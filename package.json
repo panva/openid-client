@@ -1,0 +1,50 @@
+{
+  "name": "oidc-client",
+  "version": "0.0.1",
+  "description": "OpenID Relying Party (RP, Client) implementation for Node.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "coverage": "make coverage",
+    "test": "make test",
+    "lint": "eslint lib example test --fix"
+  },
+  "repository": "panva/node-oidc-client",
+  "engines": {
+    "node": ">=6"
+  },
+  "homepage": "https://github.com/panva/node-oidc-client",
+  "keywords": [
+    "openid",
+    "connect",
+    "client",
+    "relying",
+    "party",
+    "oidc",
+    "oauth",
+    "oauth2"
+  ],
+  "author": "Filip Skokan",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.0.1",
+    "eslint-config-airbnb-base": "^4.0.0",
+    "eslint-plugin-import": "^1.10.2",
+    "istanbul": "^0.4.4",
+    "mocha": "^2.5.3",
+    "nock": "^8.0.0",
+    "sinon": "^1.17.4"
+  },
+  "dependencies": {
+    "base64url": "^1.0.6",
+    "debug": "^2.2.0",
+    "got": "^6.3.0",
+    "lodash": "^4.13.1",
+    "lru-cache": "^4.0.1",
+    "node-jose": "^0.8.0",
+    "node-uuid": "^1.4.7"
+  }
+}
