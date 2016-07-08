@@ -1,0 +1,5 @@
+<h2>error encountered</h2>
+<% if (error.error) { %>
+  <pre><%= JSON.stringify(error) %></pre>
+<% } %>
+<pre><%= error.stack %></pre>
