@@ -360,79 +360,79 @@ describe('Client', function () {
             client[method]('token');
           }).not.to.throw();
         });
+      });
 
-        it('posts the token in a body returns the parsed response', function () {
-          nock('https://rp.example.com')
-            .filteringRequestBody(function (body) {
-              expect(querystring.parse(body)).to.eql({
-                token: 'tokenValue',
-              });
-            })
+      it('posts the token in a body returns the parsed response', function () {
+        nock('https://rp.example.com')
+          .filteringRequestBody(function (body) {
+            expect(querystring.parse(body)).to.eql({
+              token: 'tokenValue',
+            });
+          })
             .post(`/token/${method}`)
-            .reply(200, {
-              endpoint: 'response',
-            });
-
-          const issuer = new Issuer({
-            [metas[0]]: `https://rp.example.com/token/${method}`,
+          .reply(200, {
+            endpoint: 'response',
           });
-          const client = new issuer.Client();
 
-          return client[method]('tokenValue')
-            .then(response => expect(response).to.eql({ endpoint: 'response' }));
+        const issuer = new Issuer({
+          [metas[0]]: `https://rp.example.com/token/${method}`,
         });
+        const client = new issuer.Client();
 
-        it('is rejected with OpenIdConnectError upon oidc error', function () {
-          nock('https://rp.example.com')
-            .post(`/token/${method}`)
-            .reply(500, {
-              error: 'server_error',
-              error_description: 'bad things are happening',
-            });
+        return client[method]('tokenValue')
+          .then(response => expect(response).to.eql({ endpoint: 'response' }));
+      });
 
-          const issuer = new Issuer({
-            [metas[0]]: `https://rp.example.com/token/${method}`,
+      it('is rejected with OpenIdConnectError upon oidc error', function () {
+        nock('https://rp.example.com')
+          .post(`/token/${method}`)
+          .reply(500, {
+            error: 'server_error',
+            error_description: 'bad things are happening',
           });
-          const client = new issuer.Client();
 
-          return client[method]('tokenValue')
-            .then(fail, function (error) {
-              expect(error).to.have.property('message', 'server_error');
-            });
+        const issuer = new Issuer({
+          [metas[0]]: `https://rp.example.com/token/${method}`,
         });
+        const client = new issuer.Client();
 
-        it('is rejected with when non 200 is returned', function () {
-          nock('https://rp.example.com')
-            .post(`/token/${method}`)
-            .reply(500, 'Internal Server Error');
-
-          const issuer = new Issuer({
-            [metas[0]]: `https://rp.example.com/token/${method}`,
+        return client[method]('tokenValue')
+          .then(fail, function (error) {
+            expect(error).to.have.property('message', 'server_error');
           });
-          const client = new issuer.Client();
+      });
 
-          return client[method]('tokenValue')
-            .then(fail, function (error) {
-              expect(error).to.be.an.instanceof(got.HTTPError);
-            });
+      it('is rejected with when non 200 is returned', function () {
+        nock('https://rp.example.com')
+          .post(`/token/${method}`)
+          .reply(500, 'Internal Server Error');
+
+        const issuer = new Issuer({
+          [metas[0]]: `https://rp.example.com/token/${method}`,
         });
+        const client = new issuer.Client();
 
-        it('is rejected with JSON.parse error upon invalid response', function () {
-          nock('https://rp.example.com')
-            .post(`/token/${method}`)
-            .reply(200, '{"notavalid"}');
-
-          const issuer = new Issuer({
-            [metas[0]]: `https://rp.example.com/token/${method}`,
+        return client[method]('tokenValue')
+          .then(fail, function (error) {
+            expect(error).to.be.an.instanceof(got.HTTPError);
           });
-          const client = new issuer.Client();
+      });
 
-          return client[method]('tokenValue')
-            .then(fail, function (error) {
-              expect(error).to.be.an.instanceof(SyntaxError);
-              expect(error).to.have.property('message').matches(/Unexpected token/);
-            });
+      it('is rejected with JSON.parse error upon invalid response', function () {
+        nock('https://rp.example.com')
+          .post(`/token/${method}`)
+          .reply(200, '{"notavalid"}');
+
+        const issuer = new Issuer({
+          [metas[0]]: `https://rp.example.com/token/${method}`,
         });
+        const client = new issuer.Client();
+
+        return client[method]('tokenValue')
+          .then(fail, function (error) {
+            expect(error).to.be.an.instanceof(SyntaxError);
+            expect(error).to.have.property('message').matches(/Unexpected token/);
+          });
       });
     });
   });
