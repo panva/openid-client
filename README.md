@@ -90,7 +90,7 @@ client.refresh(refreshToken) // => Promise
 ```js
 client.revoke(token) // => Promise
   .then(function () {
-    console.log('revoked token %j', token);
+    console.log('revoked token %s', token);
   });
 ```
 
