@@ -1,6 +1,7 @@
 'use strict';
 
 const Issuer = require('../../lib').Issuer;
+const _ = require('lodash');
 const expect = require('chai').expect;
 const BaseClient = require('../../lib/base_client');
 const url = require('url');
@@ -15,6 +16,10 @@ const fail = () => {
 };
 
 describe('Client', function () {
+  afterEach(function () {
+    nock.cleanAll();
+  });
+
   describe('#authorizationUrl', function () {
     before(function () {
       const issuer = new Issuer({
@@ -81,10 +86,6 @@ describe('Client', function () {
       sinon.stub(this.client, 'validateIdToken', function (value) {
         return value;
       });
-    });
-
-    afterEach(function () {
-      nock.cleanAll();
     });
 
     it('does an authorization_code grant with code and redirect_uri', function () {
@@ -341,6 +342,98 @@ describe('Client', function () {
           expect(error).to.be.an.instanceof(SyntaxError);
           expect(error).to.have.property('message').matches(/Unexpected token/);
         });
+    });
+  });
+
+  _.forEach({
+    introspect: ['introspection_endpoint', 'token_introspection_endpoint'],
+    revoke: ['revocation_endpoint', 'token_revocation_endpoint'],
+  }, function (metas, method) {
+    describe(`#${method}`, function () {
+      metas.forEach(function (property) {
+        it(`works with ${property} provided`, function () {
+          expect(function () {
+            const issuer = new Issuer({
+              [property]: `https://op.example.com/token/${method}`,
+            });
+            const client = new issuer.Client();
+            client[method]('token');
+          }).not.to.throw();
+        });
+
+        it('posts the token in a body returns the parsed response', function () {
+          nock('https://rp.example.com')
+            .filteringRequestBody(function (body) {
+              expect(querystring.parse(body)).to.eql({
+                token: 'tokenValue',
+              });
+            })
+            .post(`/token/${method}`)
+            .reply(200, {
+              endpoint: 'response',
+            });
+
+          const issuer = new Issuer({
+            [metas[0]]: `https://rp.example.com/token/${method}`,
+          });
+          const client = new issuer.Client();
+
+          return client[method]('tokenValue')
+            .then(response => expect(response).to.eql({ endpoint: 'response' }));
+        });
+
+        it('is rejected with OpenIdConnectError upon oidc error', function () {
+          nock('https://rp.example.com')
+            .post(`/token/${method}`)
+            .reply(500, {
+              error: 'server_error',
+              error_description: 'bad things are happening',
+            });
+
+          const issuer = new Issuer({
+            [metas[0]]: `https://rp.example.com/token/${method}`,
+          });
+          const client = new issuer.Client();
+
+          return client[method]('tokenValue')
+            .then(fail, function (error) {
+              expect(error).to.have.property('message', 'server_error');
+            });
+        });
+
+        it('is rejected with when non 200 is returned', function () {
+          nock('https://rp.example.com')
+            .post(`/token/${method}`)
+            .reply(500, 'Internal Server Error');
+
+          const issuer = new Issuer({
+            [metas[0]]: `https://rp.example.com/token/${method}`,
+          });
+          const client = new issuer.Client();
+
+          return client[method]('tokenValue')
+            .then(fail, function (error) {
+              expect(error).to.be.an.instanceof(got.HTTPError);
+            });
+        });
+
+        it('is rejected with JSON.parse error upon invalid response', function () {
+          nock('https://rp.example.com')
+            .post(`/token/${method}`)
+            .reply(200, '{"notavalid"}');
+
+          const issuer = new Issuer({
+            [metas[0]]: `https://rp.example.com/token/${method}`,
+          });
+          const client = new issuer.Client();
+
+          return client[method]('tokenValue')
+            .then(fail, function (error) {
+              expect(error).to.be.an.instanceof(SyntaxError);
+              expect(error).to.have.property('message').matches(/Unexpected token/);
+            });
+        });
+      });
     });
   });
 });
