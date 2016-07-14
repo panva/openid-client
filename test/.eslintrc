@@ -3,6 +3,7 @@
     "mocha": true
   },
   "rules": {
+    "arrow-body-style": "off",
     "func-names": "off",
     "prefer-arrow-callback": "off",
     "no-unused-expressions": "off",

@@ -9,7 +9,7 @@ const fail = () => {
 };
 
 describe('Issuer#discover()', function () {
-  it('accepts and assigns the disovered metadata', function () {
+  it('accepts and assigns the discovered metadata', function () {
     nock('https://op.example.com')
       .get('/.well-known/openid-configuration')
       .reply(200, {

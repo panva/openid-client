@@ -10,7 +10,7 @@ const fail = () => {
 const issuer = new Issuer();
 
 describe('Client#fromUri()', function () {
-  it('accepts and assigns the disovered metadata', function () {
+  it('accepts and assigns the discovered metadata', function () {
     nock('https://op.example.com')
       .get('/client/identifier')
       .reply(200, {
