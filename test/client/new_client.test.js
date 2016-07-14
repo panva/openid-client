@@ -42,9 +42,9 @@ describe('new Client()', function () {
 
   context('with keystore', function () {
     it('validates it is a keystore', function () {
-      [{}, [], 'not a keystore', 2, true, false].forEach(function () {
+      [{}, [], 'not a keystore', 2, true, false].forEach(function (notkeystore) {
         expect(function () {
-          new Client({}, 'not a keystore'); // eslint-disable-line no-new
+          new Client({}, notkeystore); // eslint-disable-line no-new
         }).to.throw('keystore must be an instance of jose.JWK.KeyStore');
       });
     });
