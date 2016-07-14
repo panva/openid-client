@@ -5,6 +5,41 @@
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js
 
+**Table of Contents**
+
+  * [Implemented specs &amp; features](#implemented-specs--features)
+  * [Get started](#get-started)
+  * [Usage](#usage)
+
+## Implemented specs & features
+
+The following client/RP features from OpenID Connect/OAuth2.0 specifications are implemented by
+openid-client.
+
+- [OpenID Connect Core 1.0 incorporating errata set 1][feature-core]
+  - Authorization Callback
+    - Authorization Code Flow
+    - Implicit Flow
+    - Hybrid Flow
+  - UserInfo Request
+  - Offline Access / Refresh Token Grant
+  - Client Credentials Grant
+  - Password Grant
+  - Client Authentication
+    - client_secret_basic
+    - client_secret_post
+    - client_secret_jwt
+    - private_key_jwt
+- [OpenID Connect Discovery 1.0 incorporating errata set 1][feature-discovery]
+  - Discovery of OpenID Provider (Issuer) Metadata
+- [OpenID Connect Dynamic Client Registration 1.0 incorporating errata set 1][feature-registration]
+  - Dynamic Client Registration request
+  - Client initialization via registration client uri
+- [RFC7009 - OAuth 2.0 Token revocation][feature-revocation]
+  - Client Authenticated request to token revocation
+- [RFC7662 - OAuth 2.0 Token introspection][feature-introspection]
+  - Client Authenticated request to token introspection
+
 ## Example
 Head over to the example folder to see the library in use. This example is deployed and configured
 to use an example OpenID Connect Provider [here][heroku-example]. The provider is using
@@ -159,3 +194,8 @@ issuer.Client.register(metadata, [keystore]) // => Promise
 [openid-connect]: http://openid.net/connect/
 [heroku-example]: https://tranquil-reef-95185.herokuapp.com/client
 [oidc-provider]: https://github.com/panva/node-oidc-provider
+[feature-core]: http://openid.net/specs/openid-connect-core-1_0.html
+[feature-discovery]: http://openid.net/specs/openid-connect-discovery-1_0.html
+[feature-registration]: http://openid.net/specs/openid-connect-registration-1_0.html
+[feature-revocation]: https://tools.ietf.org/html/rfc7009
+[feature-introspection]: https://tools.ietf.org/html/rfc7662
