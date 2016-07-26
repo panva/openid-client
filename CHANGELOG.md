@@ -1,4 +1,6 @@
 Following semver, 1.0.0 will mark the first API stable release and commence of this file,
 until then please use the compare views of github for reference.
 
-- TODO
+- https://github.com/panva/node-openid-client/compare/v0.1.0...v0.2.0
+  - httpOptions configurable on a library level
+  - signed userinfo response handling
