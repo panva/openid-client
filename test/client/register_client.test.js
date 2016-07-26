@@ -2,13 +2,11 @@
 
 const Issuer = require('../../lib/issuer');
 const expect = require('chai').expect;
-const fail = () => {
-  throw new Error('expected promise to be rejected');
-};
 const jose = require('node-jose');
 const got = require('got');
 const nock = require('nock');
 
+const fail = () => { throw new Error('expected promise to be rejected'); };
 const issuer = new Issuer({
   registration_endpoint: 'https://op.example.com/client/registration',
 });

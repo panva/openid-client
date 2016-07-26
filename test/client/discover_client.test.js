@@ -4,9 +4,8 @@ const Issuer = require('../../lib').Issuer;
 const expect = require('chai').expect;
 const nock = require('nock');
 const got = require('got');
-const fail = () => {
-  throw new Error('expected promise to be rejected');
-};
+
+const fail = () => { throw new Error('expected promise to be rejected'); };
 const issuer = new Issuer();
 
 describe('Client#fromUri()', function () {
