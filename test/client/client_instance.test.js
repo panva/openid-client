@@ -759,6 +759,29 @@ describe('Client#validateIdToken', function () {
     });
   });
 
+  it('can be also used for userinfo response validation', function () {
+    const client = new this.issuer.Client({
+      client_id: 'hs256-client',
+      client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+      userinfo_signed_response_alg: 'HS256',
+    });
+
+    return client.joseSecret().then(key => {
+      return new this.IdToken(key, 'HS256', {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      })
+      .then((token) => {
+        return client.validateIdToken(token, null, 'userinfo').then((validated) => {
+          expect(validated).to.equal(token);
+        });
+      });
+    });
+  });
+
   it('validates the id_token_signed_response_alg is the one used', function () {
     return this.client.joseSecret().then(key => {
       return new this.IdToken(key, 'HS256', {
