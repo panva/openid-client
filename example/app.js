@@ -114,7 +114,7 @@ module.exports = issuer => {
     })));
   });
 
-  router.get('/login', function * () {
+  router.get('/login', function * (next) {
     this.session.state = crypto.randomBytes(16).toString('hex');
     this.session.nonce = crypto.randomBytes(16).toString('hex');
     const authz = CLIENTS.get(this.session.id).authorizationUrl({
@@ -130,23 +130,27 @@ module.exports = issuer => {
     });
 
     this.redirect(authz);
+    yield next;
   });
 
-  router.get('/refresh', function * () {
+  router.get('/refresh', function * (next) {
     if (!TOKENS.has(this.session.id)) {
       this.session = null;
-      return this.redirect('/');
+      this.redirect('/');
+    } else {
+      const tokens = TOKENS.get(this.session.id);
+      const client = CLIENTS.get(this.session.id);
+
+      TOKENS.set(
+        this.session.id,
+        yield client.refresh(tokens)
+      );
+
+      this.redirect('/user');
     }
 
-    const tokens = TOKENS.get(this.session.id);
-    const client = CLIENTS.get(this.session.id);
 
-    TOKENS.set(
-      this.session.id,
-      yield client.refresh(tokens)
-    );
-
-    return this.redirect('/user');
+    yield next;
   });
 
   router.get('/cb', function * () {

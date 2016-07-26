@@ -105,9 +105,28 @@ client.authorizationUrl({
 }); // => String
 ```
 
+### Getting authorization url
+```js
+client.authorizationUrl({
+  redirect_uri: 'https://client.example.com/callback',
+  scope: 'openid email',
+}); // => String
+```
+
 ### Processing callback
 ```js
 client.authorizationCallback('https://client.example.com/callback', request.query) // => Promise
+  .then(function (tokens) {
+    console.log('received tokens %j', tokens);
+  });
+```
+
+### Processing callback with state or nonce check
+```js
+const state = session.state;
+const nonce = session.nonce;
+
+client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce }) // => Promise
   .then(function (tokens) {
     console.log('received tokens %j', tokens);
   });
@@ -160,6 +179,14 @@ auth via body
 client.userinfo(accessToken, { verb: 'post', via: 'body' }); // => Promise
 ```
 
+receiving [signed userinfo][signed-userinfo] responses? validate using the library, then safely
+decode yourself; make sure you have `userinfo_signed_response_alg` set on the client, defaults to
+`undefined` (expecting a json response).
+```js
+client.userinfo(accessToken)
+  .then(jwt => client.validateIdToken(jwt, null, 'userinfo')); // => resolves with validated JWT
+```
+
 ### Custom token endpoint grants
 Use when the token endpoint also supports client_credentials or password grants;
 
@@ -183,6 +210,31 @@ issuer.Client.register(metadata, [keystore]) // => Promise
   });
 ```
 
+## Configuration
+
+### Changing HTTP request defaults
+Setting `defaultHttpOptions` on `Issuer` always merges your passed options with the default. The
+default being. openid-client uses [got][got-library] for http requests.
+
+```js
+const DEFAULT_HTTP_OPTIONS = {
+  followRedirect: false,
+  headers: { 'User-Agent': `${pkg.name}/${pkg.version} (${pkg.homepage})` },
+  retries: 0,
+  timeout: 1500,
+};
+```
+
+You can add your own headers, change the user-agent used or change the timeout setting
+```js
+Issuer.defaultHttpOptions = { timeout: 2500, headers: { 'X-Your-Header': '<whatever>' } };
+```
+
+Confirm your httpOptions by
+```js
+console.log('httpOptions %j', Issuer.defaultHttpOptions);
+```
+
 [travis-image]: https://img.shields.io/travis/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [travis-url]: https://travis-ci.org/panva/node-openid-client
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
@@ -199,3 +251,5 @@ issuer.Client.register(metadata, [keystore]) // => Promise
 [feature-registration]: http://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
+[got]: https://github.com/sindresorhus/got
+[signed-userinfo]: http://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse

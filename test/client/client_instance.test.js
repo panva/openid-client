@@ -13,10 +13,9 @@ const OpenIdConnectError = require('../../lib/open_id_connect_error');
 const TokenSet = require('../../lib/token_set');
 const got = require('got');
 const jose = require('node-jose');
+
 const noop = () => {};
-const fail = () => {
-  throw new Error('expected promise to be rejected');
-};
+const fail = () => { throw new Error('expected promise to be rejected'); };
 const now = () => Date.now() / 1000 | 0;
 
 describe('Client', function () {
@@ -419,6 +418,25 @@ describe('Client', function () {
           expect(error).to.have.property('message').matches(/Unexpected token/);
         });
     });
+
+    describe('signed responses (content-type = application/jwt)', function () {
+      it('returns the response body', function () {
+        const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+        const client = new issuer.Client();
+
+        nock('https://op.example.com')
+          .get('/me')
+          .reply(200, 'this.shouldbe.jwt', {
+            'content-type': 'application/jwt; charset=utf-8',
+          });
+
+        return client.userinfo()
+          .then(userinfo => {
+            expect(userinfo).to.be.a('string');
+            expect(userinfo).to.equal('this.shouldbe.jwt');
+          });
+      });
+    });
   });
 
   _.forEach({
@@ -736,6 +754,29 @@ describe('Client#validateIdToken', function () {
         const tokenset = new TokenSet({ id_token: token });
         return client.validateIdToken(tokenset).then((validated) => {
           expect(validated).to.equal(tokenset);
+        });
+      });
+    });
+  });
+
+  it('can be also used for userinfo response validation', function () {
+    const client = new this.issuer.Client({
+      client_id: 'hs256-client',
+      client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+      userinfo_signed_response_alg: 'HS256',
+    });
+
+    return client.joseSecret().then(key => {
+      return new this.IdToken(key, 'HS256', {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      })
+      .then((token) => {
+        return client.validateIdToken(token, null, 'userinfo').then((validated) => {
+          expect(validated).to.equal(token);
         });
       });
     });
