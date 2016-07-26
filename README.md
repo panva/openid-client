@@ -213,8 +213,7 @@ issuer.Client.register(metadata, [keystore]) // => Promise
 ## Configuration
 
 ### Changing HTTP request defaults
-Setting `defaultHttpOptions` on `Issuer` always merges your passed options with the default. The
-default being. openid-client uses [got][got-library] for http requests.
+Setting `defaultHttpOptions` on `Issuer` always merges your passed options with the default. openid-client uses [got][got-library] for http requests with the following default request options
 
 ```js
 const DEFAULT_HTTP_OPTIONS = {
@@ -251,5 +250,5 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 [feature-registration]: http://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
-[got]: https://github.com/sindresorhus/got
+[got-library]: https://github.com/sindresorhus/got
 [signed-userinfo]: http://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
