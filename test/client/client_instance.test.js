@@ -13,10 +13,9 @@ const OpenIdConnectError = require('../../lib/open_id_connect_error');
 const TokenSet = require('../../lib/token_set');
 const got = require('got');
 const jose = require('node-jose');
+
 const noop = () => {};
-const fail = () => {
-  throw new Error('expected promise to be rejected');
-};
+const fail = () => { throw new Error('expected promise to be rejected'); };
 const now = () => Date.now() / 1000 | 0;
 
 describe('Client', function () {
@@ -418,6 +417,25 @@ describe('Client', function () {
           expect(error).to.be.an.instanceof(SyntaxError);
           expect(error).to.have.property('message').matches(/Unexpected token/);
         });
+    });
+
+    describe('signed responses (content-type = application/jwt)', function () {
+      it('returns the response body', function () {
+        const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+        const client = new issuer.Client();
+
+        nock('https://op.example.com')
+          .get('/me')
+          .reply(200, 'this.shouldbe.jwt', {
+            'content-type': 'application/jwt; charset=utf-8',
+          });
+
+        return client.userinfo()
+          .then(userinfo => {
+            expect(userinfo).to.be.a('string');
+            expect(userinfo).to.equal('this.shouldbe.jwt');
+          });
+      });
     });
   });
 

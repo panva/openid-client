@@ -30,9 +30,9 @@
   ],
   "devDependencies": {
     "chai": "^3.5.0",
-    "eslint": "^3.0.1",
-    "eslint-config-airbnb-base": "^4.0.0",
-    "eslint-plugin-import": "^1.10.2",
+    "eslint": "*",
+    "eslint-config-airbnb-base": "*",
+    "eslint-plugin-import": "*",
     "istanbul": "^0.4.4",
     "koa": "^1.2.0",
     "koa-ejs": "^3.0.0",
@@ -43,11 +43,12 @@
     "sinon": "^1.17.4"
   },
   "dependencies": {
-    "base64url": "^1.0.6",
+    "base64url": "^2.0.0",
     "create-error-class": "^3.0.2",
     "got": "^6.3.0",
     "lodash": "^4.13.1",
-    "node-jose": "^0.8.0",
+    "lru-cache": "^4.0.1",
+    "node-jose": "^0.9.0",
     "node-uuid": "^1.4.7"
   }
 }
