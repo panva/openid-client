@@ -187,6 +187,15 @@ client.userinfo(accessToken)
   .then(jwt => client.validateIdToken(jwt, null, 'userinfo')); // => resolves with validated JWT
 ```
 
+receiving [signed and encrypted userinfo][signed-userinfo] responses? decrypt and validate using the
+library, then safely decode yourself; additional to `userinfo_signed_response_alg` you must also
+have `userinfo_encrypted_response_alg` and `userinfo_encrypted_response_enc` set on the client
+```js
+client.userinfo(accessToken)
+  .then(jwt => client.decryptIdToken(jwt, 'userinfo'))
+  .then(jwt => client.validateIdToken(jwt, null, 'userinfo')); // => resolves with decrypted and validated JWT
+```
+
 ### Custom token endpoint grants
 Use when the token endpoint also supports client_credentials or password grants;
 
