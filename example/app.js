@@ -64,10 +64,12 @@ module.exports = issuer => {
         post_logout_redirect_uris: [url.resolve(this.href, '/')],
         redirect_uris: [url.resolve(this.href, 'cb')],
         response_types: ['code'],
-        // token_endpoint_auth_method: 'client_secret_jwt',
+
         token_endpoint_auth_method: 'private_key_jwt',
-        // id_token_signed_response_alg: 'HS256',
-        // token_endpoint_auth_signing_alg: 'HS256',
+        // token_endpoint_auth_method: 'client_secret_jwt',
+
+        // id_token_encrypted_response_alg: 'RSA1_5',
+        // userinfo_encrypted_response_alg: 'RSA1_5',
       // });
       }, keystore);
       CLIENTS.set(this.session.id, client);
@@ -124,7 +126,10 @@ module.exports = issuer => {
       },
       redirect_uri: url.resolve(this.href, 'cb'),
       scope: 'openid',
+
+      // scope: 'openid offline_access',
       // prompt: 'consent',
+
       state: this.session.state,
       nonce: this.session.nonce,
     });
