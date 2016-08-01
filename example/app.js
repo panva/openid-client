@@ -13,6 +13,8 @@ const Router = require('koa-router');
 const session = require('koa-session');
 const render = require('koa-ejs');
 
+const PRESETS = require('./presets');
+
 module.exports = issuer => {
   const app = koa();
 
@@ -54,25 +56,8 @@ module.exports = issuer => {
   });
 
   app.use(function * (next) {
-    if (!CLIENTS.has(this.session.id)) {
-      const keystore = jose.JWK.createKeyStore();
-      yield keystore.generate.apply(keystore,
-        _.sample([['RSA', 2048], ['EC', _.sample(['P-256', 'P-384', 'P-521'])]]));
-
-      const client = yield issuer.Client.register({
-        grant_types: ['authorization_code', 'refresh_token'],
-        post_logout_redirect_uris: [url.resolve(this.href, '/')],
-        redirect_uris: [url.resolve(this.href, 'cb')],
-        response_types: ['code'],
-
-        token_endpoint_auth_method: 'private_key_jwt',
-        // token_endpoint_auth_method: 'client_secret_jwt',
-
-        // id_token_encrypted_response_alg: 'RSA1_5',
-        // userinfo_encrypted_response_alg: 'RSA1_5',
-      // });
-      }, keystore);
-      CLIENTS.set(this.session.id, client);
+    if (!CLIENTS.has(this.session.id) && !this.path.startsWith('/setup')) {
+      this.redirect('/setup');
     }
     yield next;
   });
@@ -81,6 +66,32 @@ module.exports = issuer => {
 
   router.get('/', function * () {
     yield this.render('index', { session: this.session });
+  });
+
+
+  router.get('/setup', function * () {
+    yield this.render('setup', { session: this.session, presets: PRESETS });
+  });
+
+  router.post('/setup/:preset', function * () {
+    let keystore;
+    const preset = PRESETS[this.params.preset];
+
+    if (preset.keystore) {
+      keystore = jose.JWK.createKeyStore();
+      yield keystore.generate.apply(keystore, preset.keystore);
+    }
+
+    const metadata = Object.assign({
+      post_logout_redirect_uris: [url.resolve(this.href, '/')],
+      redirect_uris: [url.resolve(this.href, '/cb')],
+    }, preset.registration);
+
+    const client = yield issuer.Client.register(metadata, keystore);
+    CLIENTS.set(this.session.id, client);
+    this.session.authorization_params = preset.authorization_params;
+
+    this.redirect('/client');
   });
 
   router.get('/issuer', function * () {
@@ -97,13 +108,14 @@ module.exports = issuer => {
 
   router.get('/logout', function * () {
     const id = this.session.id;
-    this.session = null;
+    this.session.loggedIn = false;
 
     if (!TOKENS.has(id)) {
       return this.redirect('/');
     }
 
     const tokens = TOKENS.get(id);
+    TOKENS.delete(id);
 
     yield CLIENTS.get(id).revoke(tokens.access_token);
 
@@ -119,20 +131,19 @@ module.exports = issuer => {
   router.get('/login', function * (next) {
     this.session.state = crypto.randomBytes(16).toString('hex');
     this.session.nonce = crypto.randomBytes(16).toString('hex');
-    const authz = CLIENTS.get(this.session.id).authorizationUrl({
+
+    const authorizationRequest = Object.assign({
       claims: {
         id_token: { email_verified: null },
         userinfo: { sub: null, email: null },
       },
       redirect_uri: url.resolve(this.href, 'cb'),
       scope: 'openid',
-
-      // scope: 'openid offline_access',
-      // prompt: 'consent',
-
       state: this.session.state,
       nonce: this.session.nonce,
-    });
+    }, this.session.authorization_params);
+
+    const authz = CLIENTS.get(this.session.id).authorizationUrl(authorizationRequest);
 
     this.redirect(authz);
     yield next;
@@ -176,15 +187,15 @@ module.exports = issuer => {
 
   router.get('/user', function * () {
     if (!TOKENS.has(this.session.id)) {
-      this.session = null;
-      return this.redirect('/');
+      this.session.loggedIn = false;
+      return this.redirect('/client');
     }
     const tokens = TOKENS.get(this.session.id);
     const client = CLIENTS.get(this.session.id);
 
     const context = {
       tokens,
-      userinfo: (yield client.userinfo(tokens).catch(() => {})),
+      userinfo: undefined,
       id_token: tokens.id_token ? _.map(tokens.id_token.split('.'), part => {
         try {
           return JSON.parse(decode(part));
@@ -196,16 +207,26 @@ module.exports = issuer => {
       introspections: {},
     };
 
-    const introspections = _.map(tokens, (value, key) => {
+    const promises = {};
+
+    _.forEach(tokens, (value, key) => {
       if (key.endsWith('token') && key !== 'id_token') {
-        return client.introspect(value).then((response) => {
-          context.introspections[key] = response;
-        });
+        promises[key] = client.introspect(value);
       }
       return undefined;
     });
 
-    yield Promise.all(introspections);
+    promises.userinfo = client.userinfo(tokens).catch(() => {});
+
+    const results = yield promises;
+
+    _.forEach(results, (result, key) => {
+      if (key === 'userinfo') {
+        context.userinfo = result;
+      } else {
+        context.introspections[key] = result;
+      }
+    });
 
     return yield this.render('user', context);
   });
