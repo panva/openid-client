@@ -185,6 +185,14 @@ module.exports = issuer => {
     this.redirect('/user');
   });
 
+  function rejectionHandler(error) {
+    if (error.name === 'OpenIdConnectError') {
+      return error;
+    }
+
+    throw error;
+  }
+
   router.get('/user', function * () {
     if (!TOKENS.has(this.session.id)) {
       this.session.loggedIn = false;
@@ -211,12 +219,12 @@ module.exports = issuer => {
 
     _.forEach(tokens, (value, key) => {
       if (key.endsWith('token') && key !== 'id_token') {
-        promises[key] = client.introspect(value);
+        promises[key] = client.introspect(value).catch(rejectionHandler);
       }
       return undefined;
     });
 
-    promises.userinfo = client.userinfo(tokens).catch(() => {});
+    promises.userinfo = client.userinfo(tokens).catch(rejectionHandler);
 
     const results = yield promises;
 
