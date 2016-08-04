@@ -419,7 +419,7 @@ describe('Client', function () {
         });
     });
 
-    describe('signed responses (content-type = application/jwt)', function () {
+    describe.skip('signed responses (content-type = application/jwt)', function () {
       it('returns the response body', function () {
         const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
         const client = new issuer.Client();

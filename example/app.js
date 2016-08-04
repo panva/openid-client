@@ -10,8 +10,10 @@ const uuid = require('node-uuid').v4;
 const jose = require('node-jose');
 const path = require('path');
 const Router = require('koa-router');
+const body = require('koa-body');
 const session = require('koa-session');
 const render = require('koa-ejs');
+const base64url = require('base64url');
 
 const PRESETS = require('./presets');
 
@@ -185,6 +187,22 @@ module.exports = issuer => {
     this.redirect('/user');
   });
 
+  router.post('/cb', body(), function * () {
+    const state = this.session.state;
+    delete this.session.state;
+    const nonce = this.session.nonce;
+    delete this.session.nonce;
+
+    TOKENS.set(
+      this.session.id,
+      yield CLIENTS.get(this.session.id)
+        .authorizationCallback(url.resolve(this.href, 'cb'), this.request.body, { nonce, state }));
+
+    this.session.loggedIn = true;
+
+    this.redirect('/user');
+  });
+
   function rejectionHandler(error) {
     if (error.name === 'OpenIdConnectError') {
       return error;
@@ -224,7 +242,9 @@ module.exports = issuer => {
       return undefined;
     });
 
-    promises.userinfo = client.userinfo(tokens).catch(rejectionHandler);
+    if (tokens.access_token) {
+      promises.userinfo = client.userinfo(tokens).catch(rejectionHandler);
+    }
 
     const results = yield promises;
 
