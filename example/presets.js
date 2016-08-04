@@ -4,7 +4,7 @@ module.exports = {
       grant_types: ['authorization_code'],
       response_types: ['code'],
     },
-    keystore: null,
+    keystore: undefined,
     authorization_params: {
       scope: 'openid phone',
     },
@@ -14,17 +14,35 @@ module.exports = {
       grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],
     },
-    keystore: null,
+    keystore: undefined,
     authorization_params: {
       scope: 'openid phone offline_access',
       prompt: 'consent',
     },
   },
-  pairwise: {
+  implicit: {
     registration: {
-      grant_types: ['authorization_code', 'refresh_token'],
-      response_types: ['code'],
-      subject_type: 'pairwise',
+      grant_types: ['implicit'],
+      response_types: ['id_token'],
+    },
+    keystore: undefined,
+    authorization_params: {
+      scope: 'openid',
+      response_type: 'id_token',
+      response_mode: 'form_post',
+      claims: { id_token: { email_verified: null } },
+    },
+  },
+  hybrid: {
+    registration: {
+      grant_types: ['authorization_code', 'implicit'],
+      response_types: ['code id_token'],
+    },
+    keystore: undefined,
+    authorization_params: {
+      scope: 'openid',
+      response_type: 'code id_token',
+      response_mode: 'form_post',
     },
   },
   auth_private_key_jwt: {
@@ -59,7 +77,16 @@ module.exports = {
       userinfo_signed_response_alg: 'RS256',
     },
   },
-  userinfo_encrypted: {
+  userinfo_signed_encrypted: {
+    registration: {
+      grant_types: ['authorization_code'],
+      response_types: ['code'],
+      userinfo_encrypted_response_alg: 'ECDH-ES+A128KW',
+      userinfo_signed_response_alg: 'RS256',
+    },
+    keystore: ['EC', 'P-256'],
+  },
+  userinfo_not_signed_but_encrypted: {
     registration: {
       grant_types: ['authorization_code'],
       response_types: ['code'],

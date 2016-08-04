@@ -179,22 +179,10 @@ auth via body
 client.userinfo(accessToken, { verb: 'post', via: 'body' }); // => Promise
 ```
 
-receiving [signed userinfo][signed-userinfo] responses? validate using the library, then safely
-decode yourself; make sure you have `userinfo_signed_response_alg` set on the client, defaults to
-`undefined` (expecting a json response).
-```js
-client.userinfo(accessToken)
-  .then(jwt => client.validateIdToken(jwt, null, 'userinfo')); // => resolves with validated JWT
-```
-
-receiving [signed and encrypted userinfo][signed-userinfo] responses? decrypt and validate using the
-library, then safely decode yourself; additional to `userinfo_signed_response_alg` you must also
-have `userinfo_encrypted_response_alg` and `userinfo_encrypted_response_enc` set on the client
-```js
-client.userinfo(accessToken)
-  .then(jwt => client.decryptIdToken(jwt, 'userinfo'))
-  .then(jwt => client.validateIdToken(jwt, null, 'userinfo')); // => resolves with decrypted and validated JWT
-```
+userinfo also handles (as long as you have the proper metadata configured) responses that are:
+- signed
+- signed and encrypted (nested JWT)
+- just encrypted
 
 ### Custom token endpoint grants
 Use when the token endpoint also supports client_credentials or password grants;
