@@ -40,6 +40,18 @@ describe('Issuer#discover()', function () {
     });
   });
 
+  it('discovering issuers with path components', function () {
+    nock('https://op.example.com')
+      .get('/oidc/.well-known/openid-configuration')
+      .reply(200, {
+        issuer: 'https://op.example.com/oidc',
+      });
+
+    return Issuer.discover('https://op.example.com/oidc/').then(function (issuer) {
+      expect(issuer).to.have.property('issuer', 'https://op.example.com/oidc');
+    });
+  });
+
   it('is rejected with OpenIdConnectError upon oidc error', function () {
     nock('https://op.example.com')
       .get('/.well-known/openid-configuration')
