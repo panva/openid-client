@@ -13,7 +13,6 @@ const Router = require('koa-router');
 const body = require('koa-body');
 const session = require('koa-session');
 const render = require('koa-ejs');
-const base64url = require('base64url');
 
 const PRESETS = require('./presets');
 
@@ -243,7 +242,10 @@ module.exports = issuer => {
     });
 
     if (tokens.access_token) {
-      promises.userinfo = client.userinfo(tokens).catch(rejectionHandler);
+      promises.userinfo = client.userinfo(tokens)
+        .then(userinfo => client.fetchDistributedClaims(userinfo))
+        .then(userinfo => client.unpackAggregatedClaims(userinfo))
+        .catch(rejectionHandler);
     }
 
     const results = yield promises;

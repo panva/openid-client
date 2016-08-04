@@ -1100,3 +1100,113 @@ describe('Client#validateIdToken', function () {
     }).to.throw('id_token not present in TokenSet');
   });
 });
+
+describe('Client#fetchDistributedClaims', function () {
+  afterEach(nock.cleanAll);
+  before(function () {
+    const issuer = new Issuer({
+      authorization_endpoint: 'https://op.example.com/auth',
+    });
+    this.client = new issuer.Client({
+      client_id: 'identifier',
+    });
+  });
+
+  it('just returns userinfo if no distributed claims are to be fetched', function () {
+    const userinfo = {
+      sub: 'userID',
+      _claim_sources: {
+        src1: { JWT: 'not distributed' },
+      },
+    };
+    return this.client.fetchDistributedClaims(userinfo)
+      .then(result => {
+        expect(result).to.equal(userinfo);
+      });
+  });
+
+  it('fetches the claims from one or more distrubuted sources', function () {
+    nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims').reply(200, {
+        credit_history: 'foobar',
+      });
+    nock('https://src2.example.com')
+      .get('/claims').reply(200, {
+        email: 'foobar@example.com',
+      });
+
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        credit_history: 'src1',
+        email: 'src2',
+      },
+      _claim_sources: {
+        src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+        src2: { endpoint: 'https://src2.example.com/claims' },
+      },
+    };
+
+    return this.client.fetchDistributedClaims(userinfo)
+      .then(result => {
+        expect(result).to.eql({
+          sub: 'userID',
+          credit_history: 'foobar',
+          email: 'foobar@example.com',
+        });
+        expect(result).to.equal(userinfo);
+      });
+  });
+
+  it('validates claims that should be present are', function () {
+    nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims').reply(200, {
+        // credit_history: 'foobar',
+      });
+
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        credit_history: 'src1',
+      },
+      _claim_sources: {
+        src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+      },
+    };
+
+    return this.client.fetchDistributedClaims(userinfo)
+      .then(fail, function (err) {
+        expect(err).to.have.property('src', 'src1');
+        expect(err.message).to.equal('expected claim "credit_history" in "src1"');
+      });
+  });
+
+  it('is rejected with OpenIdConnectError upon oidc error', function () {
+    nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims')
+      .reply(401, {
+        error: 'invalid_token',
+        error_description: 'bad things are happening',
+      });
+
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        credit_history: 'src1',
+      },
+      _claim_sources: {
+        src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+      },
+    };
+
+    return this.client.fetchDistributedClaims(userinfo)
+      .then(fail, function (error) {
+        expect(error.name).to.equal('OpenIdConnectError');
+        expect(error).to.have.property('message', 'invalid_token');
+        expect(error).to.have.property('src', 'src1');
+      });
+  });
+});
