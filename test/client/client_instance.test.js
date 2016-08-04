@@ -307,8 +307,8 @@ describe('Client', function () {
       return client.userinfo(new TokenSet({
         id_token: 'foo',
         refresh_token: 'bar',
-      })).then(fail, (err) => {
-        expect(err.message).to.equal('access_token not present in TokenSet');
+      })).then(fail, (error) => {
+        expect(error.message).to.equal('access_token not present in TokenSet');
       });
     });
 
@@ -1159,6 +1159,33 @@ describe('Client#fetchDistributedClaims', function () {
       });
   });
 
+  it('uses access token from provided param if not part of the claims', function () {
+    nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims').reply(200, {
+        credit_history: 'foobar',
+      });
+
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        credit_history: 'src1',
+      },
+      _claim_sources: {
+        src1: { endpoint: 'https://src1.example.com/claims' },
+      },
+    };
+
+    return this.client.fetchDistributedClaims(userinfo, { src1: 'foobar' })
+      .then(result => {
+        expect(result).to.eql({
+          sub: 'userID',
+          credit_history: 'foobar',
+        });
+        expect(result).to.equal(userinfo);
+      });
+  });
+
   it('validates claims that should be present are', function () {
     nock('https://src1.example.com')
       .matchHeader('authorization', 'Bearer foobar')
@@ -1177,9 +1204,9 @@ describe('Client#fetchDistributedClaims', function () {
     };
 
     return this.client.fetchDistributedClaims(userinfo)
-      .then(fail, function (err) {
-        expect(err).to.have.property('src', 'src1');
-        expect(err.message).to.equal('expected claim "credit_history" in "src1"');
+      .then(fail, function (error) {
+        expect(error).to.have.property('src', 'src1');
+        expect(error.message).to.equal('expected claim "credit_history" in "src1"');
       });
   });
 
