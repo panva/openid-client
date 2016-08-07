@@ -23,6 +23,7 @@ openid-client.
     - Hybrid Flow
   - UserInfo Request
   - Fetching Distributed Claims
+  - Unpacking Aggregated Claims
   - Offline Access / Refresh Token Grant
   - Client Credentials Grant
   - Password Grant
@@ -200,6 +201,30 @@ let claims = {
 };
 
 client.fetchDistributedClaims(claims, { src2: 'bearer.for.src2' }) // => Promise
+  .then(function (output) {
+    console.log('claims %j', claims); // ! also modifies original input, does not create a copy
+    console.log('output %j', output);
+    // removes fetched names and sources and removes _claim_names and _claim_sources members if they
+    // are empty
+  });
+  // when rejected the error will have a property 'src' with the source name it relates to
+```
+
+### Unpacking Aggregated Claims
+```js
+let claims = {
+  sub: 'userID',
+  _claim_names: {
+    credit_history: 'src1',
+    email: 'src2',
+  },
+  _claim_sources: {
+    src1: { JWT: 'probably.a.jwt' },
+    src2: { JWT: 'probably.another.jwt' },
+  },
+};
+
+client.unpackAggregatedClaims(claims) // => Promise, autodiscovers JWT issuers, verifies signatures
   .then(function (output) {
     console.log('claims %j', claims); // ! also modifies original input, does not create a copy
     console.log('output %j', output);
