@@ -1237,3 +1237,178 @@ describe('Client#fetchDistributedClaims', function () {
       });
   });
 });
+
+describe('Client#unpackAggregatedClaims', function () {
+  function getJWT(payload, issuer) {
+    const iss = `https://${issuer}-iss.example.com`;
+    let keystore;
+    payload.iss = iss;
+
+    if (Issuer.registry.has(iss)) {
+      keystore = Issuer.registry.get(iss).keystore();
+    } else {
+      const store = jose.JWK.createKeyStore();
+      keystore = store.generate('RSA', 512).then(function () {
+        const i = new Issuer({ issuer: iss, jwks_uri: `${iss}/certs` });
+
+        nock(iss)
+          .persist()
+          .get('/certs')
+          .reply(200, store.toJSON(true));
+
+        return i.keystore();
+      });
+    }
+
+    return keystore.then(function (k) {
+      return jose.JWS.createSign({
+        fields: {
+          alg: 'RS256',
+          typ: 'JWT',
+        },
+        format: 'compact',
+      }, { key: k.get() }).update(JSON.stringify(payload)).final();
+    });
+  }
+
+  before(function () {
+    const issuer = new Issuer({
+      authorization_endpoint: 'https://op.example.com/auth',
+    });
+    this.client = new issuer.Client({
+      client_id: 'identifier',
+    });
+  });
+
+  it('just returns userinfo if no aggregated claims are to be unpacked', function () {
+    const userinfo = {
+      sub: 'userID',
+      _claim_sources: {
+        src1: { endpoint: 'not distributed' },
+      },
+    };
+    return this.client.unpackAggregatedClaims(userinfo)
+      .then(result => {
+        expect(result).to.equal(userinfo);
+      });
+  });
+
+  it('unpacks the claims from one or more aggregated sources', function * () {
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        credit_history: 'src1',
+        email: 'src2',
+      },
+      _claim_sources: {
+        src1: { JWT: yield getJWT({ credit_history: 'foobar' }, 'src1') },
+        src2: { JWT: yield getJWT({ email: 'foobar@example.com' }, 'src2') },
+      },
+    };
+
+    return this.client.unpackAggregatedClaims(userinfo)
+      .then(result => {
+        expect(result).to.eql({
+          sub: 'userID',
+          credit_history: 'foobar',
+          email: 'foobar@example.com',
+        });
+        expect(result).to.equal(userinfo);
+      });
+  });
+
+  it('autodiscovers new issuers', function * () {
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        email_verified: 'cliff',
+      },
+      _claim_sources: {
+        cliff: { JWT: yield getJWT({ email_verified: false }, 'cliff') },
+      },
+    };
+
+    const iss = 'https://cliff-iss.example.com';
+
+    const discovery = nock(iss)
+      .get('/.well-known/openid-configuration')
+      .reply(200, {
+        iss,
+        jwks_uri: `${iss}/certs`,
+      });
+
+    Issuer.registry.delete(iss);
+
+    return this.client.unpackAggregatedClaims(userinfo)
+      .then(result => {
+        expect(result).to.eql({
+          sub: 'userID',
+          email_verified: false,
+        });
+        expect(result).to.equal(userinfo);
+        expect(discovery.isDone()).to.be.true;
+      });
+  });
+
+  it('validates claims that should be present are', function * () {
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        credit_history: 'src1',
+      },
+      _claim_sources: {
+        src1: { JWT: yield getJWT({}, 'src1') },
+      },
+    };
+
+    return this.client.unpackAggregatedClaims(userinfo)
+      .then(fail, function (error) {
+        expect(error).to.have.property('src', 'src1');
+        expect(error.message).to.equal('expected claim "credit_history" in "src1"');
+      });
+  });
+
+  it('rejects discovery errors', function * () {
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        email_verified: 'cliff',
+      },
+      _claim_sources: {
+        cliff: { JWT: yield getJWT({ email_verified: false }, 'cliff') },
+      },
+    };
+
+    const iss = 'https://cliff-iss.example.com';
+
+    const discovery = nock(iss)
+      .get('/.well-known/openid-configuration')
+      .reply(500, 'Internal Server Error');
+
+    Issuer.registry.delete(iss);
+
+    return this.client.unpackAggregatedClaims(userinfo)
+      .then(fail, error => {
+        expect(discovery.isDone()).to.be.true;
+        expect(error.name).to.equal('HTTPError');
+        expect(error.src).to.equal('cliff');
+      });
+  });
+
+  it('rejects JWT errors', function () {
+    const userinfo = {
+      sub: 'userID',
+      _claim_names: {
+        email_verified: 'src1',
+      },
+      _claim_sources: {
+        src1: { JWT: 'not.a.jwt' },
+      },
+    };
+
+    return this.client.unpackAggregatedClaims(userinfo)
+      .then(fail, error => {
+        expect(error.src).to.equal('src1');
+      });
+  });
+});
