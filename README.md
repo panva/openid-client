@@ -22,6 +22,8 @@ openid-client.
     - Implicit Flow
     - Hybrid Flow
   - UserInfo Request
+  - Fetching Distributed Claims
+  - Unpacking Aggregated Claims
   - Offline Access / Refresh Token Grant
   - Client Credentials Grant
   - Password Grant
@@ -183,6 +185,54 @@ userinfo also handles (as long as you have the proper metadata configured) respo
 - signed
 - signed and encrypted (nested JWT)
 - just encrypted
+
+### Fetching Distributed Claims
+```js
+let claims = {
+  sub: 'userID',
+  _claim_names: {
+    credit_history: 'src1',
+    email: 'src2',
+  },
+  _claim_sources: {
+    src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+    src2: { endpoint: 'https://src2.example.com/claims' },
+  },
+};
+
+client.fetchDistributedClaims(claims, { src2: 'bearer.for.src2' }) // => Promise
+  .then(function (output) {
+    console.log('claims %j', claims); // ! also modifies original input, does not create a copy
+    console.log('output %j', output);
+    // removes fetched names and sources and removes _claim_names and _claim_sources members if they
+    // are empty
+  });
+  // when rejected the error will have a property 'src' with the source name it relates to
+```
+
+### Unpacking Aggregated Claims
+```js
+let claims = {
+  sub: 'userID',
+  _claim_names: {
+    credit_history: 'src1',
+    email: 'src2',
+  },
+  _claim_sources: {
+    src1: { JWT: 'probably.a.jwt' },
+    src2: { JWT: 'probably.another.jwt' },
+  },
+};
+
+client.unpackAggregatedClaims(claims) // => Promise, autodiscovers JWT issuers, verifies signatures
+  .then(function (output) {
+    console.log('claims %j', claims); // ! also modifies original input, does not create a copy
+    console.log('output %j', output);
+    // removes fetched names and sources and removes _claim_names and _claim_sources members if they
+    // are empty
+  });
+  // when rejected the error will have a property 'src' with the source name it relates to
+```
 
 ### Custom token endpoint grants
 Use when the token endpoint also supports client_credentials or password grants;
