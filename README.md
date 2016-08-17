@@ -118,8 +118,8 @@ client.authorizationUrl({
 ### Processing callback
 ```js
 client.authorizationCallback('https://client.example.com/callback', request.query) // => Promise
-  .then(function (tokens) {
-    console.log('received tokens %j', tokens);
+  .then(function (tokenSet) {
+    console.log('received tokens %j', tokenSet);
   });
 ```
 
@@ -129,32 +129,33 @@ const state = session.state;
 const nonce = session.nonce;
 
 client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce }) // => Promise
-  .then(function (tokens) {
-    console.log('received tokens %j', tokens);
+  .then(function (tokenSet) {
+    console.log('received tokens %j', tokenSet);
   });
 ```
 
 ### Refreshing a token
 ```js
 client.refresh(refreshToken) // => Promise
-  .then(function (tokens) {
-    console.log('refreshed tokens %j', tokens);
+  .then(function (tokenSet) {
+    console.log('refreshed tokens %j', tokenSet);
   });
 ```
+Tip: accepts TokenSet as well as direct refresh token values;
 
 ### Revoke a token
 ```js
 client.revoke(token) // => Promise
-  .then(function () {
-    console.log('revoked token %s', token);
+  .then(function (response) {
+    console.log('revoked token %s', token, response);
   });
 ```
 
 ### Introspect a token
 ```js
 client.introspect(token) // => Promise
-  .then(function (details) {
-    console.log('token details %j', details);
+  .then(function (response) {
+    console.log('token details %j', response);
   });
 ```
 
@@ -165,6 +166,7 @@ client.userinfo(accessToken) // => Promise
     console.log('userinfo %j', userinfo);
   });
 ```
+Tip: accepts TokenSet as well as direct access token values;
 
 via POST
 ```js
