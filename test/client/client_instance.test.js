@@ -183,13 +183,12 @@ describe('Client', function () {
         .post('/token')
         .reply(200, {});
 
-      return this.client.refresh('refreshValue')
-        .then(fail, () => {
-          expect(nock.isDone()).to.be.true;
-        });
+      return this.client.refresh('refreshValue').then(() => {
+        expect(nock.isDone()).to.be.true;
+      });
     });
 
-    it.skip('returns a TokenSet', function () {
+    it('returns a TokenSet', function () {
       nock('https://op.example.com')
         .post('/token')
         .reply(200, {
@@ -218,7 +217,7 @@ describe('Client', function () {
         access_token: 'present',
         refresh_token: 'refreshValue',
       }))
-        .then(fail, () => {
+        .then(() => {
           expect(nock.isDone()).to.be.true;
         });
     });
