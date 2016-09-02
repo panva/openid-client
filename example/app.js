@@ -77,6 +77,7 @@ module.exports = issuer => {
   router.post('/setup/:preset', function * () {
     let keystore;
     const preset = PRESETS[this.params.preset];
+    this.session.loggedIn = false;
 
     if (preset.keystore) {
       keystore = jose.JWK.createKeyStore();
@@ -118,7 +119,9 @@ module.exports = issuer => {
     const tokens = TOKENS.get(id);
     TOKENS.delete(id);
 
-    yield CLIENTS.get(id).revoke(tokens.access_token);
+    try {
+      yield CLIENTS.get(id).revoke(tokens.access_token);
+    } catch (err) {}
 
     return this.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
       search: null,
