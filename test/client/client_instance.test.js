@@ -13,12 +13,15 @@ const OpenIdConnectError = require('../../lib/open_id_connect_error');
 const TokenSet = require('../../lib/token_set');
 const got = require('got');
 const jose = require('node-jose');
+const timekeeper = require('timekeeper');
 
 const noop = () => {};
 const fail = () => { throw new Error('expected promise to be rejected'); };
 const now = () => Date.now() / 1000 | 0;
+const encode = (object) => base64url.encode(JSON.stringify(object));
 
 describe('Client', function () {
+  afterEach(timekeeper.reset);
   afterEach(nock.cleanAll);
 
   describe('#authorizationUrl', function () {
@@ -102,20 +105,6 @@ describe('Client', function () {
       })
         .then(fail, () => {
           expect(nock.isDone()).to.be.true;
-        });
-    });
-
-    it.skip('returns a TokenSet', function () {
-      nock('https://op.example.com')
-        .post('/token')
-        .reply(200, {
-          access_token: 'tokenValue',
-        });
-
-      return this.client.authorizationCallback('https://rp.example.com/cb', {})
-        .then(set => {
-          expect(set).to.be.instanceof(TokenSet);
-          expect(set).to.have.property('access_token', 'tokenValue');
         });
     });
 
@@ -418,22 +407,59 @@ describe('Client', function () {
         });
     });
 
-    describe.skip('signed responses (content-type = application/jwt)', function () {
-      it('returns the response body', function () {
-        const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-        const client = new issuer.Client();
+    describe('signed response (content-type = application/jwt)', function () {
+      it('decodes and validates the id_token', function () {
+        const issuer = new Issuer({
+          userinfo_endpoint: 'https://op.example.com/me',
+          issuer: 'https://op.example.com',
+        });
+        const client = new issuer.Client({
+          client_id: 'foobar',
+          userinfo_signed_response_alg: 'none',
+        });
+
+        const payload = {
+          iss: issuer.issuer,
+          sub: 'foobar',
+          aud: client.client_id,
+          exp: (Date.now() / 1000 | 0) + 100,
+          iat: (Date.now() / 1000 | 0),
+        };
 
         nock('https://op.example.com')
           .get('/me')
-          .reply(200, 'this.shouldbe.jwt', {
+          .reply(200, `${encode({ alg: 'none' })}.${encode(payload)}.`, {
             'content-type': 'application/jwt; charset=utf-8',
           });
 
         return client.userinfo()
           .then(userinfo => {
-            expect(userinfo).to.be.a('string');
-            expect(userinfo).to.equal('this.shouldbe.jwt');
+            expect(userinfo).to.be.an('object');
+            expect(userinfo).to.eql(payload);
           });
+      });
+
+      it('validates the used alg of signed userinfo', function () {
+        const issuer = new Issuer({
+          userinfo_endpoint: 'https://op.example.com/me',
+          issuer: 'https://op.example.com',
+        });
+        const client = new issuer.Client({
+          client_id: 'foobar',
+          userinfo_signed_response_alg: 'RS256',
+        });
+
+        const payload = {};
+
+        nock('https://op.example.com')
+          .get('/me')
+          .reply(200, `${encode({ alg: 'none' })}.${encode(payload)}.`, {
+            'content-type': 'application/jwt; charset=utf-8',
+          });
+
+        return client.userinfo().then(fail, (err) => {
+          expect(err.message).to.eql('unexpected algorithm used');
+        });
       });
     });
   });
@@ -1409,5 +1435,116 @@ describe('Client#unpackAggregatedClaims', function () {
       .then(fail, error => {
         expect(error.src).to.equal('src1');
       });
+  });
+
+  /* eslint-disable max-len */
+  describe('signed and encrypted responses', function () {
+    before(function () {
+      return jose.JWK.asKeyStore({
+        keys: [
+          {
+            kty: 'EC',
+            kid: 'L3qrG8dSNYv6F-Hvv-qTdp_EkmgwjQX76DHmDZCoa4Q',
+            crv: 'P-256',
+            x: 'PDsKZY9JxlbrE-hHce_e_H7yjWgxftRIowdW9qxBqNQ',
+            y: 'EAmrpjkbBkuBZAD2kvuL5mOXgdK_8t1t93yKGGHq_Y4',
+            d: '59efvkfuCuVLW9Y4xvLvUyjARwgnSgwTLRc0UGpewLA',
+          },
+        ],
+      }).then(keystore => { this.keystore = keystore; });
+    });
+
+    it('handles signed and encrypted id_tokens from implicit and code responses (test by hybrid)', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        token_endpoint: 'https://op.example.com/token',
+        userinfo_endpoint: 'https://op.example.com/me',
+      });
+
+      nock('https://op.example.com')
+        .post('/token')
+        .reply(200, {
+          access_token: 'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
+          expires_at: 1473083613,
+          id_token: 'eyJhbGciOiJFQ0RILUVTK0ExMjhLVyIsImtpZCI6IkwzcXJHOGRTTll2NkYtSHZ2LXFUZHBfRWttZ3dqUVg3NkRIbURaQ29hNFEiLCJlcGsiOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJJVXRTWnZOVzBubUNmT2Nwek5JSnBBS29FbGpOVkZyUlJGa2pDT3plYnlRIiwieSI6IjNEOXZ1V2VJNEdVajZWczZ4ZUJlMVZRM3dHQnhkU3BnTGdYcGZPUThmeEkifSwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImN0eSI6IkpXVCJ9.DVIPxvxnQASDiair_I_6e4M1Y8yMdzIneHMPq_LlBjo8QAiwjMQ1Uw.gdLKThNa_DcFmPGBmzOBkg.TQZ4qpEchLx9nnNIfG_N8d3sL-S-p1vpWbA3MnK68U60kX7i29s33fxhH3w5MQhZbgxjntrbRdE9wFsBzclr8hfwazBTpi6D5Ignug0xCZQYw7HBDrkq63-7PQQa2-rivTtxQxAWUZj7dnNE4Ixo9qaBkHod1EPf5xameCDzgrRa2oi2ISEE6ncQrvc7jnANeBQj0Q2OLmo9L7EIVQbEKejGfZ_0p5HiXmgFMpLbkLFwYhTdpiSUCkZlcym-e2tgbzHJmtF85cx2-yDwDNGLvY8y5ytW79_k_ckbHKVTjf_jRMagqM7Mt6TQ1fhm9T7FZ4q-96L0ItGb12jar2Aw6VWP1DAwUMZ1jA8mmllsWu-y7qc9Ert5rlJ7osZzMOgaNfX1sf5Xa7aOHysC-tVxknIPtxAamVJ7REGxmii-FO6En4zgJMt1PLUoTTK4tIpIX06VWDKI-dQzn46ple9xeuzCUvpvap823Xl9ONcVj4AF-YmHU-UkT96gx_6Owqcwm6synOh1l2O9rRi9jJnCg6egTqn1MHaVhTYaVhKQQUpE-voAoXoaJDoLQX2fC6IjF5H2xnc_1k61wGBJkX_7zqagNYGJyoluiQr5EGkB8pxANJVHNIW37ezJEIjnix5h_Fwzh_XElGzVsKeB-ih9X6ECSVJ1VIPopN5t38kGa8lQuM7vLr0i__cvYP8TgyE94nllEl-5f0gHOUQrpcUEqpsZYRBGcW_m8iU3nuvD0Em6nCvvzPUvlmCRyANQbs3A.H9oTPRc3ahVDUuYj3C9-gQ',
+          refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
+          token_type: 'Bearer',
+        });
+
+      const client = new issuer.Client({
+        client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        id_token_encrypted_response_alg: 'ECDH-ES+A128KW',
+        id_token_encrypted_response_enc: 'A128CBC-HS256',
+        id_token_signed_response_alg: 'HS256',
+      }, this.keystore);
+
+      return client.authorizationCallback('http://oidc-client.dev/cb', {
+        code: 'eyJraW5kIjoiQXV0aG9yaXphdGlvbkNvZGUiLCJqdGkiOiI3YzM5NzQyZC0yMGUyLTQ3YjEtYmM1MC1lN2VlYzhmN2IzNmYiLCJub25jZSI6ImM2NDVmZmZhNDAwNzU1MzJlZjI5YTJlYTYyN2NmYTM3IiwiaWF0IjoxNDczMDc2NDEyLCJleHAiOjE0NzMwNzcwMTIsImlzcyI6Imh0dHBzOi8vZ3VhcmRlZC1jbGlmZnMtODYzNS5oZXJva3VhcHAuY29tL29wIn0.jgUnZUBmsceb1cpqlsmiCOQ40Zx4JTRffGN_bAgYT4rLcEv3wOlzMSoVmU1cYkDbi-jjNAqkBjqxDWHcRJnQR4BAYOdyDVcGWD_aLkqGhUOCJHn_lwWqEKtSTgh-zXiqVIVC5NTA2BdhEfHhb-jnMQNrKkL2QNXOFvT9s6khZozOMXy-mUdfNfdSFHrcpFkFyGAUpezI9QmwToMB6KwoRHDYb2jcLBXdA5JLAnHw8lpz9yUaVQv7s97wY7Xgtt2zNFwQxiJWytYNHaJxQnOZje0_TvDjrZSA9IYKuKU1Q7f7-EBfQfFSGcsFK2NtGho3mNBEUDD2B8Qv1ipv50oU6Q',
+        id_token: 'eyJhbGciOiJFQ0RILUVTK0ExMjhLVyIsImtpZCI6IkwzcXJHOGRTTll2NkYtSHZ2LXFUZHBfRWttZ3dqUVg3NkRIbURaQ29hNFEiLCJlcGsiOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJyellvRzJXeTZtSWhIZ01pMk1SNmd0alpPbG40SzZnSVExVU0yS0tOaFBjIiwieSI6IjF0TmNVZTJSNHBPM2NRZUVtQTF6Z1AzNVdXV19xSUNCMDY3WHFZZGJPSXMifSwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImN0eSI6IkpXVCJ9.yMWht5iTHhr6EKd-Dy7vw_qkRnuh7RtFpLWfs0TOQ6IAIF6K5ieUKw.-wtcftFYgbs7Rj1g-zKaXw.s8BposTeAeUdqSIjKKYADk5THIP33_nLNmGcScQ94vHApM6lUeuMPNdtjGIRJfLoBnIjr0JLYUX_oB-8nXxDCgV19alT0xzc9bKMbb6FR7gHS4R6nVUFAumtpl50iwFs-xGIcVsrr76lQJv5m139EqSeCXse2OY8Q0YyBJgEb_hL4kDXpqxwAd-VqyQzyrAXd_pIlVUnydZ6BC4ZPvbN7RJPR8z1EN46GEYknweuyhT_5tD4FkcngJPRoXJ_KnEr9Q7qbIbCWMmn6bBO59uvv-MXCM2PXIaRNTwZ2_Vp0pB6LkmVC6kHcsotBBGzc-TH_5t87t4JhB1XtTyfl_Nn1YCETdVh8iJUTk_F6ntokka0PTvjXfVQZkqZHT6j6PqZzqMngHNh2lxaFRod9DxT00QEDHXoBGaMDIjBMAt0vI4vIeXqxIMtqJ3i8FMm9bociXo5kpRDgBgmTllJ8O7GDw5q0M7ZIg5dRr0aph8TeXDImwvbPhk32T6tXJVg1i8N7dTICVc0BTitp4cIw2TFXoiR3eSyLusrJ4H3qe-SNJUoq0sPBwzg1tEiDbsDaHhxiwLRu1rcyOcXEqT5Ry0bJM09I_ypEAX9JoA_5NbiY1PVx7rMDxDUreEBW_1xEG8rgXkAmVHHZWLUiEmxQ4RCnityGKIEbG7OFjOOd6CXuznnBEDV-F120bcDCaIClwYI.yFz2AdC2eJ7GX-9gYUMy8Q',
+        state: '36853f4ea7c9d26f4b0b95f126afe6a2',
+      }, { state: '36853f4ea7c9d26f4b0b95f126afe6a2', nonce: 'c645fffa40075532ef29a2ea627cfa37' });
+    });
+
+    it('handles signed and encrypted id_tokens from refresh grant', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        token_endpoint: 'https://op.example.com/token',
+      });
+
+      nock('https://op.example.com')
+        .post('/token')
+        .reply(200, {
+          access_token: 'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
+          expires_at: 1473083613,
+          id_token: 'eyJhbGciOiJFQ0RILUVTK0ExMjhLVyIsImtpZCI6IkwzcXJHOGRTTll2NkYtSHZ2LXFUZHBfRWttZ3dqUVg3NkRIbURaQ29hNFEiLCJlcGsiOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJJVXRTWnZOVzBubUNmT2Nwek5JSnBBS29FbGpOVkZyUlJGa2pDT3plYnlRIiwieSI6IjNEOXZ1V2VJNEdVajZWczZ4ZUJlMVZRM3dHQnhkU3BnTGdYcGZPUThmeEkifSwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImN0eSI6IkpXVCJ9.DVIPxvxnQASDiair_I_6e4M1Y8yMdzIneHMPq_LlBjo8QAiwjMQ1Uw.gdLKThNa_DcFmPGBmzOBkg.TQZ4qpEchLx9nnNIfG_N8d3sL-S-p1vpWbA3MnK68U60kX7i29s33fxhH3w5MQhZbgxjntrbRdE9wFsBzclr8hfwazBTpi6D5Ignug0xCZQYw7HBDrkq63-7PQQa2-rivTtxQxAWUZj7dnNE4Ixo9qaBkHod1EPf5xameCDzgrRa2oi2ISEE6ncQrvc7jnANeBQj0Q2OLmo9L7EIVQbEKejGfZ_0p5HiXmgFMpLbkLFwYhTdpiSUCkZlcym-e2tgbzHJmtF85cx2-yDwDNGLvY8y5ytW79_k_ckbHKVTjf_jRMagqM7Mt6TQ1fhm9T7FZ4q-96L0ItGb12jar2Aw6VWP1DAwUMZ1jA8mmllsWu-y7qc9Ert5rlJ7osZzMOgaNfX1sf5Xa7aOHysC-tVxknIPtxAamVJ7REGxmii-FO6En4zgJMt1PLUoTTK4tIpIX06VWDKI-dQzn46ple9xeuzCUvpvap823Xl9ONcVj4AF-YmHU-UkT96gx_6Owqcwm6synOh1l2O9rRi9jJnCg6egTqn1MHaVhTYaVhKQQUpE-voAoXoaJDoLQX2fC6IjF5H2xnc_1k61wGBJkX_7zqagNYGJyoluiQr5EGkB8pxANJVHNIW37ezJEIjnix5h_Fwzh_XElGzVsKeB-ih9X6ECSVJ1VIPopN5t38kGa8lQuM7vLr0i__cvYP8TgyE94nllEl-5f0gHOUQrpcUEqpsZYRBGcW_m8iU3nuvD0Em6nCvvzPUvlmCRyANQbs3A.H9oTPRc3ahVDUuYj3C9-gQ',
+          refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
+          token_type: 'Bearer',
+        });
+
+      const client = new issuer.Client({
+        client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        id_token_encrypted_response_alg: 'ECDH-ES+A128KW',
+        id_token_encrypted_response_enc: 'A128CBC-HS256',
+        id_token_signed_response_alg: 'HS256',
+      }, this.keystore);
+
+      return client.refresh('http://oidc-client.dev/cb', new TokenSet({
+        refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
+      }), { nonce: null });
+    });
+
+    it('handles encrypted but not signed responses too', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        userinfo_endpoint: 'https://op.example.com/me',
+      });
+
+      nock('https://op.example.com')
+        .get('/me')
+        .reply(200, 'eyJhbGciOiJFQ0RILUVTK0ExMjhLVyIsImtpZCI6IkwzcXJHOGRTTll2NkYtSHZ2LXFUZHBfRWttZ3dqUVg3NkRIbURaQ29hNFEiLCJlcGsiOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiI4SUpmUTJQU3JBTFlqd0oyd3ZXWGZoTDJGRmgyekRxVUU1dHpZRVYybTVJIiwieSI6IjhfRkFIdzVzZmJ2c1drQ0ZRLW1mN2I3VVFYempWS0UyNWE3LXVKbEZoZUkifSwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImN0eSI6IkpXVCJ9.KnATIoEGwPKAJHyKAKGVjmeuu4PmsKjXydV047kqzUzXFHPes60zSg.D50tt0pN1HygTtOs5Hu26Q.RWmwnKdALaafgNy3X9Zvvnb27XvJiDqFKQ9kqIOFBV-MtG0Q5dQaB5v6ldaExWTyugGAtP_s1LS8zlX-E9V5eHeXmJkYn9qIQbjJ9eHdHLk.uypPS5AVSBN9XNGqeVrzuQ', {
+          'content-type': 'application/jwt; charset=utf-8',
+        });
+
+      const client = new issuer.Client({
+        client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
+        userinfo_encrypted_response_alg: 'ECDH-ES+A128KW',
+        userinfo_encrypted_response_enc: 'A128CBC-HS256',
+      }, this.keystore);
+
+      return client.userinfo('accesstoken').then(userinfo => {
+        expect(userinfo).to.eql({
+          email: 'johndoe@example.com',
+          sub: '0aa66887-8c86-4f3b-b521-5a00e01799ca',
+        });
+      });
+    });
   });
 });
