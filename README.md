@@ -107,14 +107,6 @@ client.authorizationUrl({
 }); // => String
 ```
 
-### Getting authorization url
-```js
-client.authorizationUrl({
-  redirect_uri: 'https://client.example.com/callback',
-  scope: 'openid email',
-}); // => String
-```
-
 ### Processing callback
 ```js
 client.authorizationCallback('https://client.example.com/callback', request.query) // => Promise
