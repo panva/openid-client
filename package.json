@@ -6,7 +6,8 @@
   "scripts": {
     "coverage": "make coverage",
     "test": "make test",
-    "lint": "eslint lib example test --fix"
+    "lint": "eslint lib example test",
+    "lint-fix": "eslint lib example test --fix"
   },
   "repository": "panva/node-openid-client",
   "engines": {
@@ -31,9 +32,9 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "co-mocha": "^1.1.3",
-    "eslint": "*",
-    "eslint-config-airbnb-base": "*",
-    "eslint-plugin-import": "*",
+    "eslint": "^3.0.0",
+    "eslint-config-airbnb-base": "^7.0.0",
+    "eslint-plugin-import": "^1.0.0",
     "istanbul": "^0.4.4",
     "koa": "^1.2.0",
     "koa-body": "^1.4.0",

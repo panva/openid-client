@@ -22,7 +22,7 @@ module.exports = issuer => {
   if (process.env.HEROKU) {
     app.proxy = true;
 
-    app.use(function * (next) {
+    app.use(function* (next) {
       if (this.secure) {
         yield next;
       } else {
@@ -43,12 +43,12 @@ module.exports = issuer => {
     root: path.join(__dirname, 'views'),
   });
 
-  app.use(function * (next) {
+  app.use(function* (next) {
     this.session.id = this.session.id || uuid();
     yield next;
   });
 
-  app.use(function * (next) {
+  app.use(function* (next) {
     try {
       yield next;
     } catch (error) {
@@ -56,7 +56,7 @@ module.exports = issuer => {
     }
   });
 
-  app.use(function * (next) {
+  app.use(function* (next) {
     if (!CLIENTS.has(this.session.id) && !this.path.startsWith('/setup')) {
       this.redirect('/setup');
     }
@@ -65,16 +65,16 @@ module.exports = issuer => {
 
   const router = new Router();
 
-  router.get('/', function * () {
+  router.get('/', function* () {
     yield this.render('index', { session: this.session });
   });
 
 
-  router.get('/setup', function * () {
+  router.get('/setup', function* () {
     yield this.render('setup', { session: this.session, presets: PRESETS });
   });
 
-  router.post('/setup/:preset', function * () {
+  router.post('/setup/:preset', function* () {
     let keystore;
     const preset = PRESETS[this.params.preset];
     this.session.loggedIn = false;
@@ -96,7 +96,7 @@ module.exports = issuer => {
     this.redirect('/client');
   });
 
-  router.get('/issuer', function * () {
+  router.get('/issuer', function* () {
     yield this.render('issuer', {
       issuer,
       keystore: (yield issuer.keystore()),
@@ -104,11 +104,11 @@ module.exports = issuer => {
     });
   });
 
-  router.get('/client', function * () {
+  router.get('/client', function* () {
     yield this.render('client', { client: CLIENTS.get(this.session.id), session: this.session });
   });
 
-  router.get('/logout', function * () {
+  router.get('/logout', function* () {
     const id = this.session.id;
     this.session.loggedIn = false;
 
@@ -132,7 +132,7 @@ module.exports = issuer => {
     })));
   });
 
-  router.get('/login', function * (next) {
+  router.get('/login', function* (next) {
     this.session.state = crypto.randomBytes(16).toString('hex');
     this.session.nonce = crypto.randomBytes(16).toString('hex');
 
@@ -153,7 +153,7 @@ module.exports = issuer => {
     yield next;
   });
 
-  router.get('/refresh', function * (next) {
+  router.get('/refresh', function* (next) {
     if (!TOKENS.has(this.session.id)) {
       this.session = null;
       this.redirect('/');
@@ -173,7 +173,7 @@ module.exports = issuer => {
     yield next;
   });
 
-  router.get('/cb', function * () {
+  router.get('/cb', function* () {
     const state = this.session.state;
     delete this.session.state;
     const nonce = this.session.nonce;
@@ -189,7 +189,7 @@ module.exports = issuer => {
     this.redirect('/user');
   });
 
-  router.post('/cb', body(), function * () {
+  router.post('/cb', body(), function* () {
     const state = this.session.state;
     delete this.session.state;
     const nonce = this.session.nonce;
@@ -213,7 +213,7 @@ module.exports = issuer => {
     throw error;
   }
 
-  router.get('/user', function * () {
+  router.get('/user', function* () {
     if (!TOKENS.has(this.session.id)) {
       this.session.loggedIn = false;
       return this.redirect('/client');

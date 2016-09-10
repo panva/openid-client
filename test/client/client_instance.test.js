@@ -4,6 +4,7 @@ const Issuer = require('../../lib').Issuer;
 const _ = require('lodash');
 const expect = require('chai').expect;
 const BaseClient = require('../../lib/base_client');
+const now = require('../../lib/unix_timestamp');
 const url = require('url');
 const querystring = require('querystring');
 const base64url = require('base64url');
@@ -17,7 +18,6 @@ const timekeeper = require('timekeeper');
 
 const noop = () => {};
 const fail = () => { throw new Error('expected promise to be rejected'); };
-const now = () => Date.now() / 1000 | 0;
 const encode = (object) => base64url.encode(JSON.stringify(object));
 
 describe('Client', function () {
@@ -422,8 +422,8 @@ describe('Client', function () {
           iss: issuer.issuer,
           sub: 'foobar',
           aud: client.client_id,
-          exp: (Date.now() / 1000 | 0) + 100,
-          iat: (Date.now() / 1000 | 0),
+          exp: now() + 100,
+          iat: now(),
         };
 
         nock('https://op.example.com')
@@ -1318,7 +1318,7 @@ describe('Client#unpackAggregatedClaims', function () {
       });
   });
 
-  it('unpacks the claims from one or more aggregated sources', function * () {
+  it('unpacks the claims from one or more aggregated sources', function* () {
     const userinfo = {
       sub: 'userID',
       _claim_names: {
@@ -1342,7 +1342,7 @@ describe('Client#unpackAggregatedClaims', function () {
       });
   });
 
-  it('autodiscovers new issuers', function * () {
+  it('autodiscovers new issuers', function* () {
     const userinfo = {
       sub: 'userID',
       _claim_names: {
@@ -1375,7 +1375,7 @@ describe('Client#unpackAggregatedClaims', function () {
       });
   });
 
-  it('validates claims that should be present are', function * () {
+  it('validates claims that should be present are', function* () {
     const userinfo = {
       sub: 'userID',
       _claim_names: {
@@ -1393,7 +1393,7 @@ describe('Client#unpackAggregatedClaims', function () {
       });
   });
 
-  it('rejects discovery errors', function * () {
+  it('rejects discovery errors', function* () {
     const userinfo = {
       sub: 'userID',
       _claim_names: {
