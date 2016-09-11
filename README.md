@@ -137,7 +137,7 @@ Tip: accepts TokenSet as well as direct refresh token values;
 
 ### Revoke a token
 ```js
-client.revoke(token) // => Promise
+client.revoke(token, [tokenTypeHint]) // => Promise
   .then(function (response) {
     console.log('revoked token %s', token, response);
   });
@@ -145,7 +145,7 @@ client.revoke(token) // => Promise
 
 ### Introspect a token
 ```js
-client.introspect(token) // => Promise
+client.introspect(token, [tokenTypeHint]) // => Promise
   .then(function (response) {
     console.log('token details %j', response);
   });

@@ -481,7 +481,7 @@ describe('Client', function () {
         });
       });
 
-      it('posts the token in a body returns the parsed response', function () {
+      it('posts the token in a body and returns the parsed response', function () {
         nock('https://rp.example.com')
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
@@ -500,6 +500,37 @@ describe('Client', function () {
 
         return client[method]('tokenValue')
           .then(response => expect(response).to.eql({ endpoint: 'response' }));
+      });
+
+      it('posts the token and a hint in a body', function () {
+        nock('https://rp.example.com')
+          .filteringRequestBody(function (body) {
+            expect(querystring.parse(body)).to.eql({
+              token: 'tokenValue',
+              token_type_hint: 'access_token',
+            });
+          })
+            .post(`/token/${method}`)
+          .reply(200, {
+            endpoint: 'response',
+          });
+
+        const issuer = new Issuer({
+          [metas[0]]: `https://rp.example.com/token/${method}`,
+        });
+        const client = new issuer.Client();
+
+        return client[method]('tokenValue', 'access_token');
+      });
+
+      it('validates the hint is a string', function () {
+        const issuer = new Issuer({
+          [metas[0]]: `https://rp.example.com/token/${method}`,
+        });
+        const client = new issuer.Client();
+        expect(function () {
+          client[method]('tokenValue', { nonstring: 'value' });
+        }).to.throw('hint must be a string');
       });
 
       it('is rejected with OpenIdConnectError upon oidc error', function () {
