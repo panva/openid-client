@@ -239,7 +239,7 @@ module.exports = issuer => {
 
     _.forEach(tokens, (value, key) => {
       if (key.endsWith('token') && key !== 'id_token') {
-        promises[key] = client.introspect(value).catch(rejectionHandler);
+        promises[key] = client.introspect(value, key).catch(rejectionHandler);
       }
       return undefined;
     });
