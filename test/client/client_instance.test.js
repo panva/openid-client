@@ -18,7 +18,7 @@ const timekeeper = require('timekeeper');
 
 const noop = () => {};
 const fail = () => { throw new Error('expected promise to be rejected'); };
-const encode = (object) => base64url.encode(JSON.stringify(object));
+const encode = object => base64url.encode(JSON.stringify(object));
 
 describe('Client', function () {
   afterEach(timekeeper.reset);
@@ -111,7 +111,7 @@ describe('Client', function () {
     it('rejects with OpenIdConnectError when part of the response', function () {
       return this.client.authorizationCallback('https://rp.example.com/cb', {
         error: 'invalid_request',
-      }).then(fail, error => {
+      }).then(fail, (error) => {
         expect(error).to.be.instanceof(OpenIdConnectError);
         expect(error).to.have.property('message', 'invalid_request');
       });
@@ -120,7 +120,7 @@ describe('Client', function () {
     it('rejects with an Error when states mismatch (returned)', function () {
       return this.client.authorizationCallback('https://rp.example.com/cb', {
         state: 'should be checked for this',
-      }).then(fail, error => {
+      }).then(fail, (error) => {
         expect(error).to.be.instanceof(Error);
         expect(error).to.have.property('message', 'state mismatch');
       });
@@ -130,7 +130,7 @@ describe('Client', function () {
       return this.client.authorizationCallback('https://rp.example.com/cb', {}, {
         state: 'should be this',
       })
-        .then(fail, error => {
+        .then(fail, (error) => {
           expect(error).to.be.instanceof(Error);
           expect(error).to.have.property('message', 'state mismatch');
         });
@@ -142,7 +142,7 @@ describe('Client', function () {
       }, {
         state: 'should be this',
       })
-        .then(fail, error => {
+        .then(fail, (error) => {
           expect(error).to.be.instanceof(Error);
           expect(error).to.have.property('message', 'state mismatch');
         });
@@ -185,7 +185,7 @@ describe('Client', function () {
         });
 
       return this.client.refresh('refreshValue', {})
-        .then(set => {
+        .then((set) => {
           expect(set).to.be.instanceof(TokenSet);
           expect(set).to.have.property('access_token', 'tokenValue');
         });
@@ -216,7 +216,7 @@ describe('Client', function () {
         access_token: 'present',
         // refresh_token: not
       }))
-      .then(fail, error => {
+      .then(fail, (error) => {
         expect(error).to.be.instanceof(Error);
         expect(error).to.have.property('message', 'refresh_token not present in TokenSet');
       });
@@ -227,10 +227,10 @@ describe('Client', function () {
     const client = new BaseClient({ client_secret: 'rj_JR' });
 
     return client.joseSecret()
-      .then(key => {
+      .then((key) => {
         // TODO: check the "k" value
         expect(key).to.have.property('kty', 'oct');
-        return client.joseSecret().then(cached => {
+        return client.joseSecret().then((cached) => {
           expect(key).to.equal(cached);
         });
       });
@@ -433,7 +433,7 @@ describe('Client', function () {
           });
 
         return client.userinfo()
-          .then(userinfo => {
+          .then((userinfo) => {
             expect(userinfo).to.be.an('object');
             expect(userinfo).to.eql(payload);
           });
@@ -770,7 +770,7 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => this.client.validateIdToken(token).then((validated) => {
+    .then(token => this.client.validateIdToken(token).then((validated) => {
       expect(validated).to.equal(token);
     }));
   });
@@ -798,7 +798,7 @@ describe('Client#validateIdToken', function () {
       id_token_signed_response_alg: 'HS256',
     });
 
-    return client.joseSecret().then(key => {
+    return client.joseSecret().then((key) => {
       return new this.IdToken(key, 'HS256', {
         iss: this.issuer.issuer,
         sub: 'userId',
@@ -822,7 +822,7 @@ describe('Client#validateIdToken', function () {
       userinfo_signed_response_alg: 'HS256',
     });
 
-    return client.joseSecret().then(key => {
+    return client.joseSecret().then((key) => {
       return new this.IdToken(key, 'HS256', {
         iss: this.issuer.issuer,
         sub: 'userId',
@@ -839,7 +839,7 @@ describe('Client#validateIdToken', function () {
   });
 
   it('validates the id_token_signed_response_alg is the one used', function () {
-    return this.client.joseSecret().then(key => {
+    return this.client.joseSecret().then((key) => {
       return new this.IdToken(key, 'HS256', {
         iss: this.issuer.issuer,
         sub: 'userId',
@@ -847,8 +847,8 @@ describe('Client#validateIdToken', function () {
         exp: now() + 3600,
         iat: now(),
       })
-      .then((token) => this.client.validateIdToken(token))
-      .then(fail, error => {
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
         expect(error).to.have.property('message', 'unexpected algorithm used');
       });
     });
@@ -865,8 +865,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'azp must be the client_id');
     });
   });
@@ -881,8 +881,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'missing required JWT property azp');
     });
   });
@@ -898,7 +898,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token));
+    .then(token => this.client.validateIdToken(token));
   });
 
   it('passes with nonce check', function () {
@@ -913,7 +913,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token, 'nonce!!!'));
+    .then(token => this.client.validateIdToken(token, 'nonce!!!'));
   });
 
   it('validates nonce when provided to check for', function () {
@@ -927,8 +927,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token, 'nonce!!!'))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token, 'nonce!!!'))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'nonce mismatch');
     });
   });
@@ -945,8 +945,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'nonce mismatch');
     });
   });
@@ -964,8 +964,8 @@ describe('Client#validateIdToken', function () {
       delete payload[prop];
 
       return new this.IdToken(this.keystore.get(), 'RS256', payload)
-      .then((token) => this.client.validateIdToken(token))
-      .then(fail, error => {
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
         expect(error).to.have.property('message', `missing required JWT property ${prop}`);
       });
     });
@@ -981,8 +981,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'iat is not a number');
     });
   });
@@ -997,8 +997,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'id_token issued in the future');
     });
   });
@@ -1013,8 +1013,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'exp is not a number');
     });
   });
@@ -1029,8 +1029,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'id_token expired');
     });
   });
@@ -1046,8 +1046,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'nbf is not a number');
     });
   });
@@ -1063,8 +1063,8 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then((token) => this.client.validateIdToken(token))
-    .then(fail, error => {
+    .then(token => this.client.validateIdToken(token))
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'id_token not active yet');
     });
   });
@@ -1103,7 +1103,7 @@ describe('Client#validateIdToken', function () {
       const tokenset = new TokenSet({ access_token, id_token: token });
       return this.client.validateIdToken(tokenset);
     })
-    .then(fail, error => {
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'at_hash mismatch');
     });
   });
@@ -1142,7 +1142,7 @@ describe('Client#validateIdToken', function () {
       const tokenset = new TokenSet({ code, id_token: token });
       return this.client.validateIdToken(tokenset);
     })
-    .then(fail, error => {
+    .then(fail, (error) => {
       expect(error).to.have.property('message', 'c_hash mismatch');
     });
   });
@@ -1176,7 +1176,7 @@ describe('Client#fetchDistributedClaims', function () {
       },
     };
     return this.client.fetchDistributedClaims(userinfo)
-      .then(result => {
+      .then((result) => {
         expect(result).to.equal(userinfo);
       });
   });
@@ -1205,7 +1205,7 @@ describe('Client#fetchDistributedClaims', function () {
     };
 
     return this.client.fetchDistributedClaims(userinfo)
-      .then(result => {
+      .then((result) => {
         expect(result).to.eql({
           sub: 'userID',
           credit_history: 'foobar',
@@ -1233,7 +1233,7 @@ describe('Client#fetchDistributedClaims', function () {
     };
 
     return this.client.fetchDistributedClaims(userinfo, { src1: 'foobar' })
-      .then(result => {
+      .then((result) => {
         expect(result).to.eql({
           sub: 'userID',
           credit_history: 'foobar',
@@ -1344,7 +1344,7 @@ describe('Client#unpackAggregatedClaims', function () {
       },
     };
     return this.client.unpackAggregatedClaims(userinfo)
-      .then(result => {
+      .then((result) => {
         expect(result).to.equal(userinfo);
       });
   });
@@ -1363,7 +1363,7 @@ describe('Client#unpackAggregatedClaims', function () {
     };
 
     return this.client.unpackAggregatedClaims(userinfo)
-      .then(result => {
+      .then((result) => {
         expect(result).to.eql({
           sub: 'userID',
           credit_history: 'foobar',
@@ -1396,7 +1396,7 @@ describe('Client#unpackAggregatedClaims', function () {
     Issuer.registry.delete(iss);
 
     return this.client.unpackAggregatedClaims(userinfo)
-      .then(result => {
+      .then((result) => {
         expect(result).to.eql({
           sub: 'userID',
           email_verified: false,
@@ -1444,7 +1444,7 @@ describe('Client#unpackAggregatedClaims', function () {
     Issuer.registry.delete(iss);
 
     return this.client.unpackAggregatedClaims(userinfo)
-      .then(fail, error => {
+      .then(fail, (error) => {
         expect(discovery.isDone()).to.be.true;
         expect(error.name).to.equal('HTTPError');
         expect(error.src).to.equal('cliff');
@@ -1463,7 +1463,7 @@ describe('Client#unpackAggregatedClaims', function () {
     };
 
     return this.client.unpackAggregatedClaims(userinfo)
-      .then(fail, error => {
+      .then(fail, (error) => {
         expect(error.src).to.equal('src1');
       });
   });
@@ -1482,7 +1482,7 @@ describe('Client#unpackAggregatedClaims', function () {
             d: '59efvkfuCuVLW9Y4xvLvUyjARwgnSgwTLRc0UGpewLA',
           },
         ],
-      }).then(keystore => { this.keystore = keystore; });
+      }).then((keystore) => { this.keystore = keystore; });
     });
 
     it('handles signed and encrypted id_tokens from implicit and code responses (test by hybrid)', function () {
@@ -1570,7 +1570,7 @@ describe('Client#unpackAggregatedClaims', function () {
         userinfo_encrypted_response_enc: 'A128CBC-HS256',
       }, this.keystore);
 
-      return client.userinfo('accesstoken').then(userinfo => {
+      return client.userinfo('accesstoken').then((userinfo) => {
         expect(userinfo).to.eql({
           email: 'johndoe@example.com',
           sub: '0aa66887-8c86-4f3b-b521-5a00e01799ca',

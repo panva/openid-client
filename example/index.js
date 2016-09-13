@@ -7,7 +7,7 @@ const port = process.env.PORT || 3001;
 
 const appFactory = require('./app');
 
-Issuer.discover(ISSUER).then(issuer => {
+Issuer.discover(ISSUER).then((issuer) => {
   const app = appFactory(issuer);
   app.listen(port);
 }).catch(() => process.exit(1));

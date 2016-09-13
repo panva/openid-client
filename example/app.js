@@ -16,7 +16,7 @@ const render = require('koa-ejs');
 
 const PRESETS = require('./presets');
 
-module.exports = issuer => {
+module.exports = (issuer) => {
   const app = koa();
 
   if (process.env.HEROKU) {
@@ -224,7 +224,7 @@ module.exports = issuer => {
     const context = {
       tokens,
       userinfo: undefined,
-      id_token: tokens.id_token ? _.map(tokens.id_token.split('.'), part => {
+      id_token: tokens.id_token ? _.map(tokens.id_token.split('.'), (part) => {
         try {
           return JSON.parse(decode(part));
         } catch (err) {
