@@ -53,6 +53,7 @@
     "lodash": "^4.13.1",
     "lru-cache": "^4.0.1",
     "node-jose": "^0.9.0",
-    "node-uuid": "^1.4.7"
+    "node-uuid": "^1.4.7",
+    "oidc-token-hash": "^1.0.0"
   }
 }
