@@ -1,6 +1,6 @@
 {
   "name": "openid-client",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "OpenID Connect Relying Party (RP, Client) implementation for Node.js",
   "main": "lib/index.js",
   "scripts": {
