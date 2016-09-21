@@ -228,9 +228,20 @@ describe('Client', function () {
 
     return client.joseSecret()
       .then((key) => {
-        // TODO: check the "k" value
         expect(key).to.have.property('kty', 'oct');
         return client.joseSecret().then((cached) => {
+          expect(key).to.equal(cached);
+        });
+      });
+  });
+
+  it('#derivedKey', function () {
+    const client = new BaseClient({ client_secret: 'rj_JR' });
+
+    return client.derivedKey('128')
+      .then((key) => {
+        expect(key).to.have.property('kty', 'oct');
+        return client.derivedKey('128').then((cached) => {
           expect(key).to.equal(cached);
         });
       });
@@ -458,7 +469,7 @@ describe('Client', function () {
           });
 
         return client.userinfo().then(fail, (err) => {
-          expect(err.message).to.eql('unexpected algorithm used');
+          expect(err.message).to.eql('unexpected algorithm received');
         });
       });
     });
@@ -849,7 +860,7 @@ describe('Client#validateIdToken', function () {
       })
       .then(token => this.client.validateIdToken(token))
       .then(fail, (error) => {
-        expect(error).to.have.property('message', 'unexpected algorithm used');
+        expect(error).to.have.property('message', 'unexpected algorithm received');
       });
     });
   });
@@ -1516,6 +1527,7 @@ describe('Client#unpackAggregatedClaims', function () {
         code: 'eyJraW5kIjoiQXV0aG9yaXphdGlvbkNvZGUiLCJqdGkiOiI3YzM5NzQyZC0yMGUyLTQ3YjEtYmM1MC1lN2VlYzhmN2IzNmYiLCJub25jZSI6ImM2NDVmZmZhNDAwNzU1MzJlZjI5YTJlYTYyN2NmYTM3IiwiaWF0IjoxNDczMDc2NDEyLCJleHAiOjE0NzMwNzcwMTIsImlzcyI6Imh0dHBzOi8vZ3VhcmRlZC1jbGlmZnMtODYzNS5oZXJva3VhcHAuY29tL29wIn0.jgUnZUBmsceb1cpqlsmiCOQ40Zx4JTRffGN_bAgYT4rLcEv3wOlzMSoVmU1cYkDbi-jjNAqkBjqxDWHcRJnQR4BAYOdyDVcGWD_aLkqGhUOCJHn_lwWqEKtSTgh-zXiqVIVC5NTA2BdhEfHhb-jnMQNrKkL2QNXOFvT9s6khZozOMXy-mUdfNfdSFHrcpFkFyGAUpezI9QmwToMB6KwoRHDYb2jcLBXdA5JLAnHw8lpz9yUaVQv7s97wY7Xgtt2zNFwQxiJWytYNHaJxQnOZje0_TvDjrZSA9IYKuKU1Q7f7-EBfQfFSGcsFK2NtGho3mNBEUDD2B8Qv1ipv50oU6Q',
         id_token: 'eyJhbGciOiJFQ0RILUVTK0ExMjhLVyIsImtpZCI6IkwzcXJHOGRTTll2NkYtSHZ2LXFUZHBfRWttZ3dqUVg3NkRIbURaQ29hNFEiLCJlcGsiOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJyellvRzJXeTZtSWhIZ01pMk1SNmd0alpPbG40SzZnSVExVU0yS0tOaFBjIiwieSI6IjF0TmNVZTJSNHBPM2NRZUVtQTF6Z1AzNVdXV19xSUNCMDY3WHFZZGJPSXMifSwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImN0eSI6IkpXVCJ9.yMWht5iTHhr6EKd-Dy7vw_qkRnuh7RtFpLWfs0TOQ6IAIF6K5ieUKw.-wtcftFYgbs7Rj1g-zKaXw.s8BposTeAeUdqSIjKKYADk5THIP33_nLNmGcScQ94vHApM6lUeuMPNdtjGIRJfLoBnIjr0JLYUX_oB-8nXxDCgV19alT0xzc9bKMbb6FR7gHS4R6nVUFAumtpl50iwFs-xGIcVsrr76lQJv5m139EqSeCXse2OY8Q0YyBJgEb_hL4kDXpqxwAd-VqyQzyrAXd_pIlVUnydZ6BC4ZPvbN7RJPR8z1EN46GEYknweuyhT_5tD4FkcngJPRoXJ_KnEr9Q7qbIbCWMmn6bBO59uvv-MXCM2PXIaRNTwZ2_Vp0pB6LkmVC6kHcsotBBGzc-TH_5t87t4JhB1XtTyfl_Nn1YCETdVh8iJUTk_F6ntokka0PTvjXfVQZkqZHT6j6PqZzqMngHNh2lxaFRod9DxT00QEDHXoBGaMDIjBMAt0vI4vIeXqxIMtqJ3i8FMm9bociXo5kpRDgBgmTllJ8O7GDw5q0M7ZIg5dRr0aph8TeXDImwvbPhk32T6tXJVg1i8N7dTICVc0BTitp4cIw2TFXoiR3eSyLusrJ4H3qe-SNJUoq0sPBwzg1tEiDbsDaHhxiwLRu1rcyOcXEqT5Ry0bJM09I_ypEAX9JoA_5NbiY1PVx7rMDxDUreEBW_1xEG8rgXkAmVHHZWLUiEmxQ4RCnityGKIEbG7OFjOOd6CXuznnBEDV-F120bcDCaIClwYI.yFz2AdC2eJ7GX-9gYUMy8Q',
         state: '36853f4ea7c9d26f4b0b95f126afe6a2',
+        session_state: 'foobar.foo',
       }, { state: '36853f4ea7c9d26f4b0b95f126afe6a2', nonce: 'c645fffa40075532ef29a2ea627cfa37' });
     });
 
@@ -1576,6 +1588,24 @@ describe('Client#unpackAggregatedClaims', function () {
           sub: '0aa66887-8c86-4f3b-b521-5a00e01799ca',
         });
       });
+    });
+
+    it('handles symmetric encryption', function () {
+      const time = new Date(1474477036849);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({ issuer: 'http://localhost:3000/op' });
+
+      const client = new issuer.Client({
+        client_id: '0d9413a4-61c1-4b2b-8d84-a82464c1556c',
+        client_secret: 'l73jho9z9mL0GAomiQwbw08ARqro2tJ4E4qhJ+PZhNQoU6G6D23UDF91L9VR7iJ4',
+        id_token_encrypted_response_alg: 'A128KW',
+        id_token_encrypted_response_enc: 'A128CBC-HS256',
+        id_token_signed_response_alg: 'HS256',
+      });
+
+      return client.authorizationCallback('http://oidc-client.dev/cb', {
+        id_token: 'eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiY3R5IjoiSldUIn0.mAnRgJuG85tPgVMlFVcDnJF4aX63y0ZaqnRvv5EB32kp1kaJ17Oedg.fIf22AkMIaL-BylAMNSw7Q.aLMcch8U-Wx-6Y9xPti5b-H63AthqlCihBLCBZvRYd476HyCAzvuGMGzvHOuPFgFaAsxzOWkWNULOtQB2TiE2wLwCatrU2yUgaUisfXUKq1Lw0AFXyZmqcot-RNlf8hucoFHp7e9AoflKGibHEie80xHgw04jxTT7B0Y_OhpSng1cWBd3AU7UwCFKOngUugdBZ2dOmZ2zyq1oYY5FDmhm4hfB0a05s7jwImsXLsYK1LLw7wBjSzKBCJZwR055T0NbsadK1ze3rbwmx9fEruANSDSwUxsapbv1nvFPGvf03Da7FPOztVaLEraRkhXQIq1oAV2sXgKS2nD8nsEsAzJqt1iARmkj0udwmdhpHdnpRBtFJNEAAfEJf8B3ZbwvD7k0HaWEupLIdnY0nqiYKfjDUB9oFAjFOTnjrjqMt4fI73Axh5BcG6n-wCYxF3zGPGLhV_wR8usG_JKIZIeyaVik7isGBEPnFW98RX1Te5TUDLG-J84QrwauTpMkv99h_fkuJI-m1TfOTDAN2mZcTpQyuCZFDDjaYArhSMTUHgx2XSffPS8QmV8LqWMgwodyfxbGEvhbr_jpECXMV5J_ZXuKA.tCM9AdCCGHwLHXxzec7wtg',
+      }, { nonce: '9cda9a61a2b01b31aa0b31d3c33631a1' });
     });
   });
 });
