@@ -1,5 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies, func-names */
 'use strict';
+
+/* eslint-disable import/no-extraneous-dependencies, func-names */
 
 const _ = require('lodash');
 const decode = require('base64url').decode;
