@@ -77,6 +77,73 @@ describe('Client', function () {
     });
   });
 
+  describe('#authorizationPost', function () {
+    const REGEXP = /name="(.+)" value="(.+)"/g;
+
+    function paramsFromHTML(html) {
+      const params = {};
+
+      const matches = html.match(REGEXP);
+      matches.forEach((line) => {
+        line.match(REGEXP);
+        params[RegExp.$1] = RegExp.$2;
+      });
+
+      return params;
+    }
+
+    before(function () {
+      const issuer = new Issuer({
+        authorization_endpoint: 'https://op.example.com/auth',
+      });
+      this.client = new issuer.Client({
+        client_id: 'identifier',
+      });
+    });
+
+    it('returns a string with the url with some basic defaults', function () {
+      expect(paramsFromHTML(this.client.authorizationPost({
+        redirect_uri: 'https://rp.example.com/cb',
+      }))).to.eql({
+        client_id: 'identifier',
+        redirect_uri: 'https://rp.example.com/cb',
+        response_type: 'code',
+        scope: 'openid',
+      });
+    });
+
+    it('allows to overwrite the defaults', function () {
+      expect(paramsFromHTML(this.client.authorizationPost({
+        scope: 'openid offline_access',
+        redirect_uri: 'https://rp.example.com/cb',
+        response_type: 'id_token',
+      }))).to.eql({
+        client_id: 'identifier',
+        scope: 'openid offline_access',
+        redirect_uri: 'https://rp.example.com/cb',
+        response_type: 'id_token',
+      });
+    });
+
+    it('allows any other params to be provide too', function () {
+      expect(paramsFromHTML(this.client.authorizationPost({
+        state: 'state',
+        custom: 'property',
+      }))).to.contain({
+        state: 'state',
+        custom: 'property',
+      });
+    });
+
+    it('auto-stringifies claims parameter', function () {
+      expect(paramsFromHTML(this.client.authorizationPost({
+        claims: { id_token: { email: null } },
+      }))).to.contain({
+        claims: '{"id_token":{"email":null}}',
+      });
+    });
+  });
+
   describe('#authorizationCallback', function () {
     before(function () {
       const issuer = new Issuer({

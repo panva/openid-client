@@ -104,7 +104,16 @@ new googleIssuer.Client.fromUri(registration_client_uri, registration_access_tok
 client.authorizationUrl({
   redirect_uri: 'https://client.example.com/callback',
   scope: 'openid email',
-}); // => String
+}); // => String (URL)
+```
+
+You can also get HTML body of a self-submitting form to utilize POST to the authorization url with
+`#authorizationPost` method, same signature as `#authorizationUrl`.
+```js
+client.authorizationPost({
+  redirect_uri: 'https://client.example.com/callback',
+  scope: 'openid email',
+}); // => String (Valid HTML body)
 ```
 
 ### Processing callback
