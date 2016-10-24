@@ -34,6 +34,7 @@ openid-client.
     - private_key_jwt
 - [OpenID Connect Discovery 1.0 incorporating errata set 1][feature-discovery]
   - Discovery of OpenID Provider (Issuer) Metadata
+  - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (see #WebFinger)
 - [OpenID Connect Dynamic Client Registration 1.0 incorporating errata set 1][feature-registration]
   - Dynamic Client Registration request
   - Client initialization via registration client uri
@@ -260,10 +261,23 @@ issuer.Client.register(metadata, [keystore]) // => Promise
   });
 ```
 
+## WebFinger discovery
+```js
+Issuer.webfinger(userInput) // => Promise
+  .then(function (issuer) {
+    console.log('Discovered issuer %s', issuer);
+  });
+```
+Accepts, normalizes, discovers and validates the discovery of User Input using E-Mail, URL, acct,
+Hostname and Port syntaxes as described in [Discovery 1.0][feature-discovery].
+
+Uses already discovered (cached) issuers where applicable.
+
 ## Configuration
 
 ### Changing HTTP request defaults
-Setting `defaultHttpOptions` on `Issuer` always merges your passed options with the default. openid-client uses [got][got-library] for http requests with the following default request options
+Setting `defaultHttpOptions` on `Issuer` always merges your passed options with the default.
+openid-client uses [got][got-library] for http requests with the following default request options
 
 ```js
 const DEFAULT_HTTP_OPTIONS = {

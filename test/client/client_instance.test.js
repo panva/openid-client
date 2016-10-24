@@ -1,6 +1,7 @@
 'use strict';
 
 const Issuer = require('../../lib').Issuer;
+const Registry = require('../../lib').Registry;
 const _ = require('lodash');
 const expect = require('chai').expect;
 const BaseClient = require('../../lib/base_client');
@@ -351,18 +352,44 @@ describe('Client', function () {
 
     it('takes a tokenset', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({
+        id_token_signed_response_alg: 'none',
+      });
 
       nock('https://op.example.com')
         .matchHeader('authorization', 'Bearer tokenValue')
-        .get('/me').reply(200, {});
+        .get('/me').reply(200, {
+          sub: 'subject',
+        });
 
       return client.userinfo(new TokenSet({
-        id_token: 'foo',
+        id_token: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
         refresh_token: 'bar',
         access_token: 'tokenValue',
       })).then(() => {
         expect(nock.isDone()).to.be.true;
+      });
+    });
+
+    it('takes a tokenset and validates the subject in id_token is the same in userinfo', function () {
+      const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+      const client = new issuer.Client({
+        id_token_signed_response_alg: 'none',
+      });
+
+      nock('https://op.example.com')
+        .matchHeader('authorization', 'Bearer tokenValue')
+        .get('/me').reply(200, {
+          sub: 'different-subject',
+        });
+
+      return client.userinfo(new TokenSet({
+        id_token: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
+        refresh_token: 'bar',
+        access_token: 'tokenValue',
+      })).then(fail, (err) => {
+        expect(nock.isDone()).to.be.true;
+        expect(err.message).to.equal('userinfo sub mismatch');
       });
     });
 
@@ -510,7 +537,7 @@ describe('Client', function () {
             'content-type': 'application/jwt; charset=utf-8',
           });
 
-        return client.userinfo()
+        return client.userinfo('accessToken')
           .then((userinfo) => {
             expect(userinfo).to.be.an('object');
             expect(userinfo).to.eql(payload);
@@ -865,6 +892,35 @@ describe('Client#validateIdToken', function () {
       const tokenset = new TokenSet({ id_token: token });
       return this.client.validateIdToken(tokenset).then((validated) => {
         expect(validated).to.equal(tokenset);
+      });
+    });
+  });
+
+  it('validates the id token signature (when string)', function () {
+    return new this.IdToken(this.keystore.get(), 'RS256', {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    })
+    .then(token => this.client.validateIdToken(token.slice(0, -1)).then(fail, (err) => {
+      expect(err.message).to.equal('invalid signature');
+    }));
+  });
+
+  it('validates the id token signature (when TokenSet)', function () {
+    return new this.IdToken(this.keystore.get(), 'RS256', {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    })
+    .then((token) => {
+      const tokenset = new TokenSet({ id_token: token.slice(0, -1) });
+      return this.client.validateIdToken(tokenset).then(fail, (err) => {
+        expect(err.message).to.equal('invalid signature');
       });
     });
   });
@@ -1378,8 +1434,8 @@ describe('Client#unpackAggregatedClaims', function () {
     let keystore;
     payload.iss = iss;
 
-    if (Issuer.registry.has(iss)) {
-      keystore = Issuer.registry.get(iss).keystore();
+    if (Registry.has(iss)) {
+      keystore = Registry.get(iss).keystore();
     } else {
       const store = jose.JWK.createKeyStore();
       keystore = store.generate('RSA', 512).then(function () {
@@ -1467,11 +1523,11 @@ describe('Client#unpackAggregatedClaims', function () {
     const discovery = nock(iss)
       .get('/.well-known/openid-configuration')
       .reply(200, {
-        iss,
+        issuer: iss,
         jwks_uri: `${iss}/certs`,
       });
 
-    Issuer.registry.delete(iss);
+    Registry.delete(iss);
 
     return this.client.unpackAggregatedClaims(userinfo)
       .then((result) => {
@@ -1519,7 +1575,7 @@ describe('Client#unpackAggregatedClaims', function () {
       .get('/.well-known/openid-configuration')
       .reply(500, 'Internal Server Error');
 
-    Issuer.registry.delete(iss);
+    Registry.delete(iss);
 
     return this.client.unpackAggregatedClaims(userinfo)
       .then(fail, (error) => {

@@ -54,7 +54,7 @@ describe('Issuer', function () {
 
     after(nock.cleanAll);
     afterEach(function () {
-      if (LRU.prototype.restore) LRU.prototype.restore();
+      if (LRU.prototype.get.restore) LRU.prototype.get.restore();
     });
 
     it('does not refetch immidiately', function () {
@@ -84,8 +84,28 @@ describe('Issuer', function () {
           .get('/certs')
           .reply(200, this.keystore.toJSON());
 
-        return this.issuer.key({ kid: 'yeah' }).then(() => {
+        return this.issuer.key({ kid: 'yeah' }).then(fail, () => {
           expect(nock.isDone()).to.be.true;
+        });
+      });
+    });
+
+    it('rejects when no matching key is found', function () {
+      return this.issuer.key({ kid: 'noway' }).then(fail, (err) => {
+        expect(err.message).to.equal('no valid key found');
+      });
+    });
+
+    it('requires a kid is provided in definition if more keys are in the storage', function () {
+      sinon.stub(LRU.prototype, 'get').returns(undefined);
+      return this.keystore.generate('RSA', 512).then(() => {
+        nock('https://op.example.com')
+          .get('/certs')
+          .reply(200, this.keystore.toJSON());
+
+        return this.issuer.key({ alg: 'RS256' }).then(fail, (err) => {
+          expect(nock.isDone()).to.be.true;
+          expect(err.message).to.equal('JWKS with multiple entries but no kid in JWT');
         });
       });
     });
