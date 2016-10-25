@@ -105,7 +105,7 @@ describe('Issuer', function () {
 
         return this.issuer.key({ alg: 'RS256' }).then(fail, (err) => {
           expect(nock.isDone()).to.be.true;
-          expect(err.message).to.equal('JWKS with multiple entries but no kid in JWT');
+          expect(err.message).to.equal('multiple matching keys, kid must be provided');
         });
       });
     });
