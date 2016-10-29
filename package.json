@@ -43,8 +43,9 @@
     "koa-session": "^3.3.1",
     "mocha": "^3.0.0",
     "nock": "^9.0.0",
+    "readable-mock-req": "^0.2.2",
     "sinon": "^1.17.4",
-    "timekeeper": "^0.1.1"
+    "timekeeper": "^1.0.0"
   },
   "dependencies": {
     "base64url": "^2.0.0",

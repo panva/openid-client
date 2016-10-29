@@ -179,27 +179,27 @@ module.exports = (issuer) => {
     delete this.session.state;
     const nonce = this.session.nonce;
     delete this.session.nonce;
+    const client = CLIENTS.get(this.session.id);
+    const params = client.callbackParams(this.request.req);
 
-    TOKENS.set(
-      this.session.id,
-      yield CLIENTS.get(this.session.id)
-        .authorizationCallback(url.resolve(this.href, 'cb'), this.query, { nonce, state }));
+    TOKENS.set(this.session.id,
+      yield client.authorizationCallback(url.resolve(this.href, 'cb'), params, { nonce, state }));
 
     this.session.loggedIn = true;
 
     this.redirect('/user');
   });
 
-  router.post('/cb', body(), function* () {
+  router.post('/cb', body({ patchNode: true }), function* () {
     const state = this.session.state;
     delete this.session.state;
     const nonce = this.session.nonce;
     delete this.session.nonce;
+    const client = CLIENTS.get(this.session.id);
+    const params = client.callbackParams(this.request.req);
 
-    TOKENS.set(
-      this.session.id,
-      yield CLIENTS.get(this.session.id)
-        .authorizationCallback(url.resolve(this.href, 'cb'), this.request.body, { nonce, state }));
+    TOKENS.set(this.session.id,
+      yield client.authorizationCallback(url.resolve(this.href, 'cb'), params, { nonce, state }));
 
     this.session.loggedIn = true;
 

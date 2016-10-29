@@ -2,6 +2,7 @@
 
 const Issuer = require('../../lib').Issuer;
 const Registry = require('../../lib').Registry;
+const MockRequest = require('readable-mock-req');
 const _ = require('lodash');
 const expect = require('chai').expect;
 const BaseClient = require('../../lib/base_client');
@@ -14,6 +15,7 @@ const sinon = require('sinon');
 const OpenIdConnectError = require('../../lib/open_id_connect_error');
 const TokenSet = require('../../lib/token_set');
 const got = require('got');
+const http = require('http');
 const jose = require('node-jose');
 const timekeeper = require('timekeeper');
 
@@ -51,11 +53,13 @@ describe('Client', function () {
         scope: 'openid offline_access',
         redirect_uri: 'https://rp.example.com/cb',
         response_type: 'id_token',
+        nonce: 'foobar',
       }), true).query).to.eql({
         client_id: 'identifier',
         scope: 'openid offline_access',
         redirect_uri: 'https://rp.example.com/cb',
         response_type: 'id_token',
+        nonce: 'foobar',
       });
     });
 
@@ -118,11 +122,13 @@ describe('Client', function () {
         scope: 'openid offline_access',
         redirect_uri: 'https://rp.example.com/cb',
         response_type: 'id_token',
+        nonce: 'foobar',
       }))).to.eql({
         client_id: 'identifier',
         scope: 'openid offline_access',
         redirect_uri: 'https://rp.example.com/cb',
         response_type: 'id_token',
+        nonce: 'foobar',
       });
     });
 
@@ -1729,6 +1735,104 @@ describe('Client#unpackAggregatedClaims', function () {
       return client.authorizationCallback('http://oidc-client.dev/cb', {
         id_token: 'eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiY3R5IjoiSldUIn0.mAnRgJuG85tPgVMlFVcDnJF4aX63y0ZaqnRvv5EB32kp1kaJ17Oedg.fIf22AkMIaL-BylAMNSw7Q.aLMcch8U-Wx-6Y9xPti5b-H63AthqlCihBLCBZvRYd476HyCAzvuGMGzvHOuPFgFaAsxzOWkWNULOtQB2TiE2wLwCatrU2yUgaUisfXUKq1Lw0AFXyZmqcot-RNlf8hucoFHp7e9AoflKGibHEie80xHgw04jxTT7B0Y_OhpSng1cWBd3AU7UwCFKOngUugdBZ2dOmZ2zyq1oYY5FDmhm4hfB0a05s7jwImsXLsYK1LLw7wBjSzKBCJZwR055T0NbsadK1ze3rbwmx9fEruANSDSwUxsapbv1nvFPGvf03Da7FPOztVaLEraRkhXQIq1oAV2sXgKS2nD8nsEsAzJqt1iARmkj0udwmdhpHdnpRBtFJNEAAfEJf8B3ZbwvD7k0HaWEupLIdnY0nqiYKfjDUB9oFAjFOTnjrjqMt4fI73Axh5BcG6n-wCYxF3zGPGLhV_wR8usG_JKIZIeyaVik7isGBEPnFW98RX1Te5TUDLG-J84QrwauTpMkv99h_fkuJI-m1TfOTDAN2mZcTpQyuCZFDDjaYArhSMTUHgx2XSffPS8QmV8LqWMgwodyfxbGEvhbr_jpECXMV5J_ZXuKA.tCM9AdCCGHwLHXxzec7wtg',
       }, { nonce: '9cda9a61a2b01b31aa0b31d3c33631a1' });
+    });
+  });
+
+  describe('#callbackParams', function () {
+    before(function () {
+      const issuer = new Issuer({ issuer: 'http://localhost:3000/op' });
+      this.client = new issuer.Client({ client_id: 'client_id' });
+    });
+
+    before(function () {
+      this.origIncomingMessage = http.IncomingMessage;
+      http.IncomingMessage = MockRequest;
+    });
+
+    after(function () {
+      http.IncomingMessage = this.origIncomingMessage;
+    });
+
+    it('returns query params from full uri', function () {
+      expect(this.client.callbackParams('http://oidc-client.dev/cb?code=code')).to.eql({ code: 'code' });
+    });
+
+    it('returns query params from node request uri', function () {
+      expect(this.client.callbackParams('/cb?code=code')).to.eql({ code: 'code' });
+    });
+
+    it('returns fragment params from full uri', function () {
+      expect(this.client.callbackParams('http://oidc-client.dev/cb#code=code')).to.eql({ code: 'code' });
+    });
+
+    it('returns fragment params from node request uri', function () {
+      expect(this.client.callbackParams('/cb#code=code')).to.eql({ code: 'code' });
+    });
+
+    it('works with IncomingMessage (GET + query)', function () {
+      const req = new MockRequest('GET', '/cb?code=code');
+      expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
+    });
+
+    it('works with IncomingMessage (GET + fragment)', function () {
+      const req = new MockRequest('GET', '/cb#code=code');
+      expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
+    });
+
+    it('works with IncomingMessage (POST + pre-parsed string)', function () {
+      const req = new MockRequest('POST', '/cb', {
+        body: 'code=code',
+      });
+      expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
+    });
+
+    it('works with IncomingMessage (POST + pre-parsed object)', function () {
+      const req = new MockRequest('POST', '/cb', {
+        body: { code: 'code' },
+      });
+      expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
+    });
+
+    it('works with IncomingMessage (POST + pre-parsed buffer)', function () {
+      const req = new MockRequest('POST', '/cb', {
+        body: new Buffer('code=code'),
+      });
+      expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
+    });
+
+    it('rejects nonbody parsed POSTs', function () {
+      const req = new MockRequest('POST', '/cb');
+      expect(() => {
+        this.client.callbackParams(req);
+      }).to.throw('incoming message body missing, include a body parser prior to this call');
+    });
+
+    it('rejects non-object,buffer,string parsed bodies', function () {
+      const req = new MockRequest('POST', '/cb', { body: true });
+      expect(() => {
+        this.client.callbackParams(req);
+      }).to.throw('invalid IncomingMessage body object');
+    });
+
+    it('rejects IncomingMessage other than GET, POST', function () {
+      const req = new MockRequest('PUT', '/cb', {
+        body: { code: 'code' },
+      });
+      expect(() => {
+        this.client.callbackParams(req);
+      }).to.throw('invalid IncomingMessage method');
+    });
+
+    it('fails for other than strings or IncomingMessage', function () {
+      expect(() => {
+        this.client.callbackParams({});
+      }).to.throw('#callbackParams only accepts string urls or http.IncomingMessage');
+      expect(() => {
+        this.client.callbackParams(true);
+      }).to.throw('#callbackParams only accepts string urls or http.IncomingMessage');
+      expect(() => {
+        this.client.callbackParams([]);
+      }).to.throw('#callbackParams only accepts string urls or http.IncomingMessage');
     });
   });
 });
