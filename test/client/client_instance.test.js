@@ -1761,21 +1761,8 @@ describe('Client#unpackAggregatedClaims', function () {
       expect(this.client.callbackParams('/cb?code=code')).to.eql({ code: 'code' });
     });
 
-    it('returns fragment params from full uri', function () {
-      expect(this.client.callbackParams('http://oidc-client.dev/cb#code=code')).to.eql({ code: 'code' });
-    });
-
-    it('returns fragment params from node request uri', function () {
-      expect(this.client.callbackParams('/cb#code=code')).to.eql({ code: 'code' });
-    });
-
     it('works with IncomingMessage (GET + query)', function () {
       const req = new MockRequest('GET', '/cb?code=code');
-      expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
-    });
-
-    it('works with IncomingMessage (GET + fragment)', function () {
-      const req = new MockRequest('GET', '/cb#code=code');
       expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
     });
 

@@ -136,16 +136,14 @@ client.authorizationCallback('https://client.example.com/callback', request.quer
   });
 ```
 
-### Handling multiple-response modes
-When handling all available response modes with one single pass you can use
-`#authorizationParams` to get the params object from the koa/express/node request object or a url string.
+### Handling multiple response modes
+When handling multiple response modes with one single pass you can use `#authorizationParams`
+to get the params object from the koa/express/node request object or a url string.
 (http.IncomingMessage). If form_post is your response_type you need to include a body parser prior.
 
 ```js
 client.authorizationParams('https://client.example.com/cb?code=code'); // => { code: 'code' };
 client.authorizationParams('/cb?code=code'); // => { code: 'code' };
-client.authorizationParams('https://client.example.com/cb#id_token=id_token'); // => { id_token: 'id_token' };
-client.authorizationParams('/cb#id_token=id_token'); // => { id_token: 'id_token' };
 
 // koa v1.x w/ koa-body
 app.use(bodyParser({ patchNode: true }));
