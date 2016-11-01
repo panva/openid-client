@@ -1,6 +1,10 @@
 Following semver, 1.0.0 will mark the first API stable release and commence of this file,
 until then please use the compare views of github for reference.
 
+- https://github.com/panva/node-openid-client/compare/v0.6.0...v0.7.0
+  - added: webfinger discovery
+  - added: callback parameter helper for node's http.IncomingMessage
+  - tested for lts/argon (4), lts/boron (6) and current stable (7)
 - https://github.com/panva/node-openid-client/compare/v0.5.4...v0.6.0
   - added: handling of symmetrically encrypted responses (A...GCMKW, A...KW, PBES2-HS...+A...KW)
   - fix: state check supersedes error check, still not sure about it though
