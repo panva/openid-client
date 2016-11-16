@@ -1,5 +1,34 @@
-Following semver, 1.0.0 will mark the first API stable release and commence of this file,
-until then please use the compare views of github for reference.
+# openid-client CHANGELOG
+
+Yay for [SemVer](http://semver.org/).
+
+**Table of Contents**
+
+<!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.0.0](#version-100)
+  - [Migrating from 0.x to 1.0](#migrating-from-0x-to-10)
+  - [pre 1.x changelog](#pre-1x-changelog)
+
+<!-- TOC END -->
+
+## Version 1.0.0
+RP test tools are passing, no changes required from the library, API is declared stable, hence 1.0.0
+release.
+
+- [DIFF](https://github.com/panva/node-openid-client/compare/v0.7.0...v1.0.0)
+- See [1.x migration](#migrating-from-0x-to-10) to update your 0.x deployment into 1.x.
+
+## Migrating from 0.x to 1.0
+
+1. update your package.json file to `"^1.0.0"`
+2. sit back and relax, no breaking changes
+
+## pre 1.x changelog
+
+    4. Major version zero (0.y.z) is for initial development. Anything may change at any time.
+       The public API should not be considered stable.
+
+    5. Version 1.0.0 defines the public API.
 
 - https://github.com/panva/node-openid-client/compare/v0.6.0...v0.7.0
   - added: webfinger discovery

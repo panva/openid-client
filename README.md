@@ -7,9 +7,15 @@ Node.js
 
 **Table of Contents**
 
-  * [Implemented specs &amp; features](#implemented-specs--features)
-  * [Get started](#get-started)
-  * [Usage](#usage)
+<!-- TOC START min:2 max:2 link:true update:true -->
+  - [Implemented specs & features](#implemented-specs--features)
+  - [Example](#example)
+  - [Get started](#get-started)
+  - [Usage](#usage)
+  - [Configuration](#configuration)
+
+<!-- TOC END -->
+
 
 ## Implemented specs & features
 
@@ -285,7 +291,7 @@ issuer.Client.register(metadata, [keystore]) // => Promise
   });
 ```
 
-## WebFinger discovery
+### WebFinger discovery
 ```js
 Issuer.webfinger(userInput) // => Promise
   .then(function (issuer) {
