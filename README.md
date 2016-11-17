@@ -1,6 +1,6 @@
 # openid-client
 
-[![build][travis-image]][travis-url] [![dependencies][david-image]][david-url] [![codecov][codecov-image]][codecov-url] [![npm][npm-image]][npm-url] [![licence][licence-image]][licence-url]
+[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![npm][npm-image]][npm-url] [![licence][licence-image]][licence-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js
@@ -324,8 +324,6 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 
 [travis-image]: https://img.shields.io/travis/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [travis-url]: https://travis-ci.org/panva/node-openid-client
-[david-image]: https://img.shields.io/david/panva/node-openid-client.svg?style=flat-square&maxAge=7200
-[david-url]: https://david-dm.org/panva/node-openid-client
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
 [npm-image]: https://img.shields.io/npm/v/openid-client.svg?style=flat-square&maxAge=7200
