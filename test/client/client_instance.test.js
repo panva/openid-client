@@ -1297,146 +1297,9 @@ describe('Client#validateIdToken', function () {
   });
 });
 
-describe('Client#fetchDistributedClaims', function () {
-  afterEach(nock.cleanAll);
-  before(function () {
-    const issuer = new Issuer({
-      authorization_endpoint: 'https://op.example.com/auth',
-    });
-    this.client = new issuer.Client({
-      client_id: 'identifier',
-    });
-  });
-
-  it('just returns userinfo if no distributed claims are to be fetched', function () {
-    const userinfo = {
-      sub: 'userID',
-      _claim_sources: {
-        src1: { JWT: 'not distributed' },
-      },
-    };
-    return this.client.fetchDistributedClaims(userinfo)
-      .then((result) => {
-        expect(result).to.equal(userinfo);
-      });
-  });
-
-  it('fetches the claims from one or more distrubuted sources', function () {
-    nock('https://src1.example.com')
-      .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims').reply(200, {
-        credit_history: 'foobar',
-      });
-    nock('https://src2.example.com')
-      .get('/claims').reply(200, {
-        email: 'foobar@example.com',
-      });
-
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        credit_history: 'src1',
-        email: 'src2',
-      },
-      _claim_sources: {
-        src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
-        src2: { endpoint: 'https://src2.example.com/claims' },
-      },
-    };
-
-    return this.client.fetchDistributedClaims(userinfo)
-      .then((result) => {
-        expect(result).to.eql({
-          sub: 'userID',
-          credit_history: 'foobar',
-          email: 'foobar@example.com',
-        });
-        expect(result).to.equal(userinfo);
-      });
-  });
-
-  it('uses access token from provided param if not part of the claims', function () {
-    nock('https://src1.example.com')
-      .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims').reply(200, {
-        credit_history: 'foobar',
-      });
-
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        credit_history: 'src1',
-      },
-      _claim_sources: {
-        src1: { endpoint: 'https://src1.example.com/claims' },
-      },
-    };
-
-    return this.client.fetchDistributedClaims(userinfo, { src1: 'foobar' })
-      .then((result) => {
-        expect(result).to.eql({
-          sub: 'userID',
-          credit_history: 'foobar',
-        });
-        expect(result).to.equal(userinfo);
-      });
-  });
-
-  it('validates claims that should be present are', function () {
-    nock('https://src1.example.com')
-      .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims').reply(200, {
-        // credit_history: 'foobar',
-      });
-
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        credit_history: 'src1',
-      },
-      _claim_sources: {
-        src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
-      },
-    };
-
-    return this.client.fetchDistributedClaims(userinfo)
-      .then(fail, function (error) {
-        expect(error).to.have.property('src', 'src1');
-        expect(error.message).to.equal('expected claim "credit_history" in "src1"');
-      });
-  });
-
-  it('is rejected with OpenIdConnectError upon oidc error', function () {
-    nock('https://src1.example.com')
-      .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims')
-      .reply(401, {
-        error: 'invalid_token',
-        error_description: 'bad things are happening',
-      });
-
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        credit_history: 'src1',
-      },
-      _claim_sources: {
-        src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
-      },
-    };
-
-    return this.client.fetchDistributedClaims(userinfo)
-      .then(fail, function (error) {
-        expect(error.name).to.equal('OpenIdConnectError');
-        expect(error).to.have.property('message', 'invalid_token');
-        expect(error).to.have.property('src', 'src1');
-      });
-  });
-});
-
-describe('Client#unpackAggregatedClaims', function () {
+describe('Distributed and Aggregated Claims', function () {
   function getJWT(payload, issuer) {
-    const iss = `https://${issuer}-iss.example.com`;
+    const iss = issuer.startsWith('http') ? issuer : `https://${issuer}-iss.example.com`;
     let keystore;
     payload.iss = iss;
 
@@ -1467,42 +1330,200 @@ describe('Client#unpackAggregatedClaims', function () {
     });
   }
 
-  before(function () {
-    const issuer = new Issuer({
-      authorization_endpoint: 'https://op.example.com/auth',
-    });
-    this.client = new issuer.Client({
-      client_id: 'identifier',
-    });
-  });
+  describe('Client#fetchDistributedClaims', function () {
+    afterEach(nock.cleanAll);
+    before(function () {
+      const issuer = new Issuer({
+        issuer: 'https://op.example.com',
+        jwks_uri: 'https://op.example.com/jwks',
+        authorization_endpoint: 'https://op.example.com/auth',
+      });
+      this.client = new issuer.Client({
+        client_id: 'identifier',
+      });
+      const store = jose.JWK.createKeyStore();
 
-  it('just returns userinfo if no aggregated claims are to be unpacked', function () {
-    const userinfo = {
-      sub: 'userID',
-      _claim_sources: {
-        src1: { endpoint: 'not distributed' },
-      },
-    };
-    return this.client.unpackAggregatedClaims(userinfo)
+      return store.generate('RSA', 512).then(() => {
+        nock(issuer.issuer)
+          .get('/jwks')
+          .reply(200, store.toJSON(true));
+
+        return issuer.keystore();
+      });
+    });
+
+    it('just returns userinfo if no distributed claims are to be fetched', function () {
+      const userinfo = {
+        sub: 'userID',
+        _claim_sources: {
+          src1: { JWT: 'not distributed' },
+        },
+      };
+      return this.client.fetchDistributedClaims(userinfo)
       .then((result) => {
         expect(result).to.equal(userinfo);
       });
+    });
+
+    it('fetches the claims from one or more distributed sources', function* () {
+      nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims').reply(200, yield getJWT({ credit_history: 'foobar' }, 'src1'));
+      nock('https://src2.example.com')
+      .get('/claims').reply(200, yield getJWT({ email: 'foobar@example.com' }, 'src2'));
+      nock('https://src3.example.com')
+      .get('/claims').reply(200, [{ alg: 'none' }, { age: 27 }, ''].map((comp) => {
+        if (typeof comp === 'object') {
+          return base64url(JSON.stringify(comp));
+        }
+        return comp;
+      }).join('.'));
+      nock(this.client.issuer.issuer)
+      .get('/claims').reply(200, yield getJWT({ gender: 'male' }, this.client.issuer.issuer));
+
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          credit_history: 'src1',
+          email: 'src2',
+          age: 'src3',
+          gender: 'src4',
+        },
+        _claim_sources: {
+          src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+          src2: { endpoint: 'https://src2.example.com/claims' },
+          src3: { endpoint: 'https://src3.example.com/claims' },
+          src4: { endpoint: `${this.client.issuer.issuer}/claims` },
+        },
+      };
+
+      return this.client.fetchDistributedClaims(userinfo)
+      .then((result) => {
+        expect(result).to.eql({
+          gender: 'male',
+          age: 27,
+          sub: 'userID',
+          credit_history: 'foobar',
+          email: 'foobar@example.com',
+        });
+        expect(result).to.equal(userinfo);
+      });
+    });
+
+    it('uses access token from provided param if not part of the claims', function* () {
+      nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims').reply(200, yield getJWT({ credit_history: 'foobar' }, 'src1'));
+
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          credit_history: 'src1',
+        },
+        _claim_sources: {
+          src1: { endpoint: 'https://src1.example.com/claims' },
+        },
+      };
+
+      return this.client.fetchDistributedClaims(userinfo, { src1: 'foobar' })
+      .then((result) => {
+        expect(result).to.eql({
+          sub: 'userID',
+          credit_history: 'foobar',
+        });
+        expect(result).to.equal(userinfo);
+      });
+    });
+
+    it('validates claims that should be present are', function* () {
+      nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims').reply(200, yield getJWT({
+        // credit_history: 'foobar',
+      }, 'src1'));
+
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          credit_history: 'src1',
+        },
+        _claim_sources: {
+          src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+        },
+      };
+
+      return this.client.fetchDistributedClaims(userinfo)
+      .then(fail, function (error) {
+        expect(error).to.have.property('src', 'src1');
+        expect(error.message).to.equal('expected claim "credit_history" in "src1"');
+      });
+    });
+
+    it('is rejected with OpenIdConnectError upon oidc error', function () {
+      nock('https://src1.example.com')
+      .matchHeader('authorization', 'Bearer foobar')
+      .get('/claims')
+      .reply(401, {
+        error: 'invalid_token',
+        error_description: 'bad things are happening',
+      });
+
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          credit_history: 'src1',
+        },
+        _claim_sources: {
+          src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+        },
+      };
+
+      return this.client.fetchDistributedClaims(userinfo)
+      .then(fail, function (error) {
+        expect(error.name).to.equal('OpenIdConnectError');
+        expect(error).to.have.property('message', 'invalid_token');
+        expect(error).to.have.property('src', 'src1');
+      });
+    });
   });
 
-  it('unpacks the claims from one or more aggregated sources', function* () {
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        credit_history: 'src1',
-        email: 'src2',
-      },
-      _claim_sources: {
-        src1: { JWT: yield getJWT({ credit_history: 'foobar' }, 'src1') },
-        src2: { JWT: yield getJWT({ email: 'foobar@example.com' }, 'src2') },
-      },
-    };
+  describe('Client#unpackAggregatedClaims', function () {
+    before(function () {
+      const issuer = new Issuer({
+        authorization_endpoint: 'https://op.example.com/auth',
+      });
+      this.client = new issuer.Client({
+        client_id: 'identifier',
+      });
+    });
 
-    return this.client.unpackAggregatedClaims(userinfo)
+    it('just returns userinfo if no aggregated claims are to be unpacked', function () {
+      const userinfo = {
+        sub: 'userID',
+        _claim_sources: {
+          src1: { endpoint: 'not distributed' },
+        },
+      };
+      return this.client.unpackAggregatedClaims(userinfo)
+      .then((result) => {
+        expect(result).to.equal(userinfo);
+      });
+    });
+
+    it('unpacks the claims from one or more aggregated sources', function* () {
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          credit_history: 'src1',
+          email: 'src2',
+        },
+        _claim_sources: {
+          src1: { JWT: yield getJWT({ credit_history: 'foobar' }, 'src1') },
+          src2: { JWT: yield getJWT({ email: 'foobar@example.com' }, 'src2') },
+        },
+      };
+
+      return this.client.unpackAggregatedClaims(userinfo)
       .then((result) => {
         expect(result).to.eql({
           sub: 'userID',
@@ -1511,31 +1532,31 @@ describe('Client#unpackAggregatedClaims', function () {
         });
         expect(result).to.equal(userinfo);
       });
-  });
+    });
 
-  it('autodiscovers new issuers', function* () {
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        email_verified: 'cliff',
-      },
-      _claim_sources: {
-        cliff: { JWT: yield getJWT({ email_verified: false }, 'cliff') },
-      },
-    };
+    it('autodiscovers new issuers', function* () {
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          email_verified: 'cliff',
+        },
+        _claim_sources: {
+          cliff: { JWT: yield getJWT({ email_verified: false }, 'cliff') },
+        },
+      };
 
-    const iss = 'https://cliff-iss.example.com';
+      const iss = 'https://cliff-iss.example.com';
 
-    const discovery = nock(iss)
+      const discovery = nock(iss)
       .get('/.well-known/openid-configuration')
       .reply(200, {
         issuer: iss,
         jwks_uri: `${iss}/certs`,
       });
 
-    Registry.delete(iss);
+      Registry.delete(iss);
 
-    return this.client.unpackAggregatedClaims(userinfo)
+      return this.client.unpackAggregatedClaims(userinfo)
       .then((result) => {
         expect(result).to.eql({
           sub: 'userID',
@@ -1544,69 +1565,71 @@ describe('Client#unpackAggregatedClaims', function () {
         expect(result).to.equal(userinfo);
         expect(discovery.isDone()).to.be.true;
       });
-  });
+    });
 
-  it('validates claims that should be present are', function* () {
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        credit_history: 'src1',
-      },
-      _claim_sources: {
-        src1: { JWT: yield getJWT({}, 'src1') },
-      },
-    };
+    it('validates claims that should be present are', function* () {
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          credit_history: 'src1',
+        },
+        _claim_sources: {
+          src1: { JWT: yield getJWT({}, 'src1') },
+        },
+      };
 
-    return this.client.unpackAggregatedClaims(userinfo)
+      return this.client.unpackAggregatedClaims(userinfo)
       .then(fail, function (error) {
         expect(error).to.have.property('src', 'src1');
         expect(error.message).to.equal('expected claim "credit_history" in "src1"');
       });
-  });
+    });
 
-  it('rejects discovery errors', function* () {
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        email_verified: 'cliff',
-      },
-      _claim_sources: {
-        cliff: { JWT: yield getJWT({ email_verified: false }, 'cliff') },
-      },
-    };
+    it('rejects discovery errors', function* () {
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          email_verified: 'cliff',
+        },
+        _claim_sources: {
+          cliff: { JWT: yield getJWT({ email_verified: false }, 'cliff') },
+        },
+      };
 
-    const iss = 'https://cliff-iss.example.com';
+      const iss = 'https://cliff-iss.example.com';
 
-    const discovery = nock(iss)
+      const discovery = nock(iss)
       .get('/.well-known/openid-configuration')
       .reply(500, 'Internal Server Error');
 
-    Registry.delete(iss);
+      Registry.delete(iss);
 
-    return this.client.unpackAggregatedClaims(userinfo)
+      return this.client.unpackAggregatedClaims(userinfo)
       .then(fail, (error) => {
         expect(discovery.isDone()).to.be.true;
         expect(error.name).to.equal('HTTPError');
         expect(error.src).to.equal('cliff');
       });
-  });
+    });
 
-  it('rejects JWT errors', function () {
-    const userinfo = {
-      sub: 'userID',
-      _claim_names: {
-        email_verified: 'src1',
-      },
-      _claim_sources: {
-        src1: { JWT: 'not.a.jwt' },
-      },
-    };
+    it('rejects JWT errors', function () {
+      const userinfo = {
+        sub: 'userID',
+        _claim_names: {
+          email_verified: 'src1',
+        },
+        _claim_sources: {
+          src1: { JWT: 'not.a.jwt' },
+        },
+      };
 
-    return this.client.unpackAggregatedClaims(userinfo)
+      return this.client.unpackAggregatedClaims(userinfo)
       .then(fail, (error) => {
         expect(error.src).to.equal('src1');
       });
+    });
   });
+
 
   /* eslint-disable max-len */
   describe('signed and encrypted responses', function () {
