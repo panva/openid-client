@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.1.0](#version-110)
   - [Version 1.0.2](#version-102)
   - [Version 1.0.1](#version-101)
   - [Version 1.0.0](#version-100)
@@ -12,6 +13,11 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.1.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.0.2...v1.1.0)
+- fixed unpacking aggregated claims with alg=none and no iss claim
+- fetching distributed claims now expects a JWT response, previously expected invalid OP responses
 
 ## Version 1.0.2
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.0.1...v1.0.2)
