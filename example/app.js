@@ -162,10 +162,7 @@ module.exports = (issuer) => {
       const tokens = TOKENS.get(this.session.id);
       const client = CLIENTS.get(this.session.id);
 
-      TOKENS.set(
-        this.session.id,
-        yield client.refresh(tokens)
-      );
+      TOKENS.set(this.session.id, yield client.refresh(tokens));
 
       this.redirect('/user');
     }

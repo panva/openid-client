@@ -1,7 +1,7 @@
 'use strict';
 
 const Issuer = require('../../lib/issuer');
-const Client = require('../../lib/base_client');
+const Client = require('../../lib/client');
 const expect = require('chai').expect;
 
 describe('new Client()', function () {

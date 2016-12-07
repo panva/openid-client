@@ -5,7 +5,7 @@ const Registry = require('../../lib').Registry;
 const MockRequest = require('readable-mock-req');
 const _ = require('lodash');
 const expect = require('chai').expect;
-const BaseClient = require('../../lib/base_client');
+const Client = require('../../lib/client');
 const now = require('../../lib/unix_timestamp');
 const url = require('url');
 const querystring = require('querystring');
@@ -298,7 +298,7 @@ describe('Client', function () {
   });
 
   it('#joseSecret', function () {
-    const client = new BaseClient({ client_secret: 'rj_JR' });
+    const client = new Client({ client_secret: 'rj_JR' });
 
     return client.joseSecret()
       .then((key) => {
@@ -310,7 +310,7 @@ describe('Client', function () {
   });
 
   it('#derivedKey', function () {
-    const client = new BaseClient({ client_secret: 'rj_JR' });
+    const client = new Client({ client_secret: 'rj_JR' });
 
     return client.derivedKey('128')
       .then((key) => {
@@ -717,7 +717,7 @@ describe('Client', function () {
   describe('#grantAuth', function () {
     context('when none', function () {
       it('forbids any call using grant like auth', function () {
-        const client = new BaseClient({ token_endpoint_auth_method: 'none' });
+        const client = new Client({ token_endpoint_auth_method: 'none' });
         expect(function () { client.grantAuth(); })
           .to.throw('client not supposed to use grant authz');
       });
@@ -725,7 +725,7 @@ describe('Client', function () {
 
     context('when client_secret_post', function () {
       it('returns the body httpOptions', function () {
-        const client = new BaseClient({
+        const client = new Client({
           client_id: 'identifier',
           client_secret: 'secure',
           token_endpoint_auth_method: 'client_secret_post' });
@@ -737,7 +737,7 @@ describe('Client', function () {
 
     context('when client_secret_basic', function () {
       it('is the default', function () {
-        const client = new BaseClient({ client_id: 'identifier', client_secret: 'secure' });
+        const client = new Client({ client_id: 'identifier', client_secret: 'secure' });
         expect(client.grantAuth()).to.eql({
           headers: { Authorization: 'Basic aWRlbnRpZmllcjpzZWN1cmU=' },
         });
