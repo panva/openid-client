@@ -9,6 +9,7 @@ Node.js
 
 <!-- TOC START min:2 max:2 link:true update:true -->
   - [Implemented specs & features](#implemented-specs--features)
+  - [Certification](#certification)
   - [Example](#example)
   - [Get started](#get-started)
   - [Usage](#usage)
@@ -48,6 +49,14 @@ openid-client.
   - Client Authenticated request to token revocation
 - [RFC7662 - OAuth 2.0 Token introspection][feature-introspection]
   - Client Authenticated request to token introspection
+
+
+## Certification
+![openid_certified][openid-certified-logo]
+
+[OpenID Certified™][openid-certified-link] by Filip Skokan to the RP Basic, RP Implicit, RP Hybrid,
+RP Config and RP Dynamic profiles of the OpenID Connect™ protocol.
+
 
 ## Example
 Head over to the example folder to see the library in use. This example is deployed and configured
@@ -379,3 +388,5 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
 [got-library]: https://github.com/sindresorhus/got
 [signed-userinfo]: http://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
+[openid-certified-link]: http://openid.net/certification/
+[openid-certified-logo]: https://cdn.rawgit.com/panva/node-openid-client/master/OpenID_Certified.png
