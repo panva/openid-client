@@ -127,7 +127,8 @@ client.authorizationPost({
 ```js
 client.authorizationCallback('https://client.example.com/callback', request.query) // => Promise
   .then(function (tokenSet) {
-    console.log('received tokens %j', tokenSet);
+    console.log('received and validated tokens %j', tokenSet);
+    console.log('validated id_token claims %j' tokenSet.claims);
   });
 ```
 
@@ -138,7 +139,8 @@ const nonce = session.nonce;
 
 client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce }) // => Promise
   .then(function (tokenSet) {
-    console.log('received tokens %j', tokenSet);
+    console.log('received and validated tokens %j', tokenSet);
+    console.log('validated id_token claims %j' tokenSet.claims);
   });
 ```
 
@@ -170,7 +172,8 @@ app.use(function (req, res, next) {
 ```js
 client.refresh(refreshToken) // => Promise
   .then(function (tokenSet) {
-    console.log('refreshed tokens %j', tokenSet);
+    console.log('refreshed and validated tokens %j', tokenSet);
+    console.log('refreshed id_token claims %j' tokenSet.claims);
   });
 ```
 Tip: accepts TokenSet as well as direct refresh token values;
@@ -302,6 +305,23 @@ Accepts, normalizes, discovers and validates the discovery of User Input using E
 Hostname and Port syntaxes as described in [Discovery 1.0][feature-discovery].
 
 Uses already discovered (cached) issuers where applicable.
+
+### TokenSet
+`authorizationCallback` and `refresh` methods on a Client return TokenSet, when assigned an
+`expires_in` value a TokenSet calculates and assigns an `expires_at` with the corresponding unix
+time. It also comes with few helpers.
+
+```js
+client.authorizationCallback(..., ...).then(function (tokenSet) {
+  console.log('tokenSet#expires_at', tokenSet.expires_at);
+  console.log('tokenSet#expires_in', tokenSet.expires_in);
+  setTimeout(function () {
+    console.log('tokenSet#expires_in', tokenSet.expires_in);
+  }, 2000);
+  console.log('tokenSet#expired()', tokenSet.expired());
+  console.log('tokenSet#claims', tokenSet.claims);
+});
+```
 
 ## Configuration
 
