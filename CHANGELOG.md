@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.2.0](#version-120)
   - [Version 1.1.0](#version-110)
   - [Version 1.0.2](#version-102)
   - [Version 1.0.1](#version-101)
@@ -13,6 +14,10 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.2.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.1.0...v1.2.0)
+- added `#decodedIdToken` getter to TokenSets returned from `authorizationCallback` and `refresh`;
 
 ## Version 1.1.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.0.2...v1.1.0)
