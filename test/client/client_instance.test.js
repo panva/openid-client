@@ -1845,4 +1845,74 @@ describe('Distributed and Aggregated Claims', function () {
       }).to.throw('#callbackParams only accepts string urls or http.IncomingMessage');
     });
   });
+
+  describe('#requestObject', function () {
+    before(function () {
+      this.keystore = jose.JWK.createKeyStore();
+      return this.keystore.generate('RSA', 512);
+    });
+
+    before(function () {
+      this.issuer = new Issuer({
+        issuer: 'https://op.example.com',
+        jwks_uri: 'https://op.example.com/certs',
+      });
+    });
+
+    before(function () {
+      nock('https://op.example.com')
+        .get('/certs')
+        .reply(200, this.keystore.toJSON());
+
+      return this.issuer.key();
+    });
+
+    after(nock.cleanAll);
+
+    it('sign alg=none', function () {
+      const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'none' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((signed) => {
+          const parts = signed.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'none', typ: 'JWT' });
+          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({ iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar' });
+          expect(parts[2]).to.equal('');
+        });
+    });
+
+    it('sign alg=HSxxx', function () {
+      const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'HS256', client_secret: 'atleast32byteslongforHS256mmkay?' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((signed) => {
+          const parts = signed.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'HS256', typ: 'JWT' });
+          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({ iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar' });
+          expect(parts[2].length).to.be.ok;
+        });
+    });
+
+    it('sign alg=RSxxx', function () {
+      const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'RS256' }, this.keystore);
+
+      return client.requestObject({ state: 'foobar' })
+        .then((signed) => {
+          const parts = signed.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RS256', typ: 'JWT' }).and.have.property('kid');
+          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({ iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar' });
+          expect(parts[2].length).to.be.ok;
+        });
+    });
+
+    it('encrypts', function () {
+      const client = new this.issuer.Client({ client_id: 'client_id', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((signed) => {
+          const parts = signed.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'JWT' }).and.have.property('kid');
+        });
+    });
+  });
 });

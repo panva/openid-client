@@ -294,6 +294,19 @@ issuer.Client.register(metadata, [keystore]) // => Promise
   });
 ```
 
+### Generating a signed/encrypted Request Object
+```js
+client.requestObject({ response_mode: 'form_post' }, {
+  sign: client.request_object_signing_alg,
+  encrypt: {
+    alg: client.request_object_encryption_alg,
+    enc: client.request_object_encryption_enc,
+  }
+}).then(function (request) {
+  console.log('Nested signed and encrypted JWT Request Object %s', request)
+});
+```
+
 ### WebFinger discovery
 ```js
 Issuer.webfinger(userInput) // => Promise
