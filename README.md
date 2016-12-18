@@ -52,7 +52,7 @@ openid-client.
 
 
 ## Certification
-![openid_certified][openid-certified-logo]
+[![OpenId Certification][openid-certified-logo]][openid-certified-link]
 
 [OpenID Certified™][openid-certified-link] by Filip Skokan to the RP Basic, RP Implicit, RP Hybrid,
 RP Config and RP Dynamic profiles of the OpenID Connect™ protocol.

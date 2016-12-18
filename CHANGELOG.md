@@ -8,8 +8,6 @@ Yay for [SemVer](http://semver.org/).
   - [Version 1.3.0](#version-130)
   - [Version 1.2.0](#version-120)
   - [Version 1.1.0](#version-110)
-  - [Version 1.0.2](#version-102)
-  - [Version 1.0.1](#version-101)
   - [Version 1.0.0](#version-100)
   - [Migrating from 0.x to 1.0](#migrating-from-0x-to-10)
   - [pre 1.x changelog](#pre-1x-changelog)
@@ -17,6 +15,11 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.3.0
+### Version 1.3.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.3.0...v1.3.1)
+- added error messages when expected response is missing
+
+### Version 1.3.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.2.0...v1.3.0)
 - added `#requestObject` method to Client to return signed and/or encrypted Request Object
 
@@ -29,15 +32,16 @@ Yay for [SemVer](http://semver.org/).
 - fixed unpacking aggregated claims with alg=none and no iss claim
 - fetching distributed claims now expects a JWT response, previously expected invalid OP responses
 
-## Version 1.0.2
+## Version 1.0.0
+### Version 1.0.2
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.0.1...v1.0.2)
 - fixed signed userinfo response validation in case iss, aud and similar ID Token claims are missing
 
-## Version 1.0.1
+### Version 1.0.1
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.0.0...v1.0.1)
 - Updated uuid dependency
 
-## Version 1.0.0
+### Version 1.0.0
 RP test tools are passing, no changes required from the library, API is declared stable, hence 1.0.0
 release.
 
