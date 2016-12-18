@@ -88,4 +88,15 @@ describe('Issuer#discover()', function () {
         expect(error).to.have.property('message').matches(/Unexpected token/);
       });
   });
+
+  it('is rejected when no body is returned', function () {
+    nock('https://op.example.com')
+      .get('/.well-known/openid-configuration')
+      .reply(301);
+
+    return Issuer.discover('https://op.example.com')
+      .then(fail, function (error) {
+        expect(error).to.have.property('message', 'expected 200 OK with body, got 301 Moved Permanently without one');
+      });
+  });
 });
