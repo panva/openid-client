@@ -26,6 +26,11 @@
     "identity",
     "oauth",
     "certified",
+    "dynamic",
+    "config",
+    "basic",
+    "hybrid",
+    "implicit",
     "oauth2"
   ],
   "author": "Filip Skokan <panva.ip@gmail.com>",
