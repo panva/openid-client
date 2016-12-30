@@ -20,7 +20,7 @@ const PRESETS = require('./presets');
 module.exports = (issuer) => {
   const app = koa();
 
-  if (process.env.HEROKU) {
+  if (process.env.NODE_ENV === 'production') {
     app.proxy = true;
 
     app.use(function* (next) {
