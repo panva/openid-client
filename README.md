@@ -297,7 +297,8 @@ client.grant({
 
 ### Registering new client (via Dynamic Registration)
 ```js
-issuer.Client.register(metadata, [keystore]) // => Promise
+const opts = { keystore, initialAccessToken }; // both optional
+issuer.Client.register(metadata, [opts]) // => opts optional, Promise
   .then(function (client) {
     console.log('Registered client %s, %j', client, client.metadata);
   });
