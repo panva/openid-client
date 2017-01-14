@@ -182,7 +182,7 @@ app.use(function (req, res, next) {
 client.refresh(refreshToken) // => Promise
   .then(function (tokenSet) {
     console.log('refreshed and validated tokens %j', tokenSet);
-    console.log('refreshed id_token claims %j' tokenSet.claims);
+    console.log('refreshed id_token claims %j', tokenSet.claims);
   });
 ```
 Tip: accepts TokenSet as well as direct refresh token values;
