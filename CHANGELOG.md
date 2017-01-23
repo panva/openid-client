@@ -15,6 +15,17 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC END -->
 
+**pending Version 1.5.0**
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.4.0...master)
+- added missing max_age, default_max_age related functionality
+  - authorizationCallback now supports max_age check
+  - clients with default_max_age use this default value automatically
+  - when max_age is checked auth_time claim is mandatory and must be a number
+- added missing require_auth_time related functionality
+  - clients with require_auth_time = true have the presence and format of auth_time claim validated
+- authorizationUrl and authorizationPost now removes null and undefined values and ensures parameters
+  are stringified before passed to url.format
+
 ## Version 1.4.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.3.1...v1.4.0)
 - deprecated passing keystore directly to Client#register, pass an object with keystore property instead

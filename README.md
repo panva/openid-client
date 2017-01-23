@@ -141,12 +141,12 @@ client.authorizationCallback('https://client.example.com/callback', request.quer
   });
 ```
 
-### Processing callback with state or nonce check
+### Processing callback with state, nonce or max_age check
 ```js
 const state = session.state;
 const nonce = session.nonce;
 
-client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce }) // => Promise
+client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce, max_age }) // => Promise
   .then(function (tokenSet) {
     console.log('received and validated tokens %j', tokenSet);
     console.log('validated id_token claims %j' tokenSet.claims);

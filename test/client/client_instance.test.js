@@ -80,6 +80,23 @@ describe('Client', function () {
         claims: '{"id_token":{"email":null}}',
       });
     });
+
+    it('removes null and undefined values', function () {
+      expect(url.parse(this.client.authorizationUrl({
+        state: null,
+        prompt: undefined,
+      }), true).query).not.to.have.keys('state', 'prompt');
+    });
+
+    it('stringifies other values', function () {
+      expect(url.parse(this.client.authorizationUrl({
+        max_age: 300,
+        foo: true,
+      }), true).query).to.contain({
+        max_age: '300',
+        foo: 'true',
+      });
+    });
   });
 
   describe('#authorizationPost', function () {
@@ -153,10 +170,10 @@ describe('Client', function () {
 
   describe('#authorizationCallback', function () {
     before(function () {
-      const issuer = new Issuer({
+      this.issuer = new Issuer({
         token_endpoint: 'https://op.example.com/token',
       });
-      this.client = new issuer.Client({
+      this.client = new this.issuer.Client({
         client_id: 'identifier',
         client_secret: 'secure',
       });
@@ -179,6 +196,30 @@ describe('Client', function () {
       })
         .then(fail, () => {
           expect(nock.isDone()).to.be.true;
+        });
+    });
+
+    it('pushes default_max_age to #validateIdToken', function () {
+      const client = new this.issuer.Client({
+        client_id: 'with-default_max_age',
+        client_secret: 'secure',
+        default_max_age: 300,
+      });
+
+      nock('https://op.example.com')
+        .post('/token')
+        .reply(200, {
+          id_token: 'foobar',
+        });
+
+      sinon.spy(client, 'validateIdToken');
+
+      return client.authorizationCallback('https://rp.example.com/cb', {
+        code: 'codeValue',
+      })
+        .then(fail, () => {
+          expect(client.validateIdToken.calledOnce).to.be.true;
+          expect(client.validateIdToken.firstCall.args[3]).to.equal(300);
         });
     });
 
@@ -1206,6 +1247,109 @@ describe('Client#validateIdToken', function () {
     .then(token => this.client.validateIdToken(token))
     .then(fail, (error) => {
       expect(error).to.have.property('message', 'id_token not active yet');
+    });
+  });
+
+  it('passes when auth_time is within max_age', function () {
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+      auth_time: now() - 200,
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token, null, null, 300));
+  });
+
+  it('verifies auth_time did not exceed max_age', function () {
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+      auth_time: now() - 600,
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token, null, null, 300))
+    .then(fail, (error) => {
+      expect(error).to.have.property('message', 'too much time has elapsed since the last End-User authentication');
+    });
+  });
+
+  it('verifies auth_time is a number', function () {
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+      auth_time: 'foobar',
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token, null, null, 300))
+    .then(fail, (error) => {
+      expect(error).to.have.property('message', 'auth_time is not a number');
+    });
+  });
+
+  it('ignores auth_time presence check when require_auth_time is true but null is passed', function () {
+    const client = new this.issuer.Client({
+      client_id: 'with-require_auth_time',
+      require_auth_time: true,
+    });
+
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => client.validateIdToken(token, null, null, null));
+  });
+
+  it('verifies auth_time is present when require_auth_time is true', function () {
+    const client = new this.issuer.Client({
+      client_id: 'with-require_auth_time',
+      require_auth_time: true,
+    });
+
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => client.validateIdToken(token))
+    .then(fail, (error) => {
+      expect(error).to.have.property('message', 'missing required JWT property auth_time');
+    });
+  });
+
+  it('verifies auth_time is present when maxAge is passed', function () {
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token, null, null, 300))
+    .then(fail, (error) => {
+      expect(error).to.have.property('message', 'missing required JWT property auth_time');
     });
   });
 
