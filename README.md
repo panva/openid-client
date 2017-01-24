@@ -13,6 +13,7 @@ Node.js
   - [Example](#example)
   - [Get started](#get-started)
   - [Usage](#usage)
+  - [Usage with passport](#usage-with-passport)
   - [Configuration](#configuration)
 
 <!-- TOC END -->
@@ -344,6 +345,33 @@ client.authorizationCallback(..., ...).then(function (tokenSet) {
   console.log('tokenSet#expired()', tokenSet.expired());
   console.log('tokenSet#claims', tokenSet.claims);
 });
+```
+
+## Usage with passport
+Once you have a Client instance, just pass it to the Strategy. Issuer is best discovered, Client
+passed properties manually or via an uri (see [get started](#get-started)).
+
+Verify function is invoked with a TokenSet, userinfo only when requested, last argument is always
+the done function which you invoke once you found your user.
+
+```js
+const Strategy = require('openid-client').Strategy;
+
+passport.use('oidc', new Strategy(client, (tokenset, userinfo, done) => {
+  console.log('tokenset', tokenset);
+  console.log('access_token', tokenset.access_token);
+  console.log('id_token', tokenset.id_token);
+  console.log('claims', tokenset.claims);
+  console.log('userinfo', userinfo);
+
+  User.findOne({ id: tokenset.claims.sub }, function (err, user) {
+    if (err) return done(err);
+    return done(null, user);
+  });
+}));
+
+app.get('/auth', passport.authenticate('oidc', { /* authentication request params */ }));
+app.get('/auth/cb', passport.authenticate('oidc', { successRedirect: '/', failureRedirect: '/login' }));
 ```
 
 ## Configuration
