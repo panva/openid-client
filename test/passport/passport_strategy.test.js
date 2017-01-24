@@ -34,26 +34,24 @@ describe('OpenIDConnectStrategy', function () {
     });
   });
 
+  it('checks for session presence', function (next) {
+    const strategy = new Strategy(this.client, () => {});
+
+    const req = new MockRequest('GET', '/login/oidc');
+
+    strategy.error = (error) => {
+      try {
+        expect(error).to.be.an.instanceof(Error);
+        expect(error.message).to.match(/session/);
+        next();
+      } catch (err) {
+        next(err);
+      }
+    };
+    strategy.authenticate(req);
+  });
+
   describe('initate', function () {
-    it('gets some defaults from client', function () {
-      const strategy = new Strategy(this.client, () => {});
-      expect(strategy).to.have.property('scope', 'openid');
-      expect(strategy).to.have.property('response_type', 'code');
-      expect(strategy).to.have.property('redirect_uri', 'http://rp.example.com/cb');
-    });
-
-    it('can be passed those', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        response_type: 'code id_token',
-        redirect_uri: 'http://rp.example.com/callback',
-        scope: ['openid', 'profile'],
-      }, () => {});
-      expect(strategy).to.have.property('scope', 'openid profile');
-      expect(strategy).to.have.property('response_type', 'code id_token');
-      expect(strategy).to.have.property('redirect_uri', 'http://rp.example.com/callback');
-    });
-
     it('starts authentication requests for GETs', function () {
       const strategy = new Strategy(this.client, () => {});
 
@@ -67,10 +65,8 @@ describe('OpenIDConnectStrategy', function () {
       const target = strategy.redirect.firstCall.args[0];
       expect(target).to.include('redirect_uri=');
       expect(target).to.include('scope=');
-      expect(target).to.include('nonce=');
-      expect(target).to.include('state=');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('nonce', 'state');
+      expect(req.session['oidc:op.example.com']).to.have.keys('state');
     });
 
     it('starts authentication requests for POSTs', function () {
@@ -87,10 +83,33 @@ describe('OpenIDConnectStrategy', function () {
       const target = strategy.redirect.firstCall.args[0];
       expect(target).to.include('redirect_uri=');
       expect(target).to.include('scope=');
-      expect(target).to.include('nonce=');
-      expect(target).to.include('state=');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('nonce', 'state');
+      expect(req.session['oidc:op.example.com']).to.have.keys('state');
+    });
+
+    it('automatically includes nonce for where it applies', function () {
+      const strategy = new Strategy({
+        client: this.client,
+        params: {
+          response_type: 'code id_token token',
+          response_mode: 'form_post',
+        },
+      }, () => {});
+
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req);
+
+      expect(strategy.redirect.calledOnce).to.be.true;
+      const target = strategy.redirect.firstCall.args[0];
+      expect(target).to.include('redirect_uri=');
+      expect(target).to.include('scope=');
+      expect(target).to.include('nonce=');
+      expect(target).to.include('response_mode=form_post');
+      expect(req.session).to.have.property('oidc:op.example.com');
+      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce');
     });
   });
 

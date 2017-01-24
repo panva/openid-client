@@ -349,7 +349,7 @@ client.authorizationCallback(..., ...).then(function (tokenSet) {
 
 ## Usage with passport
 Once you have a Client instance, just pass it to the Strategy. Issuer is best discovered, Client
-passed properties manually or via an uri (see [usage](#usage)).
+passed properties manually or via an uri (see [get-started](#get-started)).
 
 Verify function is invoked with a TokenSet, userinfo only when requested, last argument is always
 the done function which you invoke once you found your user.
@@ -370,7 +370,7 @@ passport.use('oidc', new Strategy(client, (tokenset, userinfo, done) => {
   });
 }));
 
-app.get('/auth', passport.authenticate('oidc', { /* authentication request params */ }));
+app.get('/auth', passport.authenticate('oidc'));
 app.get('/auth/cb', passport.authenticate('oidc', { successRedirect: '/', failureRedirect: '/login' }));
 ```
 
