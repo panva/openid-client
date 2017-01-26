@@ -1336,7 +1336,7 @@ describe('Client#validateIdToken', function () {
       aud: this.client.client_id,
       exp: now() + 3600,
       iat: now(),
-      auth_time: now() - 305,
+      auth_time: now() - 303,
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
