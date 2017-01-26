@@ -880,6 +880,10 @@ describe('Client', function () {
 });
 
 describe('Client#validateIdToken', function () {
+  afterEach(function () {
+    if (this.client) this.client.CLOCK_TOLERANCE = 0;
+  });
+
   before(function () {
     this.keystore = jose.JWK.createKeyStore();
     return this.keystore.generate('RSA', 512);
@@ -1184,6 +1188,20 @@ describe('Client#validateIdToken', function () {
     });
   });
 
+  it('allows iat skew', function () {
+    this.client.CLOCK_TOLERANCE = 5;
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now() + 5,
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token));
+  });
+
   it('verifies exp is a number', function () {
     const payload = {
       iss: this.issuer.issuer,
@@ -1214,6 +1232,20 @@ describe('Client#validateIdToken', function () {
     .then(fail, (error) => {
       expect(error).to.have.property('message', 'id_token expired');
     });
+  });
+
+  it('allows exp skew', function () {
+    this.client.CLOCK_TOLERANCE = 5;
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() - 4,
+      iat: now(),
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token));
   });
 
   it('verifies nbf is a number', function () {
@@ -1250,6 +1282,21 @@ describe('Client#validateIdToken', function () {
     });
   });
 
+  it('allows nbf skew', function () {
+    this.client.CLOCK_TOLERANCE = 5;
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+      nbf: now() + 5,
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token));
+  });
+
   it('passes when auth_time is within max_age', function () {
     const payload = {
       iss: this.issuer.issuer,
@@ -1279,6 +1326,21 @@ describe('Client#validateIdToken', function () {
     .then(fail, (error) => {
       expect(error).to.have.property('message', 'too much time has elapsed since the last End-User authentication');
     });
+  });
+
+  it('allows auth_time skew', function () {
+    this.client.CLOCK_TOLERANCE = 5;
+    const payload = {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+      auth_time: now() - 305,
+    };
+
+    return new this.IdToken(this.keystore.get(), 'RS256', payload)
+    .then(token => this.client.validateIdToken(token, null, null, 300));
   });
 
   it('verifies auth_time is a number', function () {
