@@ -25,6 +25,7 @@ Yay for [SemVer](http://semver.org/).
   - clients with require_auth_time = true have the presence and format of auth_time claim validated
 - authorizationUrl and authorizationPost now removes null and undefined values and ensures parameters
   are stringified before passed to url.format
+- added client.CLOCK_TOLERANCE property, to allow for clock skew (in seconds)
 
 ## Version 1.4.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.3.1...v1.4.0)
