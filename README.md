@@ -13,6 +13,7 @@ Node.js
   - [Example](#example)
   - [Get started](#get-started)
   - [Usage](#usage)
+  - [Usage with passport](#usage-with-passport)
   - [Configuration](#configuration)
 
 <!-- TOC END -->
@@ -346,7 +347,52 @@ client.authorizationCallback(..., ...).then(function (tokenSet) {
 });
 ```
 
+## Usage with passport
+Once you have a Client instance, just pass it to the Strategy. Issuer is best discovered, Client
+passed properties manually or via an uri (see [get-started](#get-started)).
+
+Verify function is invoked with a TokenSet, userinfo only when requested, last argument is always
+the done function which you invoke once you found your user.
+
+```js
+const Strategy = require('openid-client').Strategy;
+const params = {
+  // ... any authorization params
+  // client_id defaults to client.client_id
+  // redirect_uri defaults to redirect_uris[0]
+  // response type defaults to client.response_types[0], then 'code'
+  // scope defaults to 'openid'
+}
+
+passport.use('oidc', new Strategy({ client, [params] }, (tokenset, userinfo, done) => {
+  console.log('tokenset', tokenset);
+  console.log('access_token', tokenset.access_token);
+  console.log('id_token', tokenset.id_token);
+  console.log('claims', tokenset.claims);
+  console.log('userinfo', userinfo);
+
+  User.findOne({ id: tokenset.claims.sub }, function (err, user) {
+    if (err) return done(err);
+    return done(null, user);
+  });
+}));
+
+// start authentication request
+// options [optional], extra authentication parameters
+app.get('/auth', passport.authenticate('oidc', [options]));
+
+// authentication callback
+app.get('/auth/cb', passport.authenticate('oidc', { successRedirect: '/', failureRedirect: '/login' }));
+```
+
 ## Configuration
+
+### Allow for system clock skew
+It is possible the RP or OP environment has a system clock skew, to set a clock tolerance (in seconds)
+
+```js
+client.CLOCK_TOLERANCE = 5; // to allow a 5 second skew
+```
 
 ### Changing HTTP request defaults
 Setting `defaultHttpOptions` on `Issuer` always merges your passed options with the default.
