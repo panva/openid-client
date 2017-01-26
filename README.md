@@ -376,6 +376,13 @@ app.get('/auth/cb', passport.authenticate('oidc', { successRedirect: '/', failur
 
 ## Configuration
 
+### Allow for system clock skew
+It is possible the RP or OP environment has a system clock skew, to set a clock tolerance (in seconds)
+
+```js
+client.CLOCK_TOLERANCE = 5; // to allow a 5 second skew
+```
+
 ### Changing HTTP request defaults
 Setting `defaultHttpOptions` on `Issuer` always merges your passed options with the default.
 openid-client uses [got][got-library] for http requests with the following default request options
