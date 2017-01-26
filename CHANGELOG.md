@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.5.0](#version-150)
   - [Version 1.4.0](#version-140)
   - [Version 1.3.0](#version-130)
   - [Version 1.2.0](#version-120)
@@ -15,8 +16,9 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC END -->
 
-**pending Version 1.5.0**
-- [DIFF](https://github.com/panva/node-openid-client/compare/v1.4.0...master)
+## Version 1.5.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.4.0...v1.5.0)
+- added a passport.js strategy
 - added missing max_age, default_max_age related functionality
   - authorizationCallback now supports max_age check
   - clients with default_max_age use this default value automatically

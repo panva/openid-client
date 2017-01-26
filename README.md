@@ -3,7 +3,7 @@
 [![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![npm][npm-image]][npm-url] [![licence][licence-image]][licence-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
-Node.js
+Node.js, supports [passport][passport-url].
 
 **Table of Contents**
 
@@ -437,3 +437,4 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 [signed-userinfo]: http://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
 [openid-certified-link]: http://openid.net/certification/
 [openid-certified-logo]: https://cdn.rawgit.com/panva/node-openid-client/master/OpenID_Certified.png
+[passport-url]: http://passportjs.org
