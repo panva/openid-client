@@ -750,16 +750,16 @@ describe('Client', function () {
         token: 'tokenValue',
       }).then(noop, noop);
 
-      expect(client.authenticatedPost.args[0][0]).to.equal('https://op.example.com/token');
+      expect(client.authenticatedPost.args[0][0]).to.equal('token');
       expect(client.authenticatedPost.args[0][1]).to.eql({ body: { token: 'tokenValue' } });
     });
   });
 
-  describe('#grantAuth', function () {
+  describe('#authFor', function () {
     context('when none', function () {
       it('forbids any call using grant like auth', function () {
         const client = new Client({ token_endpoint_auth_method: 'none' });
-        expect(function () { client.grantAuth(); })
+        expect(function () { client.authFor('token'); })
           .to.throw('client not supposed to use grant authz');
       });
     });
@@ -770,7 +770,7 @@ describe('Client', function () {
           client_id: 'identifier',
           client_secret: 'secure',
           token_endpoint_auth_method: 'client_secret_post' });
-        expect(client.grantAuth()).to.eql({
+        expect(client.authFor('token')).to.eql({
           body: { client_id: 'identifier', client_secret: 'secure' },
         });
       });
@@ -779,7 +779,7 @@ describe('Client', function () {
     context('when client_secret_basic', function () {
       it('is the default', function () {
         const client = new Client({ client_id: 'identifier', client_secret: 'secure' });
-        expect(client.grantAuth()).to.eql({
+        expect(client.authFor('token')).to.eql({
           headers: { Authorization: 'Basic aWRlbnRpZmllcjpzZWN1cmU=' },
         });
       });
@@ -797,7 +797,7 @@ describe('Client', function () {
           client_secret: 'its gotta be a long secret and i mean at least 32 characters',
           token_endpoint_auth_method: 'client_secret_jwt' });
 
-        return client.grantAuth().then((auth) => { this.auth = auth; });
+        return client.authFor('token').then((auth) => { this.auth = auth; });
       });
 
       it('promises a body', function () {
@@ -843,7 +843,7 @@ describe('Client', function () {
             client_id: 'identifier',
             token_endpoint_auth_method: 'private_key_jwt' }, keystore);
 
-          return client.grantAuth().then((auth) => { this.auth = auth; });
+          return client.authFor('token').then((auth) => { this.auth = auth; });
         });
       });
 
