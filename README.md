@@ -53,10 +53,10 @@ openid-client.
 
 
 ## Certification
-[![OpenId Certification][openid-certified-logo]][openid-certified-link]
-
-[OpenID Certified™][openid-certified-link] by Filip Skokan to the RP Basic, RP Implicit, RP Hybrid,
-RP Config and RP Dynamic profiles of the OpenID Connect™ protocol.
+[<img align="right" src="https://cdn.rawgit.com/panva/node-openid-client/master/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
+Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
+conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config and RP Dynamic profiles
+of the OpenID Connect™ protocol.
 
 
 ## Example
