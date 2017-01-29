@@ -17,6 +17,11 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.5.0
+### Version 1.5.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.5.0...v1.5.1)
+- fixed client_assertion aud claim for `_jwt` auth methods when used in introspection and revocation
+
+### Version 1.5.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.4.0...v1.5.0)
 - added a passport.js strategy
 - added missing max_age, default_max_age related functionality
