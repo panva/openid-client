@@ -17,6 +17,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.5.0
+### Version 1.5.2
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.5.1...v1.5.2)
+- fixed passport strategy, have it use prototype instead of ES6 class syntax
+
 ### Version 1.5.1
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.5.0...v1.5.1)
 - fixed client_assertion aud claim for `_jwt` auth methods when used in introspection and revocation
