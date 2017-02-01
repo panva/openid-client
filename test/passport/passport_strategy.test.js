@@ -129,8 +129,10 @@ describe('OpenIDConnectStrategy', function () {
 
       const req = new MockRequest('GET', '/login/oidc/callback?code=foobar&state=state');
       req.session = {
-        nonce: 'nonce',
-        state: 'state',
+        'oidc:op.example.com': {
+          nonce: 'nonce',
+          state: 'state',
+        },
       };
 
       strategy.authenticate(req);
@@ -140,10 +142,7 @@ describe('OpenIDConnectStrategy', function () {
       const strategy = new Strategy(this.client, () => {});
 
       const req = new MockRequest('GET', '/login/oidc/callback?error=server_error');
-      req.session = {
-        nonce: 'nonce',
-        state: 'state',
-      };
+      req.session = {};
 
       strategy.error = (error) => {
         try {
@@ -165,10 +164,7 @@ describe('OpenIDConnectStrategy', function () {
       });
 
       const req = new MockRequest('GET', '/login/oidc/callback?code=code');
-      req.session = {
-        nonce: 'nonce',
-        state: 'state',
-      };
+      req.session = {};
 
       strategy.error = (error) => {
         try {
@@ -185,10 +181,11 @@ describe('OpenIDConnectStrategy', function () {
     it('triggers the fail function when oidc error is encountered', function (next) {
       const strategy = new Strategy(this.client, () => {});
 
-      const req = new MockRequest('GET', '/login/oidc/callback?error=login_required');
+      const req = new MockRequest('GET', '/login/oidc/callback?error=login_required&state=state');
       req.session = {
-        nonce: 'nonce',
-        state: 'state',
+        'oidc:op.example.com': {
+          state: 'state',
+        },
       };
 
       strategy.fail = (error) => {
@@ -213,10 +210,11 @@ describe('OpenIDConnectStrategy', function () {
         return Promise.resolve(ts);
       });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo');
+      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
       req.session = {
-        nonce: 'nonce',
-        state: 'state',
+        'oidc:op.example.com': {
+          state: 'state',
+        },
       };
 
       strategy.error = (error) => {
@@ -241,10 +239,12 @@ describe('OpenIDConnectStrategy', function () {
         return Promise.resolve(ts);
       });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo');
+      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
       req.session = {
-        nonce: 'nonce',
-        state: 'state',
+        'oidc:op.example.com': {
+          nonce: 'nonce',
+          state: 'state',
+        },
       };
 
       strategy.fail = () => {
@@ -274,10 +274,12 @@ describe('OpenIDConnectStrategy', function () {
         return Promise.resolve(ui);
       });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo');
+      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
       req.session = {
-        nonce: 'nonce',
-        state: 'state',
+        'oidc:op.example.com': {
+          nonce: 'nonce',
+          state: 'state',
+        },
       };
 
       strategy.success = () => {
