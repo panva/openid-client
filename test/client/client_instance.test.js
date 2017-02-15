@@ -1433,6 +1433,44 @@ describe('Client#validateIdToken', function () {
     });
   });
 
+  it('validates at_hash presence for implicit flow', function () {
+    const access_token = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+
+    return new this.IdToken(this.keystore.get(), 'RS256', {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    })
+    .then((token) => {
+      // const tokenset = new TokenSet();
+      return this.client.authorizationCallback(null, { access_token, id_token: token });
+    })
+    .then(fail, (error) => {
+      expect(error).to.have.property('message', 'missing required property at_hash');
+    });
+  });
+
+  it('validates c_hash presence for hybrid flow', function () {
+    const code = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+
+    return new this.IdToken(this.keystore.get(), 'RS256', {
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    })
+    .then((token) => {
+      // const tokenset = new TokenSet();
+      return this.client.authorizationCallback(null, { code, id_token: token });
+    })
+    .then(fail, (error) => {
+      expect(error).to.have.property('message', 'missing required property c_hash');
+    });
+  });
+
   it('fails with the wrong at_hash', function () {
     const access_token = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
     const at_hash = 'notvalid77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
