@@ -1467,8 +1467,8 @@ describe('Client#validateIdToken', function () {
       iat: now(),
     })
     .then((token) => {
-      const tokenset = new TokenSet({ code, id_token: token });
-      return this.client.validateIdToken(tokenset);
+      const tokenset = new TokenSet({ id_token: token });
+      return this.client.validateIdToken(tokenset, null, null, null, code);
     });
   });
 
@@ -1485,8 +1485,8 @@ describe('Client#validateIdToken', function () {
       iat: now(),
     })
     .then((token) => {
-      const tokenset = new TokenSet({ code, id_token: token });
-      return this.client.validateIdToken(tokenset);
+      const tokenset = new TokenSet({ id_token: token });
+      return this.client.validateIdToken(tokenset, null, null, null, code);
     })
     .then(fail, (error) => {
       expect(error).to.have.property('message', 'c_hash mismatch');
