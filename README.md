@@ -138,7 +138,7 @@ client.authorizationPost({
 client.authorizationCallback('https://client.example.com/callback', request.query) // => Promise
   .then(function (tokenSet) {
     console.log('received and validated tokens %j', tokenSet);
-    console.log('validated id_token claims %j' tokenSet.claims);
+    console.log('validated id_token claims %j', tokenSet.claims);
   });
 ```
 
@@ -150,7 +150,7 @@ const nonce = session.nonce;
 client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce, max_age }) // => Promise
   .then(function (tokenSet) {
     console.log('received and validated tokens %j', tokenSet);
-    console.log('validated id_token claims %j' tokenSet.claims);
+    console.log('validated id_token claims %j', tokenSet.claims);
   });
 ```
 
