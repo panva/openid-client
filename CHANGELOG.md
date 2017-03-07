@@ -18,6 +18,11 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.6.0
+### Version 1.6.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.0...v1.6.1)
+- fixed verify callback skipping userinfo call when arity says it should but no access token is present (#18)
+
+### Version 1.6.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.5.3...v1.6.0)
 - added at_hash presence assertion for applicable (implicit) ID Token validation
 - added c_hash presence assertion for applicable (hybrid) ID Token validation from the authorization_endpoint
