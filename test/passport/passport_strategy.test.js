@@ -254,7 +254,7 @@ describe('OpenIDConnectStrategy', function () {
       strategy.authenticate(req);
     });
 
-    it('does userinfo request too if part of verify arity', function (next) {
+    it('does userinfo request too if part of verify arity and resulting tokenset', function (next) {
       const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
         try {
           expect(tokenset).to.be.ok;
@@ -265,13 +265,44 @@ describe('OpenIDConnectStrategy', function () {
         }
       });
 
-      const ts = { foo: 'bar' };
+      const ts = { access_token: 'foo' };
       const ui = { sub: 'bar' };
       sinon.stub(this.client, 'authorizationCallback', function () {
         return Promise.resolve(ts);
       });
       sinon.stub(this.client, 'userinfo', function () {
         return Promise.resolve(ui);
+      });
+
+      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+      req.session = {
+        'oidc:op.example.com': {
+          nonce: 'nonce',
+          state: 'state',
+        },
+      };
+
+      strategy.success = () => {
+        next();
+      };
+
+      strategy.authenticate(req);
+    });
+
+    it('skips userinfo request too if no tokenset but arity', function (next) {
+      const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
+        try {
+          expect(tokenset).to.be.ok;
+          expect(userinfo).to.be.undefined;
+          done(null, { sub: 'foobar' });
+        } catch (err) {
+          next(err);
+        }
+      });
+
+      const ts = { id_token: 'foo' };
+      sinon.stub(this.client, 'authorizationCallback', function () {
+        return Promise.resolve(ts);
       });
 
       const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
