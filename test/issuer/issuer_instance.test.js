@@ -32,6 +32,14 @@ describe('Issuer', function () {
   });
 
   describe('key storage behavior', function () {
+    it('requires jwks_uri to be configured', function () {
+      const issuer = new Issuer();
+
+      issuer.keystore().then(fail, (err) => {
+        expect(err.message).to.equal('jwks_uri must be configured');
+      });
+    });
+
     before(function () {
       this.keystore = jose.JWK.createKeyStore();
       return this.keystore.generate('RSA', 512);
