@@ -18,6 +18,11 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.6.0
+### Version 1.6.2
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.1...v1.6.2)
+- fixed verify callback skipping userinfo when userinfo_endpoint is not configured (#19)
+- removed mandatory checks from passport strategy, allowing i.e. implicit only OPs (#19)
+
 ### Version 1.6.1
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.0...v1.6.1)
 - fixed verify callback skipping userinfo call when arity says it should but no access token is present (#18)
