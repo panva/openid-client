@@ -1,5 +1,3 @@
-NODE_VERSION = $(wordlist 1,1,$(subst ., ,$(subst v, ,$(shell node -v))))
-
 TESTS = test/**/**/*.test.js test/**/*.test.js
 
 test:
