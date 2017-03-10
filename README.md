@@ -359,7 +359,7 @@ const Strategy = require('openid-client').Strategy;
 const params = {
   // ... any authorization params
   // client_id defaults to client.client_id
-  // redirect_uri defaults to redirect_uris[0]
+  // redirect_uri defaults to client.redirect_uris[0]
   // response type defaults to client.response_types[0], then 'code'
   // scope defaults to 'openid'
 }
