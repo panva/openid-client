@@ -18,6 +18,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.6.0
+### Version 1.6.4
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.3...v1.6.4)
+- fixed receiving (correct) empty responses from revocation endpoints (#21)
+
 ### Version 1.6.3
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.2...v1.6.3)
 - bumped minimum node-jose version to cover http://blog.intothesymmetry.com/2017/03/critical-vulnerability-in-json-web.html
