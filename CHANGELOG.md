@@ -18,6 +18,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.6.0
+### Version 1.6.3
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.2...v1.6.3)
+- bumped minimum node-jose version to cover http://blog.intothesymmetry.com/2017/03/critical-vulnerability-in-json-web.html
+
 ### Version 1.6.2
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.1...v1.6.2)
 - fixed verify callback skipping userinfo when userinfo_endpoint is not configured (#19)
