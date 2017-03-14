@@ -736,6 +736,23 @@ describe('Client', function () {
             expect(error).to.have.property('message').matches(/Unexpected token/);
           });
       });
+
+      if (method === 'revoke') {
+        it('handles empty bodies', function () {
+          nock('https://rp.example.com')
+            .post(`/token/${method}`)
+            .reply(200);
+
+          const issuer = new Issuer({
+            [metas[0]]: `https://rp.example.com/token/${method}`,
+          });
+          const client = new issuer.Client();
+
+          return client[method]('tokenValue').then((response) => {
+            expect(response).to.eql({});
+          });
+        });
+      }
     });
   });
 
