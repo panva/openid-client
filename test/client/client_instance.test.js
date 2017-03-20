@@ -1629,9 +1629,9 @@ describe('Distributed and Aggregated Claims', function () {
     it('fetches the claims from one or more distributed sources', function* () {
       nock('https://src1.example.com')
       .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims').reply(200, yield getJWT({ credit_history: 'foobar' }, 'src1'));
+      .get('/claims').reply(200, (yield getJWT({ credit_history: 'foobar' }, 'src1')));
       nock('https://src2.example.com')
-      .get('/claims').reply(200, yield getJWT({ email: 'foobar@example.com' }, 'src2'));
+      .get('/claims').reply(200, (yield getJWT({ email: 'foobar@example.com' }, 'src2')));
       nock('https://src3.example.com')
       .get('/claims').reply(200, [{ alg: 'none' }, { age: 27 }, ''].map((comp) => {
         if (typeof comp === 'object') {
@@ -1640,7 +1640,7 @@ describe('Distributed and Aggregated Claims', function () {
         return comp;
       }).join('.'));
       nock(this.client.issuer.issuer)
-      .get('/claims').reply(200, yield getJWT({ gender: 'male' }, this.client.issuer.issuer));
+      .get('/claims').reply(200, (yield getJWT({ gender: 'male' }, this.client.issuer.issuer)));
 
       const userinfo = {
         sub: 'userID',
@@ -1674,7 +1674,7 @@ describe('Distributed and Aggregated Claims', function () {
     it('uses access token from provided param if not part of the claims', function* () {
       nock('https://src1.example.com')
       .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims').reply(200, yield getJWT({ credit_history: 'foobar' }, 'src1'));
+      .get('/claims').reply(200, (yield getJWT({ credit_history: 'foobar' }, 'src1')));
 
       const userinfo = {
         sub: 'userID',
@@ -1699,9 +1699,9 @@ describe('Distributed and Aggregated Claims', function () {
     it('validates claims that should be present are', function* () {
       nock('https://src1.example.com')
       .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims').reply(200, yield getJWT({
+      .get('/claims').reply(200, (yield getJWT({
         // credit_history: 'foobar',
-      }, 'src1'));
+      }, 'src1')));
 
       const userinfo = {
         sub: 'userID',

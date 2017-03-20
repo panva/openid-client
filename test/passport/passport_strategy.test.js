@@ -116,7 +116,7 @@ describe('OpenIDConnectStrategy', function () {
   describe('callback', function () {
     it('triggers the verify function and then the success one', function (next) {
       const ts = { foo: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback', function () {
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
         return Promise.resolve(ts);
       });
 
@@ -159,7 +159,7 @@ describe('OpenIDConnectStrategy', function () {
     it('triggers the error function when non oidc error is encountered', function (next) {
       const strategy = new Strategy(this.client, () => {});
 
-      sinon.stub(this.client, 'authorizationCallback', function () {
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
         return Promise.reject(new Error('callback error'));
       });
 
@@ -206,7 +206,7 @@ describe('OpenIDConnectStrategy', function () {
       });
 
       const ts = { foo: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback', function () {
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
         return Promise.resolve(ts);
       });
 
@@ -235,7 +235,7 @@ describe('OpenIDConnectStrategy', function () {
       });
 
       const ts = { foo: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback', function () {
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
         return Promise.resolve(ts);
       });
 
@@ -267,10 +267,10 @@ describe('OpenIDConnectStrategy', function () {
 
       const ts = { access_token: 'foo' };
       const ui = { sub: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback', function () {
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
         return Promise.resolve(ts);
       });
-      sinon.stub(this.client, 'userinfo', function () {
+      sinon.stub(this.client, 'userinfo').callsFake(function () {
         return Promise.resolve(ui);
       });
 
@@ -301,7 +301,7 @@ describe('OpenIDConnectStrategy', function () {
       });
 
       const ts = { id_token: 'foo' };
-      sinon.stub(this.client, 'authorizationCallback', function () {
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
         return Promise.resolve(ts);
       });
 
