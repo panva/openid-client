@@ -39,6 +39,10 @@
     </nav>
     <div class="container">
       <%- body %>
+      <% if (session && session.loggedIn && issuer.check_session_iframe) { %>
+        <iframe width="1" height="1" style="position:absolute;left:-100px;top:-100px" id="opframe" src="<%= issuer.check_session_iframe %>"></iframe>
+        <iframe width="1" height="1" style="position:absolute;left:-100px;top:-100px" id="rpframe" src="/rpframe"></iframe>
+      <% } %>
     </div>
   </body>
 </html>

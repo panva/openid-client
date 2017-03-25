@@ -53,7 +53,7 @@ module.exports = (issuer) => {
     try {
       yield next;
     } catch (error) {
-      yield this.render('error', { error, session: this.session });
+      yield this.render('error', { issuer, error, session: this.session });
     }
   });
 
@@ -67,12 +67,17 @@ module.exports = (issuer) => {
   const router = new Router();
 
   router.get('/', function* () {
-    yield this.render('index', { session: this.session });
+    yield this.render('index', { session: this.session, issuer });
   });
 
+  router.get('/rpframe', function* () {
+    const clientId = CLIENTS.get(this.session.id).client_id;
+    const sessionState = TOKENS.get(this.session.id).session_state;
+    yield this.render('rp_frame', { session: this.session, layout: false, issuer, clientId, sessionState });
+  });
 
   router.get('/setup', function* () {
-    yield this.render('setup', { session: this.session, presets: PRESETS });
+    yield this.render('setup', { session: this.session, presets: PRESETS, issuer });
   });
 
   router.post('/setup/:preset', function* () {
@@ -91,6 +96,7 @@ module.exports = (issuer) => {
     }, preset.registration);
 
     const client = yield issuer.Client.register(metadata, keystore);
+    client.CLOCK_TOLERANCE = 5;
     CLIENTS.set(this.session.id, client);
     this.session.authorization_params = preset.authorization_params;
 
@@ -106,7 +112,7 @@ module.exports = (issuer) => {
   });
 
   router.get('/client', function* () {
-    yield this.render('client', { client: CLIENTS.get(this.session.id), session: this.session });
+    yield this.render('client', { client: CLIENTS.get(this.session.id), session: this.session, issuer });
   });
 
   router.get('/logout', function* () {
@@ -162,7 +168,10 @@ module.exports = (issuer) => {
       const tokens = TOKENS.get(this.session.id);
       const client = CLIENTS.get(this.session.id);
 
-      TOKENS.set(this.session.id, yield client.refresh(tokens));
+      const refreshed = yield client.refresh(tokens);
+      refreshed.session_state = tokens.session_state;
+
+      TOKENS.set(this.session.id, refreshed);
 
       this.redirect('/user');
     }
@@ -231,6 +240,7 @@ module.exports = (issuer) => {
       }) : undefined,
       session: this.session,
       introspections: {},
+      issuer,
     };
 
     const promises = {};

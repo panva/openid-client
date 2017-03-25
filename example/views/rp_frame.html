@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Client Example RP logout frame</title>
+</head>
+
+<body>
+  <script>
+    var stat = "unchanged";
+    var mes = "<%= clientId %> <%= sessionState %>";
+
+    function check_session() {
+      var targetOrigin = "<%= issuer.issuer %>";
+      var win = window.parent.document.getElementById("opframe").contentWindow;
+      win.postMessage(mes, targetOrigin);
+    }
+
+    function setTimer() {
+      check_session();
+      timerID = setInterval("check_session()", 3 * 1000);
+    }
+    window.addEventListener("message", receiveMessage, false);
+
+    function receiveMessage(e) {
+      var targetOrigin = "<%= issuer.issuer %>";
+      if (e.origin !== targetOrigin) {
+        return;
+      }
+      stat = e.data;
+      if (stat !== 'unchanged') {
+        clearInterval(timerID);
+        alert("<%= issuer.issuer %> session " + stat);
+      } else {
+        console && console.log('unchanged');
+      }
+    }
+    setTimer();
+  </script>
+</body>
+
+</html>
