@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.7.0](#version-170)
   - [Version 1.6.0](#version-160)
   - [Version 1.5.0](#version-150)
   - [Version 1.4.0](#version-140)
@@ -16,6 +17,11 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.7.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.4...v1.7.0)
+- added authorizationCallback support for submitting code_verifier
+- example now includes session management OP and RP frames
 
 ## Version 1.6.0
 ### Version 1.6.4
