@@ -19,6 +19,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.7.0
+### Version 1.7.2
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.7.1...v1.7.2)
+- added missing check for webfinger issuer location protocol
+
 ### Version 1.7.1
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.4...v1.7.1)
 - added authorizationCallback support for submitting code_verifier
