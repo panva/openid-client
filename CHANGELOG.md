@@ -19,9 +19,12 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.7.0
-- [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.4...v1.7.0)
+### Version 1.7.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.6.4...v1.7.1)
 - added authorizationCallback support for submitting code_verifier
 - example now includes session management OP and RP frames
+
+1.7.0 failed to publish properly, use 1.7.1 instead
 
 ## Version 1.6.0
 ### Version 1.6.4
