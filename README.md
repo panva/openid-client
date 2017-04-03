@@ -1,6 +1,6 @@
 # openid-client
 
-[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![npm][npm-image]][npm-url]
+[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js, supports [passport][passport-url].
@@ -424,8 +424,6 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
-[npm-image]: https://img.shields.io/npm/v/openid-client.svg?style=flat-square&maxAge=7200
-[npm-url]: https://www.npmjs.com/package/openid-client
 [openid-connect]: http://openid.net/connect/
 [heroku-example]: https://tranquil-reef-95185.herokuapp.com/client
 [oidc-provider]: https://github.com/panva/node-oidc-provider
