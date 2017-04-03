@@ -1,6 +1,6 @@
 # openid-client
 
-[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![npm][npm-image]][npm-url] [![licence][licence-image]][licence-url]
+[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![npm][npm-image]][npm-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js, supports [passport][passport-url].
@@ -58,6 +58,7 @@ Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url
 conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config and RP Dynamic profiles
 of the OpenID Connect™ protocol.
 
+[![build][conformance-image]][conformance-url]
 
 ## Example
 Head over to the example folder to see the library in use. This example is deployed and configured
@@ -419,12 +420,12 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 
 [travis-image]: https://img.shields.io/travis/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [travis-url]: https://travis-ci.org/panva/node-openid-client
+[conformance-image]: https://img.shields.io/travis/panva/openid-client-conformance-tests/master.svg?style=flat-square&maxAge=7200&label=conformance%20build%20status
+[conformance-url]: https://github.com/panva/openid-client-conformance-tests
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
 [npm-image]: https://img.shields.io/npm/v/openid-client.svg?style=flat-square&maxAge=7200
 [npm-url]: https://www.npmjs.com/package/openid-client
-[licence-image]: https://img.shields.io/github/license/panva/node-openid-client.svg?style=flat-square&maxAge=7200
-[licence-url]: LICENSE.md
 [openid-connect]: http://openid.net/connect/
 [heroku-example]: https://tranquil-reef-95185.herokuapp.com/client
 [oidc-provider]: https://github.com/panva/node-oidc-provider
