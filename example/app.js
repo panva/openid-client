@@ -1,10 +1,9 @@
 'use strict';
 
-/* eslint-disable import/no-extraneous-dependencies, func-names */
+/* eslint-disable import/no-extraneous-dependencies */
 
 const _ = require('lodash');
-const decode = require('base64url').decode;
-const koa = require('koa');
+const Koa = require('koa');
 const crypto = require('crypto');
 const url = require('url');
 const uuid = require('uuid');
@@ -18,16 +17,16 @@ const render = require('koa-ejs');
 const PRESETS = require('./presets');
 
 module.exports = (issuer) => {
-  const app = koa();
+  const app = new Koa();
 
   if (process.env.NODE_ENV === 'production') {
     app.proxy = true;
 
-    app.use(function* (next) {
-      if (this.secure) {
-        yield next;
+    app.use(async (ctx, next) => {
+      if (ctx.secure) {
+        await next();
       } else {
-        this.redirect(this.href.replace(/^http:\/\//i, 'https://'));
+        ctx.redirect(ctx.href.replace(/^http:\/\//i, 'https://'));
       }
     });
   }
@@ -44,172 +43,188 @@ module.exports = (issuer) => {
     root: path.join(__dirname, 'views'),
   });
 
-  app.use(function* (next) {
-    this.session.id = this.session.id || uuid();
-    yield next;
+  app.use(async (ctx, next) => {
+    ctx.session.id = ctx.session.id || uuid();
+    await next();
   });
 
-  app.use(function* (next) {
+  app.use(async (ctx, next) => {
     try {
-      yield next;
+      await next();
     } catch (error) {
-      yield this.render('error', { issuer, error, session: this.session });
+      await ctx.render('error', { issuer, error, session: ctx.session });
     }
   });
 
-  app.use(function* (next) {
-    if (!CLIENTS.has(this.session.id) && !this.path.startsWith('/setup')) {
-      this.redirect('/setup');
+  app.use(async (ctx, next) => {
+    if (!CLIENTS.has(ctx.session.id) && !ctx.path.startsWith('/setup')) {
+      ctx.redirect('/setup');
     }
-    yield next;
+    await next();
   });
 
   const router = new Router();
 
-  router.get('/', function* () {
-    yield this.render('index', { session: this.session, issuer });
+  router.get('/', async (ctx, next) => {
+    await ctx.render('index', { session: ctx.session, issuer });
+    return next();
   });
 
-  router.get('/rpframe', function* () {
-    const clientId = CLIENTS.get(this.session.id).client_id;
-    const sessionState = TOKENS.get(this.session.id).session_state;
-    yield this.render('rp_frame', { session: this.session, layout: false, issuer, clientId, sessionState });
+  router.get('/rpframe', async (ctx, next) => {
+    const clientId = CLIENTS.get(ctx.session.id).client_id;
+    const sessionState = TOKENS.get(ctx.session.id).session_state;
+    await ctx.render('rp_frame', { session: ctx.session, layout: false, issuer, clientId, sessionState });
+    return next();
   });
 
-  router.get('/setup', function* () {
-    yield this.render('setup', { session: this.session, presets: PRESETS, issuer });
+  router.get('/setup', async (ctx, next) => {
+    await ctx.render('setup', { session: ctx.session, presets: PRESETS, issuer });
+    return next();
   });
 
-  router.post('/setup/:preset', function* () {
+  router.post('/setup/:preset', async (ctx, next) => {
     let keystore;
-    const preset = PRESETS[this.params.preset];
-    this.session.loggedIn = false;
+    const preset = PRESETS[ctx.params.preset];
+    ctx.session.loggedIn = false;
 
     if (preset.keystore) {
       keystore = jose.JWK.createKeyStore();
-      yield keystore.generate.apply(keystore, preset.keystore);
+      await keystore.generate.apply(keystore, preset.keystore);
     }
 
     const metadata = Object.assign({
-      post_logout_redirect_uris: [url.resolve(this.href, '/')],
-      redirect_uris: [url.resolve(this.href, '/cb')],
+      post_logout_redirect_uris: [url.resolve(ctx.href, '/')],
+      redirect_uris: [url.resolve(ctx.href, '/cb')],
     }, preset.registration);
 
-    const client = yield issuer.Client.register(metadata, keystore);
+    const client = await issuer.Client.register(metadata, keystore);
     client.CLOCK_TOLERANCE = 5;
-    CLIENTS.set(this.session.id, client);
-    this.session.authorization_params = preset.authorization_params;
+    CLIENTS.set(ctx.session.id, client);
+    ctx.session.authorization_params = preset.authorization_params;
 
-    this.redirect('/client');
+    ctx.redirect('/client');
+    return next();
   });
 
-  router.get('/issuer', function* () {
-    yield this.render('issuer', {
+  router.get('/issuer', async (ctx, next) => {
+    await ctx.render('issuer', {
       issuer,
-      keystore: (yield issuer.keystore()),
-      session: this.session,
+      keystore: (await issuer.keystore()),
+      session: ctx.session,
     });
+    return next();
   });
 
-  router.get('/client', function* () {
-    yield this.render('client', { client: CLIENTS.get(this.session.id), session: this.session, issuer });
+  router.get('/client', async (ctx, next) => {
+    await ctx.render('client', { client: CLIENTS.get(ctx.session.id), session: ctx.session, issuer });
+    return next();
   });
 
-  router.get('/logout', function* () {
-    const id = this.session.id;
-    this.session.loggedIn = false;
+  router.get('/logout', async (ctx, next) => {
+    const id = ctx.session.id;
+    ctx.session.loggedIn = false;
 
     if (!TOKENS.has(id)) {
-      return this.redirect('/');
+      return ctx.redirect('/');
     }
 
     const tokens = TOKENS.get(id);
     TOKENS.delete(id);
 
+    const client = CLIENTS.get(id);
+
     try {
-      yield CLIENTS.get(id).revoke(tokens.access_token);
+      await Promise.all([
+        tokens.access_token ? client.revoke(tokens.access_token, 'access_token') : undefined,
+        tokens.refresh_token ? client.revoke(tokens.refresh_token, 'refresh_token') : undefined,
+      ]);
     } catch (err) {}
 
-    return this.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
+    ctx.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
       search: null,
       query: {
         id_token_hint: tokens.id_token,
-        post_logout_redirect_uri: url.resolve(this.href, '/'),
+        post_logout_redirect_uri: url.resolve(ctx.href, '/'),
       },
     })));
+
+    return next();
   });
 
-  router.get('/login', function* (next) {
-    this.session.state = crypto.randomBytes(16).toString('hex');
-    this.session.nonce = crypto.randomBytes(16).toString('hex');
+  router.get('/login', async (ctx, next) => {
+    ctx.session.state = crypto.randomBytes(16).toString('hex');
+    ctx.session.nonce = crypto.randomBytes(16).toString('hex');
 
     const authorizationRequest = Object.assign({
       claims: {
         id_token: { email_verified: null },
         userinfo: { sub: null, email: null },
       },
-      redirect_uri: url.resolve(this.href, 'cb'),
+      redirect_uri: url.resolve(ctx.href, 'cb'),
       scope: 'openid',
-      state: this.session.state,
-      nonce: this.session.nonce,
-    }, this.session.authorization_params);
+      state: ctx.session.state,
+      nonce: ctx.session.nonce,
+    }, ctx.session.authorization_params);
 
-    const authz = CLIENTS.get(this.session.id).authorizationUrl(authorizationRequest);
+    const authz = CLIENTS.get(ctx.session.id).authorizationUrl(authorizationRequest);
 
-    this.redirect(authz);
-    yield next;
+    ctx.redirect(authz);
+    return next();
   });
 
-  router.get('/refresh', function* (next) {
-    if (!TOKENS.has(this.session.id)) {
-      this.session = null;
-      this.redirect('/');
+  router.get('/refresh', async (ctx, next) => {
+    if (!TOKENS.has(ctx.session.id)) {
+      ctx.session = null;
+      ctx.redirect('/');
     } else {
-      const tokens = TOKENS.get(this.session.id);
-      const client = CLIENTS.get(this.session.id);
+      const tokens = TOKENS.get(ctx.session.id);
+      const client = CLIENTS.get(ctx.session.id);
 
-      const refreshed = yield client.refresh(tokens);
+      const refreshed = await client.refresh(tokens);
       refreshed.session_state = tokens.session_state;
 
-      TOKENS.set(this.session.id, refreshed);
+      TOKENS.set(ctx.session.id, refreshed);
 
-      this.redirect('/user');
+      ctx.redirect('/user');
     }
 
-
-    yield next;
+    return next();
   });
 
-  router.get('/cb', function* () {
-    const state = this.session.state;
-    delete this.session.state;
-    const nonce = this.session.nonce;
-    delete this.session.nonce;
-    const client = CLIENTS.get(this.session.id);
-    const params = client.callbackParams(this.request.req);
+  router.get('/cb', async (ctx, next) => {
+    const state = ctx.session.state;
+    delete ctx.session.state;
+    const nonce = ctx.session.nonce;
+    delete ctx.session.nonce;
+    const client = CLIENTS.get(ctx.session.id);
+    const params = client.callbackParams(ctx.request.req);
 
-    TOKENS.set(this.session.id,
-      yield client.authorizationCallback(url.resolve(this.href, 'cb'), params, { nonce, state }));
+    TOKENS.set(ctx.session.id,
+      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state }));
 
-    this.session.loggedIn = true;
+    ctx.session.loggedIn = true;
 
-    this.redirect('/user');
+    ctx.redirect('/user');
+
+    return next();
   });
 
-  router.post('/cb', body({ patchNode: true }), function* () {
-    const state = this.session.state;
-    delete this.session.state;
-    const nonce = this.session.nonce;
-    delete this.session.nonce;
-    const client = CLIENTS.get(this.session.id);
-    const params = client.callbackParams(this.request.req);
+  router.post('/cb', body({ patchNode: true }), async (ctx, next) => {
+    const state = ctx.session.state;
+    delete ctx.session.state;
+    const nonce = ctx.session.nonce;
+    delete ctx.session.nonce;
+    const client = CLIENTS.get(ctx.session.id);
+    const params = client.callbackParams(ctx.request.req);
 
-    TOKENS.set(this.session.id,
-      yield client.authorizationCallback(url.resolve(this.href, 'cb'), params, { nonce, state }));
+    TOKENS.set(ctx.session.id,
+      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state }));
 
-    this.session.loggedIn = true;
+    ctx.session.loggedIn = true;
 
-    this.redirect('/user');
+    ctx.redirect('/user');
+
+    return next();
   });
 
   function rejectionHandler(error) {
@@ -220,56 +235,52 @@ module.exports = (issuer) => {
     throw error;
   }
 
-  router.get('/user', function* () {
-    if (!TOKENS.has(this.session.id)) {
-      this.session.loggedIn = false;
-      return this.redirect('/client');
+  router.get('/user', async (ctx, next) => {
+    if (!TOKENS.has(ctx.session.id)) {
+      ctx.session.loggedIn = false;
+      return ctx.redirect('/client');
     }
-    const tokens = TOKENS.get(this.session.id);
-    const client = CLIENTS.get(this.session.id);
+    const tokens = TOKENS.get(ctx.session.id);
+    const client = CLIENTS.get(ctx.session.id);
 
     const context = {
       tokens,
       userinfo: undefined,
-      id_token: tokens.id_token ? _.map(tokens.id_token.split('.'), (part) => {
-        try {
-          return JSON.parse(decode(part));
-        } catch (err) {
-          return part;
-        }
-      }) : undefined,
-      session: this.session,
+      id_token: tokens.id_token ? tokens.claims : undefined,
+      session: ctx.session,
       introspections: {},
       issuer,
     };
 
-    const promises = {};
+    const promises = [];
 
     _.forEach(tokens, (value, key) => {
       if (key.endsWith('token') && key !== 'id_token') {
-        promises[key] = client.introspect(value, key).catch(rejectionHandler);
+        const p = client.introspect(value, key)
+          .then((result) => {
+            context.introspections[key] = result;
+          })
+          .catch(rejectionHandler);
+        promises.push(p);
       }
       return undefined;
     });
 
     if (tokens.access_token) {
-      promises.userinfo = client.userinfo(tokens)
+      const p = client.userinfo(tokens)
         .then(userinfo => client.fetchDistributedClaims(userinfo))
         .then(userinfo => client.unpackAggregatedClaims(userinfo))
+        .then((result) => {
+          context.userinfo = result;
+        })
         .catch(rejectionHandler);
+      promises.push(p);
     }
 
-    const results = yield promises;
+    await Promise.all(promises);
+    await ctx.render('user', context);
 
-    _.forEach(results, (result, key) => {
-      if (key === 'userinfo') {
-        context.userinfo = result;
-      } else {
-        context.introspections[key] = result;
-      }
-    });
-
-    return yield this.render('user', context);
+    return next();
   });
 
   app.use(router.routes());
