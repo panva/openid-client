@@ -437,3 +437,4 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 [openid-certified-link]: http://openid.net/certification/
 [openid-certified-logo]: https://cdn.rawgit.com/panva/node-openid-client/master/OpenID_Certified.png
 [passport-url]: http://passportjs.org
+[npm-url]: https://www.npmjs.com/package/openid-client
