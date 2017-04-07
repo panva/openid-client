@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.8.0](#version-180)
   - [Version 1.7.0](#version-170)
   - [Version 1.6.0](#version-160)
   - [Version 1.5.0](#version-150)
@@ -17,6 +18,13 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.8.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.7.2...v1.8.0)
+- Issuer and Client now recognize custom properties, this is so that new Registry Contents do not
+  require a new release of openid-client to be picked up. Custom properties are exposed as getters
+  so long as they do not interfere with the object's Prototype and they are always available in
+  `#metadata` getter.
 
 ## Version 1.7.0
 ### Version 1.7.2
