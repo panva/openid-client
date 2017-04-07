@@ -23,15 +23,6 @@ describe('new Issuer()', function () {
     expect(issuer).to.have.property('userinfo_endpoint', 'https://www.googleapis.com/oauth2/v3/userinfo');
   });
 
-  it('ignores unrecognized metadata', function () {
-    const issuer = new Issuer({
-      issuer: 'https://accounts.google.com',
-      unrecognized: 'http://',
-    });
-
-    expect(issuer).not.to.have.property('unrecognized');
-  });
-
   it('assigns defaults to some properties', function () {
     const issuer = new Issuer();
 
@@ -44,5 +35,28 @@ describe('new Issuer()', function () {
     expect(issuer).to.have.property('response_modes_supported').to.eql(['query', 'fragment']);
     expect(issuer).to.have.property('token_endpoint_auth_methods_supported')
       .to.eql(['client_secret_basic']);
+  });
+
+  it('is able to discover custom or non-recognized properties', function () {
+    const issuer = new Issuer({
+      issuer: 'https://op.example.com',
+      foo: 'bar',
+    });
+    expect(issuer).to.have.property('issuer', 'https://op.example.com');
+    expect(issuer).to.have.property('foo', 'bar');
+  });
+
+  it('custom properties do not interfere with the prototype', function () {
+    const issuer = new Issuer({
+      issuer: 'https://op.example.com',
+      key: 'foobar',
+      metadata: 'foobar',
+    });
+
+    expect(issuer).to.have.property('issuer', 'https://op.example.com');
+    expect(issuer).to.have.property('key').that.is.a('function'); // not a string
+    expect(issuer).to.have.property('metadata').that.is.an('object'); // not a string
+    expect(issuer.metadata).to.have.property('metadata', 'foobar');
+    expect(issuer.metadata).to.have.property('key', 'foobar');
   });
 });

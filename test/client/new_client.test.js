@@ -19,16 +19,6 @@ describe('new Client()', function () {
     expect(client).to.have.property('client_secret', 'secure');
   });
 
-  it('ignores unrecognized metadata', function () {
-    const client = new Client({
-      client_id: 'identifier',
-      client_secret: 'secure',
-      unrecognized: 'http://',
-    });
-
-    expect(client).not.to.have.property('unrecognized');
-  });
-
   it('assigns defaults to some properties', function () {
     const client = new Client({ client_id: 'identifier' });
 
@@ -60,5 +50,40 @@ describe('new Client()', function () {
       }).to.throw(
         'token_endpoint_auth_signing_alg_values_supported must be provided on the issuer');
     });
+  });
+
+  it('assigns defaults to some properties', function () {
+    const issuer = new Issuer();
+
+    expect(issuer).to.have.property('claims_parameter_supported', false);
+    expect(issuer).to.have.property('grant_types_supported')
+      .to.eql(['authorization_code', 'implicit']);
+    expect(issuer).to.have.property('request_parameter_supported', false);
+    expect(issuer).to.have.property('request_uri_parameter_supported', true);
+    expect(issuer).to.have.property('require_request_uri_registration', false);
+    expect(issuer).to.have.property('response_modes_supported').to.eql(['query', 'fragment']);
+    expect(issuer).to.have.property('token_endpoint_auth_methods_supported')
+      .to.eql(['client_secret_basic']);
+  });
+
+  it('is able to discover custom or non-recognized properties', function () {
+    const client = new Client({
+      client_id: 'identifier',
+      foo: 'bar',
+    });
+    expect(client).to.have.property('foo', 'bar');
+  });
+
+  it('custom properties do not interfere with the prototype', function () {
+    const client = new Client({
+      issuer: 'https://op.example.com',
+      userinfo: 'foobar',
+      metadata: 'foobar',
+    });
+
+    expect(client).to.have.property('userinfo').that.is.a('function'); // not a string
+    expect(client).to.have.property('metadata').that.is.an('object'); // not a string
+    expect(client.metadata).to.have.property('metadata', 'foobar');
+    expect(client.metadata).to.have.property('userinfo', 'foobar');
   });
 });
