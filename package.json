@@ -64,7 +64,7 @@
     "got": "^6.3.0",
     "lodash": "^4.13.1",
     "lru-cache": "^4.0.1",
-    "node-jose": "~0.9.3",
+    "node-jose": "^0.9.4",
     "oidc-token-hash": "^1.0.0",
     "uuid": "^3.0.0"
   }
