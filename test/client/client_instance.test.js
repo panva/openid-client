@@ -774,10 +774,14 @@ describe('Client', function () {
 
   describe('#authFor', function () {
     context('when none', function () {
-      it('forbids any call using grant like auth', function () {
-        const client = new Client({ token_endpoint_auth_method: 'none' });
-        expect(function () { client.authFor('token'); })
-          .to.throw('client not supposed to use grant authz');
+      it('returns the body httpOptions', function () {
+        const client = new Client({
+          client_id: 'identifier',
+          client_secret: 'secure',
+          token_endpoint_auth_method: 'none' });
+        expect(client.authFor('token')).to.eql({
+          body: { client_id: 'identifier' },
+        });
       });
     });
 

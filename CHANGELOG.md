@@ -20,6 +20,12 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.8.0
+### Version 1.8.2
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.8.0...v1.8.2)
+- bumped node-jose dependency to avoid github tar.gz dependencies
+- adjusted token_endpoint_auth_method=none to how it should be
+
+### Version 1.8.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.7.2...v1.8.0)
 - Issuer and Client now recognize custom properties, this is so that new Registry Contents do not
   require a new release of openid-client to be picked up. Custom properties are exposed as getters
