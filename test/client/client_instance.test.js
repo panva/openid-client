@@ -368,21 +368,6 @@ describe('Client', function () {
     expect(client.inspect()).to.equal('Client <identifier>');
   });
 
-  it('#metadata returns a copy of the clients metadata', function () {
-    const issuer = new Issuer({ issuer: 'https://op.example.com' });
-    const client = new issuer.Client({ client_id: 'identifier' });
-    const expected = {
-      application_type: ['web'],
-      client_id: 'identifier',
-      grant_types: ['authorization_code'],
-      id_token_signed_response_alg: 'RS256',
-      response_types: ['code'],
-      token_endpoint_auth_method: 'client_secret_basic',
-    };
-    expect(client.metadata).not.to.equal(expected);
-    expect(client.metadata).to.eql(expected);
-  });
-
   describe('#userinfo', function () {
     it('takes a string token', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
