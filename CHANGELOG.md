@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.9.0](#version-190)
   - [Version 1.8.0](#version-180)
   - [Version 1.7.0](#version-170)
   - [Version 1.6.0](#version-160)
@@ -18,6 +19,19 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.9.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.8.2...v1.9.0)
+- added introspection/revocation specific client and issuer properties. To remain backwards
+  compatible they default to their token endpoint counterparts
+  - issuer.revocation_endpoint_auth_methods_supported
+  - issuer.introspection_endpoint_auth_methods_supported
+  - issuer.revocation_endpoint_auth_signing_alg_values_supported
+  - issuer.introspection_endpoint_auth_signing_alg_values_supported
+  - client.revocation_endpoint_auth_method
+  - client.introspection_endpoint_auth_method
+  - client.revocation_endpoint_auth_signing_alg
+  - client.introspection_endpoint_auth_signing_alg
 
 ## Version 1.8.0
 ### Version 1.8.2
