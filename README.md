@@ -219,6 +219,11 @@ via POST
 client.userinfo(accessToken, { verb: 'post' }); // => Promise
 ```
 
+with extra query/body payload
+```js
+client.userinfo(accessToken, { params: { fields: 'email,ids_for_business' } }); // => Promise
+```
+
 auth via query
 ```js
 client.userinfo(accessToken, { via: 'query' }); // => Promise
