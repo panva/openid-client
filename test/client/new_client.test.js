@@ -22,7 +22,7 @@ describe('new Client()', function () {
   it('assigns defaults to some properties', function () {
     const client = new Client({ client_id: 'identifier' });
 
-    expect(client).to.have.property('application_type').eql(['web']);
+    expect(client).to.have.property('application_type').eql('web');
     expect(client).to.have.property('client_id', 'identifier');
     expect(client).to.have.property('grant_types').eql(['authorization_code']);
     expect(client).to.have.property('id_token_signed_response_alg', 'RS256');
