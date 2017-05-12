@@ -87,6 +87,27 @@ describe('OpenIDConnectStrategy', function () {
       expect(req.session['oidc:op.example.com']).to.have.keys('state');
     });
 
+    it('can have redirect_uri and scope specified', function () {
+      const strategy = new Strategy({
+        client: this.client,
+        params: {
+          redirect_uri: 'https://example.com/cb',
+          scope: 'openid profile',
+        },
+      }, () => {});
+
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req);
+
+      expect(strategy.redirect.calledOnce).to.be.true;
+      const target = strategy.redirect.firstCall.args[0];
+      expect(target).to.include(`redirect_uri=${encodeURIComponent('https://example.com/cb')}`);
+      expect(target).to.include('scope=openid%20profile');
+    });
+
     it('automatically includes nonce for where it applies', function () {
       const strategy = new Strategy({
         client: this.client,
