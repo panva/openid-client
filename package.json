@@ -4,8 +4,8 @@
   "description": "OpenID Connect Relying Party (RP, Client) implementation for Node.js servers, supports passportjs",
   "main": "lib/index.js",
   "scripts": {
-    "coverage": "make coverage",
-    "test": "make test",
+    "coverage": "nyc mocha",
+    "test": "mocha",
     "lint": "eslint lib example test"
   },
   "repository": "panva/node-openid-client",
@@ -46,7 +46,6 @@
     "eslint": "^3.0.0",
     "eslint-config-airbnb-base": "^11.0.0",
     "eslint-plugin-import": "^2.0.1",
-    "istanbul": "^0.4.4",
     "koa": "^2.2.0",
     "koa-body": "^2.0.0",
     "koa-ejs": "^4.0.0",
@@ -54,6 +53,7 @@
     "koa-session": "^5.0.0",
     "mocha": "^3.0.0",
     "nock": "^9.0.0",
+    "nyc": "^10.3.2",
     "readable-mock-req": "^0.2.2",
     "sinon": "^2.1.0",
     "timekeeper": "^1.0.0"
@@ -67,5 +67,11 @@
     "node-jose": "^0.9.4",
     "oidc-token-hash": "^1.0.0",
     "uuid": "^3.0.0"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
   }
 }
