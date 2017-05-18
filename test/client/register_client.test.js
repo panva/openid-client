@@ -3,7 +3,7 @@
 const Issuer = require('../../lib/issuer');
 const expect = require('chai').expect;
 const jose = require('node-jose');
-const got = require('got');
+const http = require('../../lib/http');
 const nock = require('nock');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
@@ -57,7 +57,7 @@ describe('Client#register', function () {
 
     return issuer.Client.register({})
       .then(fail, function (error) {
-        expect(error).to.be.an.instanceof(got.HTTPError);
+        expect(error).to.be.an.instanceof(http.HTTPError);
       });
   });
 

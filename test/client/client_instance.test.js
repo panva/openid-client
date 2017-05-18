@@ -14,8 +14,8 @@ const nock = require('nock');
 const sinon = require('sinon');
 const OpenIdConnectError = require('../../lib/open_id_connect_error');
 const TokenSet = require('../../lib/token_set');
-const got = require('got');
-const http = require('http');
+const http = require('../../lib/http');
+const stdhttp = require('http');
 const jose = require('node-jose');
 const timekeeper = require('timekeeper');
 
@@ -646,7 +646,7 @@ describe('Client', function () {
 
       return client.userinfo()
         .then(fail, function (error) {
-          expect(error).to.be.an.instanceof(got.HTTPError);
+          expect(error).to.be.an.instanceof(http.HTTPError);
         });
     });
 
@@ -822,7 +822,7 @@ describe('Client', function () {
 
         return client[method]('tokenValue')
           .then(fail, function (error) {
-            expect(error).to.be.an.instanceof(got.HTTPError);
+            expect(error).to.be.an.instanceof(http.HTTPError);
           });
       });
 
@@ -2139,12 +2139,12 @@ describe('Distributed and Aggregated Claims', function () {
     });
 
     before(function () {
-      this.origIncomingMessage = http.IncomingMessage;
-      http.IncomingMessage = MockRequest;
+      this.origIncomingMessage = stdhttp.IncomingMessage;
+      stdhttp.IncomingMessage = MockRequest;
     });
 
     after(function () {
-      http.IncomingMessage = this.origIncomingMessage;
+      stdhttp.IncomingMessage = this.origIncomingMessage;
     });
 
     it('returns query params from full uri', function () {
