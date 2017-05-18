@@ -3,7 +3,6 @@
 const Issuer = require('../../lib').Issuer;
 const expect = require('chai').expect;
 const nock = require('nock');
-const http = require('../../lib/http');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 const issuer = new Issuer();
@@ -44,7 +43,7 @@ describe('Client#fromUri()', function () {
 
     return issuer.Client.fromUri('https://op.example.com/client/identifier')
       .then(fail, function (error) {
-        expect(error).to.be.an.instanceof(http.HTTPError);
+        expect(error).to.be.an.instanceof(issuer.httpClient.HTTPError);
       });
   });
 

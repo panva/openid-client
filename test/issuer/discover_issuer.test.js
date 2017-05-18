@@ -3,7 +3,6 @@
 const Issuer = require('../../lib').Issuer;
 const expect = require('chai').expect;
 const nock = require('nock');
-const http = require('../../lib/http');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 
@@ -73,7 +72,7 @@ describe('Issuer#discover()', function () {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error).to.be.an.instanceof(http.HTTPError);
+        expect(error).to.be.an.instanceof(Issuer.httpClient.HTTPError);
       });
   });
 
