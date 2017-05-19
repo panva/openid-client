@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.11.0](#version-1110)
   - [Version 1.10.0](#version-1100)
   - [Version 1.9.0](#version-190)
   - [Version 1.8.0](#version-180)
@@ -20,6 +21,12 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.11.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.10.0...v1.11.0)
+- fixed default application_type from `['web']` to `'web'`
+- added barebones `Issuer.httpClient` setter to help advanced developers in complex environments
+  to change the used http request client
 
 ## Version 1.10.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.9.0...v1.10.0)
