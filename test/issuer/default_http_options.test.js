@@ -9,7 +9,7 @@ describe('Issuer#defaultHttpOptions', function () {
   });
 
   it('includes a user-agent by default', function () {
-    expect(Issuer.defaultHttpOptions).to.have.deep.property('headers.User-Agent')
+    expect(Issuer.defaultHttpOptions).to.have.nested.property('headers.User-Agent')
       .to.match(/^openid-client/);
   });
 
@@ -38,9 +38,9 @@ describe('Issuer#defaultHttpOptions=', function () {
 
   it('can be set to send more headers by default', function () {
     Issuer.defaultHttpOptions = { headers: { 'X-Meta-Id': 'meta meta' } };
-    expect(Issuer.defaultHttpOptions).to.have.deep.property('headers.User-Agent')
+    expect(Issuer.defaultHttpOptions).to.have.nested.property('headers.User-Agent')
       .to.match(/^openid-client/);
-    expect(Issuer.defaultHttpOptions).to.have.deep.property('headers.X-Meta-Id', 'meta meta');
+    expect(Issuer.defaultHttpOptions).to.have.nested.property('headers.X-Meta-Id', 'meta meta');
   });
 
   it('can overwrite the timeout', function () {
