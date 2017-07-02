@@ -425,7 +425,7 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 
 [travis-image]: https://img.shields.io/travis/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [travis-url]: https://travis-ci.org/panva/node-openid-client
-[conformance-image]: https://img.shields.io/travis/panva/openid-client-conformance-tests/master.svg?style=flat-square&maxAge=7200&label=conformance%20build%20status
+[conformance-image]: https://img.shields.io/travis/panva/openid-client-conformance-tests/master.svg?style=flat-square&maxAge=7200&label=daily%20conformance%20build
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
