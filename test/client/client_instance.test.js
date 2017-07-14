@@ -2188,13 +2188,13 @@ describe('Distributed and Aggregated Claims', function () {
     it('fails for other than strings or IncomingMessage', function () {
       expect(() => {
         this.client.callbackParams({});
-      }).to.throw('#callbackParams only accepts string urls or http.IncomingMessage');
+      }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
       expect(() => {
         this.client.callbackParams(true);
-      }).to.throw('#callbackParams only accepts string urls or http.IncomingMessage');
+      }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
       expect(() => {
         this.client.callbackParams([]);
-      }).to.throw('#callbackParams only accepts string urls or http.IncomingMessage');
+      }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
     });
   });
 
