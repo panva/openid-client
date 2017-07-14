@@ -23,6 +23,12 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.11.0
+### Version 1.11.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.11.0...v1.11.1)
+- relaxed #callbackParams to allow IncomingMessage lookalikes
+- update internal dependencies
+
+### Version 1.11.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.10.0...v1.11.0)
 - fixed default application_type from `['web']` to `'web'`
 - added barebones `Issuer.httpClient` setter to help advanced developers in complex environments
