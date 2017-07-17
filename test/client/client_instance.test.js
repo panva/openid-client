@@ -1764,7 +1764,7 @@ describe('Distributed and Aggregated Claims', function () {
       });
     });
 
-    it.skip('uses access token from provided param if not part of the claims', function* () {
+    it('uses access token from provided param if not part of the claims', function* () {
       nock('https://src1.example.com')
       .matchHeader('authorization', 'Bearer foobar')
       .get('/claims').reply(200, (yield getJWT({ credit_history: 'foobar' }, 'src1')));
