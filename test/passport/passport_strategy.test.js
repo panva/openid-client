@@ -132,6 +132,22 @@ describe('OpenIDConnectStrategy', function () {
       expect(req.session).to.have.property('oidc:op.example.com');
       expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce');
     });
+
+    it('can have session key specifed', function () {
+      const strategy = new Strategy({
+        client: this.client,
+        sessionKey: 'oidc:op.example.com:foo'
+      }, () => {});
+
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req);
+
+      expect(req.session).to.have.property('oidc:op.example.com:foo');
+      expect(req.session['oidc:op.example.com:foo']).to.have.keys('state');
+    });
   });
 
   describe('callback', function () {
