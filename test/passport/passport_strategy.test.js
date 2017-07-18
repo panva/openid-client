@@ -136,7 +136,7 @@ describe('OpenIDConnectStrategy', function () {
     it('can have session key specifed', function () {
       const strategy = new Strategy({
         client: this.client,
-        sessionKey: 'oidc:op.example.com:foo'
+        sessionKey: 'oidc:op.example.com:foo',
       }, () => {});
 
       const req = new MockRequest('GET', '/login/oidc');
