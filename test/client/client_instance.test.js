@@ -414,10 +414,10 @@ describe('Client', function () {
         access_token: 'present',
         // refresh_token: not
       }))
-      .then(fail, (error) => {
-        expect(error).to.be.instanceof(Error);
-        expect(error).to.have.property('message', 'refresh_token not present in TokenSet');
-      });
+        .then(fail, (error) => {
+          expect(error).to.be.instanceof(Error);
+          expect(error).to.have.property('message', 'refresh_token not present in TokenSet');
+        });
     });
   });
 
@@ -1037,9 +1037,9 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then(token => this.client.validateIdToken(token).then((validated) => {
-      expect(validated).to.equal(token);
-    }));
+      .then(token => this.client.validateIdToken(token).then((validated) => {
+        expect(validated).to.equal(token);
+      }));
   });
 
   it('validates the id token and fulfills with input value (when TokenSet)', function () {
@@ -1050,12 +1050,12 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
-      const tokenset = new TokenSet({ id_token: token });
-      return this.client.validateIdToken(tokenset).then((validated) => {
-        expect(validated).to.equal(tokenset);
+      .then((token) => {
+        const tokenset = new TokenSet({ id_token: token });
+        return this.client.validateIdToken(tokenset).then((validated) => {
+          expect(validated).to.equal(tokenset);
+        });
       });
-    });
   });
 
   it('validates the id token signature (when string)', function () {
@@ -1066,9 +1066,9 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then(token => this.client.validateIdToken(token.slice(0, -1)).then(fail, (err) => {
-      expect(err.message).to.equal('invalid signature');
-    }));
+      .then(token => this.client.validateIdToken(token.slice(0, -1)).then(fail, (err) => {
+        expect(err.message).to.equal('invalid signature');
+      }));
   });
 
   it('validates the id token signature (when TokenSet)', function () {
@@ -1079,12 +1079,12 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
-      const tokenset = new TokenSet({ id_token: token.slice(0, -1) });
-      return this.client.validateIdToken(tokenset).then(fail, (err) => {
-        expect(err.message).to.equal('invalid signature');
+      .then((token) => {
+        const tokenset = new TokenSet({ id_token: token.slice(0, -1) });
+        return this.client.validateIdToken(tokenset).then(fail, (err) => {
+          expect(err.message).to.equal('invalid signature');
+        });
       });
-    });
   });
 
   it('validates the id token and fulfills with input value (when signed by secret)', function () {
@@ -1102,12 +1102,12 @@ describe('Client#validateIdToken', function () {
         exp: now() + 3600,
         iat: now(),
       })
-      .then((token) => {
-        const tokenset = new TokenSet({ id_token: token });
-        return client.validateIdToken(tokenset).then((validated) => {
-          expect(validated).to.equal(tokenset);
+        .then((token) => {
+          const tokenset = new TokenSet({ id_token: token });
+          return client.validateIdToken(tokenset).then((validated) => {
+            expect(validated).to.equal(tokenset);
+          });
         });
-      });
     });
   });
 
@@ -1126,11 +1126,11 @@ describe('Client#validateIdToken', function () {
         exp: now() + 3600,
         iat: now(),
       })
-      .then((token) => {
-        return client.validateIdToken(token, null, 'userinfo').then((validated) => {
-          expect(validated).to.equal(token);
+        .then((token) => {
+          return client.validateIdToken(token, null, 'userinfo').then((validated) => {
+            expect(validated).to.equal(token);
+          });
         });
-      });
     });
   });
 
@@ -1143,10 +1143,10 @@ describe('Client#validateIdToken', function () {
         exp: now() + 3600,
         iat: now(),
       })
-      .then(token => this.client.validateIdToken(token))
-      .then(fail, (error) => {
-        expect(error).to.have.property('message', 'unexpected algorithm received');
-      });
+        .then(token => this.client.validateIdToken(token))
+        .then(fail, (error) => {
+          expect(error).to.have.property('message', 'unexpected algorithm received');
+        });
     });
   });
 
@@ -1161,10 +1161,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'azp must be the client_id');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'azp must be the client_id');
+      });
   });
 
   it('verifies azp is present when more audiences are provided', function () {
@@ -1177,10 +1177,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'missing required JWT property azp');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'missing required JWT property azp');
+      });
   });
 
   it('verifies the audience when azp is there', function () {
@@ -1194,7 +1194,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token));
+      .then(token => this.client.validateIdToken(token));
   });
 
   it('passes with nonce check', function () {
@@ -1209,7 +1209,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token, 'nonce!!!'));
+      .then(token => this.client.validateIdToken(token, 'nonce!!!'));
   });
 
   it('validates nonce when provided to check for', function () {
@@ -1223,10 +1223,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token, 'nonce!!!'))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'nonce mismatch');
-    });
+      .then(token => this.client.validateIdToken(token, 'nonce!!!'))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'nonce mismatch');
+      });
   });
 
   it('validates nonce when in token', function () {
@@ -1241,10 +1241,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'nonce mismatch');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'nonce mismatch');
+      });
   });
 
   ['iss', 'sub', 'aud', 'exp', 'iat'].forEach(function (prop) {
@@ -1260,10 +1260,10 @@ describe('Client#validateIdToken', function () {
       delete payload[prop];
 
       return new this.IdToken(this.keystore.get(), 'RS256', payload)
-      .then(token => this.client.validateIdToken(token))
-      .then(fail, (error) => {
-        expect(error).to.have.property('message', `missing required JWT property ${prop}`);
-      });
+        .then(token => this.client.validateIdToken(token))
+        .then(fail, (error) => {
+          expect(error).to.have.property('message', `missing required JWT property ${prop}`);
+        });
     });
   });
 
@@ -1277,10 +1277,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'iat is not a number');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'iat is not a number');
+      });
   });
 
   it('verifies iat is in the past', function () {
@@ -1293,10 +1293,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'id_token issued in the future');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'id_token issued in the future');
+      });
   });
 
   it('allows iat skew', function () {
@@ -1310,7 +1310,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token));
+      .then(token => this.client.validateIdToken(token));
   });
 
   it('verifies exp is a number', function () {
@@ -1323,10 +1323,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'exp is not a number');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'exp is not a number');
+      });
   });
 
   it('verifies exp is in the future', function () {
@@ -1339,10 +1339,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'id_token expired');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'id_token expired');
+      });
   });
 
   it('allows exp skew', function () {
@@ -1356,7 +1356,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token));
+      .then(token => this.client.validateIdToken(token));
   });
 
   it('verifies nbf is a number', function () {
@@ -1370,10 +1370,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'nbf is not a number');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'nbf is not a number');
+      });
   });
 
   it('verifies nbf is in the past', function () {
@@ -1387,10 +1387,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'id_token not active yet');
-    });
+      .then(token => this.client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'id_token not active yet');
+      });
   });
 
   it('allows nbf skew', function () {
@@ -1405,7 +1405,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token));
+      .then(token => this.client.validateIdToken(token));
   });
 
   it('passes when auth_time is within max_age', function () {
@@ -1419,7 +1419,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token, null, null, 300));
+      .then(token => this.client.validateIdToken(token, null, null, 300));
   });
 
   it('verifies auth_time did not exceed max_age', function () {
@@ -1433,10 +1433,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token, null, null, 300))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'too much time has elapsed since the last End-User authentication');
-    });
+      .then(token => this.client.validateIdToken(token, null, null, 300))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'too much time has elapsed since the last End-User authentication');
+      });
   });
 
   it('allows auth_time skew', function () {
@@ -1451,7 +1451,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token, null, null, 300));
+      .then(token => this.client.validateIdToken(token, null, null, 300));
   });
 
   it('verifies auth_time is a number', function () {
@@ -1465,10 +1465,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token, null, null, 300))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'auth_time is not a number');
-    });
+      .then(token => this.client.validateIdToken(token, null, null, 300))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'auth_time is not a number');
+      });
   });
 
   it('ignores auth_time presence check when require_auth_time is true but null is passed', function () {
@@ -1486,7 +1486,7 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => client.validateIdToken(token, null, null, null));
+      .then(token => client.validateIdToken(token, null, null, null));
   });
 
   it('verifies auth_time is present when require_auth_time is true', function () {
@@ -1504,10 +1504,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => client.validateIdToken(token))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'missing required JWT property auth_time');
-    });
+      .then(token => client.validateIdToken(token))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'missing required JWT property auth_time');
+      });
   });
 
   it('verifies auth_time is present when maxAge is passed', function () {
@@ -1520,10 +1520,10 @@ describe('Client#validateIdToken', function () {
     };
 
     return new this.IdToken(this.keystore.get(), 'RS256', payload)
-    .then(token => this.client.validateIdToken(token, null, null, 300))
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'missing required JWT property auth_time');
-    });
+      .then(token => this.client.validateIdToken(token, null, null, 300))
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'missing required JWT property auth_time');
+      });
   });
 
   it('passes with the right at_hash', function () {
@@ -1538,10 +1538,10 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
-      const tokenset = new TokenSet({ access_token, id_token: token });
-      return this.client.validateIdToken(tokenset);
-    });
+      .then((token) => {
+        const tokenset = new TokenSet({ access_token, id_token: token });
+        return this.client.validateIdToken(tokenset);
+      });
   });
 
   it('validates at_hash presence for implicit flow', function () {
@@ -1554,13 +1554,13 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
+      .then((token) => {
       // const tokenset = new TokenSet();
-      return this.client.authorizationCallback(null, { access_token, id_token: token });
-    })
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'missing required property at_hash');
-    });
+        return this.client.authorizationCallback(null, { access_token, id_token: token });
+      })
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'missing required property at_hash');
+      });
   });
 
   it('validates c_hash presence for hybrid flow', function () {
@@ -1573,13 +1573,13 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
+      .then((token) => {
       // const tokenset = new TokenSet();
-      return this.client.authorizationCallback(null, { code, id_token: token });
-    })
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'missing required property c_hash');
-    });
+        return this.client.authorizationCallback(null, { code, id_token: token });
+      })
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'missing required property c_hash');
+      });
   });
 
   it('fails with the wrong at_hash', function () {
@@ -1594,13 +1594,13 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
-      const tokenset = new TokenSet({ access_token, id_token: token });
-      return this.client.validateIdToken(tokenset);
-    })
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'at_hash mismatch');
-    });
+      .then((token) => {
+        const tokenset = new TokenSet({ access_token, id_token: token });
+        return this.client.validateIdToken(tokenset);
+      })
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'at_hash mismatch');
+      });
   });
 
   it('passes with the right c_hash', function () {
@@ -1615,10 +1615,10 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
-      const tokenset = new TokenSet({ code, id_token: token });
-      return this.client.validateIdToken(tokenset);
-    });
+      .then((token) => {
+        const tokenset = new TokenSet({ code, id_token: token });
+        return this.client.validateIdToken(tokenset);
+      });
   });
 
   it('fails with the wrong c_hash', function () {
@@ -1633,13 +1633,13 @@ describe('Client#validateIdToken', function () {
       exp: now() + 3600,
       iat: now(),
     })
-    .then((token) => {
-      const tokenset = new TokenSet({ code, id_token: token });
-      return this.client.validateIdToken(tokenset);
-    })
-    .then(fail, (error) => {
-      expect(error).to.have.property('message', 'c_hash mismatch');
-    });
+      .then((token) => {
+        const tokenset = new TokenSet({ code, id_token: token });
+        return this.client.validateIdToken(tokenset);
+      })
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'c_hash mismatch');
+      });
   });
 
   it('fails if tokenset without id_token is passed in', function () {
@@ -1715,25 +1715,25 @@ describe('Distributed and Aggregated Claims', function () {
         },
       };
       return this.client.fetchDistributedClaims(userinfo)
-      .then((result) => {
-        expect(result).to.equal(userinfo);
-      });
+        .then((result) => {
+          expect(result).to.equal(userinfo);
+        });
     });
 
     it('fetches the claims from one or more distributed sources', function* () {
       nock('https://src1.example.com')
-      .get('/claims').reply(200, (yield getJWT({ credit_history: 'foobar' }, 'src1')));
+        .get('/claims').reply(200, (yield getJWT({ credit_history: 'foobar' }, 'src1')));
       nock('https://src2.example.com')
-      .get('/claims').reply(200, (yield getJWT({ email: 'foobar@example.com' }, 'src2')));
+        .get('/claims').reply(200, (yield getJWT({ email: 'foobar@example.com' }, 'src2')));
       nock('https://src3.example.com')
-      .get('/claims').reply(200, [{ alg: 'none' }, { age: 27 }, ''].map((comp) => {
-        if (typeof comp === 'object') {
-          return base64url(JSON.stringify(comp));
-        }
-        return comp;
-      }).join('.'));
+        .get('/claims').reply(200, [{ alg: 'none' }, { age: 27 }, ''].map((comp) => {
+          if (typeof comp === 'object') {
+            return base64url(JSON.stringify(comp));
+          }
+          return comp;
+        }).join('.'));
       nock(this.client.issuer.issuer)
-      .get('/claims').reply(200, (yield getJWT({ gender: 'male' }, this.client.issuer.issuer)));
+        .get('/claims').reply(200, (yield getJWT({ gender: 'male' }, this.client.issuer.issuer)));
 
       const userinfo = {
         sub: 'userID',
@@ -1752,22 +1752,22 @@ describe('Distributed and Aggregated Claims', function () {
       };
 
       return this.client.fetchDistributedClaims(userinfo)
-      .then((result) => {
-        expect(result).to.eql({
-          gender: 'male',
-          age: 27,
-          sub: 'userID',
-          credit_history: 'foobar',
-          email: 'foobar@example.com',
+        .then((result) => {
+          expect(result).to.eql({
+            gender: 'male',
+            age: 27,
+            sub: 'userID',
+            credit_history: 'foobar',
+            email: 'foobar@example.com',
+          });
+          expect(result).to.equal(userinfo);
         });
-        expect(result).to.equal(userinfo);
-      });
     });
 
     it('uses access token from provided param if not part of the claims', function* () {
       nock('https://src1.example.com')
-      .matchHeader('authorization', 'Bearer foobar')
-      .get('/claims').reply(200, (yield getJWT({ credit_history: 'foobar' }, 'src1')));
+        .matchHeader('authorization', 'Bearer foobar')
+        .get('/claims').reply(200, (yield getJWT({ credit_history: 'foobar' }, 'src1')));
 
       const userinfo = {
         sub: 'userID',
@@ -1780,20 +1780,20 @@ describe('Distributed and Aggregated Claims', function () {
       };
 
       return this.client.fetchDistributedClaims(userinfo, { src1: 'foobar' })
-      .then((result) => {
-        expect(result).to.eql({
-          sub: 'userID',
-          credit_history: 'foobar',
+        .then((result) => {
+          expect(result).to.eql({
+            sub: 'userID',
+            credit_history: 'foobar',
+          });
+          expect(result).to.equal(userinfo);
         });
-        expect(result).to.equal(userinfo);
-      });
     });
 
     it('validates claims that should be present are', function* () {
       nock('https://src1.example.com')
-      .get('/claims').reply(200, (yield getJWT({
+        .get('/claims').reply(200, (yield getJWT({
         // credit_history: 'foobar',
-      }, 'src1')));
+        }, 'src1')));
 
       const userinfo = {
         sub: 'userID',
@@ -1806,19 +1806,19 @@ describe('Distributed and Aggregated Claims', function () {
       };
 
       return this.client.fetchDistributedClaims(userinfo)
-      .then(fail, function (error) {
-        expect(error).to.have.property('src', 'src1');
-        expect(error.message).to.equal('expected claim "credit_history" in "src1"');
-      });
+        .then(fail, function (error) {
+          expect(error).to.have.property('src', 'src1');
+          expect(error.message).to.equal('expected claim "credit_history" in "src1"');
+        });
     });
 
     it('is rejected with OpenIdConnectError upon oidc error', function () {
       nock('https://src1.example.com')
-      .get('/claims')
-      .reply(401, {
-        error: 'invalid_token',
-        error_description: 'bad things are happening',
-      });
+        .get('/claims')
+        .reply(401, {
+          error: 'invalid_token',
+          error_description: 'bad things are happening',
+        });
 
       const userinfo = {
         sub: 'userID',
@@ -1831,11 +1831,11 @@ describe('Distributed and Aggregated Claims', function () {
       };
 
       return this.client.fetchDistributedClaims(userinfo)
-      .then(fail, function (error) {
-        expect(error.name).to.equal('OpenIdConnectError');
-        expect(error).to.have.property('message', 'invalid_token');
-        expect(error).to.have.property('src', 'src1');
-      });
+        .then(fail, function (error) {
+          expect(error.name).to.equal('OpenIdConnectError');
+          expect(error).to.have.property('message', 'invalid_token');
+          expect(error).to.have.property('src', 'src1');
+        });
     });
   });
 
@@ -1857,9 +1857,9 @@ describe('Distributed and Aggregated Claims', function () {
         },
       };
       return this.client.unpackAggregatedClaims(userinfo)
-      .then((result) => {
-        expect(result).to.equal(userinfo);
-      });
+        .then((result) => {
+          expect(result).to.equal(userinfo);
+        });
     });
 
     it('unpacks the claims from one or more aggregated sources', function* () {
@@ -1876,14 +1876,14 @@ describe('Distributed and Aggregated Claims', function () {
       };
 
       return this.client.unpackAggregatedClaims(userinfo)
-      .then((result) => {
-        expect(result).to.eql({
-          sub: 'userID',
-          credit_history: 'foobar',
-          email: 'foobar@example.com',
+        .then((result) => {
+          expect(result).to.eql({
+            sub: 'userID',
+            credit_history: 'foobar',
+            email: 'foobar@example.com',
+          });
+          expect(result).to.equal(userinfo);
         });
-        expect(result).to.equal(userinfo);
-      });
     });
 
     it('autodiscovers new issuers', function* () {
@@ -1900,23 +1900,23 @@ describe('Distributed and Aggregated Claims', function () {
       const iss = 'https://cliff-iss.example.com';
 
       const discovery = nock(iss)
-      .get('/.well-known/openid-configuration')
-      .reply(200, {
-        issuer: iss,
-        jwks_uri: `${iss}/certs`,
-      });
+        .get('/.well-known/openid-configuration')
+        .reply(200, {
+          issuer: iss,
+          jwks_uri: `${iss}/certs`,
+        });
 
       Registry.delete(iss);
 
       return this.client.unpackAggregatedClaims(userinfo)
-      .then((result) => {
-        expect(result).to.eql({
-          sub: 'userID',
-          email_verified: false,
+        .then((result) => {
+          expect(result).to.eql({
+            sub: 'userID',
+            email_verified: false,
+          });
+          expect(result).to.equal(userinfo);
+          expect(discovery.isDone()).to.be.true;
         });
-        expect(result).to.equal(userinfo);
-        expect(discovery.isDone()).to.be.true;
-      });
     });
 
     it('validates claims that should be present are', function* () {
@@ -1931,10 +1931,10 @@ describe('Distributed and Aggregated Claims', function () {
       };
 
       return this.client.unpackAggregatedClaims(userinfo)
-      .then(fail, function (error) {
-        expect(error).to.have.property('src', 'src1');
-        expect(error.message).to.equal('expected claim "credit_history" in "src1"');
-      });
+        .then(fail, function (error) {
+          expect(error).to.have.property('src', 'src1');
+          expect(error.message).to.equal('expected claim "credit_history" in "src1"');
+        });
     });
 
     it('rejects discovery errors', function* () {
@@ -1951,17 +1951,17 @@ describe('Distributed and Aggregated Claims', function () {
       const iss = 'https://cliff-iss.example.com';
 
       const discovery = nock(iss)
-      .get('/.well-known/openid-configuration')
-      .reply(500, 'Internal Server Error');
+        .get('/.well-known/openid-configuration')
+        .reply(500, 'Internal Server Error');
 
       Registry.delete(iss);
 
       return this.client.unpackAggregatedClaims(userinfo)
-      .then(fail, (error) => {
-        expect(discovery.isDone()).to.be.true;
-        expect(error.name).to.equal('HTTPError');
-        expect(error.src).to.equal('cliff');
-      });
+        .then(fail, (error) => {
+          expect(discovery.isDone()).to.be.true;
+          expect(error.name).to.equal('HTTPError');
+          expect(error.src).to.equal('cliff');
+        });
     });
 
     it('rejects JWT errors', function () {
@@ -1976,9 +1976,9 @@ describe('Distributed and Aggregated Claims', function () {
       };
 
       return this.client.unpackAggregatedClaims(userinfo)
-      .then(fail, (error) => {
-        expect(error.src).to.equal('src1');
-      });
+        .then(fail, (error) => {
+          expect(error.src).to.equal('src1');
+        });
     });
   });
 
