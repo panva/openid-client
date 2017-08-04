@@ -56,7 +56,7 @@
     "nock": "^9.0.14",
     "nyc": "^11.0.1",
     "readable-mock-req": "^0.2.2",
-    "sinon": "^2.1.0",
+    "sinon": "^3.0.0",
     "timekeeper": "^1.0.0"
   },
   "dependencies": {
