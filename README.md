@@ -109,7 +109,7 @@ const client = new googleIssuer.Client({
 Should your oidc provider have provided you with a registration client uri and registration access
 token you can also have the Client discovered.
 ```js
-new googleIssuer.Client.fromUri(registration_client_uri, registration_access_token) // => Promise
+googleIssuer.Client.fromUri(registration_client_uri, registration_access_token) // => Promise
   .then(function (client) {
     console.log('Discovered client %s', client);
   });
