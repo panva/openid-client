@@ -24,6 +24,12 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.12.0
+### Version 1.12.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.12.0...v1.12.1)
+- explicitly specified accepted response type via `accept: application/json` header
+- added state to token_endpoint calls for servers supporting mixup mitigation
+
+### Version 1.12.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.11.1...v1.12.0)
 - Allow session key to be specified in passport strategy options
 
