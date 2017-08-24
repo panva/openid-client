@@ -94,26 +94,32 @@ console.log('Set up issuer %s', googleIssuer);
 **Now you can create your Client.**
 
 ### manually (recommended)
-You should provide the following metadata; `client_id, client_secret`. You can also provide
+You should provide at least the following metadata; `client_id, client_secret`. You can also provide
 `id_token_signed_response_alg` (defaults to `RS256`) and `token_endpoint_auth_method` (defaults to
-`client_secret_basic`);
+`client_secret_basic`).
 
 ```js
 const client = new googleIssuer.Client({
   client_id: 'zELcpfANLqY7Oqas',
   client_secret: 'TQV5U29k1gHibH5bx1layBo0OSAvAbRT3UYW3EWrSYBB5swxjVfWUa1BS8lqzxG/0v9wruMcrGadany3'
-}); // => Client
+}, [keystore]); // => Client
 ```
+
+`keystore` is an optional argument for instantiating a client with configured asymmetrical
+ID Token or UserInfo response encryption.
 
 ### via registration client uri
 Should your oidc provider have provided you with a registration client uri and registration access
 token you can also have the Client discovered.
 ```js
-googleIssuer.Client.fromUri(registration_client_uri, registration_access_token) // => Promise
+googleIssuer.Client.fromUri(registration_client_uri, registration_access_token, [keystore]) // => Promise
   .then(function (client) {
     console.log('Discovered client %s', client);
   });
 ```
+
+`keystore` is an optional argument for instantiating a client through registration client uri
+with configured asymmetrical ID Token or UserInfo response encryption.
 
 ## Usage
 

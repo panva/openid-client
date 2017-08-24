@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.13.0](#version-1130)
   - [Version 1.12.0](#version-1120)
   - [Version 1.11.0](#version-1110)
   - [Version 1.10.0](#version-1100)
@@ -22,6 +23,13 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.13.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.12.1...v1.13.0)
+- added an optional keystore argument to `Client#fromUri(uri, token, [keystore])` to pass a keystore
+  with private asymmetrical keys
+- fixed keystore check during constructor `Client#new` calls to check that only private asymmetrical
+  keys are added
 
 ## Version 1.12.0
 ### Version 1.12.1
