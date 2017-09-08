@@ -356,5 +356,119 @@ describe('OpenIDConnectStrategy', function () {
 
       strategy.authenticate(req);
     });
+
+    it('receives a request as the first parameter if passReqToCallback is set', function (next) {
+      const strategy = new Strategy({
+        client: this.client,
+        params: {
+          passReqToCallback: true,
+        },
+      }, (req, tokenset, done) => {
+        try {
+          expect(req).to.be.an.instanceof(MockRequest);
+          expect(tokenset).to.be.ok;
+          done(null, { sub: 'foobar' });
+        } catch (err) {
+          next(err);
+        }
+      });
+
+      const ts = { id_token: 'foo' };
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+        return Promise.resolve(ts);
+      });
+
+      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+      req.session = {
+        'oidc:op.example.com': {
+          nonce: 'nonce',
+          state: 'state',
+        },
+      };
+
+      strategy.success = () => {
+        next();
+      };
+
+      strategy.authenticate(req);
+    });
+
+    it('receives a request and userinfo with passReqToCallback: true and userinfo', function (next) {
+      const strategy = new Strategy({
+        client: this.client,
+        params: {
+          passReqToCallback: true,
+        },
+      }, (req, tokenset, userinfo, done) => {
+        try {
+          expect(req).to.be.an.instanceof(MockRequest);
+          expect(tokenset).to.be.ok;
+          expect(userinfo).to.be.ok;
+          done(null, { sub: 'foobar' });
+        } catch (err) {
+          next(err);
+        }
+      });
+
+      const ts = { access_token: 'foo' };
+      const ui = { sub: 'bar' };
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+        return Promise.resolve(ts);
+      });
+      sinon.stub(this.client, 'userinfo').callsFake(function () {
+        return Promise.resolve(ui);
+      });
+
+      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+      req.session = {
+        'oidc:op.example.com': {
+          nonce: 'nonce',
+          state: 'state',
+        },
+      };
+
+      strategy.success = () => {
+        next();
+      };
+
+      strategy.authenticate(req);
+    });
+
+    it('skips userinfo request too if no tokenset but arity (even with passReqToCallback)', function (next) {
+      const strategy = new Strategy({
+        client: this.client,
+        params: {
+          passReqToCallback: true,
+        },
+      }, (req, tokenset, userinfo, done) => {
+        try {
+          expect(req).to.be.an.instanceof(MockRequest);
+          expect(tokenset).to.be.ok;
+          expect(userinfo).to.be.undefined;
+          done(null, { sub: 'foobar' });
+        } catch (err) {
+          next(err);
+        }
+      });
+
+      const ts = { id_token: 'foo' };
+      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+        return Promise.resolve(ts);
+      });
+
+      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+      req.session = {
+        'oidc:op.example.com': {
+          nonce: 'nonce',
+          state: 'state',
+        },
+      };
+
+      strategy.success = () => {
+        next();
+      };
+
+      strategy.authenticate(req);
+    });
   });
 });
