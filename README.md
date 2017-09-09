@@ -374,6 +374,7 @@ const params = {
   // redirect_uri defaults to client.redirect_uris[0]
   // response type defaults to client.response_types[0], then 'code'
   // scope defaults to 'openid'
+  // passReqToCallback defaults to false
 }
 
 passport.use('oidc', new Strategy({ client, [params] }, (tokenset, userinfo, done) => {
