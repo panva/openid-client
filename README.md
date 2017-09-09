@@ -369,15 +369,16 @@ the done function which you invoke once you found your user.
 ```js
 const Strategy = require('openid-client').Strategy;
 const params = {
-  // ... any authorization params
+  // ... any authorization request parameters go here
   // client_id defaults to client.client_id
   // redirect_uri defaults to client.redirect_uris[0]
   // response type defaults to client.response_types[0], then 'code'
   // scope defaults to 'openid'
-  // passReqToCallback defaults to false
 }
+const passReqToCallback = false; // optional, defaults to false, when true req is passed as a first
+                                 // argument to verify fn
 
-passport.use('oidc', new Strategy({ client, [params] }, (tokenset, userinfo, done) => {
+passport.use('oidc', new Strategy({ client, [params], [passReqToCallback] }, (tokenset, userinfo, done) => {
   console.log('tokenset', tokenset);
   console.log('access_token', tokenset.access_token);
   console.log('id_token', tokenset.id_token);

@@ -360,9 +360,7 @@ describe('OpenIDConnectStrategy', function () {
     it('receives a request as the first parameter if passReqToCallback is set', function (next) {
       const strategy = new Strategy({
         client: this.client,
-        params: {
-          passReqToCallback: true,
-        },
+        passReqToCallback: true,
       }, (req, tokenset, done) => {
         try {
           expect(req).to.be.an.instanceof(MockRequest);
@@ -396,9 +394,7 @@ describe('OpenIDConnectStrategy', function () {
     it('receives a request and userinfo with passReqToCallback: true and userinfo', function (next) {
       const strategy = new Strategy({
         client: this.client,
-        params: {
-          passReqToCallback: true,
-        },
+        passReqToCallback: true,
       }, (req, tokenset, userinfo, done) => {
         try {
           expect(req).to.be.an.instanceof(MockRequest);
@@ -437,9 +433,7 @@ describe('OpenIDConnectStrategy', function () {
     it('skips userinfo request too if no tokenset but arity (even with passReqToCallback)', function (next) {
       const strategy = new Strategy({
         client: this.client,
-        params: {
-          passReqToCallback: true,
-        },
+        passReqToCallback: true,
       }, (req, tokenset, userinfo, done) => {
         try {
           expect(req).to.be.an.instanceof(MockRequest);
