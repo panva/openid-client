@@ -57,7 +57,7 @@
     "nyc": "^11.0.1",
     "readable-mock-req": "^0.2.2",
     "sinon": "^3.0.0",
-    "timekeeper": "^1.0.0"
+    "timekeeper": "^2.0.0"
   },
   "dependencies": {
     "base64url": "^2.0.0",
