@@ -170,14 +170,14 @@ to get the params object from the koa/express/node request object or a url strin
 client.callbackParams('https://client.example.com/cb?code=code'); // => { code: 'code' };
 client.callbackParams('/cb?code=code'); // => { code: 'code' };
 
-// koa v1.x w/ koa-body
+// example koa v2.x w/ koa-body
 app.use(bodyParser({ patchNode: true }));
-app.use(function* (next) {
-  const params = client.callbackParams(this.request.req); // => parsed url query, url fragment or body object
+app.use(async function (ctx, next) {
+  const params = client.callbackParams(ctx.request.req); // => parsed url query, url fragment or body object
   // ...
 });
 
-// express w/ bodyParser
+// example express w/ bodyParser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(function (req, res, next) {
   const params = client.callbackParams(req); // => parsed url query, url fragment or body object
