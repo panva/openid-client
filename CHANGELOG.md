@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.15.0](#version-1150)
   - [Version 1.14.0](#version-1140)
   - [Version 1.13.0](#version-1130)
   - [Version 1.12.0](#version-1120)
