@@ -2257,13 +2257,41 @@ describe('Distributed and Aggregated Claims', function () {
         });
     });
 
-    it('encrypts', function () {
+    it('encrypts for issuer using issuer\'s public key', function () {
       const client = new this.issuer.Client({ client_id: 'client_id', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
 
       return client.requestObject({ state: 'foobar' })
-        .then((signed) => {
-          const parts = signed.split('.');
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
           expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'JWT' }).and.have.property('kid');
+        });
+    });
+
+    it('encrypts for issuer using pre-shared client_secret (PBES2)', function () {
+      const client = new this.issuer.Client({
+        client_id: 'client_id',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        request_object_encryption_alg: 'PBES2-HS256+A128KW',
+      });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'PBES2-HS256+A128KW', enc: 'A128CBC-HS256', cty: 'JWT' }).and.not.have.property('kid');
+        });
+    });
+
+    it('encrypts for issuer using pre-shared client_secret (A\\d{3}KW)', function () {
+      const client = new this.issuer.Client({
+        client_id: 'client_id',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        request_object_encryption_alg: 'A128KW',
+      });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'A128KW', enc: 'A128CBC-HS256', cty: 'JWT' }).and.not.have.property('kid');
         });
     });
   });
