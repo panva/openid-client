@@ -25,6 +25,11 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC END -->
 
+## Version 1.15.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.14.0...v1.15.0)
+- added support for Request Objects encrypted with symmetrical keys
+- fixed PBES2 encryption to use client_secret derived symmetrical key instead of its full octet value
+
 ## Version 1.14.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.13.0...v1.14.0)
 - added Passport Strategy `passReqToCallback` option, defaults to false
