@@ -73,7 +73,9 @@ module.exports = (issuer) => {
   router.get('/rpframe', async (ctx, next) => {
     const clientId = CLIENTS.get(ctx.session.id).client_id;
     const sessionState = TOKENS.get(ctx.session.id).session_state;
-    await ctx.render('rp_frame', { session: ctx.session, layout: false, issuer, clientId, sessionState });
+    await ctx.render('rp_frame', {
+      session: ctx.session, layout: false, issuer, clientId, sessionState,
+    });
     return next();
   });
 
@@ -199,8 +201,10 @@ module.exports = (issuer) => {
     const client = CLIENTS.get(ctx.session.id);
     const params = client.callbackParams(ctx.request.req);
 
-    TOKENS.set(ctx.session.id,
-      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state }));
+    TOKENS.set(
+      ctx.session.id,
+      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state })
+    );
 
     ctx.session.loggedIn = true;
 
@@ -217,8 +221,10 @@ module.exports = (issuer) => {
     const client = CLIENTS.get(ctx.session.id);
     const params = client.callbackParams(ctx.request.req);
 
-    TOKENS.set(ctx.session.id,
-      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state }));
+    TOKENS.set(
+      ctx.session.id,
+      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state })
+    );
 
     ctx.session.loggedIn = true;
 

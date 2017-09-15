@@ -47,8 +47,7 @@ describe('new Client()', function () {
         new issuer.Client({ // eslint-disable-line no-new
           token_endpoint_auth_method: '_jwt',
         });
-      }).to.throw(
-        'token_endpoint_auth_signing_alg_values_supported must be provided on the issuer');
+      }).to.throw('token_endpoint_auth_signing_alg_values_supported must be provided on the issuer');
     });
   });
 

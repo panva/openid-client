@@ -868,7 +868,8 @@ describe('Client', function () {
         const client = new Client({
           client_id: 'identifier',
           client_secret: 'secure',
-          token_endpoint_auth_method: 'none' });
+          token_endpoint_auth_method: 'none',
+        });
         expect(client.authFor('token')).to.eql({
           body: { client_id: 'identifier' },
         });
@@ -880,7 +881,8 @@ describe('Client', function () {
         const client = new Client({
           client_id: 'identifier',
           client_secret: 'secure',
-          token_endpoint_auth_method: 'client_secret_post' });
+          token_endpoint_auth_method: 'client_secret_post',
+        });
         expect(client.authFor('token')).to.eql({
           body: { client_id: 'identifier', client_secret: 'secure' },
         });
@@ -906,15 +908,18 @@ describe('Client', function () {
         const client = new issuer.Client({
           client_id: 'identifier',
           client_secret: 'its gotta be a long secret and i mean at least 32 characters',
-          token_endpoint_auth_method: 'client_secret_jwt' });
+          token_endpoint_auth_method: 'client_secret_jwt',
+        });
 
         return client.authFor('token').then((auth) => { this.auth = auth; });
       });
 
       it('promises a body', function () {
         expect(this.auth).to.have.property('body').and.is.an('object');
-        expect(this.auth.body).to.have.property('client_assertion_type',
-          'urn:ietf:params:oauth:client-assertion-type:jwt-bearer');
+        expect(this.auth.body).to.have.property(
+          'client_assertion_type',
+          'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+        );
         expect(this.auth.body).to.have.property('client_assertion');
       });
 
@@ -952,7 +957,8 @@ describe('Client', function () {
         return keystore.generate('EC', 'P-256').then(() => {
           const client = new issuer.Client({
             client_id: 'identifier',
-            token_endpoint_auth_method: 'private_key_jwt' }, keystore);
+            token_endpoint_auth_method: 'private_key_jwt',
+          }, keystore);
 
           return client.authFor('token').then((auth) => { this.auth = auth; });
         });
@@ -960,8 +966,10 @@ describe('Client', function () {
 
       it('promises a body', function () {
         expect(this.auth).to.have.property('body').and.is.an('object');
-        expect(this.auth.body).to.have.property('client_assertion_type',
-          'urn:ietf:params:oauth:client-assertion-type:jwt-bearer');
+        expect(this.auth.body).to.have.property(
+          'client_assertion_type',
+          'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+        );
         expect(this.auth.body).to.have.property('client_assertion');
       });
 
@@ -2157,7 +2165,7 @@ describe('Distributed and Aggregated Claims', function () {
 
     it('works with IncomingMessage (POST + pre-parsed buffer)', function () {
       const req = new MockRequest('POST', '/cb', {
-        body: new Buffer('code=code'),
+        body: Buffer.from('code=code'),
       });
       expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
     });
@@ -2228,7 +2236,9 @@ describe('Distributed and Aggregated Claims', function () {
         .then((signed) => {
           const parts = signed.split('.');
           expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'none', typ: 'JWT' });
-          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({ iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar' });
+          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({
+            iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar',
+          });
           expect(parts[2]).to.equal('');
         });
     });
@@ -2240,7 +2250,9 @@ describe('Distributed and Aggregated Claims', function () {
         .then((signed) => {
           const parts = signed.split('.');
           expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'HS256', typ: 'JWT' });
-          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({ iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar' });
+          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({
+            iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar',
+          });
           expect(parts[2].length).to.be.ok;
         });
     });
@@ -2252,7 +2264,9 @@ describe('Distributed and Aggregated Claims', function () {
         .then((signed) => {
           const parts = signed.split('.');
           expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RS256', typ: 'JWT' }).and.have.property('kid');
-          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({ iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar' });
+          expect(JSON.parse(base64url.decode(parts[1]))).to.eql({
+            iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar',
+          });
           expect(parts[2].length).to.be.ok;
         });
     });
