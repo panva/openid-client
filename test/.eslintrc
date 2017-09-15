@@ -1,24 +1,12 @@
 {
-  "extends": "airbnb-base",
   "env": {
     "mocha": true
   },
   "rules": {
-    "comma-dangle": ["error", {
-      arrays: "always-multiline",
-      objects: "always-multiline",
-      functions: "never"
-    }],
     "arrow-body-style": "off",
     "func-names": "off",
     "import/no-extraneous-dependencies": "off",
-    "no-empty": ["error", { "allowEmptyCatch": true }],
-    "no-param-reassign": ["error", { "props": false }],
     "no-unused-expressions": "off",
-    "prefer-destructuring": "off",
-    "prefer-arrow-callback": "off",
-    "prefer-rest-params": "off",
-    "prefer-spread": "off",
-    "strict": "off"
+    "prefer-arrow-callback": "off"
   }
 }

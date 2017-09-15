@@ -2165,7 +2165,7 @@ describe('Distributed and Aggregated Claims', function () {
 
     it('works with IncomingMessage (POST + pre-parsed buffer)', function () {
       const req = new MockRequest('POST', '/cb', {
-        body: Buffer.from('code=code'),
+        body: new Buffer('code=code'),
       });
       expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
     });

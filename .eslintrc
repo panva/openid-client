@@ -6,6 +6,7 @@
       objects: "always-multiline",
       functions: "never"
     }],
+    "no-buffer-constructor": "off",
     "no-underscore-dangle": ["error", { "allow": ["_claim_names", "_claim_sources"] }],
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-param-reassign": ["error", { "props": false }],
