@@ -21,7 +21,7 @@ describe('TokenSet', function () {
     expect(ts.expired()).to.be.false;
   });
 
-  it('expired token sets', function () {
+  it('expired token sets expires_in to 0', function () {
     const ts = new TokenSet({
       expires_in: -30,
     });
@@ -29,6 +29,26 @@ describe('TokenSet', function () {
     expect(ts).to.have.property('expires_at', now() - 30);
     expect(ts).to.have.property('expires_in', 0);
     expect(ts.expired()).to.be.true;
+  });
+
+  it('sets the refresh_expire_at automatically from refresh_expires_in', function () {
+    const ts = new TokenSet({
+      refresh_expires_in: 300,
+    });
+
+    expect(ts).to.have.property('refresh_expires_at', now() + 300);
+    expect(ts).to.have.property('refresh_expires_in', 300);
+    expect(ts.refresh_expired()).to.be.false;
+  });
+
+  it('expired refresh_token sets refresh_expires_in to 0', function () {
+    const ts = new TokenSet({
+      refresh_expires_in: -30,
+    });
+
+    expect(ts).to.have.property('refresh_expires_at', now() - 30);
+    expect(ts).to.have.property('refresh_expires_in', 0);
+    expect(ts.refresh_expired()).to.be.true;
   });
 
   it('provides a #claims getter', function () {
