@@ -65,7 +65,7 @@
     "lodash": "^4.13.1",
     "lru-cache": "^4.0.1",
     "node-jose": "^0.10.0",
-    "oidc-token-hash": "^1.0.0",
+    "oidc-token-hash": "^2.0.0",
     "uuid": "^3.0.0"
   },
   "nyc": {
