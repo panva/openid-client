@@ -21,7 +21,7 @@ describe('TokenSet', function () {
     expect(ts.expired()).to.be.false;
   });
 
-  it('expired token sets', function () {
+  it('expired token sets expires_in to 0', function () {
     const ts = new TokenSet({
       expires_in: -30,
     });
