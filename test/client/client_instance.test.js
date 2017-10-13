@@ -1590,6 +1590,62 @@ describe('Client#validateIdToken', function () {
       });
   });
 
+  it('validates state presence when s_hash is returned', function () {
+    const s_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
+
+    return new this.IdToken(this.keystore.get(), 'RS256', {
+      s_hash,
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    })
+      .then((token) => {
+        return this.client.authorizationCallback(null, { id_token: token });
+      })
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 'cannot verify s_hash, state not provided');
+      });
+  });
+
+  it('validates s_hash', function () {
+    const state = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+    const s_hash = 'foobar'; // eslint-disable-line camelcase
+
+    return new this.IdToken(this.keystore.get(), 'RS256', {
+      s_hash,
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    })
+      .then((token) => {
+        return this.client.authorizationCallback(null, { id_token: token, state }, { state });
+      })
+      .then(fail, (error) => {
+        expect(error).to.have.property('message', 's_hash mismatch');
+      });
+  });
+
+  it('passes with the right s_hash', function () {
+    const state = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+    const s_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
+
+    return new this.IdToken(this.keystore.get(), 'RS256', {
+      s_hash,
+      iss: this.issuer.issuer,
+      sub: 'userId',
+      aud: this.client.client_id,
+      exp: now() + 3600,
+      iat: now(),
+    })
+      .then((token) => {
+        return this.client.authorizationCallback(null, { id_token: token, state }, { state });
+      });
+  });
+
   it('fails with the wrong at_hash', function () {
     const access_token = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
     const at_hash = 'notvalid77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
