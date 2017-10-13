@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.16.0](#version-1160)
   - [Version 1.15.0](#version-1150)
   - [Version 1.14.0](#version-1140)
   - [Version 1.13.0](#version-1130)
@@ -25,6 +26,11 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.16.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.15.0...v1.15.1)
+- added `s_hash` value validation support for ID Tokens returned by authorization endpoint
+- fixed edge cases where valid `_hash` but from invalid sha-length was accepted
 
 ## Version 1.15.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.14.0...v1.15.0)
