@@ -1,14 +1,11 @@
 language: node_js
 dist: trusty
 sudo: false
-addons:
-  apt:
-    packages:
-      - bc
 node_js:
   - v4.0.0
   - lts/argon
   - lts/boron
+  - lts/carbon
   - stable
 script:
   - npm run coverage
