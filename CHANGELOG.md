@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 1.17.0](#version-1170)
   - [Version 1.16.0](#version-1160)
   - [Version 1.15.0](#version-1150)
   - [Version 1.14.0](#version-1140)
@@ -26,6 +27,11 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 1.17.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.16.0...v1.17.0)
+- now uses `client_secret_post` as default for Issuer instances that do not support
+  `client_secret_basic` but do signal support for `client_secret_post` in their discovery document
 
 ## Version 1.16.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.15.0...v1.16.0)
