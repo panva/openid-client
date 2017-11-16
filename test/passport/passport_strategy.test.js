@@ -24,6 +24,7 @@ describe('OpenIDConnectStrategy', function () {
       jwks_uri: 'https://op.example.com/jwks',
       token_endpoint: 'https://op.example.com/token',
       userinfo_endpoint: 'https://op.example.com/userinfo',
+      code_challenge_methods_supported: ['plain', 'S256'],
     });
 
     this.client = new this.issuer.Client({
@@ -131,6 +132,99 @@ describe('OpenIDConnectStrategy', function () {
       expect(target).to.include('response_mode=form_post');
       expect(req.session).to.have.property('oidc:op.example.com');
       expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce');
+    });
+
+    describe('use pkce', () => {
+      it('can be set to use PKCE with boolean', function () {
+        this.issuer.metadata.code_challenge_methods_supported = ['S256', 'plain'];
+        const s256 = new Strategy({ // eslint-disable-line no-new
+          client: this.client,
+          usePKCE: true,
+        }, () => {});
+        expect(s256).to.have.property('_usePKCE', 'S256');
+
+        this.issuer.metadata.code_challenge_methods_supported = ['plain'];
+        const plain = new Strategy({ // eslint-disable-line no-new
+          client: this.client,
+          usePKCE: true,
+        }, () => {});
+        expect(plain).to.have.property('_usePKCE', 'plain');
+
+        ['foobar', undefined, false].forEach((invalidDiscoveryValue) => {
+          this.issuer.metadata.code_challenge_methods_supported = invalidDiscoveryValue;
+          expect(() => {
+            new Strategy({ // eslint-disable-line no-new
+              client: this.client,
+              usePKCE: true,
+            }, () => {});
+          }).to.throw('code_challenge_methods_supported is not properly set on issuer');
+        });
+
+        this.issuer.metadata.code_challenge_methods_supported = [];
+        expect(() => {
+          new Strategy({ // eslint-disable-line no-new
+            client: this.client,
+            usePKCE: true,
+          }, () => {});
+        }).to.throw('issuer code_challenge_methods_supported is empty');
+
+        this.issuer.metadata.code_challenge_methods_supported = ['not supported'];
+        expect(() => {
+          new Strategy({ // eslint-disable-line no-new
+            client: this.client,
+            usePKCE: true,
+          }, () => {});
+        }).to.throw('neither S256 or plain code_challenge_method is supported by the issuer');
+      });
+
+      it('will throw when explictly provided value is not supported', function () {
+        expect(() => {
+          new Strategy({ // eslint-disable-line no-new
+            client: this.client,
+            usePKCE: 'foobar',
+          }, () => {});
+        }).to.throw('foobar is not valid/implemented PKCE code_challenge_method');
+      });
+
+      it('can be set to use PKCE (S256)', function () {
+        const strategy = new Strategy({
+          client: this.client,
+          usePKCE: 'S256',
+        }, () => {});
+
+        const req = new MockRequest('GET', '/login/oidc');
+        req.session = {};
+
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
+
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include('code_challenge_method=S256');
+        expect(target).to.include('code_challenge=');
+        expect(req.session).to.have.property('oidc:op.example.com');
+        expect(req.session['oidc:op.example.com']).to.have.property('code_verifier');
+      });
+
+      it('can be set to use PKCE (plain)', function () {
+        const strategy = new Strategy({
+          client: this.client,
+          usePKCE: 'plain',
+        }, () => {});
+
+        const req = new MockRequest('GET', '/login/oidc');
+        req.session = {};
+
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
+
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).not.to.include('code_challenge_method');
+        expect(target).to.include('code_challenge=');
+        expect(req.session).to.have.property('oidc:op.example.com');
+        expect(req.session['oidc:op.example.com']).to.have.property('code_verifier');
+      });
     });
 
     it('can have session key specifed', function () {

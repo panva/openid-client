@@ -378,7 +378,11 @@ const params = {
 const passReqToCallback = false; // optional, defaults to false, when true req is passed as a first
                                  // argument to verify fn
 
-passport.use('oidc', new Strategy({ client, [params], [passReqToCallback] }, (tokenset, userinfo, done) => {
+const usePKCE = true; // optional, defaults to false, when true the code_challenge_method will be
+                      // resolved from the issuer configuration, instead of true you may provide
+                      // any of the supported values directly, i.e. "S256" (recommended) or "plain"
+
+passport.use('oidc', new Strategy({ client, [params], [passReqToCallback], [usePKCE] }, (tokenset, userinfo, done) => {
   console.log('tokenset', tokenset);
   console.log('access_token', tokenset.access_token);
   console.log('id_token', tokenset.id_token);
