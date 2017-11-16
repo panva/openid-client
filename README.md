@@ -399,6 +399,39 @@ app.get('/auth', passport.authenticate('oidc', [options]));
 app.get('/auth/cb', passport.authenticate('oidc', { successRedirect: '/', failureRedirect: '/login' }));
 ```
 
+### Passport with PKCE
+The Client instance must have the property `token_endpoint_auth_method` setted to `none`.
+See [Proof Key for Code Exchange by OAuth Public Clients][feature-pkce] spec.
+
+
+```js
+const client = new issuer.Client({
+  client_id: 'zELcpfANLqY7Oqas',
+  token_endpoint_auth_method: 'none'
+});
+
+const Strategy = require('openid-client').Strategy;
+
+passport.use('oidc', new Strategy({ client, [params], [passReqToCallback] }, (tokenset, userinfo, done) => {
+    //... same as the previous example
+}));
+
+const verifier = 'foo'; // random PKCE verifier
+
+// start authentication request
+app.get('/auth', passport.authenticate('oidc', {
+  code_challenge: yourChallengeFunction(verifier),
+  code_challenge_method: 'S256' // or 'plain'
+}));
+
+// authentication callback
+app.get('/auth/cb', passport.authenticate('oidc', {
+    code_verifier: verifier,
+    successRedirect: '/',
+    failureRedirect: '/login'
+}));
+```
+
 ## Configuration
 
 ### Allow for system clock skew
@@ -445,6 +478,7 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 [feature-registration]: http://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
+[feature-pkce]: https://tools.ietf.org/html/rfc7636
 [got-library]: https://github.com/sindresorhus/got
 [signed-userinfo]: http://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
 [openid-certified-link]: http://openid.net/certification/
