@@ -28,6 +28,11 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC END -->
 
+## Version 1.18.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.17.0...v1.18.0)
+- added option for the passport strategy to use PKCE
+- updated http request library `got` dependency
+
 ## Version 1.17.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.16.0...v1.17.0)
 - now uses `client_secret_post` as default for Issuer instances that do not support
