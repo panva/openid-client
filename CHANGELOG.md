@@ -5,7 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
-  - [Version 1.18.0](#version-1180)
+  - [Version 1.18.x](#version-118x)
   - [Version 1.17.0](#version-1170)
   - [Version 1.16.0](#version-1160)
   - [Version 1.15.0](#version-1150)
@@ -29,7 +29,13 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC END -->
 
-## Version 1.18.0
+## Version 1.18.x
+### Version 1.18.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.18.0...v1.18.1)
+- fixed the order of several `assert.equal` calls to swap actual/expected descriptions
+- added assertion error messages for passport strategy
+
+### Version 1.18.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.17.0...v1.18.0)
 - added option for the passport strategy to use PKCE
 - updated http request library `got` dependency
