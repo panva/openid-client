@@ -30,6 +30,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.18.x
+### Version 1.18.2
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.18.1...v1.18.2)
+- bumped node-jose dependency
+
 ### Version 1.18.1
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.18.0...v1.18.1)
 - fixed the order of several `assert.equal` calls to swap actual/expected descriptions

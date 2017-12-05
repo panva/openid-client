@@ -1,6 +1,6 @@
 {
   "name": "openid-client",
-  "version": "1.18.1",
+  "version": "1.18.2",
   "description": "OpenID Connect Relying Party (RP, Client) implementation for Node.js servers, supports passportjs",
   "main": "lib/index.js",
   "scripts": {
@@ -54,6 +54,7 @@
     "mocha": "^4.0.0",
     "nock": "^9.0.14",
     "nyc": "^11.0.1",
+    "pre-commit": "^1.2.2",
     "readable-mock-req": "^0.2.2",
     "sinon": "^4.0.0",
     "timekeeper": "^2.0.0"
@@ -64,7 +65,7 @@
     "got": "^8.0.0",
     "lodash": "^4.13.1",
     "lru-cache": "^4.0.1",
-    "node-jose": "^0.10.0",
+    "node-jose": "^0.11.0",
     "oidc-token-hash": "^2.0.0",
     "uuid": "^3.0.0"
   },
