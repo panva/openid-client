@@ -56,6 +56,7 @@
     "nyc": "^11.0.1",
     "pre-commit": "^1.2.2",
     "readable-mock-req": "^0.2.2",
+    "request": "^2.83.0",
     "sinon": "^4.0.0",
     "timekeeper": "^2.0.0"
   },

@@ -7,189 +7,235 @@ const expect = require('chai').expect;
 const Issuer = require('../../lib').Issuer;
 const Strategy = require('../../lib').Strategy;
 
-describe('OpenIDConnectStrategy', function () {
-  before(function () {
-    this.origIncomingMessage = http.IncomingMessage;
-    http.IncomingMessage = MockRequest;
-  });
-
-  after(function () {
-    http.IncomingMessage = this.origIncomingMessage;
-  });
-
-  beforeEach(function () {
-    this.issuer = new Issuer({
-      issuer: 'https://op.example.com',
-      authorization_endpoint: 'https://op.example.com/auth',
-      jwks_uri: 'https://op.example.com/jwks',
-      token_endpoint: 'https://op.example.com/token',
-      userinfo_endpoint: 'https://op.example.com/userinfo',
-      code_challenge_methods_supported: ['plain', 'S256'],
+['useGot', 'useRequest'].forEach((httpProvider) => {
+  describe(`OpenIDConnectStrategy - using ${httpProvider.substring(3).toLowerCase()}`, function () {
+    before(function () {
+      Issuer[httpProvider]();
     });
 
-    this.client = new this.issuer.Client({
-      client_id: 'foo',
-      client_secret: 'barbaz',
-      respose_types: ['code'],
-      redirect_uris: ['http://rp.example.com/cb'],
+    before(function () {
+      this.origIncomingMessage = http.IncomingMessage;
+      http.IncomingMessage = MockRequest;
     });
-  });
 
-  it('checks for session presence', function (next) {
-    const strategy = new Strategy(this.client, () => {});
+    after(function () {
+      http.IncomingMessage = this.origIncomingMessage;
+    });
 
-    const req = new MockRequest('GET', '/login/oidc');
+    beforeEach(function () {
+      this.issuer = new Issuer({
+        issuer: 'https://op.example.com',
+        authorization_endpoint: 'https://op.example.com/auth',
+        jwks_uri: 'https://op.example.com/jwks',
+        token_endpoint: 'https://op.example.com/token',
+        userinfo_endpoint: 'https://op.example.com/userinfo',
+        code_challenge_methods_supported: ['plain', 'S256'],
+      });
 
-    strategy.error = (error) => {
-      try {
-        expect(error).to.be.an.instanceof(Error);
-        expect(error.message).to.match(/session/);
-        next();
-      } catch (err) {
-        next(err);
-      }
-    };
-    strategy.authenticate(req);
-  });
+      this.client = new this.issuer.Client({
+        client_id: 'foo',
+        client_secret: 'barbaz',
+        respose_types: ['code'],
+        redirect_uris: ['http://rp.example.com/cb'],
+      });
+    });
 
-  describe('initate', function () {
-    it('starts authentication requests for GETs', function () {
+    it('checks for session presence', function (next) {
       const strategy = new Strategy(this.client, () => {});
 
       const req = new MockRequest('GET', '/login/oidc');
-      req.session = {};
 
-      strategy.redirect = sinon.spy();
+      strategy.error = (error) => {
+        try {
+          expect(error).to.be.an.instanceof(Error);
+          expect(error.message).to.match(/session/);
+          next();
+        } catch (err) {
+          next(err);
+        }
+      };
       strategy.authenticate(req);
-
-      expect(strategy.redirect.calledOnce).to.be.true;
-      const target = strategy.redirect.firstCall.args[0];
-      expect(target).to.include('redirect_uri=');
-      expect(target).to.include('scope=');
-      expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state');
     });
 
-    it('starts authentication requests for POSTs', function () {
-      const strategy = new Strategy(this.client, () => {});
+    describe('initate', function () {
+      it('starts authentication requests for GETs', function () {
+        const strategy = new Strategy(this.client, () => {});
 
-      const req = new MockRequest('POST', '/login/oidc');
-      req.session = {};
-      req.body = {};
+        const req = new MockRequest('GET', '/login/oidc');
+        req.session = {};
 
-      strategy.redirect = sinon.spy();
-      strategy.authenticate(req);
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
 
-      expect(strategy.redirect.calledOnce).to.be.true;
-      const target = strategy.redirect.firstCall.args[0];
-      expect(target).to.include('redirect_uri=');
-      expect(target).to.include('scope=');
-      expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state');
-    });
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include('redirect_uri=');
+        expect(target).to.include('scope=');
+        expect(req.session).to.have.property('oidc:op.example.com');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state');
+      });
 
-    it('can have redirect_uri and scope specified', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        params: {
-          redirect_uri: 'https://example.com/cb',
-          scope: 'openid profile',
-        },
-      }, () => {});
+      it('starts authentication requests for POSTs', function () {
+        const strategy = new Strategy(this.client, () => {});
 
-      const req = new MockRequest('GET', '/login/oidc');
-      req.session = {};
+        const req = new MockRequest('POST', '/login/oidc');
+        req.session = {};
+        req.body = {};
 
-      strategy.redirect = sinon.spy();
-      strategy.authenticate(req);
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
 
-      expect(strategy.redirect.calledOnce).to.be.true;
-      const target = strategy.redirect.firstCall.args[0];
-      expect(target).to.include(`redirect_uri=${encodeURIComponent('https://example.com/cb')}`);
-      expect(target).to.include('scope=openid%20profile');
-    });
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include('redirect_uri=');
+        expect(target).to.include('scope=');
+        expect(req.session).to.have.property('oidc:op.example.com');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state');
+      });
 
-    it('automatically includes nonce for where it applies', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        params: {
-          response_type: 'code id_token token',
-          response_mode: 'form_post',
-        },
-      }, () => {});
-
-      const req = new MockRequest('GET', '/login/oidc');
-      req.session = {};
-
-      strategy.redirect = sinon.spy();
-      strategy.authenticate(req);
-
-      expect(strategy.redirect.calledOnce).to.be.true;
-      const target = strategy.redirect.firstCall.args[0];
-      expect(target).to.include('redirect_uri=');
-      expect(target).to.include('scope=');
-      expect(target).to.include('nonce=');
-      expect(target).to.include('response_mode=form_post');
-      expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce');
-    });
-
-    describe('use pkce', () => {
-      it('can be set to use PKCE with boolean', function () {
-        this.issuer.metadata.code_challenge_methods_supported = ['S256', 'plain'];
-        const s256 = new Strategy({ // eslint-disable-line no-new
+      it('can have redirect_uri and scope specified', function () {
+        const strategy = new Strategy({
           client: this.client,
-          usePKCE: true,
+          params: {
+            redirect_uri: 'https://example.com/cb',
+            scope: 'openid profile',
+          },
         }, () => {});
-        expect(s256).to.have.property('_usePKCE', 'S256');
 
-        this.issuer.metadata.code_challenge_methods_supported = ['plain'];
-        const plain = new Strategy({ // eslint-disable-line no-new
+        const req = new MockRequest('GET', '/login/oidc');
+        req.session = {};
+
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
+
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include(`redirect_uri=${encodeURIComponent('https://example.com/cb')}`);
+        expect(target).to.include('scope=openid%20profile');
+      });
+
+      it('automatically includes nonce for where it applies', function () {
+        const strategy = new Strategy({
           client: this.client,
-          usePKCE: true,
+          params: {
+            response_type: 'code id_token token',
+            response_mode: 'form_post',
+          },
         }, () => {});
-        expect(plain).to.have.property('_usePKCE', 'plain');
 
-        ['foobar', undefined, false].forEach((invalidDiscoveryValue) => {
-          this.issuer.metadata.code_challenge_methods_supported = invalidDiscoveryValue;
+        const req = new MockRequest('GET', '/login/oidc');
+        req.session = {};
+
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
+
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include('redirect_uri=');
+        expect(target).to.include('scope=');
+        expect(target).to.include('nonce=');
+        expect(target).to.include('response_mode=form_post');
+        expect(req.session).to.have.property('oidc:op.example.com');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce');
+      });
+
+      describe('use pkce', () => {
+        it('can be set to use PKCE with boolean', function () {
+          this.issuer.metadata.code_challenge_methods_supported = ['S256', 'plain'];
+          const s256 = new Strategy({ // eslint-disable-line no-new
+            client: this.client,
+            usePKCE: true,
+          }, () => {});
+          expect(s256).to.have.property('_usePKCE', 'S256');
+
+          this.issuer.metadata.code_challenge_methods_supported = ['plain'];
+          const plain = new Strategy({ // eslint-disable-line no-new
+            client: this.client,
+            usePKCE: true,
+          }, () => {});
+          expect(plain).to.have.property('_usePKCE', 'plain');
+
+          ['foobar', undefined, false].forEach((invalidDiscoveryValue) => {
+            this.issuer.metadata.code_challenge_methods_supported = invalidDiscoveryValue;
+            expect(() => {
+              new Strategy({ // eslint-disable-line no-new
+                client: this.client,
+                usePKCE: true,
+              }, () => {});
+            }).to.throw('code_challenge_methods_supported is not properly set on issuer');
+          });
+
+          this.issuer.metadata.code_challenge_methods_supported = [];
           expect(() => {
             new Strategy({ // eslint-disable-line no-new
               client: this.client,
               usePKCE: true,
             }, () => {});
-          }).to.throw('code_challenge_methods_supported is not properly set on issuer');
+          }).to.throw('issuer code_challenge_methods_supported is empty');
+
+          this.issuer.metadata.code_challenge_methods_supported = ['not supported'];
+          expect(() => {
+            new Strategy({ // eslint-disable-line no-new
+              client: this.client,
+              usePKCE: true,
+            }, () => {});
+          }).to.throw('neither S256 or plain code_challenge_method is supported by the issuer');
         });
 
-        this.issuer.metadata.code_challenge_methods_supported = [];
-        expect(() => {
-          new Strategy({ // eslint-disable-line no-new
-            client: this.client,
-            usePKCE: true,
-          }, () => {});
-        }).to.throw('issuer code_challenge_methods_supported is empty');
+        it('will throw when explictly provided value is not supported', function () {
+          expect(() => {
+            new Strategy({ // eslint-disable-line no-new
+              client: this.client,
+              usePKCE: 'foobar',
+            }, () => {});
+          }).to.throw('foobar is not valid/implemented PKCE code_challenge_method');
+        });
 
-        this.issuer.metadata.code_challenge_methods_supported = ['not supported'];
-        expect(() => {
-          new Strategy({ // eslint-disable-line no-new
+        it('can be set to use PKCE (S256)', function () {
+          const strategy = new Strategy({
             client: this.client,
-            usePKCE: true,
+            usePKCE: 'S256',
           }, () => {});
-        }).to.throw('neither S256 or plain code_challenge_method is supported by the issuer');
+
+          const req = new MockRequest('GET', '/login/oidc');
+          req.session = {};
+
+          strategy.redirect = sinon.spy();
+          strategy.authenticate(req);
+
+          expect(strategy.redirect.calledOnce).to.be.true;
+          const target = strategy.redirect.firstCall.args[0];
+          expect(target).to.include('code_challenge_method=S256');
+          expect(target).to.include('code_challenge=');
+          expect(req.session).to.have.property('oidc:op.example.com');
+          expect(req.session['oidc:op.example.com']).to.have.property('code_verifier');
+        });
+
+        it('can be set to use PKCE (plain)', function () {
+          const strategy = new Strategy({
+            client: this.client,
+            usePKCE: 'plain',
+          }, () => {});
+
+          const req = new MockRequest('GET', '/login/oidc');
+          req.session = {};
+
+          strategy.redirect = sinon.spy();
+          strategy.authenticate(req);
+
+          expect(strategy.redirect.calledOnce).to.be.true;
+          const target = strategy.redirect.firstCall.args[0];
+          expect(target).not.to.include('code_challenge_method');
+          expect(target).to.include('code_challenge=');
+          expect(req.session).to.have.property('oidc:op.example.com');
+          expect(req.session['oidc:op.example.com']).to.have.property('code_verifier');
+        });
       });
 
-      it('will throw when explictly provided value is not supported', function () {
-        expect(() => {
-          new Strategy({ // eslint-disable-line no-new
-            client: this.client,
-            usePKCE: 'foobar',
-          }, () => {});
-        }).to.throw('foobar is not valid/implemented PKCE code_challenge_method');
-      });
-
-      it('can be set to use PKCE (S256)', function () {
+      it('can have session key specifed', function () {
         const strategy = new Strategy({
           client: this.client,
-          usePKCE: 'S256',
+          sessionKey: 'oidc:op.example.com:foo',
         }, () => {});
 
         const req = new MockRequest('GET', '/login/oidc');
@@ -198,365 +244,325 @@ describe('OpenIDConnectStrategy', function () {
         strategy.redirect = sinon.spy();
         strategy.authenticate(req);
 
-        expect(strategy.redirect.calledOnce).to.be.true;
-        const target = strategy.redirect.firstCall.args[0];
-        expect(target).to.include('code_challenge_method=S256');
-        expect(target).to.include('code_challenge=');
-        expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.property('code_verifier');
+        expect(req.session).to.have.property('oidc:op.example.com:foo');
+        expect(req.session['oidc:op.example.com:foo']).to.have.keys('state');
+      });
+    });
+
+    describe('callback', function () {
+      it('triggers the verify function and then the success one', function (next) {
+        const ts = { foo: 'bar' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
+
+        const strategy = new Strategy(this.client, (tokenset, done) => {
+          expect(tokenset).to.equal(ts);
+          done(null, tokenset);
+        });
+
+        strategy.success = () => { next(); };
+
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foobar&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+          },
+        };
+
+        strategy.authenticate(req);
       });
 
-      it('can be set to use PKCE (plain)', function () {
-        const strategy = new Strategy({
-          client: this.client,
-          usePKCE: 'plain',
-        }, () => {});
+      it('triggers the error function when server_error is encountered', function (next) {
+        const strategy = new Strategy(this.client, () => {});
 
-        const req = new MockRequest('GET', '/login/oidc');
+        const req = new MockRequest('GET', '/login/oidc/callback?error=server_error');
         req.session = {};
 
-        strategy.redirect = sinon.spy();
+        strategy.error = (error) => {
+          try {
+            expect(error.error).to.equal('server_error');
+            next();
+          } catch (err) {
+            next(err);
+          }
+        };
+
         strategy.authenticate(req);
-
-        expect(strategy.redirect.calledOnce).to.be.true;
-        const target = strategy.redirect.firstCall.args[0];
-        expect(target).not.to.include('code_challenge_method');
-        expect(target).to.include('code_challenge=');
-        expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.property('code_verifier');
-      });
-    });
-
-    it('can have session key specifed', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        sessionKey: 'oidc:op.example.com:foo',
-      }, () => {});
-
-      const req = new MockRequest('GET', '/login/oidc');
-      req.session = {};
-
-      strategy.redirect = sinon.spy();
-      strategy.authenticate(req);
-
-      expect(req.session).to.have.property('oidc:op.example.com:foo');
-      expect(req.session['oidc:op.example.com:foo']).to.have.keys('state');
-    });
-  });
-
-  describe('callback', function () {
-    it('triggers the verify function and then the success one', function (next) {
-      const ts = { foo: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
       });
 
-      const strategy = new Strategy(this.client, (tokenset, done) => {
-        expect(tokenset).to.equal(ts);
-        done(null, tokenset);
+      it('triggers the error function when non oidc error is encountered', function (next) {
+        const strategy = new Strategy(this.client, () => {});
+
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.reject(new Error('callback error'));
+        });
+
+        const req = new MockRequest('GET', '/login/oidc/callback?code=code');
+        req.session = {};
+
+        strategy.error = (error) => {
+          try {
+            expect(error.message).to.equal('callback error');
+            next();
+          } catch (err) {
+            next(err);
+          }
+        };
+
+        strategy.authenticate(req);
       });
 
-      strategy.success = () => { next(); };
+      it('triggers the fail function when oidc error is encountered', function (next) {
+        const strategy = new Strategy(this.client, () => {});
 
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foobar&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          nonce: 'nonce',
-          state: 'state',
-        },
-      };
+        const req = new MockRequest('GET', '/login/oidc/callback?error=login_required&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            state: 'state',
+          },
+        };
 
-      strategy.authenticate(req);
-    });
+        strategy.fail = (error) => {
+          try {
+            expect(error.message).to.equal('login_required');
+            next();
+          } catch (err) {
+            next(err);
+          }
+        };
 
-    it('triggers the error function when server_error is encountered', function (next) {
-      const strategy = new Strategy(this.client, () => {});
+        strategy.authenticate(req);
+      });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?error=server_error');
-      req.session = {};
+      it('triggers the error function for errors during verify', function (next) {
+        const strategy = new Strategy(this.client, (tokenset, done) => {
+          done(new Error('user find error'));
+        });
 
-      strategy.error = (error) => {
-        try {
-          expect(error.error).to.equal('server_error');
+        const ts = { foo: 'bar' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
+
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            state: 'state',
+          },
+        };
+
+        strategy.error = (error) => {
+          try {
+            expect(error.message).to.equal('user find error');
+            next();
+          } catch (err) {
+            next(err);
+          }
+        };
+
+        strategy.authenticate(req);
+      });
+
+      it('triggers the fail function when verify yields no account', function (next) {
+        const strategy = new Strategy(this.client, (tokenset, done) => {
+          done();
+        });
+
+        const ts = { foo: 'bar' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
+
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+          },
+        };
+
+        strategy.fail = () => {
           next();
-        } catch (err) {
-          next(err);
-        }
-      };
+        };
 
-      strategy.authenticate(req);
-    });
-
-    it('triggers the error function when non oidc error is encountered', function (next) {
-      const strategy = new Strategy(this.client, () => {});
-
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.reject(new Error('callback error'));
+        strategy.authenticate(req);
       });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?code=code');
-      req.session = {};
+      it('does userinfo request too if part of verify arity and resulting tokenset', function (next) {
+        const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
+          try {
+            expect(tokenset).to.be.ok;
+            expect(userinfo).to.be.ok;
+            done(null, { sub: 'foobar' });
+          } catch (err) {
+            next(err);
+          }
+        });
 
-      strategy.error = (error) => {
-        try {
-          expect(error.message).to.equal('callback error');
+        const ts = { access_token: 'foo' };
+        const ui = { sub: 'bar' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
+        sinon.stub(this.client, 'userinfo').callsFake(function () {
+          return Promise.resolve(ui);
+        });
+
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+          },
+        };
+
+        strategy.success = () => {
           next();
-        } catch (err) {
-          next(err);
-        }
-      };
+        };
 
-      strategy.authenticate(req);
-    });
+        strategy.authenticate(req);
+      });
 
-    it('triggers the fail function when oidc error is encountered', function (next) {
-      const strategy = new Strategy(this.client, () => {});
+      it('skips userinfo request too if no tokenset but arity', function (next) {
+        const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
+          try {
+            expect(tokenset).to.be.ok;
+            expect(userinfo).to.be.undefined;
+            done(null, { sub: 'foobar' });
+          } catch (err) {
+            next(err);
+          }
+        });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?error=login_required&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          state: 'state',
-        },
-      };
+        const ts = { id_token: 'foo' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
 
-      strategy.fail = (error) => {
-        try {
-          expect(error.message).to.equal('login_required');
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+          },
+        };
+
+        strategy.success = () => {
           next();
-        } catch (err) {
-          next(err);
-        }
-      };
+        };
 
-      strategy.authenticate(req);
-    });
-
-    it('triggers the error function for errors during verify', function (next) {
-      const strategy = new Strategy(this.client, (tokenset, done) => {
-        done(new Error('user find error'));
+        strategy.authenticate(req);
       });
 
-      const ts = { foo: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
-      });
+      it('receives a request as the first parameter if passReqToCallback is set', function (next) {
+        const strategy = new Strategy({
+          client: this.client,
+          passReqToCallback: true,
+        }, (req, tokenset, done) => {
+          try {
+            expect(req).to.be.an.instanceof(MockRequest);
+            expect(tokenset).to.be.ok;
+            done(null, { sub: 'foobar' });
+          } catch (err) {
+            next(err);
+          }
+        });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          state: 'state',
-        },
-      };
+        const ts = { id_token: 'foo' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
 
-      strategy.error = (error) => {
-        try {
-          expect(error.message).to.equal('user find error');
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+          },
+        };
+
+        strategy.success = () => {
           next();
-        } catch (err) {
-          next(err);
-        }
-      };
+        };
 
-      strategy.authenticate(req);
-    });
-
-    it('triggers the fail function when verify yields no account', function (next) {
-      const strategy = new Strategy(this.client, (tokenset, done) => {
-        done();
+        strategy.authenticate(req);
       });
 
-      const ts = { foo: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
+      it('receives a request and userinfo with passReqToCallback: true and userinfo', function (next) {
+        const strategy = new Strategy({
+          client: this.client,
+          passReqToCallback: true,
+        }, (req, tokenset, userinfo, done) => {
+          try {
+            expect(req).to.be.an.instanceof(MockRequest);
+            expect(tokenset).to.be.ok;
+            expect(userinfo).to.be.ok;
+            done(null, { sub: 'foobar' });
+          } catch (err) {
+            next(err);
+          }
+        });
+
+        const ts = { access_token: 'foo' };
+        const ui = { sub: 'bar' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
+        sinon.stub(this.client, 'userinfo').callsFake(function () {
+          return Promise.resolve(ui);
+        });
+
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+          },
+        };
+
+        strategy.success = () => {
+          next();
+        };
+
+        strategy.authenticate(req);
       });
 
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          nonce: 'nonce',
-          state: 'state',
-        },
-      };
+      it('skips userinfo request too if no tokenset but arity (even with passReqToCallback)', function (next) {
+        const strategy = new Strategy({
+          client: this.client,
+          passReqToCallback: true,
+        }, (req, tokenset, userinfo, done) => {
+          try {
+            expect(req).to.be.an.instanceof(MockRequest);
+            expect(tokenset).to.be.ok;
+            expect(userinfo).to.be.undefined;
+            done(null, { sub: 'foobar' });
+          } catch (err) {
+            next(err);
+          }
+        });
 
-      strategy.fail = () => {
-        next();
-      };
+        const ts = { id_token: 'foo' };
+        sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
+          return Promise.resolve(ts);
+        });
 
-      strategy.authenticate(req);
-    });
+        const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+          },
+        };
 
-    it('does userinfo request too if part of verify arity and resulting tokenset', function (next) {
-      const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
-        try {
-          expect(tokenset).to.be.ok;
-          expect(userinfo).to.be.ok;
-          done(null, { sub: 'foobar' });
-        } catch (err) {
-          next(err);
-        }
+        strategy.success = () => {
+          next();
+        };
+
+        strategy.authenticate(req);
       });
-
-      const ts = { access_token: 'foo' };
-      const ui = { sub: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
-      });
-      sinon.stub(this.client, 'userinfo').callsFake(function () {
-        return Promise.resolve(ui);
-      });
-
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          nonce: 'nonce',
-          state: 'state',
-        },
-      };
-
-      strategy.success = () => {
-        next();
-      };
-
-      strategy.authenticate(req);
-    });
-
-    it('skips userinfo request too if no tokenset but arity', function (next) {
-      const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
-        try {
-          expect(tokenset).to.be.ok;
-          expect(userinfo).to.be.undefined;
-          done(null, { sub: 'foobar' });
-        } catch (err) {
-          next(err);
-        }
-      });
-
-      const ts = { id_token: 'foo' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
-      });
-
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          nonce: 'nonce',
-          state: 'state',
-        },
-      };
-
-      strategy.success = () => {
-        next();
-      };
-
-      strategy.authenticate(req);
-    });
-
-    it('receives a request as the first parameter if passReqToCallback is set', function (next) {
-      const strategy = new Strategy({
-        client: this.client,
-        passReqToCallback: true,
-      }, (req, tokenset, done) => {
-        try {
-          expect(req).to.be.an.instanceof(MockRequest);
-          expect(tokenset).to.be.ok;
-          done(null, { sub: 'foobar' });
-        } catch (err) {
-          next(err);
-        }
-      });
-
-      const ts = { id_token: 'foo' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
-      });
-
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          nonce: 'nonce',
-          state: 'state',
-        },
-      };
-
-      strategy.success = () => {
-        next();
-      };
-
-      strategy.authenticate(req);
-    });
-
-    it('receives a request and userinfo with passReqToCallback: true and userinfo', function (next) {
-      const strategy = new Strategy({
-        client: this.client,
-        passReqToCallback: true,
-      }, (req, tokenset, userinfo, done) => {
-        try {
-          expect(req).to.be.an.instanceof(MockRequest);
-          expect(tokenset).to.be.ok;
-          expect(userinfo).to.be.ok;
-          done(null, { sub: 'foobar' });
-        } catch (err) {
-          next(err);
-        }
-      });
-
-      const ts = { access_token: 'foo' };
-      const ui = { sub: 'bar' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
-      });
-      sinon.stub(this.client, 'userinfo').callsFake(function () {
-        return Promise.resolve(ui);
-      });
-
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          nonce: 'nonce',
-          state: 'state',
-        },
-      };
-
-      strategy.success = () => {
-        next();
-      };
-
-      strategy.authenticate(req);
-    });
-
-    it('skips userinfo request too if no tokenset but arity (even with passReqToCallback)', function (next) {
-      const strategy = new Strategy({
-        client: this.client,
-        passReqToCallback: true,
-      }, (req, tokenset, userinfo, done) => {
-        try {
-          expect(req).to.be.an.instanceof(MockRequest);
-          expect(tokenset).to.be.ok;
-          expect(userinfo).to.be.undefined;
-          done(null, { sub: 'foobar' });
-        } catch (err) {
-          next(err);
-        }
-      });
-
-      const ts = { id_token: 'foo' };
-      sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
-        return Promise.resolve(ts);
-      });
-
-      const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
-      req.session = {
-        'oidc:op.example.com': {
-          nonce: 'nonce',
-          state: 'state',
-        },
-      };
-
-      strategy.success = () => {
-        next();
-      };
-
-      strategy.authenticate(req);
     });
   });
 });

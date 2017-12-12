@@ -435,6 +435,45 @@ Confirm your httpOptions by
 console.log('httpOptions %j', Issuer.defaultHttpOptions);
 ```
 
+### Proxy settings
+Because of the lightweight nature of [got][got-library] library the client will not use
+environment-defined http(s) proxies. In order to have them used you'll need to either provide your own http request
+implementation using the provided `httpClient` setter or use the bundled [request][request-library]
+one.
+
+Custom implementation:
+```js
+/*
+ * url {String}
+ * options {Object}
+ * options.headers {Object}
+ * options.body {String|Object}
+ * options.form {Boolean}
+ * options.query {Object}
+ * options.timeout {Number}
+ * options.retries {Number}
+ * options.followRedirect {Boolean}
+ */
+
+Issuer.httpClient = {
+   get(url, options) {}, // return Promise
+   post(url, options) {}, // return Promise
+   HTTPError, // used error constructor
+};
+```
+
+Bundled (and maintained + tested) request implementation after you've added [request][request-library]
+to your package.json bundle:
+
+```
+npm install request@^2.0.0 --save
+```
+
+```js
+Issuer.useRequest();
+```
+
+
 [travis-image]: https://img.shields.io/travis/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [travis-url]: https://travis-ci.org/panva/node-openid-client
 [conformance-image]: https://img.shields.io/travis/panva/openid-client-conformance-tests/master.svg?style=flat-square&maxAge=7200&label=conformance%20build
@@ -450,6 +489,7 @@ console.log('httpOptions %j', Issuer.defaultHttpOptions);
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
 [got-library]: https://github.com/sindresorhus/got
+[request-library]: https://github.com/request/request
 [signed-userinfo]: http://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
 [openid-certified-link]: http://openid.net/certification/
 [openid-certified-logo]: https://cdn.rawgit.com/panva/node-openid-client/master/OpenID_Certified.png
