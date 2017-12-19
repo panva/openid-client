@@ -292,6 +292,24 @@ const Strategy = require('../../lib').Strategy;
         strategy.authenticate(req);
       });
 
+      it('lets the dev know when most common problems with session occur', function (next) {
+        const strategy = new Strategy(this.client, () => {});
+
+        const req = new MockRequest('GET', '/login/oidc/callback?code=code&state=foo');
+        req.session = {};
+
+        strategy.error = (error) => {
+          try {
+            expect(error.message).to.match(/^state mismatch, could not find a state in the session/);
+            next();
+          } catch (err) {
+            next(err);
+          }
+        };
+
+        strategy.authenticate(req);
+      });
+
       it('triggers the error function when non oidc error is encountered', function (next) {
         const strategy = new Strategy(this.client, () => {});
 
