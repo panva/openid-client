@@ -5,7 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
-  - [Version 1.19.0](#version-1190)
+  - [Version 1.19.x](#version-119x)
   - [Version 1.18.x](#version-118x)
   - [Version 1.17.0](#version-1170)
   - [Version 1.16.0](#version-1160)
@@ -30,7 +30,13 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC END -->
 
-## Version 1.19.0
+## Version 1.19.x
+### Version 1.19.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.0...v1.19.1)
+- adjusted the passport state mismatch related error message to hint developers at a local setup
+  issue
+
+### Version 1.19.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.18.2...v1.19.0)
 - added maintained request wrapper and a simple api to use request instead of `got`
 
