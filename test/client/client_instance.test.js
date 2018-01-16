@@ -39,6 +39,13 @@ const encode = object => base64url.encode(JSON.stringify(object));
         this.client = new issuer.Client({
           client_id: 'identifier',
         });
+
+        const issuerWithQuery = new Issuer({
+          authorization_endpoint: 'https://op.example.com/auth?a=b'
+        });
+        this.clientWithQuery = new issuerWithQuery.Client({
+          client_id: 'identifier',
+        });
       });
 
       it('returns a string with the url with some basic defaults', function () {
@@ -49,6 +56,18 @@ const encode = object => base64url.encode(JSON.stringify(object));
           redirect_uri: 'https://rp.example.com/cb',
           response_type: 'code',
           scope: 'openid',
+        });
+      });
+
+      it('keeps origin query parameters', function() {
+        expect(url.parse(this.clientWithQuery.authorizationUrl({
+          redirect_uri: 'https://rp.example.com/cb',
+        }), true).query).to.eql({
+          client_id: 'identifier',
+          redirect_uri: 'https://rp.example.com/cb',
+          response_type: 'code',
+          scope: 'openid',
+          a: 'b',
         });
       });
 
