@@ -31,6 +31,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.19.x
+### Version 1.19.3
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.2...v1.19.3)
+- fix return values of `#authorizationCallback()` for `response_type=none` to resolve a TokenSet
+
 ### Version 1.19.2
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.1...v1.19.2)
 - fixed `authorizationUrl` to respect existing issuer authorization_endpoint query parameters
