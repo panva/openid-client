@@ -246,6 +246,15 @@ const encode = object => base64url.encode(JSON.stringify(object));
           });
       });
 
+      it('resolves a tokenset with just a state for response_type=none', function () {
+        const state = { state: 'foo' };
+        return this.client.authorizationCallback('https://rp.example.com/cb', state, state)
+          .then((set) => {
+            expect(set).to.be.instanceof(TokenSet);
+            expect(set).to.have.property('state', 'foo');
+          });
+      });
+
       it('rejects with OpenIdConnectError when part of the response', function () {
         return this.client.authorizationCallback('https://rp.example.com/cb', {
           error: 'invalid_request',
