@@ -2,45 +2,56 @@
   "name": "openid-client",
   "version": "1.19.3",
   "description": "OpenID Connect Relying Party (RP, Client) implementation for Node.js servers, supports passportjs",
-  "main": "lib/index.js",
-  "scripts": {
-    "coverage": "nyc mocha",
-    "test": "mocha",
-    "lint": "eslint lib example test",
-    "lint-fix": "eslint lib example test --fix"
-  },
-  "repository": "panva/node-openid-client",
-  "engines": {
-    "node": ">=4"
-  },
-  "homepage": "https://github.com/panva/node-openid-client",
   "keywords": [
-    "openid",
-    "connect",
-    "client",
-    "relying",
-    "party",
-    "oidc",
     "auth",
     "authentication",
+    "basic",
+    "certified",
+    "client",
+    "config",
+    "connect",
+    "dynamic",
+    "hybrid",
     "identity",
+    "implicit",
     "oauth",
+    "oauth2",
+    "oidc",
+    "openid",
+    "party",
     "passport",
     "passportjs",
-    "strategy",
-    "certified",
-    "dynamic",
-    "config",
-    "basic",
-    "hybrid",
-    "implicit",
-    "oauth2"
+    "relying",
+    "strategy"
   ],
-  "author": "Filip Skokan <panva.ip@gmail.com>",
+  "homepage": "https://github.com/panva/node-openid-client",
   "license": "MIT",
+  "author": "Filip Skokan <panva.ip@gmail.com>",
   "files": [
     "lib"
   ],
+  "main": "lib/index.js",
+  "repository": "panva/node-openid-client",
+  "scripts": {
+    "coverage": "nyc mocha",
+    "lint": "eslint lib example test",
+    "lint-fix": "eslint lib example test --fix",
+    "test": "mocha"
+  },
+  "pre-commit": [
+    "coverage",
+    "lint"
+  ],
+  "dependencies": {
+    "base64url": "^2.0.0",
+    "create-error-class": "^3.0.2",
+    "got": "^8.0.0",
+    "lodash": "^4.13.1",
+    "lru-cache": "^4.0.1",
+    "node-jose": "^0.11.0",
+    "oidc-token-hash": "^2.0.0",
+    "uuid": "^3.0.0"
+  },
   "devDependencies": {
     "chai": "^4.0.0",
     "eslint": "^4.3.0",
@@ -60,15 +71,8 @@
     "sinon": "^4.0.0",
     "timekeeper": "^2.0.0"
   },
-  "dependencies": {
-    "base64url": "^2.0.0",
-    "create-error-class": "^3.0.2",
-    "got": "^8.0.0",
-    "lodash": "^4.13.1",
-    "lru-cache": "^4.0.1",
-    "node-jose": "^0.11.0",
-    "oidc-token-hash": "^2.0.0",
-    "uuid": "^3.0.0"
+  "engines": {
+    "node": ">=4"
   },
   "nyc": {
     "reporter": [
