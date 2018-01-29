@@ -7,7 +7,6 @@ Node.js, supports [passport][passport-url].
 
 **Table of Contents**
 
-<!-- TOC START min:2 max:2 link:true update:true -->
   - [Implemented specs & features](#implemented-specs--features)
   - [Certification](#certification)
   - [Example](#example)
@@ -15,8 +14,6 @@ Node.js, supports [passport][passport-url].
   - [Usage](#usage)
   - [Usage with passport](#usage-with-passport)
   - [Configuration](#configuration)
-
-<!-- TOC END -->
 
 
 ## Implemented specs & features
@@ -59,6 +56,22 @@ conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config and RP Dynamic profi
 of the OpenID Connect™ protocol.
 
 [![build][conformance-image]][conformance-url]
+
+
+## Sponsor
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <img alt="auth0-logo" src="https://avatars.githubusercontent.com/u/2824157?s=75&v=4" style="max-width:100%;">
+      </td>
+      <td colspan="2">
+        If you want to quickly add OpenID Connect authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at <a href="https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=openid-client&utm_content=auth">auth0.com/overview</a>.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 
 ## Example
 Head over to the example folder to see the library in use. This example is deployed and configured
