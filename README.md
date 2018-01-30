@@ -39,7 +39,7 @@ openid-client.
     - private_key_jwt
 - [OpenID Connect Discovery 1.0 incorporating errata set 1][feature-discovery]
   - Discovery of OpenID Provider (Issuer) Metadata
-  - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (see #WebFinger)
+  - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (see [WebFinger](#webfinger-discovery))
 - [OpenID Connect Dynamic Client Registration 1.0 incorporating errata set 1][feature-registration]
   - Dynamic Client Registration request
   - Client initialization via registration client uri
