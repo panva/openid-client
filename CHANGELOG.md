@@ -31,6 +31,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.19.x
+### Version 1.19.4
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.3...v1.19.4)
+- fixed edge cases of (and simplified) private id token decryption method
+
 ### Version 1.19.3
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.2...v1.19.3)
 - fix return values of `#authorizationCallback()` for `response_type=none` to resolve a TokenSet
