@@ -1,6 +1,6 @@
 {
   "name": "openid-client",
-  "version": "1.19.4",
+  "version": "1.19.5",
   "description": "OpenID Connect Relying Party (RP, Client) implementation for Node.js servers, supports passportjs",
   "keywords": [
     "auth",

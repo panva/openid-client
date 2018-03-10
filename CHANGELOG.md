@@ -31,6 +31,10 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 1.19.x
+### Version 1.19.5
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.4...v1.19.5)
+- `Issuer.discover` now parses the provided URI instead of just inspecting the string. #80
+
 ### Version 1.19.4
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.3...v1.19.4)
 - fixed edge cases of (and simplified) private id token decryption method
