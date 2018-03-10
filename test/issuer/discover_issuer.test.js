@@ -44,7 +44,7 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
       });
     });
 
-    it('discovering issuers with path components', function () {
+    it('discovering issuers with path components (with trailing slash)', function () {
       nock('https://op.example.com')
         .get('/oidc/.well-known/openid-configuration')
         .reply(200, {
@@ -52,6 +52,30 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
         });
 
       return Issuer.discover('https://op.example.com/oidc/').then(function (issuer) {
+        expect(issuer).to.have.property('issuer', 'https://op.example.com/oidc');
+      });
+    });
+
+    it('discovering issuers with path components (without trailing slash)', function () {
+      nock('https://op.example.com')
+        .get('/oidc/.well-known/openid-configuration')
+        .reply(200, {
+          issuer: 'https://op.example.com/oidc',
+        });
+
+      return Issuer.discover('https://op.example.com/oidc').then(function (issuer) {
+        expect(issuer).to.have.property('issuer', 'https://op.example.com/oidc');
+      });
+    });
+
+    it('discovering issuers with well known uri including path and query', function () {
+      nock('https://op.example.com')
+        .get('/oidc/.well-known/openid-configuration?foo=bar')
+        .reply(200, {
+          issuer: 'https://op.example.com/oidc',
+        });
+
+      return Issuer.discover('https://op.example.com/oidc/.well-known/openid-configuration?foo=bar').then(function (issuer) {
         expect(issuer).to.have.property('issuer', 'https://op.example.com/oidc');
       });
     });
