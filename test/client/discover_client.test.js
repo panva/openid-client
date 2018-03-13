@@ -37,7 +37,7 @@ const issuer = new Issuer();
 
       return issuer.Client.fromUri('https://op.example.com/client/identifier')
         .then(fail, function (error) {
-          expect(error).to.have.property('message', 'server_error');
+          expect(error).to.have.property('error', 'server_error');
         });
     });
 

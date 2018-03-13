@@ -90,7 +90,7 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
 
       return Issuer.discover('https://op.example.com')
         .then(fail, function (error) {
-          expect(error).to.have.property('message', 'server_error');
+          expect(error).to.have.property('error', 'server_error');
         });
     });
 

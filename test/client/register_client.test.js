@@ -50,7 +50,7 @@ const issuer = new Issuer({
 
       return issuer.Client.register({})
         .then(fail, function (error) {
-          expect(error).to.have.property('message', 'server_error');
+          expect(error).to.have.property('error', 'server_error');
         });
     });
 

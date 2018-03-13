@@ -344,7 +344,7 @@ const Strategy = require('../../lib').Strategy;
 
         strategy.fail = (error) => {
           try {
-            expect(error.message).to.equal('login_required');
+            expect(error.error).to.equal('login_required');
             next();
           } catch (err) {
             next(err);

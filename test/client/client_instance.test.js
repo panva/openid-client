@@ -260,7 +260,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
           error: 'invalid_request',
         }).then(fail, (error) => {
           expect(error).to.be.instanceof(OpenIdConnectError);
-          expect(error).to.have.property('message', 'invalid_request');
+          expect(error).to.have.property('error', 'invalid_request');
         });
       });
 
@@ -344,7 +344,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
           error: 'invalid_request',
         }).then(fail, (error) => {
           expect(error).to.be.instanceof(OpenIdConnectError);
-          expect(error).to.have.property('message', 'invalid_request');
+          expect(error).to.have.property('error', 'invalid_request');
         });
       });
 
@@ -661,7 +661,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
         return client.userinfo()
           .then(fail, function (error) {
             expect(error.name).to.equal('OpenIdConnectError');
-            expect(error).to.have.property('message', 'invalid_token');
+            expect(error).to.have.property('error', 'invalid_token');
           });
       });
 
@@ -823,7 +823,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
 
           return client[method]('tokenValue')
             .then(fail, function (error) {
-              expect(error).to.have.property('message', 'server_error');
+              expect(error).to.have.property('error', 'server_error');
             });
         });
 
@@ -1940,7 +1940,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
         return this.client.fetchDistributedClaims(userinfo)
           .then(fail, function (error) {
             expect(error.name).to.equal('OpenIdConnectError');
-            expect(error).to.have.property('message', 'invalid_token');
+            expect(error).to.have.property('error', 'invalid_token');
             expect(error).to.have.property('src', 'src1');
           });
       });

@@ -174,6 +174,22 @@ client.authorizationCallback('https://client.example.com/callback', request.quer
   });
 ```
 
+### IdP Errors - OpenIdConnectError
+When the OpenID Provider returns an OIDC formatted error from either authorization callbacks or
+any of the JSON responses the library will reject a given Promise with `OpenIdConnectError` instance.
+
+The message of this error is `"${error} (${error_description})"`. However the OpenIdConnectError object
+also has the following properties:
+
+- error
+- error_description
+- error_uri
+- state
+- scope
+
+Values are `undefined` if these were not provided in the response. Additionally, for API call
+responses a `response` property is available with the response object from the used http client.
+
 ### Handling multiple response modes
 When handling multiple response modes with one single pass you can use `#callbackParams`
 to get the params object from the koa/express/node request object or a url string.
