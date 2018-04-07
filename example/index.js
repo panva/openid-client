@@ -14,5 +14,5 @@ Issuer.discover(ISSUER).then((issuer) => {
   app.listen(PORT);
 }).catch((err) => {
   console.error(err); // eslint-disable-line no-console
-  process.exit(1);
+  process.exitCode = 1;
 });
