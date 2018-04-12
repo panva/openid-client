@@ -5,6 +5,10 @@
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js, supports [passport][passport-url].
 
+Notice: openid-client ^2.0.0 drops support for Node.js versions less than lts/boron(6.9.0) due to
+Node.js lts/argon end of life on [2018-04-30](https://github.com/nodejs/Release). See the
+[CHANGELOG](/CHANGELOG.md) for a complete list of deprecations and changes.
+
 **Table of Contents**
 
   - [Implemented specs & features](#implemented-specs--features)

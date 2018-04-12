@@ -34,7 +34,7 @@ Yay for [SemVer](http://semver.org/).
 
 ## Version 2.0.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.20.0...v2.0.0)
-- dropped support for Node.js v4.x due to its End-of-Life on 2018-04-30
+- dropped support for Node.js v4.x due to its End-of-Life on [2018-04-30](https://github.com/nodejs/Release)
 - removed deprecated `client#grantAuth`
 - removed deprecated way of passing keystore directly to `Client#register`
 - removed support for passing client to `OpenIDConnectStrategy` as single argument, use
