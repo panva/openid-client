@@ -1,7 +1,5 @@
-'use strict';
-
 const Issuer = require('../../lib/issuer');
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const jose = require('node-jose');
 const nock = require('nock');
 
@@ -75,90 +73,6 @@ const issuer = new Issuer({
           expect(error).to.be.an.instanceof(SyntaxError);
           expect(error).to.have.property('message').matches(/Unexpected token/);
         });
-    });
-
-    context('with keystore (deprecated)', function () {
-      it('enriches the registration with jwks if not provided (or jwks_uri)', function () {
-        const keystore = jose.JWK.createKeyStore();
-
-        nock('https://op.example.com')
-          .filteringRequestBody(function (body) {
-            expect(JSON.parse(body)).to.eql({
-              jwks: keystore.toJSON(),
-            });
-          })
-          .post('/client/registration')
-          .reply(200, {
-            client_id: 'identifier',
-            client_secret: 'secure',
-          });
-
-        return keystore.generate('EC', 'P-256').then(() => issuer.Client.register({}, keystore));
-      });
-
-      it('ignores the keystore during registration if jwks is provided', function () {
-        const keystore = jose.JWK.createKeyStore();
-
-        nock('https://op.example.com')
-          .filteringRequestBody(function (body) {
-            expect(JSON.parse(body)).to.eql({
-              jwks: 'whatever',
-            });
-          })
-          .post('/client/registration')
-          .reply(200, {
-            client_id: 'identifier',
-            client_secret: 'secure',
-          });
-
-        return keystore.generate('EC', 'P-256').then(() => issuer.Client.register({
-          jwks: 'whatever',
-        }, keystore));
-      });
-
-      it('ignores the keystore during registration if jwks_uri is provided', function () {
-        const keystore = jose.JWK.createKeyStore();
-
-        nock('https://op.example.com')
-          .filteringRequestBody(function (body) {
-            expect(JSON.parse(body)).to.eql({
-              jwks_uri: 'https://rp.example.com/certs',
-            });
-          })
-          .post('/client/registration')
-          .reply(200, {
-            client_id: 'identifier',
-            client_secret: 'secure',
-          });
-
-        return keystore.generate('EC', 'P-256').then(() => issuer.Client.register({
-          jwks_uri: 'https://rp.example.com/certs',
-        }, keystore));
-      });
-
-      it('does not accept oct keys', function () {
-        const keystore = jose.JWK.createKeyStore();
-
-        return keystore.generate('oct', 32).then(() => {
-          expect(function () {
-            issuer.Client.register({}, keystore);
-          }).to.throw('keystore must only contain private EC or RSA keys');
-        });
-      });
-
-      it('does not accept public keys', function () {
-        return jose.JWK.asKey({
-          kty: 'EC',
-          kid: 'MFZeG102dQiqbANoaMlW_Jmf7fOZmtRsHt77JFhTpF0',
-          crv: 'P-256',
-          x: 'FWZ9rSkLt6Dx9E3pxLybhdM6xgR5obGsj5_pqmnz5J4',
-          y: '_n8G69C-A2Xl4xUW2lF0i8ZGZnk_KPYrhv4GbTGu5G4',
-        }).then((key) => {
-          expect(function () {
-            issuer.Client.register({}, key.keystore);
-          }).to.throw('keystore must only contain private EC or RSA keys');
-        });
-      });
     });
 
     context('with keystore (as option)', function () {

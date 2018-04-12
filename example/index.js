@@ -1,5 +1,3 @@
-'use strict';
-
 const { Issuer } = require('..');
 
 const {

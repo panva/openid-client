@@ -1,11 +1,8 @@
-'use strict';
-
 const http = require('http');
 const sinon = require('sinon');
 const MockRequest = require('readable-mock-req');
-const expect = require('chai').expect;
-const Issuer = require('../../lib').Issuer;
-const Strategy = require('../../lib').Strategy;
+const { expect } = require('chai');
+const { Issuer, Strategy } = require('../../lib');
 
 ['useGot', 'useRequest'].forEach((httpProvider) => {
   describe(`OpenIDConnectStrategy - using ${httpProvider.substring(3).toLowerCase()}`, function () {
@@ -41,7 +38,7 @@ const Strategy = require('../../lib').Strategy;
     });
 
     it('checks for session presence', function (next) {
-      const strategy = new Strategy(this.client, () => {});
+      const strategy = new Strategy({ client: this.client }, () => {});
 
       const req = new MockRequest('GET', '/login/oidc');
 
@@ -59,7 +56,7 @@ const Strategy = require('../../lib').Strategy;
 
     describe('initate', function () {
       it('starts authentication requests for GETs', function () {
-        const strategy = new Strategy(this.client, () => {});
+        const strategy = new Strategy({ client: this.client }, () => {});
 
         const req = new MockRequest('GET', '/login/oidc');
         req.session = {};
@@ -76,7 +73,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('starts authentication requests for POSTs', function () {
-        const strategy = new Strategy(this.client, () => {});
+        const strategy = new Strategy({ client: this.client }, () => {});
 
         const req = new MockRequest('POST', '/login/oidc');
         req.session = {};
@@ -256,7 +253,7 @@ const Strategy = require('../../lib').Strategy;
           return Promise.resolve(ts);
         });
 
-        const strategy = new Strategy(this.client, (tokenset, done) => {
+        const strategy = new Strategy({ client: this.client }, (tokenset, done) => {
           expect(tokenset).to.equal(ts);
           done(null, tokenset);
         });
@@ -275,7 +272,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('triggers the error function when server_error is encountered', function (next) {
-        const strategy = new Strategy(this.client, () => {});
+        const strategy = new Strategy({ client: this.client }, () => {});
 
         const req = new MockRequest('GET', '/login/oidc/callback?error=server_error');
         req.session = {};
@@ -293,7 +290,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('lets the dev know when most common problems with session occur', function (next) {
-        const strategy = new Strategy(this.client, () => {});
+        const strategy = new Strategy({ client: this.client }, () => {});
 
         const req = new MockRequest('GET', '/login/oidc/callback?code=code&state=foo');
         req.session = {};
@@ -311,7 +308,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('triggers the error function when non oidc error is encountered', function (next) {
-        const strategy = new Strategy(this.client, () => {});
+        const strategy = new Strategy({ client: this.client }, () => {});
 
         sinon.stub(this.client, 'authorizationCallback').callsFake(function () {
           return Promise.reject(new Error('callback error'));
@@ -333,7 +330,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('triggers the fail function when oidc error is encountered', function (next) {
-        const strategy = new Strategy(this.client, () => {});
+        const strategy = new Strategy({ client: this.client }, () => {});
 
         const req = new MockRequest('GET', '/login/oidc/callback?error=login_required&state=state');
         req.session = {
@@ -355,7 +352,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('triggers the error function for errors during verify', function (next) {
-        const strategy = new Strategy(this.client, (tokenset, done) => {
+        const strategy = new Strategy({ client: this.client }, (tokenset, done) => {
           done(new Error('user find error'));
         });
 
@@ -384,7 +381,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('triggers the fail function when verify yields no account', function (next) {
-        const strategy = new Strategy(this.client, (tokenset, done) => {
+        const strategy = new Strategy({ client: this.client }, (tokenset, done) => {
           done();
         });
 
@@ -409,7 +406,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('does userinfo request too if part of verify arity and resulting tokenset', function (next) {
-        const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
+        const strategy = new Strategy({ client: this.client }, (tokenset, userinfo, done) => {
           try {
             expect(tokenset).to.be.ok;
             expect(userinfo).to.be.ok;
@@ -444,7 +441,7 @@ const Strategy = require('../../lib').Strategy;
       });
 
       it('skips userinfo request too if no tokenset but arity', function (next) {
-        const strategy = new Strategy(this.client, (tokenset, userinfo, done) => {
+        const strategy = new Strategy({ client: this.client }, (tokenset, userinfo, done) => {
           try {
             expect(tokenset).to.be.ok;
             expect(userinfo).to.be.undefined;

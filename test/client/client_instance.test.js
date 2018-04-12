@@ -1,10 +1,7 @@
-'use strict';
-
-const Issuer = require('../../lib').Issuer;
-const Registry = require('../../lib').Registry;
+const { Registry, Issuer } = require('../../lib');
 const MockRequest = require('readable-mock-req');
 const _ = require('lodash');
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const Client = require('../../lib/client');
 const now = require('../../lib/unix_timestamp');
 const url = require('url');
@@ -2275,7 +2272,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
 
       it('works with IncomingMessage (POST + pre-parsed buffer)', function () {
         const req = new MockRequest('POST', '/cb', {
-          body: new Buffer('code=code'),
+          body: Buffer.from('code=code'),
         });
         expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
       });

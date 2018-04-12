@@ -84,7 +84,7 @@ an Issuer instance.
 
 ### via Discovery (recommended)
 ```js
-const Issuer = require('openid-client').Issuer;
+const { Issuer } = require('openid-client');
 Issuer.discover('https://accounts.google.com') // => Promise
   .then(function (googleIssuer) {
     console.log('Discovered issuer %s', googleIssuer);
@@ -93,7 +93,7 @@ Issuer.discover('https://accounts.google.com') // => Promise
 
 ### manually
 ```js
-const Issuer = require('openid-client').Issuer;
+const { Issuer } = require('openid-client');
 const googleIssuer = new Issuer({
   issuer: 'https://accounts.google.com',
   authorization_endpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -389,14 +389,14 @@ client.authorizationCallback(..., ...).then(function (tokenSet) {
 ```
 
 ## Usage with passport
-Once you have a Client instance, just pass it to the Strategy. Issuer is best discovered, Client
-passed properties manually or via an uri (see [get-started](#get-started)).
+Once you have a Client instance, just pass it to the Strategy constructor. Issuer is best
+discovered, Client passed properties manually or via an uri (see [get-started](#get-started)).
 
 Verify function is invoked with a TokenSet, userinfo only when requested, last argument is always
 the done function which you invoke once you found your user.
 
 ```js
-const Strategy = require('openid-client').Strategy;
+const { Strategy } = require('openid-client');
 const params = {
   // ... any authorization request parameters go here
   // client_id defaults to client.client_id

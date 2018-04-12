@@ -1,7 +1,5 @@
-'use strict';
-
-const Issuer = require('../../lib').Issuer;
-const expect = require('chai').expect;
+const { Issuer } = require('../../lib');
+const { expect } = require('chai');
 const LRU = require('lru-cache');
 const nock = require('nock');
 const sinon = require('sinon');

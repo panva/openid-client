@@ -1,7 +1,5 @@
-'use strict';
-
-const Issuer = require('../../lib').Issuer;
-const expect = require('chai').expect;
+const { Issuer } = require('../../lib');
+const { expect } = require('chai');
 
 describe('new Issuer()', function () {
   it('accepts the recognized metadata', function () {

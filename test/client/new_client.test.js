@@ -1,8 +1,6 @@
-'use strict';
-
 const Issuer = require('../../lib/issuer');
 const Client = require('../../lib/client');
-const expect = require('chai').expect;
+const { expect } = require('chai');
 
 describe('new Client()', function () {
   it('accepts the recognized metadata', function () {

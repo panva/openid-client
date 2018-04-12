@@ -1,7 +1,5 @@
-'use strict';
-
-const Issuer = require('../../lib').Issuer;
-const expect = require('chai').expect;
+const { Issuer } = require('../../lib');
+const { expect } = require('chai');
 const nock = require('nock');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };

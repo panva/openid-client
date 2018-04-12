@@ -1,5 +1,3 @@
-'use strict';
-
 /* eslint-disable import/no-extraneous-dependencies */
 
 const _ = require('lodash');
@@ -91,7 +89,7 @@ module.exports = (issuer) => {
 
     if (preset.keystore) {
       keystore = jose.JWK.createKeyStore();
-      await keystore.generate.apply(keystore, preset.keystore);
+      await keystore.generate(...preset.keystore);
     }
 
     const metadata = Object.assign({
@@ -123,7 +121,7 @@ module.exports = (issuer) => {
   });
 
   router.get('/logout', async (ctx, next) => {
-    const id = ctx.session.id;
+    const { id } = ctx.session;
     ctx.session.loggedIn = false;
 
     if (!TOKENS.has(id)) {
@@ -194,9 +192,8 @@ module.exports = (issuer) => {
   });
 
   router.get('/cb', async (ctx, next) => {
-    const state = ctx.session.state;
+    const { state, nonce } = ctx.session;
     delete ctx.session.state;
-    const nonce = ctx.session.nonce;
     delete ctx.session.nonce;
     const client = CLIENTS.get(ctx.session.id);
     const params = client.callbackParams(ctx.request.req);
@@ -214,9 +211,8 @@ module.exports = (issuer) => {
   });
 
   router.post('/cb', body({ patchNode: true }), async (ctx, next) => {
-    const state = ctx.session.state;
+    const { state, nonce } = ctx.session;
     delete ctx.session.state;
-    const nonce = ctx.session.nonce;
     delete ctx.session.nonce;
     const client = CLIENTS.get(ctx.session.id);
     const params = client.callbackParams(ctx.request.req);

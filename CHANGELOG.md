@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+  - [Version 2.0.0](#version-200)
   - [Version 1.20.0](#version-1200)
   - [Version 1.19.x](#version-119x)
   - [Version 1.18.x](#version-118x)
@@ -30,6 +31,15 @@ Yay for [SemVer](http://semver.org/).
   - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 2.0.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v1.20.0...v2.0.0)
+- dropped support for Node.js v4.x due to its End-of-Life on 2018-04-30
+- removed deprecated `client#grantAuth`
+- removed deprecated way of passing keystore directly to `Client#register`
+- removed support for passing client to `OpenIDConnectStrategy` as single argument, use
+  `new Strategy({ client })` instead of `new Strategy(client)`.
+- fixed a bug requiring nonce to be passed for `response_type=none`
 
 ## Version 1.20.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.19.5...v1.20.0)

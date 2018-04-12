@@ -2,8 +2,7 @@ language: node_js
 dist: trusty
 sudo: false
 node_js:
-  - v4.0.0
-  - lts/argon
+  - v6.9.0
   - lts/boron
   - lts/carbon
   - stable
