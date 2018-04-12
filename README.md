@@ -513,8 +513,8 @@ Issuer.useRequest();
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
-[snyk-image]: https://snyk.io/test/github/panva/node-openid-client/badge.svg?style=flat-square
-[snyk-url]: https://snyk.io/test/github/panva/node-openid-client
+[snyk-image]: https://snyk.io/test/npm/openid-client/badge.svg?style=flat-square
+[snyk-url]: https://snyk.io/test/npm/openid-client
 [openid-connect]: http://openid.net/connect/
 [heroku-example]: https://tranquil-reef-95185.herokuapp.com/client
 [oidc-provider]: https://github.com/panva/node-oidc-provider
