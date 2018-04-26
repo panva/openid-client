@@ -5,7 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
-  - [Version 2.0.0](#version-200)
+  - [Version 2.0.x](#version-20x)
   - [Version 1.20.0](#version-1200)
   - [Version 1.19.x](#version-119x)
   - [Version 1.18.x](#version-118x)
@@ -32,7 +32,13 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC END -->
 
-## Version 2.0.0
+## Version 2.0.x
+### Version 2.0.1
+- [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.0...v2.0.1)
+- fixed client_secret_basic client auth for non-ascii characters according to
+  https://tools.ietf.org/html/rfc6749#section-2.3.1
+
+### Version 2.0.0
 - [DIFF](https://github.com/panva/node-openid-client/compare/v1.20.0...v2.0.0)
 - dropped support for Node.js v4.x due to its End-of-Life on [2018-04-30](https://github.com/nodejs/Release)
 - removed deprecated `client#grantAuth`
