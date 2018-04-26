@@ -926,6 +926,13 @@ const encode = object => base64url.encode(JSON.stringify(object));
             headers: { Authorization: 'Basic aWRlbnRpZmllcjpzZWN1cmU=' },
           });
         });
+
+        it('works with non-text characters', function () {
+          const client = new Client({ client_id: 'an:identifier', client_secret: 'some secure & non-standard secret' });
+          expect(client.authFor('token')).to.eql({
+            headers: { Authorization: 'Basic YW4lM0FpZGVudGlmaWVyOnNvbWUrc2VjdXJlKyUyNitub24tc3RhbmRhcmQrc2VjcmV0' },
+          });
+        });
       });
 
       context('when client_secret_jwt', function () {
