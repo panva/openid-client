@@ -507,9 +507,9 @@ Issuer.useRequest();
 ```
 
 
-[travis-image]: https://img.shields.io/travis/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
-[travis-url]: https://travis-ci.org/panva/node-openid-client
-[conformance-image]: https://img.shields.io/travis/panva/openid-client-conformance-tests/master.svg?style=flat-square&maxAge=7200&label=conformance%20build
+[travis-image]: https://api.travis-ci.com/panva/node-openid-client.svg?branch=master
+[travis-url]: https://travis-ci.com/panva/node-openid-client
+[conformance-image]: https://api.travis-ci.com/panva/openid-client-conformance-tests.svg?branch=master
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg?style=flat-square&maxAge=7200
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
