@@ -5,34 +5,38 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
-  - [Version 2.0.x](#version-20x)
-  - [Version 1.20.0](#version-1200)
-  - [Version 1.19.x](#version-119x)
-  - [Version 1.18.x](#version-118x)
-  - [Version 1.17.0](#version-1170)
-  - [Version 1.16.0](#version-1160)
-  - [Version 1.15.0](#version-1150)
-  - [Version 1.14.0](#version-1140)
-  - [Version 1.13.0](#version-1130)
-  - [Version 1.12.0](#version-1120)
-  - [Version 1.11.0](#version-1110)
-  - [Version 1.10.0](#version-1100)
-  - [Version 1.9.0](#version-190)
-  - [Version 1.8.0](#version-180)
-  - [Version 1.7.0](#version-170)
-  - [Version 1.6.0](#version-160)
-  - [Version 1.5.0](#version-150)
-  - [Version 1.4.0](#version-140)
-  - [Version 1.3.0](#version-130)
-  - [Version 1.2.0](#version-120)
-  - [Version 1.1.0](#version-110)
-  - [Version 1.0.0](#version-100)
-  - [Migrating from 0.x to 1.0](#migrating-from-0x-to-10)
-  - [pre 1.x changelog](#pre-1x-changelog)
+- [Version 2.0.x](#version-20x)
+- [Version 1.20.0](#version-1200)
+- [Version 1.19.x](#version-119x)
+- [Version 1.18.x](#version-118x)
+- [Version 1.17.0](#version-1170)
+- [Version 1.16.0](#version-1160)
+- [Version 1.15.0](#version-1150)
+- [Version 1.14.0](#version-1140)
+- [Version 1.13.0](#version-1130)
+- [Version 1.12.0](#version-1120)
+- [Version 1.11.0](#version-1110)
+- [Version 1.10.0](#version-1100)
+- [Version 1.9.0](#version-190)
+- [Version 1.8.0](#version-180)
+- [Version 1.7.0](#version-170)
+- [Version 1.6.0](#version-160)
+- [Version 1.5.0](#version-150)
+- [Version 1.4.0](#version-140)
+- [Version 1.3.0](#version-130)
+- [Version 1.2.0](#version-120)
+- [Version 1.1.0](#version-110)
+- [Version 1.0.0](#version-100)
+- [Migrating from 0.x to 1.0](#migrating-from-0x-to-10)
+- [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
 
 ## Version 2.0.x
+### Version 2.0.2
+- [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.1...v2.0.2)
+- dependency tree updates
+
 ### Version 2.0.1
 - [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.0...v2.0.1)
 - fixed client_secret_basic client auth for non-ascii characters according to
