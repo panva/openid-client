@@ -1,11 +1,11 @@
 # openid-client
 
-[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![snyk][snyk-image]][snyk-url]
+[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![snyk][snyk-image]][snyk-url] [![nsp][nsp-image]][nsp-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js, supports [passport][passport-url].
 
-Notice: openid-client ^2.0.0 drops support for Node.js versions less than lts/boron(6.9.0) due to
+Notice: openid-client ^2.0.x drops support for Node.js versions less than lts/boron(6.9.0) due to
 Node.js lts/argon end of life on [2018-04-30](https://github.com/nodejs/Release). See the
 [CHANGELOG](/CHANGELOG.md) for a complete list of deprecations and changes.
 
@@ -509,9 +509,11 @@ Issuer.useRequest();
 
 [travis-image]: https://api.travis-ci.com/panva/node-openid-client.svg?branch=master
 [travis-url]: https://travis-ci.com/panva/node-openid-client
+[nsp-image]: https://nodesecurity.io/orgs/panva/projects/d64be300-0668-45ea-ae1b-667149b52b0a/badge
+[nsp-url]: https://nodesecurity.io/orgs/panva/projects/d64be300-0668-45ea-ae1b-667149b52b0a
 [conformance-image]: https://api.travis-ci.com/panva/openid-client-conformance-tests.svg?branch=master
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
-[codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg
+[codecov-image]: https://codecov.io/gh/panva/node-openid-client/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
 [snyk-image]: https://snyk.io/test/npm/openid-client/badge.svg
 [snyk-url]: https://snyk.io/test/npm/openid-client
