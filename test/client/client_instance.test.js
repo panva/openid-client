@@ -6,7 +6,7 @@ const Client = require('../../lib/client');
 const now = require('../../lib/unix_timestamp');
 const url = require('url');
 const querystring = require('querystring');
-const base64url = require('base64url');
+const base64url = require('base64-url');
 const nock = require('nock');
 const sinon = require('sinon');
 const OpenIdConnectError = require('../../lib/open_id_connect_error');
@@ -1834,7 +1834,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
           nock('https://src3.example.com')
             .get('/claims').reply(200, [{ alg: 'none' }, { age: 27 }, ''].map((comp) => {
               if (typeof comp === 'object') {
-                return base64url(JSON.stringify(comp));
+                return base64url.encode(JSON.stringify(comp));
               }
               return comp;
             }).join('.'));

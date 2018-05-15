@@ -1,6 +1,6 @@
 # openid-client
 
-[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url] [![snyk][snyk-image]][snyk-url] [![nsp][nsp-image]][nsp-url]
+[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js, supports [passport][passport-url].
@@ -509,14 +509,10 @@ Issuer.useRequest();
 
 [travis-image]: https://api.travis-ci.com/panva/node-openid-client.svg?branch=master
 [travis-url]: https://travis-ci.com/panva/node-openid-client
-[nsp-image]: https://nodesecurity.io/orgs/panva/projects/d64be300-0668-45ea-ae1b-667149b52b0a/badge
-[nsp-url]: https://nodesecurity.io/orgs/panva/projects/d64be300-0668-45ea-ae1b-667149b52b0a
 [conformance-image]: https://api.travis-ci.com/panva/openid-client-conformance-tests.svg?branch=master
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
 [codecov-image]: https://codecov.io/gh/panva/node-openid-client/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
-[snyk-image]: https://snyk.io/test/npm/openid-client/badge.svg
-[snyk-url]: https://snyk.io/test/npm/openid-client
 [openid-connect]: http://openid.net/connect/
 [heroku-example]: https://tranquil-reef-95185.herokuapp.com/client
 [oidc-provider]: https://github.com/panva/node-oidc-provider

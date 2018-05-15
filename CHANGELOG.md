@@ -33,6 +33,9 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 2.0.x
+### Version 2.0.3
+- base64url dependency replaced
+
 ### Version 2.0.2
 - [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.1...v2.0.2)
 - dependency tree updates
