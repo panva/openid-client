@@ -135,6 +135,16 @@ const { Issuer, Strategy } = require('../../lib');
         expect(req.session).to.have.property('oidc:op.example.com');
         expect(req.session['oidc:op.example.com']).to.have.keys('state');
       });
+      it('should handle a request without a query object if copyParams is truthy', function () {
+        const strategy = new Strategy({ client: this.client, copyParams: ['foo'] }, () => {});
+
+        const req = new MockRequest('POST', '/login/oidc');
+        req.session = {};
+        req.body = {};
+
+        strategy.redirect = sinon.spy();
+        expect(() => strategy.authenticate(req)).not.to.throw();
+      });
       it('can have redirect_uri and scope specified', function () {
         const strategy = new Strategy({
           client: this.client,
@@ -155,7 +165,6 @@ const { Issuer, Strategy } = require('../../lib');
         expect(target).to.include(`redirect_uri=${encodeURIComponent('https://example.com/cb')}`);
         expect(target).to.include('scope=openid%20profile');
       });
-
       it('automatically includes nonce for where it applies', function () {
         const strategy = new Strategy({
           client: this.client,
