@@ -89,7 +89,52 @@ const { Issuer, Strategy } = require('../../lib');
         expect(req.session).to.have.property('oidc:op.example.com');
         expect(req.session['oidc:op.example.com']).to.have.keys('state');
       });
+      it('copies all querystring parameters from the request if copyParams is truthy', function () {
+        const strategy = new Strategy({ client: this.client, copyParams: true }, () => {});
 
+        const req = new MockRequest('POST', '/login/oidc');
+        req.session = {};
+        req.body = {};
+        req.query = {
+          foo: 'bar',
+          hello: 'world',
+        };
+
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
+
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include('redirect_uri=');
+        expect(target).to.include('scope=');
+        expect(target).to.include('foo=bar');
+        expect(target).to.include('hello=world');
+        expect(req.session).to.have.property('oidc:op.example.com');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state');
+      });
+      it('copies querystring parameters that exist as properties in copyParams if copyParams is an object', function () {
+        const strategy = new Strategy({ client: this.client, copyParams: ['foo'] }, () => {});
+
+        const req = new MockRequest('POST', '/login/oidc');
+        req.session = {};
+        req.body = {};
+        req.query = {
+          foo: 'bar',
+          hello: 'world',
+        };
+
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req);
+
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include('redirect_uri=');
+        expect(target).to.include('scope=');
+        expect(target).to.include('foo=bar');
+        expect(target).not.to.include('hello=world');
+        expect(req.session).to.have.property('oidc:op.example.com');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state');
+      });
       it('can have redirect_uri and scope specified', function () {
         const strategy = new Strategy({
           client: this.client,

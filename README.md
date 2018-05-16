@@ -407,6 +407,7 @@ const params = {
   // redirect_uri defaults to client.redirect_uris[0]
   // response type defaults to client.response_types[0], then 'code'
   // scope defaults to 'openid'
+  // copyParams truthy to copy all querystring parameters from the request, or an array containing specific names to copy
 }
 const passReqToCallback = false; // optional, defaults to false, when true req is passed as a first
                                  // argument to verify fn
