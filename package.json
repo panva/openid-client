@@ -43,7 +43,7 @@
     "lint"
   ],
   "dependencies": {
-    "base64-url": "^2.2.0",
+    "base64url": "^3.0.0",
     "got": "^8.3.1",
     "lodash": "^4.17.10",
     "lru-cache": "^4.1.3",

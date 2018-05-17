@@ -1,5 +1,5 @@
 const sinon = require('sinon');
-const base64url = require('base64-url');
+const base64url = require('base64url');
 const { expect } = require('chai');
 const TokenSet = require('../../lib/token_set');
 const now = require('../../lib/unix_timestamp');
