@@ -97,7 +97,7 @@ module.exports = (issuer) => {
       redirect_uris: [url.resolve(ctx.href, '/cb')],
     }, preset.registration);
 
-    const client = await issuer.Client.register(metadata, keystore);
+    const client = await issuer.Client.register(metadata, { keystore });
     client.CLOCK_TOLERANCE = 5;
     CLIENTS.set(ctx.session.id, client);
     ctx.session.authorization_params = preset.authorization_params;
