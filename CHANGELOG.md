@@ -33,7 +33,13 @@ Yay for [SemVer](http://semver.org/).
 <!-- TOC END -->
 
 ## Version 2.0.x
+### Version 2.0.4
+- [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.3...v2.0.4)
+- fixed circular when serializing OpenIdConnectError
+- base64url dependency update
+
 ### Version 2.0.3
+- [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.2...v2.0.3)
 - base64url dependency replaced
 
 ### Version 2.0.2
