@@ -5,6 +5,7 @@ Yay for [SemVer](http://semver.org/).
 **Table of Contents**
 
 <!-- TOC START min:2 max:2 link:true update:true -->
+- [Version 2.1.0](#version-210)
 - [Version 2.0.x](#version-20x)
 - [Version 1.20.0](#version-1200)
 - [Version 1.19.x](#version-119x)
@@ -31,6 +32,11 @@ Yay for [SemVer](http://semver.org/).
 - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- TOC END -->
+
+## Version 2.1.0
+- [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.4...v2.1.0)
+- `node-jose` dependency bumped to major ^1.0.0 - fixes `A\d{3}GCMKW` symmetrical encryption support
+- dependency updates
 
 ## Version 2.0.x
 ### Version 2.0.4
