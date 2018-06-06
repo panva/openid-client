@@ -60,7 +60,7 @@ Yay for [SemVer](http://semver.org/).
     don't currently follow the standard. A proper way of submitting client_id and client_secret using
     `client_secret_basic` is `Authorization: base64(formEncode(client_id):formEncode(client_secret))`. 
     If your client_id and client_secret does contain special characters that need encoding this does not
-    affect you.
+    affect you. If it does, try using `client_secret_post` instead.
 
 ### Version 2.0.0
 - 2018-04-12 [DIFF](https://github.com/panva/node-openid-client/compare/v1.20.0...v2.0.0)
