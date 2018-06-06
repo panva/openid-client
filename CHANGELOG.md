@@ -54,8 +54,13 @@ Yay for [SemVer](http://semver.org/).
 
 ### Version 2.0.1
 - 2018-04-26 [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.0...v2.0.1)
-- fixed client_secret_basic client auth for non-ascii characters according to
-  https://tools.ietf.org/html/rfc6749#section-2.3.1
+- fixed `client_secret_basic` requiring the username and password tokens to be `x-www-form-urlencoded`
+  according to https://tools.ietf.org/html/rfc6749#section-2.3.1
+  - NOTE: Although technically a fix, this is a breaking change when used with providers that also 
+    don't currently follow the standard. A proper way of submitting client_id and client_secret using
+    `client_secret_basic` is `Authorization: base64(formEncode(client_id):formEncode(client_secret))`. 
+    If your client_id and client_secret does contain special characters that need encoding this does not
+    affect you.
 
 ### Version 2.0.0
 - 2018-04-12 [DIFF](https://github.com/panva/node-openid-client/compare/v1.20.0...v2.0.0)
