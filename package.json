@@ -67,7 +67,7 @@
     "pre-commit": "^1.2.2",
     "readable-mock-req": "^0.2.2",
     "request": "^2.87.0",
-    "sinon": "^5.0.10",
+    "sinon": "^6.0.0",
     "timekeeper": "^2.1.2"
   },
   "engines": {
