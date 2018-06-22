@@ -4,19 +4,14 @@ module.exports = {
       grant_types: ['authorization_code'],
       response_types: ['code'],
     },
-    keystore: undefined,
-    authorization_params: {
-      scope: 'openid phone',
-    },
   },
   with_refresh: {
     registration: {
       grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],
     },
-    keystore: undefined,
     authorization_params: {
-      scope: 'openid phone offline_access',
+      scope: 'openid profile email address phone offline_access',
       prompt: 'consent',
     },
   },
@@ -25,12 +20,9 @@ module.exports = {
       grant_types: ['implicit'],
       response_types: ['id_token token'],
     },
-    keystore: undefined,
     authorization_params: {
-      scope: 'openid',
       response_type: 'id_token token',
       response_mode: 'form_post',
-      claims: { id_token: { email_verified: null } },
     },
   },
   hybrid: {
@@ -38,9 +30,7 @@ module.exports = {
       grant_types: ['authorization_code', 'implicit'],
       response_types: ['code id_token'],
     },
-    keystore: undefined,
     authorization_params: {
-      scope: 'openid',
       response_type: 'code id_token',
       response_mode: 'form_post',
     },
@@ -103,6 +93,5 @@ module.exports = {
       id_token_encrypted_response_alg: 'PBES2-HS512+A256KW',
       id_token_signed_response_alg: 'HS512',
     },
-    keystore: undefined,
   },
 };

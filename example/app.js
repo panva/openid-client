@@ -156,12 +156,8 @@ module.exports = (issuer) => {
     ctx.session.nonce = crypto.randomBytes(16).toString('hex');
 
     const authorizationRequest = Object.assign({
-      claims: {
-        id_token: { email_verified: null },
-        userinfo: { sub: null, email: null },
-      },
       redirect_uri: url.resolve(ctx.href, 'cb'),
-      scope: 'openid',
+      scope: 'openid profile email address phone',
       state: ctx.session.state,
       nonce: ctx.session.nonce,
     }, ctx.session.authorization_params);
