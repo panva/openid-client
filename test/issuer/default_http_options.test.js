@@ -1,5 +1,6 @@
-const { Issuer } = require('../../lib');
 const { expect } = require('chai');
+
+const { Issuer } = require('../../lib');
 
 describe('Issuer#defaultHttpOptions', function () {
   it('does not follow redirects', function () {

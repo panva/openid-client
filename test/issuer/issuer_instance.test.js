@@ -1,9 +1,10 @@
-const { Issuer } = require('../../lib');
 const { expect } = require('chai');
 const LRU = require('lru-cache');
 const nock = require('nock');
 const sinon = require('sinon');
 const jose = require('node-jose');
+
+const { Issuer } = require('../../lib');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 

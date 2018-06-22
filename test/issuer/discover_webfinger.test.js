@@ -1,6 +1,7 @@
-const { Issuer, Registry } = require('../../lib');
 const { expect } = require('chai');
 const nock = require('nock');
+
+const { Issuer, Registry } = require('../../lib');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 

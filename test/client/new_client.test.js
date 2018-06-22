@@ -1,6 +1,7 @@
+const { expect } = require('chai');
+
 const Issuer = require('../../lib/issuer');
 const Client = require('../../lib/client');
-const { expect } = require('chai');
 
 describe('new Client()', function () {
   it('accepts the recognized metadata', function () {

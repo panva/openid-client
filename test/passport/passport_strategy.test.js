@@ -1,7 +1,9 @@
 const http = require('http');
+
 const sinon = require('sinon');
 const MockRequest = require('readable-mock-req');
 const { expect } = require('chai');
+
 const { Issuer, Strategy } = require('../../lib');
 
 ['useGot', 'useRequest'].forEach((httpProvider) => {

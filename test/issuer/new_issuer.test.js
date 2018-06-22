@@ -1,5 +1,6 @@
-const { Issuer } = require('../../lib');
 const { expect } = require('chai');
+
+const { Issuer } = require('../../lib');
 
 describe('new Issuer()', function () {
   it('accepts the recognized metadata', function () {

@@ -1,7 +1,8 @@
-const Issuer = require('../../lib/issuer');
 const { expect } = require('chai');
 const jose = require('node-jose');
 const nock = require('nock');
+
+const Issuer = require('../../lib/issuer');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 const issuer = new Issuer({

@@ -1,12 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-const _ = require('lodash');
-const Koa = require('koa');
 const crypto = require('crypto');
 const url = require('url');
+const path = require('path');
+
+const _ = require('lodash');
+const Koa = require('koa');
 const uuid = require('uuid/v4');
 const jose = require('node-jose');
-const path = require('path');
 const Router = require('koa-router');
 const body = require('koa-body');
 const session = require('koa-session');

@@ -1,19 +1,21 @@
-const { Registry, Issuer } = require('../../lib');
+const url = require('url');
+const querystring = require('querystring');
+const stdhttp = require('http');
+
 const MockRequest = require('readable-mock-req');
 const _ = require('lodash');
 const { expect } = require('chai');
-const Client = require('../../lib/client');
-const now = require('../../lib/unix_timestamp');
-const url = require('url');
-const querystring = require('querystring');
 const base64url = require('base64url');
 const nock = require('nock');
 const sinon = require('sinon');
-const OpenIdConnectError = require('../../lib/open_id_connect_error');
-const TokenSet = require('../../lib/token_set');
-const stdhttp = require('http');
 const jose = require('node-jose');
 const timekeeper = require('timekeeper');
+
+const TokenSet = require('../../lib/token_set');
+const OpenIdConnectError = require('../../lib/open_id_connect_error');
+const now = require('../../lib/unix_timestamp');
+const Client = require('../../lib/client');
+const { Registry, Issuer } = require('../../lib');
 
 const noop = () => {};
 const fail = () => { throw new Error('expected promise to be rejected'); };
@@ -376,7 +378,6 @@ const encode = object => base64url.encode(JSON.stringify(object));
           });
       });
     });
-
 
     describe('#refresh', function () {
       before(function () {
@@ -2103,7 +2104,6 @@ const encode = object => base64url.encode(JSON.stringify(object));
           });
       });
     });
-
 
     /* eslint-disable max-len */
     describe('signed and encrypted responses', function () {
