@@ -12,6 +12,7 @@ const Router = require('koa-router');
 const body = require('koa-body');
 const session = require('koa-session');
 const render = require('koa-ejs');
+const LRU = require('lru-cache')();
 
 const PRESETS = require('./presets');
 
@@ -31,13 +32,22 @@ module.exports = (issuer) => {
   }
 
   app.keys = ['some secret hurr'];
-  app.use(session(app));
-
-  const CLIENTS = new Map();
-  const TOKENS = new Map();
+  app.use(session({
+    store: {
+      get(key) {
+        return LRU.get(key);
+      },
+      set(key, sess, maxAge) {
+        LRU.set(key, sess, maxAge);
+      },
+      destroy(key) {
+        LRU.del(key);
+      },
+    },
+  }, app));
 
   render(app, {
-    cache: false,
+    cache: true,
     layout: '_layout',
     root: path.join(__dirname, 'views'),
   });
@@ -56,7 +66,7 @@ module.exports = (issuer) => {
   });
 
   app.use(async (ctx, next) => {
-    if (!CLIENTS.has(ctx.session.id) && !ctx.path.startsWith('/setup')) {
+    if (!ctx.session.client && !ctx.path.startsWith('/setup')) {
       ctx.redirect('/setup');
     }
     await next();
@@ -70,8 +80,8 @@ module.exports = (issuer) => {
   });
 
   router.get('/rpframe', async (ctx, next) => {
-    const clientId = CLIENTS.get(ctx.session.id).client_id;
-    const sessionState = TOKENS.get(ctx.session.id).session_state;
+    const clientId = ctx.session.client.client_id;
+    const sessionState = ctx.session.tokenset.session_state;
     await ctx.render('rp_frame', {
       session: ctx.session, layout: false, issuer, clientId, sessionState,
     });
@@ -86,21 +96,30 @@ module.exports = (issuer) => {
   router.post('/setup/:preset', async (ctx, next) => {
     let keystore;
     const preset = PRESETS[ctx.params.preset];
-    ctx.session.loggedIn = false;
+    const metadata = {};
 
     if (preset.keystore) {
       keystore = jose.JWK.createKeyStore();
       await keystore.generate(...preset.keystore);
+      ctx.session.keystore = keystore;
+      if (process.env.NODE_ENV === 'production') {
+        Object.assign(metadata, {
+          jwks_uri: url.resolve(ctx.href, router.url('jwks', { session_id: ctx.session.id })),
+        });
+      }
+    } else {
+      ctx.session.keystore = undefined;
     }
 
-    const metadata = Object.assign({
+    Object.assign(metadata, {
       post_logout_redirect_uris: [url.resolve(ctx.href, '/')],
       redirect_uris: [url.resolve(ctx.href, '/cb')],
     }, preset.registration);
 
     const client = await issuer.Client.register(metadata, { keystore });
     client.CLOCK_TOLERANCE = 5;
-    CLIENTS.set(ctx.session.id, client);
+    ctx.session.tokenset = undefined;
+    ctx.session.client = client;
     ctx.session.authorization_params = preset.authorization_params;
 
     ctx.redirect('/client');
@@ -117,37 +136,31 @@ module.exports = (issuer) => {
   });
 
   router.get('/client', async (ctx, next) => {
-    await ctx.render('client', { client: CLIENTS.get(ctx.session.id), session: ctx.session, issuer });
+    await ctx.render('client', { client: ctx.session.client, session: ctx.session, issuer });
     return next();
   });
 
   router.get('/logout', async (ctx, next) => {
-    const { id } = ctx.session;
-    ctx.session.loggedIn = false;
+    const { client, tokenset: tokens } = ctx.session;
 
-    if (!TOKENS.has(id)) {
-      return ctx.redirect('/');
+    if (tokens) {
+      try {
+        await Promise.all([
+          tokens.access_token ? client.revoke(tokens.access_token, 'access_token') : undefined,
+          tokens.refresh_token ? client.revoke(tokens.refresh_token, 'refresh_token') : undefined,
+        ]);
+      } catch (err) {}
+      ctx.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
+        search: null,
+        query: {
+          id_token_hint: tokens.id_token,
+          post_logout_redirect_uri: url.resolve(ctx.href, '/'),
+        },
+      })));
+    } else {
+      ctx.redirect('/');
     }
-
-    const tokens = TOKENS.get(id);
-    TOKENS.delete(id);
-
-    const client = CLIENTS.get(id);
-
-    try {
-      await Promise.all([
-        tokens.access_token ? client.revoke(tokens.access_token, 'access_token') : undefined,
-        tokens.refresh_token ? client.revoke(tokens.refresh_token, 'refresh_token') : undefined,
-      ]);
-    } catch (err) {}
-
-    ctx.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
-      search: null,
-      query: {
-        id_token_hint: tokens.id_token,
-        post_logout_redirect_uri: url.resolve(ctx.href, '/'),
-      },
-    })));
+    ctx.session = null;
 
     return next();
   });
@@ -156,31 +169,32 @@ module.exports = (issuer) => {
     ctx.session.state = crypto.randomBytes(16).toString('hex');
     ctx.session.nonce = crypto.randomBytes(16).toString('hex');
 
+    const { client } = ctx.session;
+
     const authorizationRequest = Object.assign({
       redirect_uri: url.resolve(ctx.href, 'cb'),
       scope: 'openid profile email address phone',
       state: ctx.session.state,
       nonce: ctx.session.nonce,
+      response_type: client.response_types[0],
     }, ctx.session.authorization_params);
 
-    const authz = CLIENTS.get(ctx.session.id).authorizationUrl(authorizationRequest);
-
-    ctx.redirect(authz);
+    ctx.redirect(client.authorizationUrl(authorizationRequest));
     return next();
   });
 
   router.get('/refresh', async (ctx, next) => {
-    if (!TOKENS.has(ctx.session.id)) {
+    if (!ctx.session.tokenset) {
       ctx.session = null;
       ctx.redirect('/');
     } else {
-      const tokens = TOKENS.get(ctx.session.id);
-      const client = CLIENTS.get(ctx.session.id);
+      const tokens = ctx.session.tokenset;
+      const { client } = ctx.session;
 
       const refreshed = await client.refresh(tokens);
       refreshed.session_state = tokens.session_state;
 
-      TOKENS.set(ctx.session.id, refreshed);
+      ctx.session.tokenset = refreshed;
 
       ctx.redirect('/user');
     }
@@ -189,18 +203,18 @@ module.exports = (issuer) => {
   });
 
   router.get('/cb', async (ctx, next) => {
+    const { client } = ctx.session;
+    const params = client.callbackParams(ctx.request.req);
+
+    if (_.isEmpty(params)) { // probably a fragment response
+      return ctx.render('repost', { layout: false });
+    }
+
     const { state, nonce } = ctx.session;
     delete ctx.session.state;
     delete ctx.session.nonce;
-    const client = CLIENTS.get(ctx.session.id);
-    const params = client.callbackParams(ctx.request.req);
 
-    TOKENS.set(
-      ctx.session.id,
-      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state })
-    );
-
-    ctx.session.loggedIn = true;
+    ctx.session.tokenset = await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state });
 
     ctx.redirect('/user');
 
@@ -211,19 +225,27 @@ module.exports = (issuer) => {
     const { state, nonce } = ctx.session;
     delete ctx.session.state;
     delete ctx.session.nonce;
-    const client = CLIENTS.get(ctx.session.id);
+    const { client } = ctx.session;
     const params = client.callbackParams(ctx.request.req);
 
-    TOKENS.set(
-      ctx.session.id,
-      await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state })
-    );
-
-    ctx.session.loggedIn = true;
+    ctx.session.tokenset = await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state });
 
     ctx.redirect('/user');
 
     return next();
+  });
+
+  router.get('jwks', '/:session_id/jwks.json', async (ctx) => {
+    const { keystore } = LRU.get(ctx.params.session_id) || {};
+    if (keystore) {
+      ctx.body = keystore.toJSON();
+    } else {
+      ctx.status = 404;
+      ctx.body = {
+        error: 'invalid_request',
+        error_description: 'jwks for this client not found',
+      };
+    }
   });
 
   function rejectionHandler(error) {
@@ -235,12 +257,11 @@ module.exports = (issuer) => {
   }
 
   router.get('/user', async (ctx, next) => {
-    if (!TOKENS.has(ctx.session.id)) {
-      ctx.session.loggedIn = false;
+    const tokens = ctx.session.tokenset;
+    if (!tokens) {
       return ctx.redirect('/client');
     }
-    const tokens = TOKENS.get(ctx.session.id);
-    const client = CLIENTS.get(ctx.session.id);
+    const { client } = ctx.session;
 
     const context = {
       tokens,
