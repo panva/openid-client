@@ -4,8 +4,9 @@ Yay for [SemVer](http://semver.org/).
 
 **Table of Contents**
 
-<!-- TOC START min:2 max:2 link:true update:true -->
-- [Version 2.1.0](#version-210)
+<!-- TOC depthFrom:2 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Version 2.1.x](#version-21x)
 - [Version 2.0.x](#version-20x)
 - [Version 1.20.0](#version-1200)
 - [Version 1.19.x](#version-119x)
@@ -31,9 +32,14 @@ Yay for [SemVer](http://semver.org/).
 - [Migrating from 0.x to 1.0](#migrating-from-0x-to-10)
 - [pre 1.x changelog](#pre-1x-changelog)
 
-<!-- TOC END -->
+<!-- /TOC -->
 
-## Version 2.1.0
+## Version 2.1.x
+### Version 2.1.1
+- 2018-06-28 [DIFF](https://github.com/panva/node-openid-client/compare/v2.1.0...v2.1.1)
+- fixed handling of bearer endpoint responses with www-authenticate headers only. fixes #102
+
+### Version 2.1.0
 - 2018-05-31 [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.4...v2.1.0)
 - `node-jose` dependency bumped to major ^1.0.0 - fixes `A\d{3}GCMKW` symmetrical encryption support
 - dependency updates
@@ -56,9 +62,9 @@ Yay for [SemVer](http://semver.org/).
 - 2018-04-26 [DIFF](https://github.com/panva/node-openid-client/compare/v2.0.0...v2.0.1)
 - fixed `client_secret_basic` requiring the username and password tokens to be `x-www-form-urlencoded`
   according to https://tools.ietf.org/html/rfc6749#section-2.3.1
-  - NOTE: Although technically a fix, this is a breaking change when used with providers that also 
+  - NOTE: Although technically a fix, this is a breaking change when used with providers that also
     don't currently follow the standard. A proper way of submitting client_id and client_secret using
-    `client_secret_basic` is `Authorization: base64(formEncode(client_id):formEncode(client_secret))`. 
+    `client_secret_basic` is `Authorization: base64(formEncode(client_id):formEncode(client_secret))`.
     If your client_id and client_secret does contain special characters that need encoding this does not
     affect you. If it does, try using `client_secret_post` instead.
 
