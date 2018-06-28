@@ -49,7 +49,24 @@ const issuer = new Issuer({
 
       return issuer.Client.register({})
         .then(fail, function (error) {
+          expect(error.name).to.equal('OpenIdConnectError');
           expect(error).to.have.property('error', 'server_error');
+          expect(error).to.have.property('error_description', 'bad things are happening');
+        });
+    });
+
+    it('is rejected with OpenIdConnectError upon oidc error in www-authenticate header', function () {
+      nock('https://op.example.com')
+        .post('/client/registration')
+        .reply(401, 'Unauthorized', {
+          'WWW-Authenticate': 'Bearer error="invalid_token", error_description="bad things are happening"',
+        });
+
+      return issuer.Client.register({})
+        .then(fail, function (error) {
+          expect(error.name).to.equal('OpenIdConnectError');
+          expect(error).to.have.property('error', 'invalid_token');
+          expect(error).to.have.property('error_description', 'bad things are happening');
         });
     });
 

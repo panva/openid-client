@@ -660,6 +660,25 @@ const encode = object => base64url.encode(JSON.stringify(object));
           .then(fail, function (error) {
             expect(error.name).to.equal('OpenIdConnectError');
             expect(error).to.have.property('error', 'invalid_token');
+            expect(error).to.have.property('error_description', 'bad things are happening');
+          });
+      });
+
+      it('is rejected with OpenIdConnectError upon oidc error in www-authenticate header', function () {
+        const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+        const client = new issuer.Client();
+
+        nock('https://op.example.com')
+          .get('/me')
+          .reply(401, 'Unauthorized', {
+            'WWW-Authenticate': 'Bearer error="invalid_token", error_description="bad things are happening"',
+          });
+
+        return client.userinfo()
+          .then(fail, function (error) {
+            expect(error.name).to.equal('OpenIdConnectError');
+            expect(error).to.have.property('error', 'invalid_token');
+            expect(error).to.have.property('error_description', 'bad things are happening');
           });
       });
 
@@ -822,6 +841,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
           return client[method]('tokenValue')
             .then(fail, function (error) {
               expect(error).to.have.property('error', 'server_error');
+              expect(error).to.have.property('error_description', 'bad things are happening');
             });
         });
 
@@ -1946,6 +1966,33 @@ const encode = object => base64url.encode(JSON.stringify(object));
           .then(fail, function (error) {
             expect(error.name).to.equal('OpenIdConnectError');
             expect(error).to.have.property('error', 'invalid_token');
+            expect(error).to.have.property('error_description', 'bad things are happening');
+            expect(error).to.have.property('src', 'src1');
+          });
+      });
+
+      it('is rejected with OpenIdConnectError upon oidc error in www-authenticate header', function () {
+        nock('https://src1.example.com')
+          .get('/claims')
+          .reply(401, 'Unauthorized', {
+            'WWW-Authenticate': 'Bearer error="invalid_token", error_description="bad things are happening"',
+          });
+
+        const userinfo = {
+          sub: 'userID',
+          _claim_names: {
+            credit_history: 'src1',
+          },
+          _claim_sources: {
+            src1: { endpoint: 'https://src1.example.com/claims', access_token: 'foobar' },
+          },
+        };
+
+        return this.client.fetchDistributedClaims(userinfo)
+          .then(fail, function (error) {
+            expect(error.name).to.equal('OpenIdConnectError');
+            expect(error).to.have.property('error', 'invalid_token');
+            expect(error).to.have.property('error_description', 'bad things are happening');
             expect(error).to.have.property('src', 'src1');
           });
       });
