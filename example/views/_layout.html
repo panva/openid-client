@@ -26,7 +26,7 @@
             <li><a href="/client">Client</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <% if (session.tokenset) { %>
+            <% if (session && session.loggedIn) { %>
               <li><a href="/user">Who am i?</a></li>
               <li><a href="/logout">Logout</a></li>
             <% } else {%>
@@ -39,7 +39,7 @@
     </nav>
     <div class="container">
       <%- body %>
-      <% if (session.tokenset && issuer.check_session_iframe) { %>
+      <% if (session && session.loggedIn && issuer.check_session_iframe) { %>
         <iframe width="1" height="1" style="position:absolute;left:-100px;top:-100px" id="opframe" src="<%= issuer.check_session_iframe %>"></iframe>
         <iframe width="1" height="1" style="position:absolute;left:-100px;top:-100px" id="rpframe" src="/rpframe"></iframe>
       <% } %>
