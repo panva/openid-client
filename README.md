@@ -25,7 +25,7 @@ Node.js lts/argon end of life on [2018-04-30](https://github.com/nodejs/Release)
 The following client/RP features from OpenID Connect/OAuth2.0 specifications are implemented by
 openid-client.
 
-- [OpenID Connect Core 1.0 incorporating errata set 1][feature-core]
+- [OpenID Connect Core 1.0][feature-core]
   - Authorization Callback
     - Authorization Code Flow
     - Implicit Flow
@@ -41,10 +41,10 @@ openid-client.
     - client_secret_post
     - client_secret_jwt
     - private_key_jwt
-- [OpenID Connect Discovery 1.0 incorporating errata set 1][feature-discovery]
+- [RFC8414 - OAuth 2.0 Authorization Server Metadata][feature-oauth-discovery] and [OpenID Connect Discovery 1.0][feature-discovery]
   - Discovery of OpenID Provider (Issuer) Metadata
   - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (see [WebFinger](#webfinger-discovery))
-- [OpenID Connect Dynamic Client Registration 1.0 incorporating errata set 1][feature-registration]
+- [OpenID Connect Dynamic Client Registration 1.0][feature-registration]
   - Dynamic Client Registration request
   - Client initialization via registration client uri
 - [RFC7009 - OAuth 2.0 Token revocation][feature-revocation]
@@ -518,6 +518,7 @@ Issuer.useRequest();
 [oidc-provider]: https://github.com/panva/node-oidc-provider
 [feature-core]: http://openid.net/specs/openid-connect-core-1_0.html
 [feature-discovery]: http://openid.net/specs/openid-connect-discovery-1_0.html
+[feature-oauth-discovery]: https://tools.ietf.org/html/rfc8414
 [feature-registration]: http://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662

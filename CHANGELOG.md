@@ -6,6 +6,7 @@ Yay for [SemVer](http://semver.org/).
 
 <!-- TOC depthFrom:2 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
 
+- [Version 2.2.0](#version-220)
 - [Version 2.1.x](#version-21x)
 - [Version 2.0.x](#version-20x)
 - [Version 1.20.0](#version-1200)
@@ -33,6 +34,13 @@ Yay for [SemVer](http://semver.org/).
 - [pre 1.x changelog](#pre-1x-changelog)
 
 <!-- /TOC -->
+
+## Version 2.2.0
+- 2018-07-04 [DIFF](https://github.com/panva/node-openid-client/compare/v2.1.1...v2.2.0)
+- added support for [RFC8414 - OAuth 2.0 Authorization Server Metadata](https://tools.ietf.org/html/rfc8414)
+  discovery
+- `encrypted_id_token` property added to TokenSet instances with the value of the encrypted ID Token
+  value before its decryption
 
 ## Version 2.1.x
 ### Version 2.1.1
