@@ -47,6 +47,10 @@ module.exports = (issuer) => {
       },
     },
   }, app));
+  app.use((ctx, next) => {
+    ctx.session.save(); // save this session no matter whether it is populated
+    return next();
+  });
 
   render(app, {
     cache: true,
@@ -63,7 +67,7 @@ module.exports = (issuer) => {
   });
 
   app.use(async (ctx, next) => {
-    if (!ctx.session.client && !ctx.path.startsWith('/setup')) {
+    if (!ctx.session.client && !ctx.path.startsWith('/setup') && !ctx.path.endsWith('/jwks.json')) {
       ctx.redirect('/setup');
     }
     await next();
