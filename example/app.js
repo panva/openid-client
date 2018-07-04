@@ -6,7 +6,6 @@ const path = require('path');
 
 const _ = require('lodash');
 const Koa = require('koa');
-const uuid = require('uuid/v4');
 const jose = require('node-jose');
 const Router = require('koa-router');
 const body = require('koa-body');
@@ -15,6 +14,8 @@ const render = require('koa-ejs');
 const LRU = require('lru-cache')();
 
 const PRESETS = require('./presets');
+
+const SESSION_KEY = 'rp:sess';
 
 module.exports = (issuer) => {
   const app = new Koa();
@@ -33,6 +34,7 @@ module.exports = (issuer) => {
 
   app.keys = ['some secret hurr'];
   app.use(session({
+    key: SESSION_KEY,
     store: {
       get(key) {
         return LRU.get(key);
@@ -50,11 +52,6 @@ module.exports = (issuer) => {
     cache: true,
     layout: '_layout',
     root: path.join(__dirname, 'views'),
-  });
-
-  app.use(async (ctx, next) => {
-    ctx.session.id = ctx.session.id || uuid();
-    await next();
   });
 
   app.use(async (ctx, next) => {
@@ -104,7 +101,7 @@ module.exports = (issuer) => {
       ctx.session.keystore = keystore;
       if (process.env.NODE_ENV === 'production') {
         Object.assign(metadata, {
-          jwks_uri: url.resolve(ctx.href, router.url('jwks', { session_id: ctx.session.id })),
+          jwks_uri: url.resolve(ctx.href, router.url('jwks', { session_id: ctx.cookies.get(SESSION_KEY) })),
         });
       }
     } else {
