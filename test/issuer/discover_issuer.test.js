@@ -88,7 +88,7 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
     describe('/.well-known/oauth-authorization-server', function () {
       it('accepts and assigns the discovered metadata', function () {
         nock('https://op.example.com', { allowUnmocked: true })
-          .get('/.well-known/oauth-authorization-server')
+          .get('/oauth2/.well-known/oauth-authorization-server')
           .reply(200, {
             authorization_endpoint: 'https://op.example.com/o/oauth2/v2/auth',
             issuer: 'https://op.example.com',
@@ -97,7 +97,7 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
             userinfo_endpoint: 'https://op.example.com/oauth2/v3/userinfo',
           });
 
-        return Issuer.discover('https://op.example.com/.well-known/oauth-authorization-server').then(function (issuer) {
+        return Issuer.discover('https://op.example.com/oauth2/.well-known/oauth-authorization-server').then(function (issuer) {
           expect(issuer).to.have.property('authorization_endpoint', 'https://op.example.com/o/oauth2/v2/auth');
           expect(issuer).to.have.property('issuer', 'https://op.example.com');
           expect(issuer).to.have.property('jwks_uri', 'https://op.example.com/oauth2/v3/certs');
@@ -108,13 +108,13 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
 
       it('discovering issuers with well known uri including path and query', function () {
         nock('https://op.example.com', { allowUnmocked: true })
-          .get('/.well-known/oauth-authorization-server/oauth2')
+          .get('/oauth2/.well-known/oauth-authorization-server')
           .query({ foo: 'bar' })
           .reply(200, {
             issuer: 'https://op.example.com/oauth2',
           });
 
-        return Issuer.discover('https://op.example.com/.well-known/oauth-authorization-server/oauth2?foo=bar').then(function (issuer) {
+        return Issuer.discover('https://op.example.com/oauth2/.well-known/oauth-authorization-server?foo=bar').then(function (issuer) {
           expect(issuer).to.have.property('issuer', 'https://op.example.com/oauth2');
         });
       });
