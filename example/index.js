@@ -7,6 +7,8 @@ const {
 
 const appFactory = require('./app');
 
+Issuer.defaultHttpOptions = { timeout: 5000 };
+
 Issuer.discover(ISSUER).then((issuer) => {
   const app = appFactory(issuer);
   app.listen(PORT);
