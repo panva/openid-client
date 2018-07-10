@@ -13,8 +13,7 @@ const timekeeper = require('timekeeper');
 
 const TokenSet = require('../../lib/token_set');
 const OpenIdConnectError = require('../../lib/open_id_connect_error');
-const now = require('../../lib/unix_timestamp');
-const Client = require('../../lib/client');
+const now = require('../../lib/util/unix_timestamp');
 const { Registry, Issuer } = require('../../lib');
 
 const noop = () => {};
@@ -453,7 +452,8 @@ const encode = object => base64url.encode(JSON.stringify(object));
     });
 
     it('#joseSecret', function () {
-      const client = new Client({ client_secret: 'rj_JR' });
+      const issuer = new Issuer();
+      const client = new issuer.Client({ client_secret: 'rj_JR' });
 
       return client.joseSecret()
         .then((key) => {
@@ -465,7 +465,8 @@ const encode = object => base64url.encode(JSON.stringify(object));
     });
 
     it('#derivedKey', function () {
-      const client = new Client({ client_secret: 'rj_JR' });
+      const issuer = new Issuer();
+      const client = new issuer.Client({ client_secret: 'rj_JR' });
 
       return client.derivedKey('128')
         .then((key) => {
@@ -916,7 +917,8 @@ const encode = object => base64url.encode(JSON.stringify(object));
     describe('#authFor', function () {
       context('when none', function () {
         it('returns the body httpOptions', function () {
-          const client = new Client({
+          const issuer = new Issuer();
+          const client = new issuer.Client({
             client_id: 'identifier',
             client_secret: 'secure',
             token_endpoint_auth_method: 'none',
@@ -929,7 +931,8 @@ const encode = object => base64url.encode(JSON.stringify(object));
 
       context('when client_secret_post', function () {
         it('returns the body httpOptions', function () {
-          const client = new Client({
+          const issuer = new Issuer();
+          const client = new issuer.Client({
             client_id: 'identifier',
             client_secret: 'secure',
             token_endpoint_auth_method: 'client_secret_post',
@@ -942,14 +945,16 @@ const encode = object => base64url.encode(JSON.stringify(object));
 
       context('when client_secret_basic', function () {
         it('is the default', function () {
-          const client = new Client({ client_id: 'identifier', client_secret: 'secure' });
+          const issuer = new Issuer();
+          const client = new issuer.Client({ client_id: 'identifier', client_secret: 'secure' });
           expect(client.authFor('token')).to.eql({
             headers: { Authorization: 'Basic aWRlbnRpZmllcjpzZWN1cmU=' },
           });
         });
 
         it('works with non-text characters', function () {
-          const client = new Client({ client_id: 'an:identifier', client_secret: 'some secure & non-standard secret' });
+          const issuer = new Issuer();
+          const client = new issuer.Client({ client_id: 'an:identifier', client_secret: 'some secure & non-standard secret' });
           expect(client.authFor('token')).to.eql({
             headers: { Authorization: 'Basic YW4lM0FpZGVudGlmaWVyOnNvbWUrc2VjdXJlKyUyNitub24tc3RhbmRhcmQrc2VjcmV0' },
           });

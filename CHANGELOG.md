@@ -39,8 +39,6 @@ Yay for [SemVer](http://semver.org/).
 - 2018-07-04 [DIFF](https://github.com/panva/node-openid-client/compare/v2.1.1...v2.2.0)
 - added support for [RFC8414 - OAuth 2.0 Authorization Server Metadata](https://tools.ietf.org/html/rfc8414)
   discovery
-- `encrypted_id_token` property added to TokenSet instances with the value of the encrypted ID Token
-  value before its decryption
 
 ## Version 2.1.x
 ### Version 2.1.1

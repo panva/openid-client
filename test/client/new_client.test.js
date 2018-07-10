@@ -1,14 +1,14 @@
 const { expect } = require('chai');
 
 const Issuer = require('../../lib/issuer');
-const Client = require('../../lib/client');
 
 describe('new Client()', function () {
   it('accepts the recognized metadata', function () {
     let client;
 
     expect(function () {
-      client = new Client({
+      const issuer = new Issuer();
+      client = new issuer.Client({
         client_id: 'identifier',
         client_secret: 'secure',
       });
@@ -19,7 +19,8 @@ describe('new Client()', function () {
   });
 
   it('assigns defaults to some properties', function () {
-    const client = new Client({ client_id: 'identifier' });
+    const issuer = new Issuer();
+    const client = new issuer.Client({ client_id: 'identifier' });
 
     expect(client).to.have.property('application_type').eql('web');
     expect(client).to.have.property('client_id', 'identifier');
@@ -31,27 +32,47 @@ describe('new Client()', function () {
 
   context('with keystore', function () {
     it('validates it is a keystore', function () {
+      const issuer = new Issuer();
       [{}, [], 'not a keystore', 2, true, false].forEach(function (notkeystore) {
         expect(function () {
-          new Client({}, notkeystore); // eslint-disable-line no-new
+          new issuer.Client({}, notkeystore); // eslint-disable-line no-new
         }).to.throw('keystore must be an instance of jose.JWK.KeyStore');
       });
     });
   });
 
-  context('with token_endpoint_auth_method =~ _jwt', function () {
-    it('validates the issuer has supported algs announced', function () {
-      expect(function () {
-        const issuer = new Issuer();
-        new issuer.Client({ // eslint-disable-line no-new
-          token_endpoint_auth_method: '_jwt',
-        });
-      }).to.throw('token_endpoint_auth_signing_alg_values_supported must be provided on the issuer');
+  ['introspection', 'revocation'].forEach((endpoint) => {
+    it(`autofills ${endpoint}_endpoint_auth_method`, function () {
+      const issuer = new Issuer({
+        [`${endpoint}_endpoint`]: `https://op.example.com/token/${endpoint}`,
+      });
+      const client = new issuer.Client({
+        token_endpoint_auth_method: 'client_secret_jwt',
+        token_endpoint_auth_signing_alg: 'HS512',
+      });
+      expect(client[`${endpoint}_endpoint_auth_method`]).to.equal('client_secret_jwt');
+      expect(client[`${endpoint}_endpoint_auth_signing_alg`]).to.equal('HS512');
     });
   });
 
-  it('is able to discover custom or non-recognized properties', function () {
-    const client = new Client({
+  ['token', 'introspection', 'revocation'].forEach((endpoint) => {
+    context(`with ${endpoint}_endpoint_auth_method =~ _jwt`, function () {
+      it(`validates the issuer has supported algs announced if ${endpoint}_endpoint_auth_signing_alg is not defined on a client`, function () {
+        expect(function () {
+          const issuer = new Issuer({
+            [`${endpoint}_endpoint`]: 'https://op.example.com/token',
+          });
+          new issuer.Client({ // eslint-disable-line no-new
+            [`${endpoint}_endpoint_auth_method`]: '_jwt',
+          });
+        }).to.throw(`${endpoint}_endpoint_auth_signing_alg_values_supported must be configured on the issuer if ${endpoint}_endpoint_auth_signing_alg is not defined on a client`);
+      });
+    });
+  });
+
+  it('is able to assign custom or non-recognized properties', function () {
+    const issuer = new Issuer();
+    const client = new issuer.Client({
       client_id: 'identifier',
       foo: 'bar',
     });
@@ -59,7 +80,8 @@ describe('new Client()', function () {
   });
 
   it('custom properties do not interfere with the prototype', function () {
-    const client = new Client({
+    const issuer = new Issuer();
+    const client = new issuer.Client({
       issuer: 'https://op.example.com',
       userinfo: 'foobar',
       metadata: 'foobar',

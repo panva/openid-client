@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const checkIfBearerHeaderOnlyError = require('../../lib/is_bearer_header_only_error');
+const checkIfBearerHeaderOnlyError = require('../../lib/helpers/is_bearer_header_only_error');
 
 describe('isBearerHeaderOnlyError', function () {
   it('ignores the header when scheme is not Bearer', function () {

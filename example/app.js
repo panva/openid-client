@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const url = require('url');
 const path = require('path');
 
-const _ = require('lodash');
 const Koa = require('koa');
 const jose = require('node-jose');
 const Router = require('koa-router');
@@ -207,7 +206,7 @@ module.exports = (issuer) => {
     const { client } = ctx.session;
     const params = client.callbackParams(ctx.request.req);
 
-    if (_.isEmpty(params)) { // probably a fragment response
+    if (!Object.keys(params).length) { // probably a fragment response
       return ctx.render('repost', { layout: false });
     }
 
@@ -275,7 +274,8 @@ module.exports = (issuer) => {
 
     const promises = [];
 
-    _.forEach(tokens, (value, key) => {
+    Object.keys(tokens).forEach((key) => {
+      const value = tokens[key];
       if (key.endsWith('token') && key !== 'id_token') {
         const p = client.introspect(value, key)
           .then((result) => {
@@ -284,7 +284,6 @@ module.exports = (issuer) => {
           .catch(rejectionHandler);
         promises.push(p);
       }
-      return undefined;
     });
 
     if (tokens.access_token) {

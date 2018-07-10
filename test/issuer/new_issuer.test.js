@@ -36,6 +36,29 @@ describe('new Issuer()', function () {
       .to.eql(['client_secret_basic']);
   });
 
+  ['introspection', 'revocation'].forEach((endpoint) => {
+    it(`assigns ${endpoint}_endpoint from token_${endpoint}_endpoint and removes it`, function () {
+      const issuer = new Issuer({
+        [`token_${endpoint}_endpoint`]: `https://op.example.com/token/${endpoint}`,
+      });
+
+      expect(issuer).to.have.property(`${endpoint}_endpoint`, `https://op.example.com/token/${endpoint}`);
+      expect(issuer).not.to.have.property(`token_${endpoint}_endpoint`);
+    });
+
+    it(`assigns ${endpoint} auth method meta from token if both are not defined`, function () {
+      const issuer = new Issuer({
+        token_endpoint: 'https://op.example.com/token',
+        token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post', 'client_secret_jwt'],
+        token_endpoint_auth_signing_alg_values_supported: ['RS256', 'HS256'],
+        [`${endpoint}_endpoint`]: `https://op.example.com/token/${endpoint}`,
+      });
+
+      expect(issuer).to.have.property(`${endpoint}_endpoint_auth_methods_supported`).and.eql(['client_secret_basic', 'client_secret_post', 'client_secret_jwt']);
+      expect(issuer).to.have.property(`${endpoint}_endpoint_auth_signing_alg_values_supported`).and.eql(['RS256', 'HS256']);
+    });
+  });
+
   it('is able to discover custom or non-recognized properties', function () {
     const issuer = new Issuer({
       issuer: 'https://op.example.com',
