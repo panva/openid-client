@@ -33,15 +33,12 @@
   "main": "lib/index.js",
   "repository": "panva/node-openid-client",
   "scripts": {
+    "commitmsg": "commitlint -E GIT_PARAMS",
     "coverage": "nyc mocha",
     "lint": "eslint lib example test",
     "lint-fix": "eslint lib example test --fix",
     "test": "mocha"
   },
-  "pre-commit": [
-    "coverage",
-    "lint"
-  ],
   "dependencies": {
     "base64url": "^3.0.0",
     "got": "^8.3.1",
@@ -53,10 +50,13 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^7.0.0",
+    "@commitlint/config-conventional": "^7.0.1",
     "chai": "^4.1.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.12.0",
+    "husky": "^0.14.3",
     "koa": "^2.5.1",
     "koa-body": "^4.0.0",
     "koa-ejs": "^4.1.1",
@@ -65,7 +65,6 @@
     "mocha": "^5.2.0",
     "nock": "^9.3.0",
     "nyc": "^12.0.2",
-    "pre-commit": "^1.2.2",
     "readable-mock-req": "^0.2.2",
     "request": "^2.87.0",
     "sinon": "^6.0.0",
@@ -73,6 +72,11 @@
   },
   "engines": {
     "node": ">=6.9.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "nyc": {
     "reporter": [
