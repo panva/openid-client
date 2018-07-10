@@ -14,6 +14,28 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
 
     afterEach(nock.cleanAll);
 
+    describe('custom /.well-known', function () {
+      it('accepts and assigns the discovered metadata', function () {
+        nock('https://op.example.com', { allowUnmocked: true })
+          .get('/.well-known/example-configuration')
+          .reply(200, {
+            authorization_endpoint: 'https://op.example.com/o/oauth2/v2/auth',
+            issuer: 'https://op.example.com',
+            jwks_uri: 'https://op.example.com/oauth2/v3/certs',
+            token_endpoint: 'https://op.example.com/oauth2/v4/token',
+            userinfo_endpoint: 'https://op.example.com/oauth2/v3/userinfo',
+          });
+
+        return Issuer.discover('https://op.example.com/.well-known/example-configuration').then(function (issuer) {
+          expect(issuer).to.have.property('authorization_endpoint', 'https://op.example.com/o/oauth2/v2/auth');
+          expect(issuer).to.have.property('issuer', 'https://op.example.com');
+          expect(issuer).to.have.property('jwks_uri', 'https://op.example.com/oauth2/v3/certs');
+          expect(issuer).to.have.property('token_endpoint', 'https://op.example.com/oauth2/v4/token');
+          expect(issuer).to.have.property('userinfo_endpoint', 'https://op.example.com/oauth2/v3/userinfo');
+        });
+      });
+    });
+
     describe('/.well-known/openid-configuration', function () {
       it('accepts and assigns the discovered metadata', function () {
         nock('https://op.example.com', { allowUnmocked: true })
