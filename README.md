@@ -56,7 +56,7 @@ openid-client.
 ## Certification
 [<img width="184" height="96" align="right" src="https://cdn.rawgit.com/panva/node-openid-client/38cf016b/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
 Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
-conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config and RP Dynamic profiles
+conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config, RP Dynamic and RP Form Post profiles
 of the OpenID Connect™ protocol.
 
 [![build][conformance-image]][conformance-url]
