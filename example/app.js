@@ -112,7 +112,7 @@ module.exports = (issuer) => {
     }
 
     Object.assign(metadata, {
-      post_logout_redirect_uris: [url.resolve(ctx.href, '/')],
+      post_logout_redirect_uris: [ctx.origin],
       redirect_uris: [url.resolve(ctx.href, '/cb')],
     }, preset.registration);
 
@@ -154,7 +154,7 @@ module.exports = (issuer) => {
         search: null,
         query: {
           id_token_hint: tokens.id_token,
-          post_logout_redirect_uri: url.resolve(ctx.href, '/'),
+          post_logout_redirect_uri: ctx.origin,
         },
       })));
     } else {
