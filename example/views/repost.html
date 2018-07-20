@@ -16,12 +16,12 @@
 
       var fields = parseQuery(window.location.hash.substring(1));
 
-      const form = document.createElement('form');
+      var form = document.createElement('form');
       form.method = 'POST';
 
       Object.keys(fields).forEach((key) => {
         if (key) { // empty fragment will yield {"":""};
-          const input = document.createElement('input');
+          var input = document.createElement('input');
           input.type = 'hidden';
           input.name = key;
           input.value = fields[key];
