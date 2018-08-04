@@ -160,7 +160,7 @@ module.exports = (issuer) => {
     } else {
       ctx.redirect('/');
     }
-    ctx.session = null;
+    delete ctx.session.tokenset;
 
     return next();
   });
