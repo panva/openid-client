@@ -71,7 +71,7 @@ const { Issuer, Strategy } = require('../../lib');
         expect(target).to.include('redirect_uri=');
         expect(target).to.include('scope=');
         expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.keys('state');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type');
       });
 
       it('starts authentication requests for POSTs', function () {
@@ -89,7 +89,7 @@ const { Issuer, Strategy } = require('../../lib');
         expect(target).to.include('redirect_uri=');
         expect(target).to.include('scope=');
         expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.keys('state');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type');
       });
 
       it('can have redirect_uri and scope specified', function () {
@@ -135,7 +135,7 @@ const { Issuer, Strategy } = require('../../lib');
         expect(target).to.include('nonce=');
         expect(target).to.include('response_mode=form_post');
         expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce');
+        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce', 'response_type');
       });
 
       describe('use pkce', () => {
@@ -244,7 +244,7 @@ const { Issuer, Strategy } = require('../../lib');
         strategy.authenticate(req);
 
         expect(req.session).to.have.property('oidc:op.example.com:foo');
-        expect(req.session['oidc:op.example.com:foo']).to.have.keys('state');
+        expect(req.session['oidc:op.example.com:foo']).to.have.keys('state', 'response_type');
       });
     });
 
@@ -267,6 +267,7 @@ const { Issuer, Strategy } = require('../../lib');
           'oidc:op.example.com': {
             nonce: 'nonce',
             state: 'state',
+            response_type: 'code',
           },
         };
 
@@ -276,8 +277,14 @@ const { Issuer, Strategy } = require('../../lib');
       it('triggers the error function when server_error is encountered', function (next) {
         const strategy = new Strategy({ client: this.client }, () => {});
 
-        const req = new MockRequest('GET', '/login/oidc/callback?error=server_error');
-        req.session = {};
+        const req = new MockRequest('GET', '/login/oidc/callback?error=server_error&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+            response_type: 'code',
+          },
+        };
 
         strategy.error = (error) => {
           try {
@@ -299,7 +306,7 @@ const { Issuer, Strategy } = require('../../lib');
 
         strategy.error = (error) => {
           try {
-            expect(error.message).to.match(/^state mismatch, could not find a state in the session/);
+            expect(error.message).to.eql('did not find expected authorization request details in session, req.session["oidc:op.example.com"] is undefined');
             next();
           } catch (err) {
             next(err);
@@ -316,8 +323,14 @@ const { Issuer, Strategy } = require('../../lib');
           return Promise.reject(new Error('callback error'));
         });
 
-        const req = new MockRequest('GET', '/login/oidc/callback?code=code');
-        req.session = {};
+        const req = new MockRequest('GET', '/login/oidc/callback?code=code&state=state');
+        req.session = {
+          'oidc:op.example.com': {
+            nonce: 'nonce',
+            state: 'state',
+            response_type: 'code',
+          },
+        };
 
         strategy.error = (error) => {
           try {
@@ -337,7 +350,9 @@ const { Issuer, Strategy } = require('../../lib');
         const req = new MockRequest('GET', '/login/oidc/callback?error=login_required&state=state');
         req.session = {
           'oidc:op.example.com': {
+            nonce: 'nonce',
             state: 'state',
+            response_type: 'code',
           },
         };
 
@@ -366,7 +381,9 @@ const { Issuer, Strategy } = require('../../lib');
         const req = new MockRequest('GET', '/login/oidc/callback?code=foo&state=state');
         req.session = {
           'oidc:op.example.com': {
+            nonce: 'nonce',
             state: 'state',
+            response_type: 'code',
           },
         };
 
@@ -396,6 +413,7 @@ const { Issuer, Strategy } = require('../../lib');
         req.session = {
           'oidc:op.example.com': {
             nonce: 'nonce',
+            response_type: 'code',
             state: 'state',
           },
         };
@@ -431,6 +449,7 @@ const { Issuer, Strategy } = require('../../lib');
         req.session = {
           'oidc:op.example.com': {
             nonce: 'nonce',
+            response_type: 'code',
             state: 'state',
           },
         };
@@ -462,6 +481,7 @@ const { Issuer, Strategy } = require('../../lib');
         req.session = {
           'oidc:op.example.com': {
             nonce: 'nonce',
+            response_type: 'code',
             state: 'state',
           },
         };
@@ -496,6 +516,7 @@ const { Issuer, Strategy } = require('../../lib');
         req.session = {
           'oidc:op.example.com': {
             nonce: 'nonce',
+            response_type: 'code',
             state: 'state',
           },
         };
@@ -535,6 +556,7 @@ const { Issuer, Strategy } = require('../../lib');
         req.session = {
           'oidc:op.example.com': {
             nonce: 'nonce',
+            response_type: 'code',
             state: 'state',
           },
         };
@@ -570,6 +592,7 @@ const { Issuer, Strategy } = require('../../lib');
         req.session = {
           'oidc:op.example.com': {
             nonce: 'nonce',
+            response_type: 'code',
             state: 'state',
           },
         };
