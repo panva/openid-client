@@ -1,3 +1,18 @@
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/panva/node-openid-client/compare/v2.2.1...v2.3.0) (2018-08-11)
+
+
+### Features
+
+* authorization response parameter checking based on response_type ([6e0ac57](https://github.com/panva/node-openid-client/commit/6e0ac57))
+* passport strategy automatically checks response REQUIRED params ([902eeed](https://github.com/panva/node-openid-client/commit/902eeed))
+
+
+
 # Pre standard-version Change Log
 ## Version 2.2.x
 ### Version 2.2.1
