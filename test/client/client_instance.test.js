@@ -262,35 +262,108 @@ const encode = object => base64url.encode(JSON.stringify(object));
         });
       });
 
-      it('rejects with an Error when states mismatch (returned)', function () {
-        return this.client.authorizationCallback('https://rp.example.com/cb', {
-          state: 'should be checked for this',
-        }).then(fail, (error) => {
-          expect(error).to.be.instanceof(Error);
-          expect(error).to.have.property('message', 'state mismatch');
+      describe('state checks', function () {
+        it('rejects with an Error when states mismatch (returned)', function () {
+          return this.client.authorizationCallback('https://rp.example.com/cb', {
+            state: 'should be checked for this',
+          }).then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property('message', 'checks.state missing');
+          });
+        });
+
+        it('rejects with an Error when states mismatch (not returned)', function () {
+          return this.client.authorizationCallback('https://rp.example.com/cb', {}, {
+            state: 'should be this',
+          })
+            .then(fail, (error) => {
+              expect(error).to.be.instanceof(Error);
+              expect(error).to.have.property('message', 'state missing from response');
+            });
+        });
+
+        it('rejects with an Error when states mismatch (general mismatch)', function () {
+          return this.client.authorizationCallback('https://rp.example.com/cb', {
+            state: 'is this',
+          }, {
+            state: 'should be this',
+          })
+            .then(fail, (error) => {
+              expect(error).to.be.instanceof(Error);
+              expect(error).to.have.property('message', 'state mismatch');
+            });
         });
       });
 
-      it('rejects with an Error when states mismatch (not returned)', function () {
-        return this.client.authorizationCallback('https://rp.example.com/cb', {}, {
-          state: 'should be this',
-        })
-          .then(fail, (error) => {
+      describe('response type checks', function () {
+        it('rejects with an Error when code is missing', function () {
+          return this.client.authorizationCallback('https://rp.example.com/cb', {
+            // code: 'foo',
+            access_token: 'foo',
+            token_type: 'Bearer',
+            id_token: 'foo',
+          }, {
+            response_type: 'code id_token token',
+          }).then(fail, (error) => {
             expect(error).to.be.instanceof(Error);
-            expect(error).to.have.property('message', 'state mismatch');
+            expect(error).to.have.property('message', 'code missing from response');
           });
-      });
+        });
 
-      it('rejects with an Error when states mismatch (general mismatch)', function () {
-        return this.client.authorizationCallback('https://rp.example.com/cb', {
-          state: 'is this',
-        }, {
-          state: 'should be this',
-        })
-          .then(fail, (error) => {
+        it('rejects with an Error when id_token is missing', function () {
+          return this.client.authorizationCallback('https://rp.example.com/cb', {
+            code: 'foo',
+            access_token: 'foo',
+            token_type: 'Bearer',
+            // id_token: 'foo',
+          }, {
+            response_type: 'code id_token token',
+          }).then(fail, (error) => {
             expect(error).to.be.instanceof(Error);
-            expect(error).to.have.property('message', 'state mismatch');
+            expect(error).to.have.property('message', 'id_token missing from response');
           });
+        });
+
+        it('rejects with an Error when token_type is missing', function () {
+          return this.client.authorizationCallback('https://rp.example.com/cb', {
+            code: 'foo',
+            access_token: 'foo',
+            // token_type: 'Bearer',
+            id_token: 'foo',
+          }, {
+            response_type: 'code id_token token',
+          }).then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property('message', 'token_type missing from response');
+          });
+        });
+
+        it('rejects with an Error when access_token is missing', function () {
+          return this.client.authorizationCallback('https://rp.example.com/cb', {
+            code: 'foo',
+            // access_token: 'foo',
+            token_type: 'Bearer',
+            id_token: 'foo',
+          }, {
+            response_type: 'code id_token token',
+          }).then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property('message', 'access_token missing from response');
+          });
+        });
+
+        ['code', 'access_token', 'id_token'].forEach((param) => {
+          it(`rejects with an Error when ${param} is encoutered during "none" response`, function () {
+            return this.client.authorizationCallback('https://rp.example.com/cb', {
+              [param]: 'foo',
+            }, {
+              response_type: 'none',
+            }).then(fail, (error) => {
+              expect(error).to.be.instanceof(Error);
+              expect(error).to.have.property('message', 'unexpected params encountered for "none" response');
+            });
+          });
+        });
       });
     });
 
@@ -337,6 +410,60 @@ const encode = object => base64url.encode(JSON.stringify(object));
         });
       });
 
+      describe('response type checks', function () {
+        it('rejects with an Error when code is missing', function () {
+          return this.client.oauthCallback('https://rp.example.com/cb', {
+            // code: 'foo',
+            access_token: 'foo',
+            token_type: 'Bearer',
+          }, {
+            response_type: 'code token',
+          }).then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property('message', 'code missing from response');
+          });
+        });
+
+        it('rejects with an Error when token_type is missing', function () {
+          return this.client.oauthCallback('https://rp.example.com/cb', {
+            code: 'foo',
+            access_token: 'foo',
+            // token_type: 'Bearer',
+          }, {
+            response_type: 'code token',
+          }).then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property('message', 'token_type missing from response');
+          });
+        });
+
+        it('rejects with an Error when access_token is missing', function () {
+          return this.client.oauthCallback('https://rp.example.com/cb', {
+            code: 'foo',
+            // access_token: 'foo',
+            token_type: 'Bearer',
+          }, {
+            response_type: 'code token',
+          }).then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property('message', 'access_token missing from response');
+          });
+        });
+
+        ['code', 'access_token'].forEach((param) => {
+          it(`rejects with an Error when ${param} is encoutered during "none" response`, function () {
+            return this.client.oauthCallback('https://rp.example.com/cb', {
+              [param]: 'foo',
+            }, {
+              response_type: 'none',
+            }).then(fail, (error) => {
+              expect(error).to.be.instanceof(Error);
+              expect(error).to.have.property('message', 'unexpected params encountered for "none" response');
+            });
+          });
+        });
+      });
+
       it('rejects with OpenIdConnectError when part of the response', function () {
         return this.client.oauthCallback('https://rp.example.com/cb', {
           error: 'invalid_request',
@@ -346,35 +473,37 @@ const encode = object => base64url.encode(JSON.stringify(object));
         });
       });
 
-      it('rejects with an Error when states mismatch (returned)', function () {
-        return this.client.oauthCallback('https://rp.example.com/cb', {
-          state: 'should be checked for this',
-        }).then(fail, (error) => {
-          expect(error).to.be.instanceof(Error);
-          expect(error).to.have.property('message', 'state mismatch');
+      describe('state checks', function () {
+        it('rejects with an Error when states mismatch (returned)', function () {
+          return this.client.oauthCallback('https://rp.example.com/cb', {
+            state: 'should be checked for this',
+          }).then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property('message', 'checks.state missing');
+          });
         });
-      });
 
-      it('rejects with an Error when states mismatch (not returned)', function () {
-        return this.client.oauthCallback('https://rp.example.com/cb', {}, {
-          state: 'should be this',
-        })
-          .then(fail, (error) => {
-            expect(error).to.be.instanceof(Error);
-            expect(error).to.have.property('message', 'state mismatch');
-          });
-      });
+        it('rejects with an Error when states mismatch (not returned)', function () {
+          return this.client.oauthCallback('https://rp.example.com/cb', {}, {
+            state: 'should be this',
+          })
+            .then(fail, (error) => {
+              expect(error).to.be.instanceof(Error);
+              expect(error).to.have.property('message', 'state missing from response');
+            });
+        });
 
-      it('rejects with an Error when states mismatch (general mismatch)', function () {
-        return this.client.oauthCallback('https://rp.example.com/cb', {
-          state: 'is this',
-        }, {
-          state: 'should be this',
-        })
-          .then(fail, (error) => {
-            expect(error).to.be.instanceof(Error);
-            expect(error).to.have.property('message', 'state mismatch');
-          });
+        it('rejects with an Error when states mismatch (general mismatch)', function () {
+          return this.client.oauthCallback('https://rp.example.com/cb', {
+            state: 'is this',
+          }, {
+            state: 'should be this',
+          })
+            .then(fail, (error) => {
+              expect(error).to.be.instanceof(Error);
+              expect(error).to.have.property('message', 'state mismatch');
+            });
+        });
       });
     });
 

@@ -156,19 +156,18 @@ client.authorizationCallback('https://client.example.com/callback', request.quer
   });
 ```
 
-### Processing callback with state, nonce or max_age check
+### Processing callback with required params, state, nonce or max_age checks (recommended)
 ```js
-const state = session.state;
-const nonce = session.nonce;
+const { state, nonce, max_age, response_type } = session[authorizationRequestState];
 
-client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce, max_age }) // => Promise
+client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce, max_age, response_type }) // => Promise
   .then(function (tokenSet) {
     console.log('received and validated tokens %j', tokenSet);
     console.log('validated id_token claims %j', tokenSet.claims);
   });
 ```
 
-### IdP Errors - OpenIdConnectError
+### OP Errors - OpenIdConnectError
 When the OpenID Provider returns an OIDC formatted error from either authorization callbacks or
 any of the JSON responses the library will reject a given Promise with `OpenIdConnectError` instance.
 

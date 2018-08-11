@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-extraneous-dependencies, camelcase */
 
 const crypto = require('crypto');
 const url = require('url');
@@ -166,20 +166,23 @@ module.exports = (issuer) => {
   });
 
   router.get('/login', async (ctx, next) => {
-    ctx.session.state = crypto.randomBytes(16).toString('hex');
-    ctx.session.nonce = crypto.randomBytes(16).toString('hex');
+    const state = crypto.randomBytes(16).toString('hex');
+    const nonce = crypto.randomBytes(16).toString('hex');
+    ctx.session.auth_request = { state, nonce };
 
     const { client } = ctx.session;
 
-    const authorizationRequest = Object.assign({
+    const authorization_request = Object.assign({
       redirect_uri: url.resolve(ctx.href, 'cb'),
       scope: 'openid profile email address phone',
-      state: ctx.session.state,
-      nonce: ctx.session.nonce,
+      state,
+      nonce,
       response_type: client.response_types[0],
     }, ctx.session.authorization_params);
 
-    ctx.redirect(client.authorizationUrl(authorizationRequest));
+    ctx.session.auth_request.response_type = authorization_request.response_type;
+
+    ctx.redirect(client.authorizationUrl(authorization_request));
     return next();
   });
 
@@ -210,11 +213,10 @@ module.exports = (issuer) => {
       return ctx.render('repost', { layout: false });
     }
 
-    const { state, nonce } = ctx.session;
-    delete ctx.session.state;
-    delete ctx.session.nonce;
+    const { state, nonce, response_type } = ctx.session.auth_request;
+    delete ctx.session.auth_request;
 
-    ctx.session.tokenset = await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state });
+    ctx.session.tokenset = await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state, response_type });
 
     ctx.redirect('/user');
 
@@ -222,13 +224,12 @@ module.exports = (issuer) => {
   });
 
   router.post('/cb', body({ patchNode: true }), async (ctx, next) => {
-    const { state, nonce } = ctx.session;
-    delete ctx.session.state;
-    delete ctx.session.nonce;
+    const { state, nonce, response_type } = ctx.session.auth_request;
+    delete ctx.session.auth_request;
     const { client } = ctx.session;
     const params = client.callbackParams(ctx.request.req);
 
-    ctx.session.tokenset = await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state });
+    ctx.session.tokenset = await client.authorizationCallback(url.resolve(ctx.href, 'cb'), params, { nonce, state, response_type });
 
     ctx.redirect('/user');
 
