@@ -13,7 +13,6 @@ Node.js lts/argon end of life on [2018-04-30](https://github.com/nodejs/Release)
 
   - [Implemented specs & features](#implemented-specs--features)
   - [Certification](#certification)
-  - [Example](#example)
   - [Get started](#get-started)
   - [Usage](#usage)
   - [Usage with passport](#usage-with-passport)
@@ -66,11 +65,6 @@ of the OpenID Connect™ protocol.
 
 [<img width="65" height="65" align="left" src="https://avatars.githubusercontent.com/u/2824157?s=75&v=4" alt="auth0-logo">][sponsor-auth0] If you want to quickly add OpenID Connect authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/overview][sponsor-auth0].<br><br>
 
-
-## Example
-Head over to the example folder to see the library in use. This example is deployed and configured
-to use an example OpenID Connect Provider [here][heroku-example]. The provider is using
-[oidc-provider][oidc-provider] library.
 
 ## Get started
 On the off-chance you want to manage multiple clients for multiple issuers you need to first get
