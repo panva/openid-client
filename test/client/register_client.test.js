@@ -21,7 +21,7 @@ const issuer = new Issuer({
       const issuer = new Issuer({}); // eslint-disable-line no-shadow
       expect(function () {
         issuer.Client.register();
-      }).to.throw('issuer does not support dynamic registration');
+      }).to.throw('registration_endpoint must be configured on the issuer');
     });
 
     it('accepts and assigns the discovered metadata', function () {

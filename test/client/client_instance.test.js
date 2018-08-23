@@ -268,7 +268,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
             state: 'should be checked for this',
           }).then(fail, (error) => {
             expect(error).to.be.instanceof(Error);
-            expect(error).to.have.property('message', 'checks.state missing');
+            expect(error).to.have.property('message', 'checks.state argument is missing');
           });
         });
 
@@ -278,7 +278,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
           })
             .then(fail, (error) => {
               expect(error).to.be.instanceof(Error);
-              expect(error).to.have.property('message', 'state missing from response');
+              expect(error).to.have.property('message', 'state missing from the response');
             });
         });
 
@@ -479,7 +479,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
             state: 'should be checked for this',
           }).then(fail, (error) => {
             expect(error).to.be.instanceof(Error);
-            expect(error).to.have.property('message', 'checks.state missing');
+            expect(error).to.have.property('message', 'checks.state argument is missing');
           });
         });
 
@@ -489,7 +489,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
           })
             .then(fail, (error) => {
               expect(error).to.be.instanceof(Error);
-              expect(error).to.have.property('message', 'state missing from response');
+              expect(error).to.have.property('message', 'state missing from the response');
             });
         });
 
