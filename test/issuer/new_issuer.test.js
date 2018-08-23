@@ -22,18 +22,16 @@ describe('new Issuer()', function () {
     expect(issuer).to.have.property('userinfo_endpoint', 'https://www.googleapis.com/oauth2/v3/userinfo');
   });
 
-  it('assigns defaults to some properties', function () {
+  it('does not assign Discovery 1.0 defaults when instantiating manually', function () {
     const issuer = new Issuer();
 
-    expect(issuer).to.have.property('claims_parameter_supported', false);
-    expect(issuer).to.have.property('grant_types_supported')
-      .to.eql(['authorization_code', 'implicit']);
-    expect(issuer).to.have.property('request_parameter_supported', false);
-    expect(issuer).to.have.property('request_uri_parameter_supported', true);
-    expect(issuer).to.have.property('require_request_uri_registration', false);
-    expect(issuer).to.have.property('response_modes_supported').to.eql(['query', 'fragment']);
-    expect(issuer).to.have.property('token_endpoint_auth_methods_supported')
-      .to.eql(['client_secret_basic']);
+    expect(issuer).not.to.have.property('claims_parameter_supported');
+    expect(issuer).not.to.have.property('grant_types_supported');
+    expect(issuer).not.to.have.property('request_parameter_supported');
+    expect(issuer).not.to.have.property('request_uri_parameter_supported');
+    expect(issuer).not.to.have.property('require_request_uri_registration');
+    expect(issuer).not.to.have.property('response_modes_supported');
+    expect(issuer).not.to.have.property('token_endpoint_auth_methods_supported');
   });
 
   ['introspection', 'revocation'].forEach((endpoint) => {
