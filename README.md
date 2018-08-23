@@ -75,7 +75,7 @@ an Issuer instance.
 const { Issuer } = require('openid-client');
 Issuer.discover('https://accounts.google.com') // => Promise
   .then(function (googleIssuer) {
-    console.log('Discovered issuer %s', googleIssuer);
+    console.log('Discovered issuer %s %O', googleIssuer.issuer, googleIssuer.metadata);
   });
 ```
 
@@ -89,15 +89,13 @@ const googleIssuer = new Issuer({
   userinfo_endpoint: 'https://www.googleapis.com/oauth2/v3/userinfo',
   jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs',
 }); // => Issuer
-console.log('Set up issuer %s', googleIssuer);
+console.log('Set up issuer %s %O', googleIssuer.issuer, googleIssuer.metadata);
 ```
 
 **Now you can create your Client.**
 
 ### manually (recommended)
-You should provide at least the following metadata; `client_id, client_secret`. You can also provide
-`id_token_signed_response_alg` (defaults to `RS256`) and `token_endpoint_auth_method` (defaults to
-`client_secret_basic`).
+You should provide at least the following metadata: `client_id`, `client_secret`, `id_token_signed_response_alg` (defaults to `RS256`) and `token_endpoint_auth_method` (defaults to `client_secret_basic`) for a basic client definition, but you may provide any IANA registered client metadata.
 
 ```js
 const client = new googleIssuer.Client({
@@ -115,7 +113,7 @@ token you can also have the Client discovered.
 ```js
 googleIssuer.Client.fromUri(registration_client_uri, registration_access_token, [keystore]) // => Promise
   .then(function (client) {
-    console.log('Discovered client %s', client);
+    console.log('Discovered client %s %O', client.client_id, client.metadata);
   });
 ```
 
@@ -143,23 +141,17 @@ client.authorizationPost({
 
 ### Processing callback
 ```js
-client.authorizationCallback('https://client.example.com/callback', request.query) // => Promise
+const { state, response_type } = session[authorizationRequestState];
+client.authorizationCallback('https://client.example.com/callback', request.query, { state, response_type }) // => Promise
   .then(function (tokenSet) {
     console.log('received and validated tokens %j', tokenSet);
     console.log('validated id_token claims %j', tokenSet.claims);
   });
 ```
 
-### Processing callback with required params, state, nonce or max_age checks (recommended)
-```js
-const { state, nonce, max_age, response_type } = session[authorizationRequestState];
-
-client.authorizationCallback('https://client.example.com/callback', request.query, { state, nonce, max_age, response_type }) // => Promise
-  .then(function (tokenSet) {
-    console.log('received and validated tokens %j', tokenSet);
-    console.log('validated id_token claims %j', tokenSet.claims);
-  });
-```
+Aside from `state` and `response_type`, checks for `nonce` (implicit and hybrid responses) and
+`max_age` are implemented. `id_token` signature and claims validation does not need to be requested,
+it is done automatically.
 
 ### OP Errors - OpenIdConnectError
 When the OpenID Provider returns an OIDC formatted error from either authorization callbacks or
@@ -189,14 +181,14 @@ client.callbackParams('/cb?code=code'); // => { code: 'code' };
 // example koa v2.x w/ koa-body
 app.use(bodyParser({ patchNode: true }));
 app.use(async function (ctx, next) {
-  const params = client.callbackParams(ctx.request.req); // => parsed url query, url fragment or body object
+  const params = client.callbackParams(ctx.request.req); // => parsed url query or body object
   // ...
 });
 
 // example express w/ bodyParser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(function (req, res, next) {
-  const params = client.callbackParams(req); // => parsed url query, url fragment or body object
+  const params = client.callbackParams(req); // => parsed url query or body object
   // ...
 });
 ```
@@ -310,17 +302,19 @@ client.unpackAggregatedClaims(claims) // => Promise, autodiscovers JWT issuers, 
 ```
 
 ### Custom token endpoint grants
-Use when the token endpoint also supports client_credentials or password grants;
+Use when the token endpoint also supports additional grant types.
 
 ```js
 client.grant({
-  grant_type: 'client_credentials'
+  grant_type: 'client_credentials',
+  scope: 'api:read',
 }); // => Promise
 
 client.grant({
   grant_type: 'password',
   username: 'johndoe',
   password: 'A3ddj3w',
+  scope: 'profile',
 }); // => Promise
 ```
 
@@ -329,20 +323,30 @@ client.grant({
 const opts = { keystore, initialAccessToken }; // both optional
 issuer.Client.register(metadata, [opts]) // => opts optional, Promise
   .then(function (client) {
-    console.log('Registered client %s, %j', client, client.metadata);
+    console.log('Registered client %s, %O', client.client_id, client.metadata);
   });
 ```
 
 ### Generating a signed/encrypted Request Object
 ```js
-client.requestObject({ response_mode: 'form_post' }, {
-  sign: client.request_object_signing_alg,
-  encrypt: {
-    alg: client.request_object_encryption_alg,
-    enc: client.request_object_encryption_enc,
-  }
+client.requestObject({ max_age: 300, redirect_uri })
+  .then(function (request) {
+    console.log('JWT Request Object %s', request)
+  });
+```
+
+This will use the client metadata `request_object_signing_alg`, `request_object_encryption_alg` and
+`request_object_encryption_enc`, but you can provide the signing and/or encryption algs explicitly
+
+```js
+client.requestObject({ max_age: 300, redirect_uri }, {
+  // sign: '...',
+  // encrypt: {
+  //   alg: '...',
+  //   enc: '...',
+  // }
 }).then(function (request) {
-  console.log('Nested signed and encrypted JWT Request Object %s', request)
+  console.log('JWT Request Object %s', request)
 });
 ```
 
@@ -350,7 +354,7 @@ client.requestObject({ response_mode: 'form_post' }, {
 ```js
 Issuer.webfinger(userInput) // => Promise
   .then(function (issuer) {
-    console.log('Discovered issuer %s', issuer);
+    console.log('Discovered issuer %s %O', issuer.issuer, issuer.metadata);
   });
 ```
 Accepts, normalizes, discovers and validates the discovery of User Input using E-Mail, URL, acct,
