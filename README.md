@@ -36,6 +36,7 @@ openid-client.
   - Client Credentials Grant
   - Password Grant
   - Client Authentication
+    - none
     - client_secret_basic
     - client_secret_post
     - client_secret_jwt
@@ -425,6 +426,34 @@ app.get('/auth/cb', passport.authenticate('oidc', { successRedirect: '/', failur
 
 ## Configuration
 
+### Client Authentication explained
+
+Configure `token_endpoint_auth_method` with one of the following. Defined in [Core 1.0][client-authentication]:
+
+- `none` - only client_id is sent in the request body
+- `client_secret_basic` (default) - client_id and client_secret is sent using the `Authorization`
+  header as described in [RFC6749](https://tools.ietf.org/html/rfc6749#section-2.3.1)
+- `client_secret_post` - client_id and client_secret is sent in the request body as described in
+  [RFC6749](https://tools.ietf.org/html/rfc6749#section-2.3.1)
+- `client_secret_jwt` - using `client_secret` as a shared symmetrical secret a `client_assertion` is
+  sent in the request body
+- `private_key_jwt` - using the asymmetric keys provided via `keystore` a `client_assertion` is sent
+  in the request body
+
+The configuration may differ between token, introspection and revocation endpoints. The metadata
+would be:
+
+- `token_endpoint_auth_method`
+- `introspection_endpoint_auth_method`
+- `revocation_endpoint_auth_method`
+
+The other metadata names follow the same prefix convention.
+
+Note: `*_jwt` methods resolve their algorithm either via the client's configured alg
+(`token_endpoint_auth_signing_alg`) or any of the issuer's supported algs
+(`token_endpoint_auth_signing_alg_values_supported`)
+
+
 ### Allow for system clock skew
 It is possible the RP or OP environment has a system clock skew, to set a clock tolerance (in seconds)
 
@@ -500,19 +529,20 @@ Issuer.useRequest();
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
 [codecov-image]: https://codecov.io/gh/panva/node-openid-client/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
-[openid-connect]: http://openid.net/connect/
+[openid-connect]: https://openid.net/connect/
 [heroku-example]: https://tranquil-reef-95185.herokuapp.com/client
 [oidc-provider]: https://github.com/panva/node-oidc-provider
-[feature-core]: http://openid.net/specs/openid-connect-core-1_0.html
-[feature-discovery]: http://openid.net/specs/openid-connect-discovery-1_0.html
+[feature-core]: https://openid.net/specs/openid-connect-core-1_0.html
+[client-authentication]: https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
+[feature-discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html
 [feature-oauth-discovery]: https://tools.ietf.org/html/rfc8414
-[feature-registration]: http://openid.net/specs/openid-connect-registration-1_0.html
+[feature-registration]: https://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
 [got-library]: https://github.com/sindresorhus/got
 [request-library]: https://github.com/request/request
-[signed-userinfo]: http://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
-[openid-certified-link]: http://openid.net/certification/
+[signed-userinfo]: https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
+[openid-certified-link]: https://openid.net/certification/
 [openid-certified-logo]: https://cdn.rawgit.com/panva/node-openid-client/master/OpenID_Certified.png
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
