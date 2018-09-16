@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.4.1"></a>
+## [2.4.1](https://github.com/panva/node-openid-client/compare/v2.4.0...v2.4.1) (2018-09-16)
+
+
+### Bug Fixes
+
+* lts/boron unsupported syntax fix ([5289188](https://github.com/panva/node-openid-client/commit/5289188))
+
+
+
 <a name="2.4.0"></a>
 # [2.4.0](https://github.com/panva/node-openid-client/compare/v2.3.1...v2.4.0) (2018-09-16)
 
