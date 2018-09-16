@@ -57,7 +57,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
         });
       });
 
-      it('keeps origin query parameters', function () {
+      it('keeps original query parameters', function () {
         expect(url.parse(this.clientWithQuery.authorizationUrl({
           redirect_uri: 'https://rp.example.com/cb',
         }), true).query).to.eql({
@@ -116,6 +116,87 @@ const encode = object => base64url.encode(JSON.stringify(object));
         }), true).query).to.contain({
           max_age: '300',
           foo: 'true',
+        });
+      });
+    });
+
+    describe('#endSessionUrl', function () {
+      before(function () {
+        const issuer = new Issuer({
+          end_session_endpoint: 'https://op.example.com/session/end',
+        });
+        this.client = new issuer.Client({
+          client_id: 'identifier',
+        });
+        this.clientWithUris = new issuer.Client({
+          post_logout_redirect_uris: ['https://rp.example.com/logout/cb'],
+        });
+
+        const issuerWithQuery = new Issuer({
+          end_session_endpoint: 'https://op.example.com/session/end?foo=bar',
+        });
+        this.clientWithQuery = new issuerWithQuery.Client({
+          client_id: 'identifier',
+        });
+
+        const issuerWithoutMeta = new Issuer({
+          // end_session_endpoint: 'https://op.example.com/session/end?foo=bar',
+        });
+        this.clientWithoutMeta = new issuerWithoutMeta.Client({
+          client_id: 'identifier',
+        });
+      });
+
+      it("throws if the issuer doesn't have end_session_endpoint configured", function () {
+        expect(() => {
+          this.clientWithoutMeta.endSessionUrl();
+        }).to.throw('end_session_endpoint must be configured on the issuer');
+      });
+
+      it('returns the end_session_endpoint only if nothing is passed', function () {
+        expect(this.client.endSessionUrl()).to.eql('https://op.example.com/session/end');
+        expect(this.clientWithQuery.endSessionUrl()).to.eql('https://op.example.com/session/end?foo=bar');
+      });
+
+      it('defaults the post_logout_redirect_uri if client has some', function () {
+        expect(url.parse(this.clientWithUris.endSessionUrl(), true).query).to.eql({
+          post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
+        });
+      });
+
+      it('takes a TokenSet too', function () {
+        const hint = new TokenSet({
+          id_token: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
+          refresh_token: 'bar',
+          access_token: 'tokenValue',
+        });
+        expect(url.parse(this.client.endSessionUrl({
+          id_token_hint: hint,
+        }), true).query).to.eql({
+          id_token_hint: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
+        });
+      });
+
+      it('allows for recommended and optional query params to be passed in', function () {
+        expect(url.parse(this.client.endSessionUrl({
+          post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
+          state: 'foo',
+          id_token_hint: 'idtoken',
+        }), true).query).to.eql({
+          post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
+          state: 'foo',
+          id_token_hint: 'idtoken',
+        });
+        expect(url.parse(this.clientWithQuery.endSessionUrl({
+          post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
+          state: 'foo',
+          id_token_hint: 'idtoken',
+          foo: 'this will be ignored',
+        }), true).query).to.eql({
+          post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
+          state: 'foo',
+          foo: 'bar',
+          id_token_hint: 'idtoken',
         });
       });
     });

@@ -52,6 +52,9 @@ openid-client.
 - [RFC7662 - OAuth 2.0 Token introspection][feature-introspection]
   - Client Authenticated request to token introspection
 
+Updates to features defined in draft or experimental specifications are released as MINOR library
+versions, if you utilize these consider using the tilde ~ operator in your package.json since
+breaking changes may be introduced as part of these specification updates.
 
 ## Certification
 [<img width="184" height="96" align="right" src="https://cdn.rawgit.com/panva/node-openid-client/38cf016b/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
@@ -253,6 +256,18 @@ userinfo also handles (as long as you have the proper metadata configured) respo
 - signed
 - signed and encrypted (nested JWT)
 - just encrypted
+
+### Getting RP-Initiated Logout url
+
+Note: Only usable with issuer's supporting OpenID Connect Session Management 1.0
+
+```js
+client.endSessionUrl({
+  post_logout_redirect_uri: '...', // OPTIONAL, defaults to client.post_logout_redirect_uris[0] if there's only one
+  state: '...', // RECOMMENDED
+  id_token_hint: '...', // OPTIONAL, accepts the string value or tokenSet with id_token
+}); // => String (URL)
+```
 
 ### Fetching Distributed Claims
 ```js
