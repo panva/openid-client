@@ -204,6 +204,20 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
         });
     });
 
+    it('is rejected with HTTPError when error is not a string', function () {
+      nock('https://op.example.com', { allowUnmocked: true })
+        .get('/.well-known/openid-configuration')
+        .reply(400, {
+          error: {},
+          error_description: 'bad things are happening',
+        });
+
+      return Issuer.discover('https://op.example.com')
+        .then(fail, function (error) {
+          expect(error).to.be.an.instanceof(Issuer.httpClient.HTTPError);
+        });
+    });
+
     it('is rejected with when non 200 is returned', function () {
       nock('https://op.example.com', { allowUnmocked: true })
         .get('/.well-known/openid-configuration')
