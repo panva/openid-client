@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "base64url": "^3.0.0",
+    "debug": "^4.1.0",
     "got": "^8.3.2",
     "lodash": "^4.17.11",
     "lru-cache": "^4.1.3",
