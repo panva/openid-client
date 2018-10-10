@@ -166,7 +166,31 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
       });
     });
 
-    it('assigns Discovery 1.0 defaults', function () {
+    it('assigns Discovery 1.0 defaults 1/2', function () {
+      nock('https://op.example.com', { allowUnmocked: true })
+        .get('/.well-known/openid-configuration')
+        .reply(200, {
+          authorization_endpoint: 'https://op.example.com/o/oauth2/v2/auth',
+          issuer: 'https://op.example.com',
+          jwks_uri: 'https://op.example.com/oauth2/v3/certs',
+          token_endpoint: 'https://op.example.com/oauth2/v4/token',
+          userinfo_endpoint: 'https://op.example.com/oauth2/v3/userinfo',
+        });
+
+      return Issuer.discover('https://op.example.com/.well-known/openid-configuration')
+        .then((issuer) => {
+          expect(issuer).to.have.property('claims_parameter_supported', false);
+          expect(issuer).to.have.property('grant_types_supported').to.eql(['authorization_code', 'implicit']);
+          expect(issuer).to.have.property('request_parameter_supported', false);
+          expect(issuer).to.have.property('request_uri_parameter_supported', true);
+          expect(issuer).to.have.property('require_request_uri_registration', false);
+          expect(issuer).to.have.property('response_modes_supported').to.eql(['query', 'fragment']);
+          expect(issuer).to.have.property('claim_types_supported').to.eql(['normal']);
+          expect(issuer).to.have.property('token_endpoint_auth_methods_supported').to.eql(['client_secret_basic']);
+        });
+    });
+
+    it('assigns Discovery 1.0 defaults 2/2', function () {
       nock('https://op.example.com', { allowUnmocked: true })
         .get('/.well-known/openid-configuration')
         .reply(200, {
