@@ -1919,6 +1919,27 @@ const encode = object => base64url.encode(JSON.stringify(object));
         });
     });
 
+    it('validates s_hash when returned from token endpoint', function () {
+      const access_token = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+      const state = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+      const s_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
+      const nonce = 'foobar';
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        s_hash,
+        nonce,
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: this.client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      })
+        .then((token) => {
+          const tokenset = new TokenSet({ access_token, id_token: token });
+          return this.client.validateIdToken(tokenset, nonce, 'token', null, state);
+        });
+    });
+
     it('fails with the wrong at_hash', function () {
       const access_token = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
       const at_hash = 'notvalid77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
