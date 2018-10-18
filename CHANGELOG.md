@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.4.4"></a>
+## [2.4.4](https://github.com/panva/node-openid-client/compare/v2.4.3...v2.4.4) (2018-10-18)
+
+
+### Bug Fixes
+
+* strategy code_verifier length, removed uuid dependency ([60d0cb8...ea4a8fd](https://github.com/panva/node-openid-client/compare/60d0cb8...ea4a8fd)), closes [#131](https://github.com/panva/node-openid-client/issues/131)
+
+
+
 <a name="2.4.3"></a>
 ## [2.4.3](https://github.com/panva/node-openid-client/compare/v2.4.2...v2.4.3) (2018-10-10)
 
