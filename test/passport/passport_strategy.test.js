@@ -71,7 +71,7 @@ const { Issuer, Strategy } = require('../../lib');
         expect(target).to.include('redirect_uri=');
         expect(target).to.include('scope=');
         expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type');
+        expect(req.session['oidc:op.example.com']).to.have.keys('redirect_uri', 'state', 'response_type');
       });
 
       it('starts authentication requests for POSTs', function () {
@@ -89,7 +89,7 @@ const { Issuer, Strategy } = require('../../lib');
         expect(target).to.include('redirect_uri=');
         expect(target).to.include('scope=');
         expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type');
+        expect(req.session['oidc:op.example.com']).to.have.keys('redirect_uri', 'state', 'response_type');
       });
 
       it('can have redirect_uri and scope specified', function () {
@@ -110,6 +110,27 @@ const { Issuer, Strategy } = require('../../lib');
         expect(strategy.redirect.calledOnce).to.be.true;
         const target = strategy.redirect.firstCall.args[0];
         expect(target).to.include(`redirect_uri=${encodeURIComponent('https://example.com/cb')}`);
+        expect(target).to.include('scope=openid%20profile');
+      });
+
+      it('can override redirect_uri', function () {
+        const strategy = new Strategy({
+          client: this.client,
+          params: {
+            redirect_uri: 'https://example.com/cb',
+            scope: 'openid profile',
+          },
+        }, () => {});
+
+        const req = new MockRequest('GET', '/login/oidc');
+        req.session = {};
+
+        strategy.redirect = sinon.spy();
+        strategy.authenticate(req, { redirect_uri: 'https://example.com/cb2' });
+
+        expect(strategy.redirect.calledOnce).to.be.true;
+        const target = strategy.redirect.firstCall.args[0];
+        expect(target).to.include(`redirect_uri=${encodeURIComponent('https://example.com/cb2')}`);
         expect(target).to.include('scope=openid%20profile');
       });
 
@@ -135,7 +156,7 @@ const { Issuer, Strategy } = require('../../lib');
         expect(target).to.include('nonce=');
         expect(target).to.include('response_mode=form_post');
         expect(req.session).to.have.property('oidc:op.example.com');
-        expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce', 'response_type');
+        expect(req.session['oidc:op.example.com']).to.have.keys('redirect_uri', 'state', 'nonce', 'response_type');
       });
 
       describe('use pkce', () => {
@@ -244,7 +265,7 @@ const { Issuer, Strategy } = require('../../lib');
         strategy.authenticate(req);
 
         expect(req.session).to.have.property('oidc:op.example.com:foo');
-        expect(req.session['oidc:op.example.com:foo']).to.have.keys('state', 'response_type');
+        expect(req.session['oidc:op.example.com:foo']).to.have.keys('redirect_uri', 'state', 'response_type');
       });
     });
 
