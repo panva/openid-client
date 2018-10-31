@@ -57,7 +57,7 @@ versions, if you utilize these consider using the tilde ~ operator in your packa
 breaking changes may be introduced as part of these specification updates.
 
 ## Certification
-[<img width="184" height="96" align="right" src="https://cdn.rawgit.com/panva/node-openid-client/38cf016b/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
+[<img width="184" height="96" align="right" src="https://cdn.jsdelivr.net/gh/panva/node-openid-client@38cf016b0837e6d4116de3780b28d222d5780bc9/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
 Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
 conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config, RP Dynamic and RP Form Post profiles
 of the OpenID Connect™ protocol.
@@ -68,6 +68,12 @@ of the OpenID Connect™ protocol.
 <h2>Sponsor</h2>
 
 [<img width="65" height="65" align="left" src="https://avatars.githubusercontent.com/u/2824157?s=75&v=4" alt="auth0-logo">][sponsor-auth0] If you want to quickly add OpenID Connect authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/overview][sponsor-auth0].<br><br>
+
+<h2>Support</h2>
+
+[<img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160" align="right">][support-patreon]
+If you or your business use openid-client, please consider becoming a [Patron][support-patreon] so I can continue maintaining it and adding new features carefree. You may also donate one-time via [PayPal][support-paypal].
+[<img src="https://cdn.jsdelivr.net/gh/gregoiresgt/payment-icons@183140a5ff8f39b5a19d59ebeb2c77f03c3a24d3/Assets/Payment/PayPal/Paypal@2x.png" width="100" align="right">][support-paypal]
 
 
 ## Get started
@@ -558,7 +564,8 @@ Issuer.useRequest();
 [request-library]: https://github.com/request/request
 [signed-userinfo]: https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse
 [openid-certified-link]: https://openid.net/certification/
-[openid-certified-logo]: https://cdn.rawgit.com/panva/node-openid-client/master/OpenID_Certified.png
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
 [sponsor-auth0]: https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=openid-client&utm_content=auth
+[support-patreon]: https://www.patreon.com/panva
+[support-paypal]: https://www.paypal.me/panva
