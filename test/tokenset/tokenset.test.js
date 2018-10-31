@@ -1,4 +1,3 @@
-const sinon = require('sinon');
 const base64url = require('base64url');
 const { expect } = require('chai');
 
@@ -35,14 +34,14 @@ describe('TokenSet', function () {
       id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ',
     });
 
-    expect(ts.claims).to.eql({ sub: '1234567890', name: 'John Doe', admin: true });
+    expect(ts.claims()).to.eql({ sub: '1234567890', name: 'John Doe', admin: true });
   });
 
   it('#claims throws if no id_token is present', function () {
     const ts = new TokenSet({});
 
     expect(function () {
-      ts.claims;
+      ts.claims();
     }).to.throw('id_token not present in TokenSet');
   });
 
@@ -52,18 +51,5 @@ describe('TokenSet', function () {
     });
 
     expect(JSON.parse(JSON.stringify(ts))).to.eql(ts);
-  });
-
-  it('#claims only decodes the token once for each TokenSet', function () {
-    const ts = new TokenSet({
-      id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.',
-    });
-
-    sinon.spy(base64url, 'decode');
-
-    ts.claims;
-    expect(base64url.decode.calledOnce).to.be.true;
-    ts.claims;
-    expect(base64url.decode.calledOnce).to.be.true;
   });
 });

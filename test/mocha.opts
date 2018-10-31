@@ -1,1 +1,4 @@
 test/**/*.test.js
+--retries 1
+--forbid-only
+--forbid-pending

@@ -11,11 +11,11 @@ about: Create a report to help improve openid-client
 **To Reproduce**
 Issuer and Client configuration: (inline or gist) - Don't forget to redact your secrets.
 ```js
-// Issuer configuration (issuer.metadata) and how it's constructed (discovery or manual?)
+// Issuer configuration (issuer.metadata) and how it is constructed (discovery or manual?)
 {
   // ...
 }
-// Client configuration (client.metadata) and how it's constructed (fromUri or manual?)
+// Client configuration (client.metadata) and how it is constructed (fromUri or manual?)
 {
   // ...
 }

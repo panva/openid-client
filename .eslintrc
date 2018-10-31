@@ -1,11 +1,6 @@
 {
   "extends": "airbnb-base",
   "rules": {
-    "comma-dangle": ["error", {
-      arrays: "always-multiline",
-      objects: "always-multiline",
-      functions: "never"
-    }],
     "no-underscore-dangle": ["error", { "allow": ["_claim_names", "_claim_sources"] }],
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-param-reassign": ["error", { "props": false }],

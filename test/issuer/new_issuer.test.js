@@ -35,15 +35,6 @@ describe('new Issuer()', function () {
   });
 
   ['introspection', 'revocation'].forEach((endpoint) => {
-    it(`assigns ${endpoint}_endpoint from token_${endpoint}_endpoint and removes it`, function () {
-      const issuer = new Issuer({
-        [`token_${endpoint}_endpoint`]: `https://op.example.com/token/${endpoint}`,
-      });
-
-      expect(issuer).to.have.property(`${endpoint}_endpoint`, `https://op.example.com/token/${endpoint}`);
-      expect(issuer).not.to.have.property(`token_${endpoint}_endpoint`);
-    });
-
     it(`assigns ${endpoint} auth method meta from token if both are not defined`, function () {
       const issuer = new Issuer({
         token_endpoint: 'https://op.example.com/token',

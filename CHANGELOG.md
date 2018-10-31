@@ -2,6 +2,76 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.0.0](https://github.com/panva/node-openid-client/compare/v2.5.0...v3.0.0) (2019-05-11)
+
+
+### Bug Fixes
+
+* authorizationParams no longer requires nonce for `response_type=token`
+* issuer's auth signing algs presence is now asserted if client is missing the relevant metadata property
+* unintended (client|issuer).metadata[property] reassignment is no longer possible
+* refreshed encrypted ID Tokens are now properly decrypted
+* userinfo_endpoint presence on an issuer is now asserted during userinfo function call
+* PBES2 symmetric encryption and decryption now correctly uses the `client_secret` value rather then
+its SHA digest
+* Accept header is now correctly set for all requests
+* clients configured to receive signed and/or encrypted userinfo endpoints will now correctly reject
+a response that isn't proper `application/jwt`
+
+
+### Features
+
+* **Typed Errors** - openid-client now has unique errors for HTTP transport related errors, OP/AS
+returned errors and RP(client-side) assertions.
+* **common configuration issues are now gracefully handled.** I feel like many developers may be
+setting properties like `redirect_uri` or `response_type` on a client instance. I sympathize and
+openid-client will now take these common mistakes and accomodate.
+* **QoL** `#client.authorizationParams()` will now attempt to resolve the `redirect_uri` and
+`response_type` from your client's metadata. If there's only one listed, it will be used
+automatically. If there's more, you must continue providing it explicitly.
+* **per-request http request options helper function** HTTP request options can now be modified on
+a per request basis for the different classes or their instances. This now allows each request's
+options to be altered on-demand with e.g. client mutual-TLS certificates or implementing work
+arounds for specific AS quirks.
+* **mutual-TLS client authentication** is now supported through the above mentioned helper for both
+client-authentication and proof-of-possession purposes.
+* **custom request bodies** Where the above per-request helper falls short is providing extra
+token endpoint exchange parameters like `resource` to authorization code or refresh token exchange,
+you can now pass those in the actual client methods.
+* **custom client assertion payloads** You can now pass extra claims to the client authenticated
+calls e.g. token, introspect, revoke.
+* **request objects are now set to be one-time use** Generated Request Objects are secure by default
+they include iat, exp and jti claims so that OPs have a way to make them one-time use depending on
+their policy.
+* **EdDSA support** OKP JSON Web Keys and EdDSA signing and verification is now supported.
+
+
+### BREAKING CHANGES
+* openid-client now uses `@panva/jose` for all things JOSE. As a result of this the minimum required
+node version is v12.0.0 and the client will now only function in node.js environments.
+* `Issuer.defaultHttpOptions` getter and setter were removed. See documentation customization
+section for its replacement.
+* `client.CLOCK_TOLERANCE` client property was removed. See documentation customization  section for
+its replacement.
+* `client.authorizationCallback()` has been renamed to `client.callback()`
+* `tokenset.claims` getter is now a function `tokenset.claims()`
+* `useRequest` and `useGot` methods were removed, with the maintenance mode and inevitable
+deprecation of the `request` module i've decided to only support got as an http request library.
+* Instead of passing jose library keystore instances with private keys the API now
+expects a JWKS formatted object. `keystore` options argument properties are now called just `jwks`.
+* `response_type=code` is no longer defaulted to in `#client.authorizationUrl()` if your client
+instance has multiple `response_types` members.
+* Strict `===` equality operator is now used for assertions, while unlikely the breaking change is
+that should some ID Token claims be correct values but incorrect type, these will start failing now.
+* `#client.revoke()` no longer returns or in any way processes the response body as per spec
+requirements.
+* All http(s) responses are now strictly checked for the expected http response status code.
+* All http(s) requests now assert that an absolute URL is being requested.
+* Passport Strategy will now fail when userinfo is requested via the verify callback arity but no
+access token is returned from the OP.
+
+
+
 # [2.5.0](https://github.com/panva/node-openid-client/compare/v2.4.5...v2.5.0) (2019-04-29)
 
 
