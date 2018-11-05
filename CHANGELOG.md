@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.4.5"></a>
+## [2.4.5](https://github.com/panva/node-openid-client/compare/v2.4.4...v2.4.5) (2018-11-05)
+
+
+### Bug Fixes
+
+* upgrade min node-jose version to fix its performance in node ([e682dfc](https://github.com/panva/node-openid-client/commit/e682dfc))
+
+
+
 <a name="2.4.4"></a>
 ## [2.4.4](https://github.com/panva/node-openid-client/compare/v2.4.3...v2.4.4) (2018-10-18)
 
