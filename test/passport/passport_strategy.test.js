@@ -39,6 +39,34 @@ const { Issuer, Strategy } = require('../../lib');
       });
     });
 
+    it('passes through defined querystring parameters', function () {
+      const strategy = new Strategy({
+        client: this.client,
+        passThrough: {
+          foo: true,
+          test: 'bar',
+        },
+      }, () => {});
+
+      const req = new MockRequest('GET', '/login/oidc?foo=bar&bar=123&baz=456');
+      req.query = {
+        foo: 'bar',
+        bar: '123',
+        baz: '456',
+      };
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req);
+
+      expect(strategy.redirect.calledOnce).to.be.true;
+      const target = strategy.redirect.firstCall.args[0];
+      expect(target).to.include('foo=bar');
+      expect(target).to.include('test=123');
+      expect(target).not.to.include('bar=');
+      expect(target).not.to.include('baz=');
+    });
+
     it('checks for session presence', function (next) {
       const strategy = new Strategy({ client: this.client }, () => {});
 
