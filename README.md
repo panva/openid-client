@@ -117,6 +117,17 @@ const client = new googleIssuer.Client({
 `keystore` is an optional argument for instantiating a client with configured asymmetrical
 ID Token or UserInfo response encryption.
 
+#### For usage with Azure AD v2 Multitenant application
+
+Set `isAzureADv2Multitenant` to true and add a list of valid tenant ids to `azureADv2ValidTenantIds`. If `azureADv2ValidTenantIds` is undefined or empty all tenant ids will be accepted if returned `tid` is the same as the id in `iss`.
+
+```js
+  const adClient = new adIssuer.Client({
+    isAzureADv2Multitenant: true,
+    azureADv2ValidTenantIds: ["0000000-0000-0000-0000-0000000000001"]
+  });
+```
+
 ### via registration client uri
 Should your oidc provider have provided you with a registration client uri and registration access
 token you can also have the Client discovered.

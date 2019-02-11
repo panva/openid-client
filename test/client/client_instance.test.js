@@ -2686,4 +2686,181 @@ const encode = object => base64url.encode(JSON.stringify(object));
       });
     });
   });
+
+  describe('Azure AD v2 Multitenant settings', function () {
+    afterEach(function () {
+      if (this.client) this.client.CLOCK_TOLERANCE = 0;
+    });
+
+    before(function () {
+      this.keystore = jose.JWK.createKeyStore();
+      return this.keystore.generate('RSA', 512);
+    });
+
+    before(function () {
+      this.issuer = new Issuer({
+        issuer: 'https://login.microsoftonline.com/{tenantid}/v2.0',
+        jwks_uri: 'https://op.example.com/certs',
+      });
+
+      this.IdToken = class IdToken {
+        constructor(key, alg, payload) {
+          return jose.JWS.createSign({
+            fields: { alg, typ: 'JWT' },
+            format: 'compact',
+          }, { key, reference: !alg.startsWith('HS') }).update(JSON.stringify(payload)).final();
+        }
+      };
+    });
+
+    before(function () {
+      nock('https://op.example.com')
+        .persist()
+        .get('/certs')
+        .reply(200, this.keystore.toJSON());
+    });
+
+    after(nock.cleanAll);
+
+    it('asserts bad iss when no parameters are set', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+      });
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        iss: 'https://login.microsoftonline.com/e3ec3382-28d5-4c23-8ff4-a6444ecf05ed/v2.0',
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+        tid: 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed',
+      })
+        .then(client.validateIdToken.bind(client))
+        .catch(e => expect(e.message).to.equal('unexpected iss value'));
+    });
+
+    it('allows any issuer with matching tid if azureADv2ValidTenantIds is not set', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+        isAzureADv2Multitenant: true,
+      });
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        iss: 'https://login.microsoftonline.com/e3ec3382-28d5-4c23-8ff4-a6444ecf05ed/v2.0',
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+        tid: 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed',
+      })
+        .then(token => client.validateIdToken(token).then((validated) => {
+          expect(validated).to.equal(token);
+        }));
+    });
+
+    it('allows any issuer with matching tid if azureADv2ValidTenantIds is empty', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+        isAzureADv2Multitenant: true,
+        azureADv2ValidTenantIds: [],
+      });
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        iss: 'https://login.microsoftonline.com/e3ec3382-28d5-4c23-8ff4-a6444ecf05ed/v2.0',
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+        tid: 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed',
+      })
+        .then(token => client.validateIdToken(token).then((validated) => {
+          expect(validated).to.equal(token);
+        }));
+    });
+
+    it('allows the tenant if it matches the only azureADv2ValidTenantIds', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+        isAzureADv2Multitenant: true,
+        azureADv2ValidTenantIds: ['e3ec3382-28d5-4c23-8ff4-a6444ecf05ed'],
+      });
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        iss: 'https://login.microsoftonline.com/e3ec3382-28d5-4c23-8ff4-a6444ecf05ed/v2.0',
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+        tid: 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed',
+      })
+        .then(token => client.validateIdToken(token).then((validated) => {
+          expect(validated).to.equal(token);
+        }));
+    });
+
+    it('allows the tenant if it matches 1 of the azureADv2ValidTenantIds', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+        isAzureADv2Multitenant: true,
+        azureADv2ValidTenantIds: ['7dd0242f-7b0d-4bd4-b298-8df0da124f58', 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed'],
+      });
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        iss: 'https://login.microsoftonline.com/e3ec3382-28d5-4c23-8ff4-a6444ecf05ed/v2.0',
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+        tid: 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed',
+      })
+        .then(token => client.validateIdToken(token).then((validated) => {
+          expect(validated).to.equal(token);
+        }));
+    });
+
+    it('it fails if the incoming tid does not match the supplied azureADv2ValidTenantIds', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+        isAzureADv2Multitenant: true,
+        azureADv2ValidTenantIds: ['7dd0242f-7b0d-4bd4-b298-8df0da124f58'],
+      });
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        iss: 'https://login.microsoftonline.com/e3ec3382-28d5-4c23-8ff4-a6444ecf05ed/v2.0',
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+        tid: 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed',
+      })
+        .then(client.validateIdToken.bind(client))
+        .catch(e => expect(e.message).to.equal('tid (e3ec3382-28d5-4c23-8ff4-a6444ecf05ed) is not included in allowed tenant ids'));
+    });
+
+    it('it fails if the incoming tid does not match any of the supplied azureADv2ValidTenantIds', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+        isAzureADv2Multitenant: true,
+        azureADv2ValidTenantIds: ['7dd0242f-7b0d-4bd4-b298-8df0da124f58', '8041ca5d-9883-4ca3-a6a0-076ceeba5ba2'],
+      });
+
+      return new this.IdToken(this.keystore.get(), 'RS256', {
+        iss: 'https://login.microsoftonline.com/e3ec3382-28d5-4c23-8ff4-a6444ecf05ed/v2.0',
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+        tid: 'e3ec3382-28d5-4c23-8ff4-a6444ecf05ed',
+      })
+        .then(client.validateIdToken.bind(client))
+        .catch(e => expect(e.message).to.equal('tid (e3ec3382-28d5-4c23-8ff4-a6444ecf05ed) is not included in allowed tenant ids'));
+    });
+  });
 });
