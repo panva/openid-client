@@ -1122,6 +1122,20 @@ const encode = object => base64url.encode(JSON.stringify(object));
         expect(client.authenticatedPost.args[0][0]).to.equal('token');
         expect(client.authenticatedPost.args[0][1]).to.eql({ body: { token: 'tokenValue' } });
       });
+      it('calls authenticatedPost with token endpoint and body and extraClaims', function () {
+        const issuer = new Issuer({ token_endpoint: 'https://op.example.com/token' });
+        const client = new issuer.Client();
+
+        sinon.spy(client, 'authenticatedPost');
+
+        client.grant({
+          token: 'tokenValue',
+        }, { data: 'testValue' }).then(noop, noop);
+
+        expect(client.authenticatedPost.args[0][0]).to.equal('token');
+        expect(client.authenticatedPost.args[0][1]).to.eql({ body: { token: 'tokenValue' } });
+        expect(client.authenticatedPost.args[0][2]).to.eql({ data: 'testValue' });
+      });
     });
 
     describe('#authFor', function () {
@@ -1266,6 +1280,47 @@ const encode = object => base64url.encode(JSON.stringify(object));
           expect(header.alg).to.equal('ES256');
           expect(header.typ).to.equal('JWT');
           expect(header.kid).to.be.ok;
+        });
+      });
+
+      it('when private_key_jwt with extra claims has extra payload properties', function () {
+        const issuer = new Issuer({
+          token_endpoint: 'https://rp.example.com/token',
+          token_endpoint_auth_signing_alg_values_supported: ['ES256', 'ES384'],
+        });
+
+        const keystore = jose.JWK.createKeyStore();
+
+        return keystore.generate('EC', 'P-256').then(() => {
+          const client = new issuer.Client({
+            client_id: 'identifier',
+            token_endpoint_auth_method: 'private_key_jwt',
+          }, keystore);
+
+          return client.authFor('token', { data: 'testValue' }).then((auth) => {
+            const payload = JSON.parse(base64url.decode(auth.body.client_assertion.split('.')[1]));
+            expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud', 'data']);
+            expect(payload.data).to.equal('testValue');
+          });
+        });
+      });
+
+      it('when client_secret_jwt with extra claims has extra payload properties', function () {
+        const issuer = new Issuer({
+          token_endpoint: 'https://rp.example.com/token',
+          token_endpoint_auth_signing_alg_values_supported: ['HS256', 'HS384'],
+        });
+
+        const client = new issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+          token_endpoint_auth_method: 'client_secret_jwt',
+        });
+
+        return client.authFor('token', { data: 'testValue' }).then((auth) => {
+          const payload = JSON.parse(base64url.decode(auth.body.client_assertion.split('.')[1]));
+          expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud', 'data']);
+          expect(payload.data).to.equal('testValue');
         });
       });
     });
