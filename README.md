@@ -159,8 +159,8 @@ client.authorizationCallback('https://client.example.com/callback', request.quer
   });
 ```
 
-Aside from `state` and `response_type`, checks for `nonce` (implicit and hybrid responses) and
-`max_age` are implemented. `id_token` signature and claims validation does not need to be requested,
+Aside from `state` and `response_type`, checks for `nonce` (implicit and hybrid responses),
+`max_age`, and `code_verifier` (for use with PKCE) are implemented. `id_token` signature and claims validation does not need to be requested,
 it is done automatically.
 
 ### OP Errors - OpenIdConnectError
