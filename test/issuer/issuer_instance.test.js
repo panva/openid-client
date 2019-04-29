@@ -45,7 +45,7 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
           .get('/certs')
           .reply(200, this.keystore.toJSON());
 
-        return this.issuer.key();
+        return this.issuer.key({});
       });
 
       after(nock.cleanAll);
@@ -55,7 +55,7 @@ const fail = () => { throw new Error('expected promise to be rejected'); };
 
       it('does not refetch immidiately', function () {
         nock.cleanAll();
-        return this.issuer.key();
+        return this.issuer.key({});
       });
 
       it('fetches if asked to', function () {

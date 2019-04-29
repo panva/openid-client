@@ -2600,7 +2600,7 @@ const encode = object => base64url.encode(JSON.stringify(object));
           .get('/certs')
           .reply(200, this.keystore.toJSON());
 
-        return this.issuer.key();
+        return this.issuer.key({});
       });
 
       after(nock.cleanAll);
