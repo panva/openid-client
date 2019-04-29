@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* add support for azure ad v2 multitenant apps ([24486dd](https://github.com/panva/node-openid-client/commit/24486dd)), closes [/github.com/panva/node-openid-client/pull/148#issuecomment-483348258](https://github.com//github.com/panva/node-openid-client/pull/148/issues/issuecomment-483348258) [#148](https://github.com/panva/node-openid-client/issues/148)
+* add support for azure ad v2 multitenant apps ([24486dd](https://github.com/panva/node-openid-client/commit/24486dd)), closes [#148](https://github.com/panva/node-openid-client/issues/148)
 
 
 
