@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.5.0](https://github.com/panva/node-openid-client/compare/v2.4.5...v2.5.0) (2019-04-29)
+
+
+### Bug Fixes
+
+* key lookup cache is now working as intended ([90d2f2a](https://github.com/panva/node-openid-client/commit/90d2f2a)), closes [#162](https://github.com/panva/node-openid-client/issues/162)
+
+
+### Features
+
+* add support for azure ad v2 multitenant apps ([24486dd](https://github.com/panva/node-openid-client/commit/24486dd)), closes [/github.com/panva/node-openid-client/pull/148#issuecomment-483348258](https://github.com//github.com/panva/node-openid-client/pull/148/issues/issuecomment-483348258) [#148](https://github.com/panva/node-openid-client/issues/148)
+
+
+
 <a name="2.4.5"></a>
 ## [2.4.5](https://github.com/panva/node-openid-client/compare/v2.4.4...v2.4.5) (2018-11-05)
 
