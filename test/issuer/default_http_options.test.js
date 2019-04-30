@@ -17,7 +17,7 @@ describe('Issuer#defaultHttpOptions', function () {
   });
 
   it('has a rather graceous timeout', function () {
-    expect(Issuer.defaultHttpOptions).to.have.property('timeout', 1500);
+    expect(Issuer.defaultHttpOptions).to.have.property('timeout', 10000);
   });
 });
 
