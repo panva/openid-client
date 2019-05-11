@@ -100,7 +100,7 @@ Returns metadata from the issuer's discovery document.
 Returns the issuer's `jwks_uri` keys as a [`@panva/jose`][jose] parsed JWKS.Keystore.
 
 - `forceReload`: `<boolean>` forces a reload of the issuer's jwks_uri. **Default:** 'false'
-- Returns: `<jose.JWKS.KeyStore>`
+- Returns: `Promise<jose.JWKS.KeyStore>`
 
 ---
 
