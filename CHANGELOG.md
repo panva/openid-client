@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.1.0](https://github.com/panva/node-openid-client/compare/v3.0.0...v3.1.0) (2019-05-13)
+
+
+### Features
+
+* add helpers for generating secure random values & PKCE challenges ([44f1865](https://github.com/panva/node-openid-client/commit/44f1865))
+
+
+
 # [3.0.0](https://github.com/panva/node-openid-client/compare/v2.5.0...v3.0.0) (2019-05-11)
 
 
