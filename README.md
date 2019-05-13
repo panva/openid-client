@@ -79,6 +79,7 @@ or koa middlewares. Those can however be built using the exposed API.
   - [Customizing][documentation-customizing]
   - [TokenSet][documentation-tokenset]
   - [Strategy][documentation-strategy]
+  - [generators][documentation-generators]
   - [errors][documentation-errors]
 
 ## Quick start
@@ -120,20 +121,17 @@ to get the authorization endpoint's URL with parameters already encoded in the q
 to.
 
 ```js
-const code_verifier = crypto.randomBytes(32).toString('hex');
+const { generators } = require('openid-client');
+const code_verifier = generators.codeVerifier();
 // store the code_verifier in your framework's session mechanism, if it is a cookie based solution
 // it should be httpOnly (not readable by javascript) and encrypted.
 
-// sha256 digest of the code_verifier in base64url with no padding
-const challenge = crypto.createHash('sha256')
-  .update(code_verifier)
-  .digest('base64')
-  .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+const code_challenge = generators.codeChallenge(verifier);
 
 client.authorizationUrl({
   scope: 'openid email profile',
   resource: 'https://my.api.example.com/resource/32178',
-  code_challenge: challenge,
+  code_challenge,
   code_challenge_method: 'S256',
 });
 ```
@@ -190,9 +188,11 @@ to get the authorization endpoint's URL with parameters already encoded in the q
 to.
 
 ```js
-const nonce = crypto.randomBytes(32).toString('hex');
+const { generators } = require('openid-client');
+const nonce = generators.nonce();
 // store the nonce in your framework's session mechanism, if it is a cookie based solution
 // it should be httpOnly (not readable by javascript) and encrypted.
+
 client.authorizationUrl({
   scope: 'openid email profile',
   response_mode: 'form_post',
@@ -271,4 +271,5 @@ See [Client Authentication Methods][documentation-methods].
 [documentation-tokenset]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#tokenset
 [documentation-strategy]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#strategy
 [documentation-errors]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#errors
+[documentation-generators]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#generators
 [documentation-methods]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods

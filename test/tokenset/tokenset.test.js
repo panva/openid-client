@@ -2,7 +2,7 @@ const base64url = require('base64url');
 const { expect } = require('chai');
 
 const TokenSet = require('../../lib/token_set');
-const now = require('../../lib/util/unix_timestamp');
+const now = require('../../lib/helpers/unix_timestamp');
 
 describe('TokenSet', function () {
   after(function () {

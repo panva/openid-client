@@ -7,6 +7,7 @@
 - [Customizing](#customizing)
 - [TokenSet](#tokenset)
 - [Strategy](#strategy)
+- [generators](#generators)
 - [errors](#errors)
 
 ## Sponsor
@@ -652,8 +653,38 @@ Creates a new Strategy
   - `[userinfo]`: `<Object>` Optional argument, omit it when you don't want to load userinfo and
     are fine using 'tokenset.claims()' alone.
   - `done`: `<Function>`
-
 - Returns: `<Strategy>`
+
+---
+
+## generators
+
+<!-- TOC generators START -->
+  - [generators.random([bytes])](#generatorsrandombytes)
+  - [generators.state([bytes])](#generatorsrandombytes)
+  - [generators.nonce([bytes])](#generatorsrandombytes)
+  - [generators.codeVerifier([bytes])](#generatorsrandombytes)
+  - [generators.codeChallenge(codeVerifier)](#generatorscodechallengeverifier)
+<!-- TOC generators END -->
+
+---
+
+#### `generators.random([bytes])`
+
+Generates random bytes and encodes them in url safe base64. This method is also aliased as
+`generators.nonce`, `generators.state` and `generators.codeVerifier`
+
+- `bytes`: `<number>` Number indicating the number of bytes to generate. **Default:** 32
+- Returns: `<string>`
+
+---
+
+#### `generators.codeChallenge(verifier)`
+
+Calculates the S256 PKCE code challenge for an arbitrary code verifier.
+
+- `verifier`: `<string>` Code verifier to calculate the S256 code challenge for.
+- Returns: `<string>`
 
 ---
 

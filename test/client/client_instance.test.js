@@ -12,7 +12,7 @@ const timekeeper = require('timekeeper');
 
 const TokenSet = require('../../lib/token_set');
 const { OPError } = require('../../lib/errors');
-const now = require('../../lib/util/unix_timestamp');
+const now = require('../../lib/helpers/unix_timestamp');
 const { Registry, Issuer, custom } = require('../../lib');
 const clientInternal = require('../../lib/helpers/client');
 
