@@ -126,6 +126,26 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('scope=openid%20profile');
     });
 
+    it('can have authorization parameters specified at runtime', function () {
+      const strategy = new Strategy({
+        client: this.client,
+        params: {
+          redirect_uri: 'https://example.com/cb',
+          scope: 'openid profile',
+        },
+      }, () => {});
+
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req, { resource: 'urn:example:foo' });
+
+      expect(strategy.redirect.calledOnce).to.be.true;
+      const target = strategy.redirect.firstCall.args[0];
+      expect(target).to.include(`resource=${encodeURIComponent('urn:example:foo')}`);
+    });
+
     it('automatically includes nonce for where it applies', function () {
       const strategy = new Strategy({
         client: this.client,
