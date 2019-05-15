@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.1](https://github.com/panva/node-openid-client/compare/v3.1.0...v3.1.1) (2019-05-15)
+
+
+### Bug Fixes
+
+* passport strategy runtime authenticate parameters regression ([36e741e](https://github.com/panva/node-openid-client/commit/36e741e)), closes [#167](https://github.com/panva/node-openid-client/issues/167)
+
+
+
 # [3.1.0](https://github.com/panva/node-openid-client/compare/v3.0.0...v3.1.0) (2019-05-13)
 
 
