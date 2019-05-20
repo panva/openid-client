@@ -288,6 +288,11 @@ Performs the callback for Authorization Server's authorization response.
     is either `client_secret_jwt` or `private_key_jwt`.
 - Returns: `Promise<TokenSet>` Parsed token endpoint response as a TokenSet.
 
+Tip: If you're using pure
+OAuth 2.0 then `client.oauthCallback(redirectUri, parameters[, checks[, extras]])` is the OAuth 2.0
+variant of this method, it has the same signature with the exception of checks only supporting
+`code_verifier`, `state` and `response_type`.
+
 ---
 
 #### `client.refresh(refreshToken[, extras])`
