@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.2](https://github.com/panva/node-openid-client/compare/v3.1.1...v3.1.2) (2019-06-21)
+
+
+### Bug Fixes
+
+* ensure runtime @panva/jose dependency ^1.3.0 ([d992deb](https://github.com/panva/node-openid-client/commit/d992deb))
+
+
+
 ## [3.1.1](https://github.com/panva/node-openid-client/compare/v3.1.0...v3.1.1) (2019-05-15)
 
 
