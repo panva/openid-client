@@ -2764,7 +2764,7 @@ describe('Client', () => {
     /* eslint-disable max-len */
     describe('signed and encrypted responses', function () {
       before(function () {
-        this.keystore = jose.JWKS.KeyStore.fromJWKS({
+        this.keystore = jose.JWKS.asKeyStore({
           keys: [
             {
               kty: 'EC',
