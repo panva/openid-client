@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.2.0](https://github.com/panva/node-openid-client/compare/v3.1.2...v3.2.0) (2019-06-27)
+
+
+### Features
+
+* feat: added support for direct symmetric key encryption alg (dir) ([f1b4282](https://github.com/panva/node-openid-client/commit/f1b4282))
+
+
+
 ## [3.1.2](https://github.com/panva/node-openid-client/compare/v3.1.1...v3.1.2) (2019-06-21)
 
 
