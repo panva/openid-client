@@ -3176,6 +3176,21 @@ describe('Client', () => {
           });
       });
 
+      it('encrypts for issuer using pre-shared client_secret (dir + A128CBC-HS256)', function () {
+        const client = new this.issuer.Client({
+          client_id: 'client_id',
+          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+          request_object_encryption_alg: 'dir',
+          request_object_encryption_enc: 'A128CBC-HS256',
+        });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A128CBC-HS256', cty: 'JWT' }).and.not.have.property('kid');
+          });
+      });
+
       it('throws on non-object inputs', function () {
         const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'none' });
         return client.requestObject(true).then(fail, (err) => {
