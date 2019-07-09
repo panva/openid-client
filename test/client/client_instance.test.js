@@ -975,7 +975,7 @@ describe('Client', () => {
       return client.userinfo()
         .then(fail, function (error) {
           expect(error.name).to.eql('ParseError');
-          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com:443/me": \n{"notavalid"}...');
+          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/me": \n{"notavalid"}...');
           expect(error).to.have.property('response');
         });
     });
@@ -1163,7 +1163,7 @@ describe('Client', () => {
       return client.introspect('tokenValue')
         .then(fail, function (error) {
           expect(error.name).to.eql('ParseError');
-          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com:443/token/introspect": \n{"notavalid"}...');
+          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/token/introspect": \n{"notavalid"}...');
           expect(error).to.have.property('response');
         });
     });

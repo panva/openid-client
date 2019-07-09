@@ -287,7 +287,7 @@ describe('Issuer#discover()', () => {
         expect([...error].some((err) => {
           try {
             expect(err.name).to.eql('ParseError');
-            expect(err.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com:443/.well-known/openid-configuration": \n{"notavalid"}...');
+            expect(err.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/.well-known/openid-configuration": \n{"notavalid"}...');
             expect(err).to.have.property('response');
             return true;
           } catch (e) {
