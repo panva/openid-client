@@ -248,7 +248,7 @@ See [Client Authentication Methods][documentation-methods].
 [travis-url]: https://travis-ci.com/panva/node-openid-client
 [conformance-image]: https://api.travis-ci.com/panva/openid-client-conformance-tests.svg?branch=master
 [conformance-url]: https://github.com/panva/openid-client-conformance-tests
-[codecov-image]: https://codecov.io/gh/panva/node-openid-client/branch/master/graph/badge.svg
+[codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
 [openid-connect]: https://openid.net/connect/
 [feature-core]: https://openid.net/specs/openid-connect-core-1_0.html
