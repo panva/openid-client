@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.2](https://github.com/panva/node-openid-client/compare/v3.2.1...v3.2.2) (2019-07-12)
+
+
+### Bug Fixes
+
+* give AAD v2 organizations and consumers same treatment as common ([4891b5b](https://github.com/panva/node-openid-client/commit/4891b5b)), closes [#175](https://github.com/panva/node-openid-client/issues/175)
+
+
+
 ## [3.2.1](https://github.com/panva/node-openid-client/compare/v3.2.0...v3.2.1) (2019-07-10)
 
 
