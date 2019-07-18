@@ -71,7 +71,8 @@ describe('OpenIDConnectStrategy', () => {
 
   describe('initate', function () {
     it('starts authentication requests for GETs', function () {
-      const strategy = new Strategy({ client: this.client }, () => {});
+      const params = { foo: 'bar' };
+      const strategy = new Strategy({ client: this.client, params }, () => {});
 
       const req = new MockRequest('GET', '/login/oidc');
       req.session = {};
@@ -79,6 +80,7 @@ describe('OpenIDConnectStrategy', () => {
       strategy.redirect = sinon.spy();
       strategy.authenticate(req);
 
+      expect(params).to.eql({ foo: 'bar' });
       expect(strategy.redirect.calledOnce).to.be.true;
       const target = strategy.redirect.firstCall.args[0];
       expect(target).to.include('redirect_uri=');
