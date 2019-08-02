@@ -445,12 +445,13 @@ Performs Dynamic Client Read Request to retrieve a Client instance.
 
 <!-- TOC Customizing START -->
 - [Customizing HTTP requests](#customizing-http-requests)
+- [Customizing individual HTTP requests](#customizing-individual-http-requests)
 - [Customizing clock skew tolerance](#customizing-clock-skew-tolerance)
 <!-- TOC Customizing END -->
 
 ---
 
-#### Customizing HTTP Requests
+#### Customizing HTTP requests
 
 The following are default [`got`][got-library] request
 [options](https://github.com/sindresorhus/got/tree/v9.6.0#options) that openid-client sets for all
@@ -466,7 +467,21 @@ const DEFAULT_HTTP_OPTIONS = {
 };
 ```
 
-You can change these options by assigning a function to
+You may change these global options like so:
+
+```js
+const { custom } = require('openid-client');
+
+custom.setHttpOptionsDefaults({
+  timeout: 5000,
+});
+```
+
+This is meant to change global request options such as `timeout` or the default `User-Agent` header.
+
+#### Customizing individual HTTP requests
+
+You change options on a per-request basis by assigning a function to
 
 - `Issuer` constructor to override the following request's options
   - discovery
@@ -481,7 +496,7 @@ You can change these options by assigning a function to
   - introspection endpoint requests
   - revocation endpoint requests
 
-This function will then be called before executing each and every request.
+This function will then be called before executing each and every request on the instance or constructor.
 
 ```js
 const { custom } = require('openid-client');
@@ -491,6 +506,9 @@ client[custom.http_options] = function (options) {
   return options;
 }
 ```
+
+This is meant to change request options on per-request basis should there be a specific IdP quirk
+you need to work around, e.g. adding custom headers or body payload parameters.
 
 <details>
   <summary><em><strong>Example</strong></em> (Click to expand) providing mutual-TLS client certificate and key</summary>
