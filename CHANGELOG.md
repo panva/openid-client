@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.3.0](https://github.com/panva/node-openid-client/compare/v3.2.3...v3.3.0) (2019-08-02)
+
+
+### Features
+
+* option to change http options globally ([a1e0a3f](https://github.com/panva/node-openid-client/commit/a1e0a3f))
+
+
+
 ## [3.2.3](https://github.com/panva/node-openid-client/compare/v3.2.2...v3.2.3) (2019-07-18)
 
 
