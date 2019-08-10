@@ -17,7 +17,7 @@ const { Registry, Issuer, custom } = require('../../lib');
 const clientInternal = require('../../lib/helpers/client');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
-const encode = object => base64url.encode(JSON.stringify(object));
+const encode = (object) => base64url.encode(JSON.stringify(object));
 
 describe('Client', () => {
   afterEach(timekeeper.reset);
@@ -1077,7 +1077,7 @@ describe('Client', () => {
       const client = new issuer.Client();
 
       return client.introspect('tokenValue')
-        .then(response => expect(response).to.eql({ endpoint: 'response' }));
+        .then((response) => expect(response).to.eql({ endpoint: 'response' }));
     });
 
     it('posts the token and a hint in a body', function () {
@@ -1188,7 +1188,7 @@ describe('Client', () => {
       const client = new issuer.Client();
 
       return client.revoke('tokenValue')
-        .then(response => expect(response).to.be.undefined);
+        .then((response) => expect(response).to.be.undefined);
     });
 
     it('posts the token and a hint in a body', function () {
@@ -1507,7 +1507,7 @@ describe('Client', () => {
         exp: now() + 3600,
         iat: now(),
       })
-        .then(token => this.client.validateIdToken(token).then((validated) => {
+        .then((token) => this.client.validateIdToken(token).then((validated) => {
           expect(validated).to.equal(token);
         }));
     });
@@ -1536,7 +1536,7 @@ describe('Client', () => {
         exp: now() + 3600,
         iat: now(),
       })
-        .then(token => this.client.validateIdToken(token.slice(0, -1)).then(fail, (err) => {
+        .then((token) => this.client.validateIdToken(token.slice(0, -1)).then(fail, (err) => {
           expect(err.message).to.equal('failed to validate JWT signature');
         }));
     });
@@ -1613,7 +1613,7 @@ describe('Client', () => {
           exp: now() + 3600,
           iat: now(),
         })
-          .then(token => this.client.validateIdToken(token))
+          .then((token) => this.client.validateIdToken(token))
           .then(fail, (error) => {
             expect(error).to.have.property('message', 'unexpected JWT alg received, expected RS256, got: HS256');
           });
@@ -1631,7 +1631,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'azp must be the client_id, expected identifier, got: not the client');
         });
@@ -1647,7 +1647,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'missing required JWT property azp');
         });
@@ -1664,7 +1664,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token));
+        .then((token) => this.client.validateIdToken(token));
     });
 
     it('verifies the audience when string', function () {
@@ -1677,7 +1677,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'aud mismatch, expected identifier, got: someone else');
         });
@@ -1694,7 +1694,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'aud is missing the client_id, expected identifier to be included in ["someone else","and another"]');
         });
@@ -1712,7 +1712,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token, 'nonce!!!'));
+        .then((token) => this.client.validateIdToken(token, 'nonce!!!'));
     });
 
     it('validates nonce when provided to check for', function () {
@@ -1726,7 +1726,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token, 'nonce!!!'))
+        .then((token) => this.client.validateIdToken(token, 'nonce!!!'))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'nonce mismatch, expected nonce!!!, got: undefined');
         });
@@ -1744,7 +1744,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'nonce mismatch, expected undefined, got: nonce!!!');
         });
@@ -1763,7 +1763,7 @@ describe('Client', () => {
         delete payload[prop];
 
         return this.IdToken(this.keystore.get(), 'RS256', payload)
-          .then(token => this.client.validateIdToken(token))
+          .then((token) => this.client.validateIdToken(token))
           .then(fail, (error) => {
             expect(error).to.have.property('message', `missing required JWT property ${prop}`);
           });
@@ -1780,7 +1780,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'JWT iat claim must be a JSON number integer');
         });
@@ -1796,7 +1796,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message').that.matches(/^id_token issued in the future, now \d+, iat \d+$/);
         });
@@ -1813,7 +1813,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token));
+        .then((token) => this.client.validateIdToken(token));
     });
 
     it('verifies exp is a number', function () {
@@ -1826,7 +1826,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'JWT exp claim must be a JSON number integer');
         });
@@ -1842,7 +1842,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message').that.matches(/^id_token expired, now \d+, exp \d+$/);
         });
@@ -1859,7 +1859,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token));
+        .then((token) => this.client.validateIdToken(token));
     });
 
     it('verifies nbf is a number', function () {
@@ -1873,7 +1873,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'JWT nbf claim must be a JSON number integer');
         });
@@ -1890,7 +1890,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token))
+        .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message').that.matches(/^id_token not active yet, now \d+, nbf \d+$/);
         });
@@ -1908,7 +1908,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token));
+        .then((token) => this.client.validateIdToken(token));
     });
 
     it('passes when auth_time is within max_age', function () {
@@ -1922,7 +1922,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token, null, null, 300));
+        .then((token) => this.client.validateIdToken(token, null, null, 300));
     });
 
     it('verifies auth_time did not exceed max_age', function () {
@@ -1936,7 +1936,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token, null, null, 300))
+        .then((token) => this.client.validateIdToken(token, null, null, 300))
         .then(fail, (error) => {
           expect(error).to.have.property('message').that.matches(/^too much time has elapsed since the last End-User authentication, max_age 300, auth_time: \d+, now \d+$/);
         });
@@ -1954,7 +1954,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token, null, null, 300));
+        .then((token) => this.client.validateIdToken(token, null, null, 300));
     });
 
     it('verifies auth_time is a number', function () {
@@ -1968,7 +1968,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token, null, null, 300))
+        .then((token) => this.client.validateIdToken(token, null, null, 300))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'JWT auth_time claim must be a JSON number integer');
         });
@@ -1989,7 +1989,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => client.validateIdToken(token, null, null, null));
+        .then((token) => client.validateIdToken(token, null, null, null));
     });
 
     it('verifies auth_time is present when require_auth_time is true', function () {
@@ -2007,7 +2007,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => client.validateIdToken(token))
+        .then((token) => client.validateIdToken(token))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'missing required JWT property auth_time');
         });
@@ -2023,7 +2023,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then(token => this.client.validateIdToken(token, null, null, 300))
+        .then((token) => this.client.validateIdToken(token, null, null, 300))
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'missing required JWT property auth_time');
         });

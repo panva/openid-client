@@ -87,7 +87,7 @@ describe('mutual-TLS', () => {
       revocation_endpoint_auth_method: 'self_signed_tls_client_auth',
       tls_client_certificate_bound_access_tokens: true,
     });
-    this.client[custom.http_options] = opts => ({ ...opts, key, cert });
+    this.client[custom.http_options] = (opts) => ({ ...opts, key, cert });
   });
 
   it('requires mTLS for userinfo when tls_client_certificate_bound_access_tokens is true', async function () {
