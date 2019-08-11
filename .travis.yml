@@ -29,3 +29,11 @@ matrix:
         - nvm i node
         - npm i
       script: npm test
+    - name: "Test Suite - Electron - 6.0.0"
+      language: node_js
+      node_js: stable
+      script: xvfb-run npx electron@6.0.0 ./test/electron
+    - name: "Test Suite - Electron - ^6.0.0"
+      language: node_js
+      node_js: stable
+      script: xvfb-run npx electron@6 ./test/electron

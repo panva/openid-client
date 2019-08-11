@@ -400,7 +400,7 @@ the following are valid values for `token_endpoint_auth_method`.
   header as described in [RFC6749](https://tools.ietf.org/html/rfc6749#section-2.3.1)
 - `client_secret_post` - client_id and client_secret is sent in the request body as described in
   [RFC6749](https://tools.ietf.org/html/rfc6749#section-2.3.1)
-- `client_secret_jwt` - using `client_secret` as a shared symmetrical secret a `client_assertion` is
+- `client_secret_jwt` - using `client_secret` as a shared symmetric secret a `client_assertion` is
   sent in the request body
 - `private_key_jwt` - using the asymmetric keys provided via `jwks` a `client_assertion` is sent
   in the request body

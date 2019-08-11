@@ -213,6 +213,11 @@ client.callback('https://client.example.com/callback', params, { nonce }) // => 
   });
 ```
 
+## Electron Support
+
+Electron v6.x runtime is supported to the extent of the crypto engine BoringSSL feature parity with
+standard Node.js OpenSSL.
+
 ## FAQ
 
 #### Semver?

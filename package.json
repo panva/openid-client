@@ -10,6 +10,7 @@
     "client",
     "connect",
     "dynamic",
+    "electron",
     "hybrid",
     "identity",
     "implicit",
@@ -17,8 +18,8 @@
     "oauth2",
     "oidc",
     "openid",
-    "relying party",
     "passport",
+    "relying party",
     "strategy"
   ],
   "homepage": "https://github.com/panva/node-openid-client",
@@ -36,7 +37,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "@panva/jose": "^1.3.0",
+    "@panva/jose": "^1.6.1",
     "base64url": "^3.0.1",
     "got": "^9.6.0",
     "lodash": "^4.17.13",
