@@ -13,4 +13,4 @@ Base.prototype.epilogue = function epilogue() {
   app.exit(failures ? 1 : 0);
 }
 
-require('../node_modules/.bin/mocha');
+require('mocha/bin/mocha');
