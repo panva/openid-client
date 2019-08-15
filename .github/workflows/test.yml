@@ -19,7 +19,7 @@ jobs:
       - run: npm run lint
 
   test:
-    name: Test Suite + Coverage - Node.JS
+    name: Node Tests + Coverage
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -43,7 +43,7 @@ jobs:
         run: npx codecov
 
   test-nightly:
-    name: Test Suite + Coverage - Node.JS Nightly
+    name: Node Nightly Tests + Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -60,7 +60,7 @@ jobs:
           npx codecov
 
   test-electron:
-    name: Test Suite - Electron
+    name: Electron - Tests
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
