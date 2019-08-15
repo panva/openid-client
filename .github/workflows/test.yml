@@ -86,19 +86,6 @@ jobs:
     needs:
       - test
       - test-electron
-    strategy:
-      fail-fast: false
-      matrix:
-        script:
-          - basic
-          - config
-          - dynamic
-          - id_token-implicit
-          - id_token+token-implicit
-          - code+id_token-hybrid
-          - code+token-hybrid
-          - code+id_token+token-hybrid
-          - non-profile
     steps:
       - run: |
           docker pull panvafs/oidc-certification-rp-ci
@@ -110,8 +97,8 @@ jobs:
         with:
           node-version: 12
       - run: npm install
-      - run: npm install panva/node-openid-client#${{ github.sha }}
-      - run: npm run ${{ matrix.script }}
+      - run: npm install ${{ github.repository }}#${{ github.sha }}
+      - run: npm run test
         env:
           ISSUER: https://localhost:8080
           NODE_TLS_REJECT_UNAUTHORIZED: 0
