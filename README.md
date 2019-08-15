@@ -1,6 +1,6 @@
 # openid-client
 
-[![build][travis-image]][travis-url] [![codecov][codecov-image]][codecov-url]
+![build][actions-image] [![codecov][codecov-image]][codecov-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js runtime, supports [passport][passport-url].
@@ -51,8 +51,6 @@ openid-client.
 Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
 conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config, RP Dynamic and RP Form Post profiles
 of the OpenID Connect™ protocol.
-
-[![build][conformance-image]][conformance-url]
 
 
 ## Sponsor
@@ -249,10 +247,7 @@ to check its documentation as there were breaking changes between versions 2 and
 
 See [Client Authentication Methods][documentation-methods].
 
-[travis-image]: https://api.travis-ci.com/panva/node-openid-client.svg?branch=master
-[travis-url]: https://travis-ci.com/panva/node-openid-client
-[conformance-image]: https://api.travis-ci.com/panva/openid-client-conformance-tests.svg?branch=master
-[conformance-url]: https://github.com/panva/openid-client-conformance-tests
+[actions-image]: https://action-badges.now.sh/panva/node-openid-client
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
 [openid-connect]: https://openid.net/connect/
