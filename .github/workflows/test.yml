@@ -86,13 +86,23 @@ jobs:
     needs:
       - test
       - test-electron
+    strategy:
+      fail-fast: false
+      matrix:
+        script:
+          - basic
+          - config
+          - dynamic
+          - id_token-implicit
+          - id_token+token-implicit
+          - code+id_token-hybrid
+          - code+token-hybrid
+          - code+id_token+token-hybrid
+          - non-profile
     steps:
       - run: |
-          git clone https://github.com/openid-certification/oidctest.git oidctest
-          cd oidctest
-          git checkout v1.2.0
-          sed -i -e 's/rp-test/localhost/g' docker/rp_test/conf.py
-          docker-compose -f docker/docker-compose.yml up -d --build rp-test
+          docker pull panvafs/oidc-certification-rp-ci
+          docker run -d -p 8080:8080 panvafs/oidc-certification-rp-ci
           while ! curl -sk https://127.0.0.1:8080 >/dev/null; do sleep 2; done
           cd .. && rm -rf oidctest
       - run: git clone https://github.com/panva/openid-client-conformance-tests.git .
@@ -101,7 +111,7 @@ jobs:
           node-version: 12
       - run: npm install
       - run: npm install panva/node-openid-client#${{ github.sha }}
-      - run: npm run test
+      - run: npm run ${{ matrix.script }}
         env:
           ISSUER: https://localhost:8080
           NODE_TLS_REJECT_UNAUTHORIZED: 0
