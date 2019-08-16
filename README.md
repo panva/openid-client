@@ -1,6 +1,6 @@
 # openid-client
 
-![build][actions-image] [![codecov][codecov-image]][codecov-url]
+[![codecov][codecov-image]][codecov-url]
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js runtime, supports [passport][passport-url].
@@ -247,7 +247,7 @@ to check its documentation as there were breaking changes between versions 2 and
 
 See [Client Authentication Methods][documentation-methods].
 
-[actions-image]: https://action-badges.now.sh/panva/node-openid-client
+
 [codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg
 [codecov-url]: https://codecov.io/gh/panva/node-openid-client
 [openid-connect]: https://openid.net/connect/
