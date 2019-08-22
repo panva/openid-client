@@ -5,9 +5,6 @@
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js runtime, supports [passport][passport-url].
 
-**WARNING: Node.js 12 or higher is required for openid-client@3 and above.** For older Node.js
-versions use [openid-client@2](https://github.com/panva/openid-client/tree/v2.x).
-
 ## Implemented specs & features
 
 The following client/RP features from OpenID Connect/OAuth2.0 specifications are implemented by
@@ -224,12 +221,9 @@ private API and is subject to change between any versions.
 
 #### How do I use it outside of Node.js
 
-It is **only built for Node.js** environment.
-
-#### How do I use it older Node.js versions
-
-Use [openid-client@2](https://github.com/panva/openid-client/tree/v2.x) release line, but be sure
-to check its documentation as there were breaking changes between versions 2 and 3.
+It is **only built for ^10.13.0 || >=12.0.0 Node.js** environment - including openid-client in
+transpiled browser-environment targeted projects is not supported and may result in unexpected
+results.
 
 #### What's new in 3.x?
 
@@ -239,7 +233,6 @@ to check its documentation as there were breaking changes between versions 2 and
 - Added support for any additional token exchange parameters to support specifications such as
   Resource Indicators
 - Typed [errors][documentation-errors]
-- Coming soon™ - Typescript definitions
 
 #### How to make the client send client_id and client_secret in the body?
 
