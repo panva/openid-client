@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.5.0](https://github.com/panva/node-openid-client/compare/v3.4.0...v3.5.0) (2019-08-22)
+
+
+### Features
+
+* added Node.js lts/dubnium support for runtime supported features ([54788c2](https://github.com/panva/node-openid-client/commit/54788c2))
+
+
+
 # [3.4.0](https://github.com/panva/node-openid-client/compare/v3.3.0...v3.4.0) (2019-08-13)
 
 
