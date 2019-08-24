@@ -132,6 +132,14 @@ describe('Client', () => {
       });
     });
 
+    it('allows resource to passed as an array', function () {
+      expect(url.parse(this.client.authorizationUrl({
+        resource: ['urn:example:com', 'urn:example-2:com'],
+      }), true).query).to.deep.contain({
+        resource: ['urn:example:com', 'urn:example-2:com'],
+      });
+    });
+
     it('auto-stringifies claims parameter', function () {
       expect(url.parse(this.client.authorizationUrl({
         claims: { id_token: { email: null } },
