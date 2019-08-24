@@ -6,6 +6,7 @@
 - [Client](#client)
 - [Customizing](#customizing)
 - [TokenSet](#tokenset)
+- [DeviceFlowHandle](#deviceflowhandle)
 - [Strategy](#strategy)
 - [generators](#generators)
 - [errors](#errors)
@@ -143,6 +144,7 @@ Performs [OpenID Provider Issuer Discovery][webfinger-discovery] based on End-Us
   - [client.introspect(token[, tokenTypeHint[, extras]])](#clientintrospecttoken-tokentypehint-extras)
   - [client.revoke(token[, tokenTypeHint[, extras]])](#clientrevoketoken-tokentypehint-extras)
   - [client.requestObject(payload)](#clientrequestobjectpayload)
+  - [client.deviceAuthorization(parameters[, extras])](#clientdeviceauthorizationparameters-extras)
 - [Client Authentication Methods](#client-authentication-methods)
 - [Client.register(metadata[, other])](#clientregistermetadata-other)
 - [Client.fromUri(registrationClientUri, registrationAccessToken[, jwks])](#clientfromuriregistrationclienturi-registrationaccesstoken-jwks)
@@ -387,6 +389,27 @@ metadata for determining the algorithms to use.
   - any other JWT parameters like `nbf` may also be included
   - any custom request object payload properties may also be included
 - Returns: `Promise<string>`
+
+---
+
+#### `client.deviceAuthorization(parameters[, extras])`
+
+[RFC8628 - OAuth 2.0 Device Authorization Grant (Device Flow)](https://tools.ietf.org/html/rfc8628)
+
+Starts a Device Authorization Request at the issuer's `device_authorization_endpoint` and returns
+a handle for subsequent Device Access Token Request polling.
+
+- `parameters`: `<Object>`
+  - `client_id`: `<string>` **Default:** client's client_id
+  - `scope`: `<string>` **Default:** 'openid'
+  - any Device Authorization Request parameters may also be included
+- `extras`: `<Object>`
+  - `exchangeBody`: `<Object>` extra request body properties to be sent to the AS during the Device
+    Access Token Request
+  - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
+    part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
+    is either `client_secret_jwt` or `private_key_jwt`.
+- Returns: `Promise<DeviceFlowHandle>`
 
 ---
 
@@ -636,6 +659,87 @@ perform any validations as these were done prior to openid-client returning the 
 first place.
 
 - Returns: `<Object>`
+
+---
+
+## DeviceFlowHandle
+
+<!-- TOC DeviceFlowHandle START -->
+- [Class: &lt;DeviceFlowHandle&gt;](#class-deviceflowhandle)
+  - [handle.poll()](#handlepoll)
+  - [handle.user_code](#handleuser_code)
+  - [handle.verification_uri](#handleverification_uri)
+  - [handle.verification_uri_complete](#handleverification_uri_complete)
+  - [handle.expired()](#handleexpired)
+  - [handle.expires_in](#handleexpires_in)
+  - [handle.device_code](#handledevice_code)
+<!-- TOC DeviceFlowHandle END -->
+
+---
+
+#### Class: `<DeviceFlowHandle>`
+
+The handle represents a Device Authorization Response with the `verification_uri`, `user_code` and
+other defined response properties. A handle is instantiated by calling
+[`client.deviceAuthorization()`](#clientdeviceauthorizationparameters-extras)
+
+---
+
+#### `handle.poll()`
+
+This will continuously poll the token_endpoint and resolve with a TokenSet once one is received.
+This will handle the defined `authorization_pending` and `slow_down` "soft" errors and continue
+polling but upon any other error it will reject.
+
+- Returns: `Promise<TokenSet>`
+
+---
+
+#### `handle.user_code`
+
+Returns the `user_code` Device Authorization Response parameter.
+
+- Returns: `<string>`
+
+---
+
+#### `handle.verification_uri`
+
+Returns the `verification_uri` Device Authorization Response parameter.
+
+- Returns: `<string>`
+
+---
+
+#### `handle.verification_uri_complete`
+
+Returns the `verification_uri_complete` Device Authorization Response parameter.
+
+- Returns: `<string>`
+
+---
+
+#### `handle.expired()`
+
+Returns true/false depending on whether the handle is expired or not.
+
+- Returns: `<boolean>`
+
+---
+
+#### `handle.expires_in`
+
+Returns the number of seconds until the handle expires.
+
+- Returns: `<number>`
+
+---
+
+#### `handle.device_code`
+
+Returns the `device_code` Device Authorization Response parameter.
+
+- Returns: `<string>`
 
 ---
 

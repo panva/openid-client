@@ -102,7 +102,7 @@ describe('Client#register', () => {
             jwks: keystore.toJWKS(),
           });
         })
-        .post('/client/registration')
+        .post('/client/registration', () => true)
         .reply(201, {
           client_id: 'identifier',
           client_secret: 'secure',
@@ -120,7 +120,7 @@ describe('Client#register', () => {
             jwks: 'whatever',
           });
         })
-        .post('/client/registration')
+        .post('/client/registration', () => true)
         .reply(201, {
           client_id: 'identifier',
           client_secret: 'secure',
@@ -140,7 +140,7 @@ describe('Client#register', () => {
             jwks_uri: 'https://rp.example.com/certs',
           });
         })
-        .post('/client/registration')
+        .post('/client/registration', () => true)
         .reply(201, {
           client_id: 'identifier',
           client_secret: 'secure',

@@ -358,7 +358,7 @@ describe('Client', () => {
             grant_type: 'authorization_code',
           });
         })
-        .post('/token')
+        .post('/token', () => true)
         .reply(200, {});
 
       return this.client.callback('https://rp.example.com/cb', {
@@ -536,7 +536,7 @@ describe('Client', () => {
             grant_type: 'authorization_code',
           });
         })
-        .post('/token')
+        .post('/token', () => true)
         .reply(200, {
           access_token: 'tokenValue',
         });
@@ -675,7 +675,7 @@ describe('Client', () => {
             grant_type: 'refresh_token',
           });
         })
-        .post('/token')
+        .post('/token', () => true)
         .reply(200, {});
 
       return this.client.refresh('refreshValue').then(() => {
@@ -705,7 +705,7 @@ describe('Client', () => {
             grant_type: 'refresh_token',
           });
         })
-        .post('/token')
+        .post('/token', () => true)
         .reply(200, {});
 
       return this.client.refresh(new TokenSet({

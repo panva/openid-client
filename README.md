@@ -36,6 +36,7 @@ openid-client.
   - Client Authenticated request to token revocation
 - [RFC7662 - OAuth 2.0 Token introspection][feature-introspection]
   - Client Authenticated request to token introspection
+- [RFC8628 - OAuth 2.0 Device Authorization Grant (Device Flow)][feature-device-flow]
 - [draft-ietf-oauth-mtls - OAuth 2.0 Mutual TLS Client Authentication and Certificate-Bound Access Tokens][feature-mtls]
   - Mutual TLS Client Certificate-Bound Access Tokens
   - Metadata for Mutual TLS Endpoint Aliases
@@ -206,6 +207,32 @@ client.callback('https://client.example.com/callback', params, { nonce }) // => 
   });
 ```
 
+### Device Authorization Grant (Device Flow)
+
+[RFC8628 - OAuth 2.0 Device Authorization Grant (Device Flow)](https://tools.ietf.org/html/rfc8628)
+is started by starting a Device Authorization Request.
+
+```js
+const handle = await client.deviceAuthorization();
+console.log('User Code: ', handle.user_code);
+console.log('Verification URI: ', handle.verification_uri);
+console.log('Verification URI (complete): ', handle.verification_uri_complete);
+```
+
+The handle represents a Device Authorization Response with the `verification_uri`, `user_code` and
+other defined response properties.
+
+You will display the instructions to the end-user and have him directed at `verification_uri` or
+`verification_uri_complete`, afterwards you can start polling for the Device Access Token Response.
+```js
+const tokenSet = await handle.poll();
+console.log('received tokens %j', tokenSet);
+```
+
+This will poll in the defined interval and only resolve with a TokenSet once one is received. This
+will handle the defined `authorization_pending` and `slow_down` "soft" errors and continue polling
+but upon any other error it will reject. With tokenSet received you can throw away the handle.
+
 ## Electron Support
 
 Electron v6.x runtime is supported to the extent of the crypto engine BoringSSL feature parity with
@@ -249,7 +276,8 @@ See [Client Authentication Methods][documentation-methods].
 [feature-registration]: https://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
-[feature-mtls]: https://tools.ietf.org/html/draft-ietf-oauth-mtls-14
+[feature-mtls]: https://tools.ietf.org/html/draft-ietf-oauth-mtls-17
+[feature-device-flow]: https://tools.ietf.org/html/rfc8628
 [openid-certified-link]: https://openid.net/certification/
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
