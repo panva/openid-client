@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.6.1](https://github.com/panva/node-openid-client/compare/v3.6.0...v3.6.1) (2019-08-24)
+
+
+### Bug Fixes
+
+* ignore runtime unsupported or malformed issuer jwks ([f08b8be](https://github.com/panva/node-openid-client/commit/f08b8be))
+
+
+
 # [3.6.0](https://github.com/panva/node-openid-client/compare/v3.5.0...v3.6.0) (2019-08-24)
 
 
