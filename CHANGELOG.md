@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.6.0](https://github.com/panva/node-openid-client/compare/v3.5.0...v3.6.0) (2019-08-24)
+
+
+### Features
+
+* add RFC8628 - OAuth 2.0 Device Authorization Grant (Device Flow) support ([adb4b76](https://github.com/panva/node-openid-client/commit/adb4b76))
+* allow multiple resource parameters in authorization requests ([dfdd8cb](https://github.com/panva/node-openid-client/commit/dfdd8cb))
+
+
+
 # [3.5.0](https://github.com/panva/node-openid-client/compare/v3.4.0...v3.5.0) (2019-08-22)
 
 
