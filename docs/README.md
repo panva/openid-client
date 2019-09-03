@@ -17,9 +17,7 @@
 
 ## Support
 
-[<img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160" align="right">][support-patreon]
-If you or your business use openid-client, please consider becoming a [Patron][support-patreon] so I can continue maintaining it and adding new features carefree. You may also donate one-time via [PayPal][support-paypal].
-[<img src="https://cdn.jsdelivr.net/gh/gregoiresgt/payment-icons@183140a5ff8f39b5a19d59ebeb2c77f03c3a24d3/Assets/Payment/PayPal/Paypal@2x.png" width="100" align="right">][support-paypal]
+If you or your business use openid-client, please consider becoming a [sponsor][support-sponsor] so I can continue maintaining it and adding new features carefree.
 
 <br>
 
@@ -911,8 +909,7 @@ request instance.
 
 
 [sponsor-auth0]: https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=openid-client&utm_content=auth
-[support-patreon]: https://www.patreon.com/panva
-[support-paypal]: https://www.paypal.me/panva
+[support-sponsor]: https://github.com/users/panva/sponsorship
 [jose]: https://github.com/panva/jose
 [webfinger-discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html#IssuerDiscovery
 [got-library]: https://github.com/sindresorhus/got/tree/v9.6.0
