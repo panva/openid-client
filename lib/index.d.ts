@@ -510,8 +510,8 @@ declare module 'openid-client' {
     usePKCE: boolean | string
   }
 
-  export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo?: object, done?: (err: any, user?: TUser) => void) => void)
-  export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done?: (err: any, user?: TUser) => void) => void
+  export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo: object, done: (err: any, user?: TUser) => void) => void
+  export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void
 
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/lib/helpers/generators.js
