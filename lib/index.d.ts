@@ -1,8 +1,6 @@
 /// <reference types="@panva/jose" />
 /// <reference types="node" />
 
-import { IncomingMessage } from "http"
-
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
@@ -516,47 +514,47 @@ declare module 'openid-client' {
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/lib/helpers/generators.js
    */
-  export namespace generators {
+  export const generators : {
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    export function random(bytes: number): string
+    random(bytes: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    export function state(bytes: number): string
+    state(bytes: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    export function nonce(bytes: number): string
+    nonce(bytes: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    export function codeVerifier(bytes: number): string
+    codeVerifier(bytes: number): string
     /**
      * Calculates the S256 PKCE code challenge for an arbitrary code verifier.
      * Encodes in url safe base64.
      * @param {string} verifier Code verifier to calculate the S256 code challenge for
      */
-    export function codeChallenge(verifier: string) : string
+    codeChallenge(verifier: string) : string
   }
 
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
    */
-  export namespace custom {
-    export function setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
+  export const custom : {
+    setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
     // tslint:disable-next-line:variable-name
-    export const http_options : Symbol
+    readonly http_options : unique symbol
     // tslint:disable-next-line:variable-name
-    export const clock_tolerance: Symbol
+    readonly clock_tolerance: unique symbol
   }
 
   export interface ISetHttpOptionsDefaults {
