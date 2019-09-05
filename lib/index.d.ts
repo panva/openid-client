@@ -452,19 +452,12 @@ declare module 'openid-client' {
    * storage or a database. Note: manually constructed TokenSet instances do not undergo any validations.
    */
   export class TokenSet implements ITokenSetParams {
-    // tslint:disable-next-line:variable-name
     access_token?: string
-    // tslint:disable-next-line:variable-name
     token_type?: string
-    // tslint:disable-next-line:variable-name
     id_token?: string
-    // tslint:disable-next-line:variable-name
     refresh_token?: string
-    // tslint:disable-next-line:variable-name
     expires_in?: number
-    // tslint:disable-next-line:variable-name
     expires_at?: number
-    // tslint:disable-next-line:variable-name
     session_state?: string
     scope?: string
 
@@ -551,9 +544,7 @@ declare module 'openid-client' {
    */
   export const custom : {
     setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
-    // tslint:disable-next-line:variable-name
     readonly http_options : unique symbol
-    // tslint:disable-next-line:variable-name
     readonly clock_tolerance: unique symbol
   }
 
