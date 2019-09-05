@@ -8,6 +8,19 @@ declare module 'openid-client' {
   import { JWKS, JSONWebKeySet } from '@panva/jose'
   import { IncomingMessage } from 'http'
   import { Http2ServerRequest } from 'http2'
+  import { GotOptions } from 'got'
+
+  type HttpRequestOptions = GotOptions<null>
+  type CustomHttpOptionsProvider = (options: HttpRequestOptions) => HttpRequestOptions;
+
+  /**
+   * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
+   */
+  export const custom : {
+    setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
+    readonly http_options : unique symbol
+    readonly clock_tolerance: unique symbol
+  }
 
   /**
    * @see https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
@@ -311,7 +324,7 @@ declare module 'openid-client' {
 
   export class Client implements IClient {
     constructor (metadata: IClientMetadata, jwks?: JSONWebKeySet)
-
+    [custom.http_options]: CustomHttpOptionsProvider
     metadata: IClientMetadata
     authorizationUrl (parameters?: IAuthorizationUrlParams): string
     endSessionUrl (parameters?: IEndSessionUrlParams): string
@@ -327,6 +340,7 @@ declare module 'openid-client' {
     deviceAuthorization(parameters?: IDeviceAuthParameters, extras?: IDeviceAuthExtras): Promise<IDeviceFlowHandle>
     static register(metadata: object, other?: IRegisterOther): Promise<IClient>
     static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet): Promise<IClient>
+    static [custom.http_options]: CustomHttpOptionsProvider
   }
 
   export interface IDeviceFlowHandle {
@@ -398,6 +412,8 @@ declare module 'openid-client' {
     constructor (metadata: IIssuerMetadata)
     Client: typeof Client
     metadata: IIssuerMetadata
+    [custom.http_options]: CustomHttpOptionsProvider
+
     keystore (forceReload?: boolean): Promise<JWKS.KeyStore>
 
     /**
@@ -413,6 +429,8 @@ declare module 'openid-client' {
      * @param input EMAIL, URL, Hostname and Port, acct or syntax input
      */
     static webfinger (input: string): Promise<Issuer>
+
+    static [custom.http_options]: CustomHttpOptionsProvider
   }
 
   export interface ITokenSetParams {
@@ -537,15 +555,6 @@ declare module 'openid-client' {
      * @param {string} verifier Code verifier to calculate the S256 code challenge for
      */
     function codeChallenge(verifier: string) : string
-  }
-
-  /**
-   * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
-   */
-  export const custom : {
-    setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
-    readonly http_options : unique symbol
-    readonly clock_tolerance: unique symbol
   }
 
   export interface ISetHttpOptionsDefaults {
