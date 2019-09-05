@@ -1,6 +1,8 @@
 /// <reference types="@panva/jose" />
 /// <reference types="node" />
 
+import { TokenSet } from "openid-client"
+
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
@@ -485,4 +487,29 @@ declare module 'openid-client' {
 
     [key: string]: unknown
   }
+
+  export class Strategy<TUser> {
+    constructor(options: IStrategyOptions, verify: StrategyVerifyCallbackUserInfo<TUser> | StrategyVerifyCallback<TUser>)
+  }
+
+  export interface IStrategyOptions {
+    client: IClient
+    /**
+     * Authorization Request parameters. The strategy will use these.
+     */
+    params: object
+    /**
+     * Boolean specifying whether the verify function should get the request object as first argument instead.
+     * Default: 'false'
+     */
+    passReqToCallback: boolean
+    /**
+     * The PKCE method to use. When 'true' it will resolve based on the issuer metadata, when 'false' no PKCE will be
+     * used. Default: 'false'
+     */
+    usePKCE: boolean | string
+  }
+
+  export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo?: object, done?: (err: any, user?: TUser) => void) => void)
+  export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done?: (err: any, user?: TUser) => void) => void
 }
