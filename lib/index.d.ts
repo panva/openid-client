@@ -510,4 +510,23 @@ declare module 'openid-client' {
 
   export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo?: object, done?: (err: any, user?: TUser) => void) => void)
   export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done?: (err: any, user?: TUser) => void) => void
+
+  export type generators = {
+    random: GeneratorRandom
+    state: GeneratorRandom
+    nonce: GeneratorRandom
+    codeVerifier: GeneratorRandom
+    /**
+     * Calculates the S256 PKCE code challenge for an arbitrary code verifier.
+     * Encodes in url safe base64.
+     * @param {string} verifier Code verifier to calculate the S256 code challenge for
+     */
+    codeChallenge: (verifier: string) => string
+  }
+
+  /**
+   * Generates random bytes and encodes them in url safe base64.
+   * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
+   */
+  type GeneratorRandom = (bytes: number) => string
 }
