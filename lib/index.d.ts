@@ -1,5 +1,6 @@
 /// <reference types="@panva/jose" />
 /// <reference types="node" />
+/// <reference types="got" />
 
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
@@ -17,7 +18,7 @@ declare module 'openid-client' {
    * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
    */
   export const custom : {
-    setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
+    setHttpOptionsDefaults(params: HttpRequestOptions) : void
     readonly http_options : unique symbol
     readonly clock_tolerance: unique symbol
   }
@@ -558,15 +559,6 @@ declare module 'openid-client' {
      * @param {string} verifier Code verifier to calculate the S256 code challenge for
      */
     function codeChallenge(verifier: string) : string
-  }
-
-  export interface ISetHttpOptionsDefaults {
-    followRedirect?: boolean
-    headers?: object
-    retry?: number
-    timeout?: number
-    throwHttpErrors?: boolean
-    [key: string]: unknown
   }
 
   /**
