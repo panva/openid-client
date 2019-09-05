@@ -1,6 +1,8 @@
 /// <reference types="@panva/jose" />
 /// <reference types="node" />
 
+import { IncomingMessage } from "http"
+
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
@@ -511,6 +513,9 @@ declare module 'openid-client' {
   export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo?: object, done?: (err: any, user?: TUser) => void) => void)
   export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done?: (err: any, user?: TUser) => void) => void
 
+  /**
+   * @see https://github.com/panva/node-openid-client/blob/master/lib/helpers/generators.js
+   */
   export namespace generators {
     /**
      * Generates random bytes and encodes them in url safe base64.
@@ -543,6 +548,9 @@ declare module 'openid-client' {
     export function codeChallenge(verifier: string) : string
   }
 
+  /**
+   * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
+   */
   export namespace custom {
     export function setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
     // tslint:disable-next-line:variable-name
@@ -554,9 +562,82 @@ declare module 'openid-client' {
   export interface ISetHttpOptionsDefaults {
     followRedirect?: boolean
     headers?: object
-    retry?: number,
-    timeout?: number,
-    throwHttpErrors?: boolean,
+    retry?: number
+    timeout?: number
+    throwHttpErrors?: boolean
     [key: string]: unknown
+  }
+
+  /**
+   * @see https://github.com/panva/node-openid-client/blob/master/lib/errors.js
+   */
+  export namespace errors {
+    /**
+     * Error class thrown when a regular OAuth 2.0 / OIDC style error is returned by the AS or an
+     * unexpected response is sent by the OP.
+     *
+     * @param {IOPErrorParams} params
+     * @param {IncomingMessage} response When the error is related to an http(s) request made to the OP this propetty will hold the pure node request instance.
+     **/
+    export class OPError extends Error implements IOPErrorParams {
+      constructor(params: IOPErrorParams, response?: IncomingMessage)
+
+      /**
+       * The 'error_description' parameter from the AS response.
+       */
+      error_description?: string
+      /**
+       * The 'error' parameter from the AS response.
+       */
+      error?: string
+      /**
+       * The 'error_uri' parameter from the AS response.
+       */
+      error_uri?: string
+      /**
+       * The 'state' parameter from the AS response.
+       */
+      state?: string
+      /**
+       * The 'scope' parameter from the AS response.
+       */
+      scope?: string
+      session_state?: string
+      response?: IncomingMessage
+    }
+
+    export interface IOPErrorParams {
+      /**
+       * The 'error_description' parameter from the AS response.
+       */
+      error_description?: string
+      /**
+       * The 'error' parameter from the AS response.
+       */
+      error?: string
+      /**
+       * The 'error_uri' parameter from the AS response.
+       */
+      error_uri?: string
+      /**
+       * The 'state' parameter from the AS response.
+       */
+      state?: string
+      /**
+       * The 'scope' parameter from the AS response.
+       */
+      scope?: string
+      session_state?: string
+    }
+
+    /**
+     * Error class thrown when client-side response expectations/validations fail to pass.
+     * Depending on the context it may or may not have additional context-based properties like
+     * checks, jwt, params or body.
+     */
+    export class RPError extends Error {
+      constructor (...args: any)
+      response?: IncomingMessage
+    }
   }
 }
