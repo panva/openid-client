@@ -514,36 +514,36 @@ declare module 'openid-client' {
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/lib/helpers/generators.js
    */
-  export const generators : {
+  export namespace generators {
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    random(bytes: number): string
+    function random(bytes: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    state(bytes: number): string
+    function state(bytes: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    nonce(bytes: number): string
+    function nonce(bytes: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    codeVerifier(bytes: number): string
+    function codeVerifier(bytes: number): string
     /**
      * Calculates the S256 PKCE code challenge for an arbitrary code verifier.
      * Encodes in url safe base64.
      * @param {string} verifier Code verifier to calculate the S256 code challenge for
      */
-    codeChallenge(verifier: string) : string
+    function codeChallenge(verifier: string) : string
   }
 
   /**
