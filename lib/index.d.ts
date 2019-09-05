@@ -12,22 +12,12 @@ declare module 'openid-client' {
   /**
    * @see https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
    */
-  enum AuthResponseType {
-    CODE = 'code',
-    TOKEN = 'token',
-    ID_TOKEN = 'id_token',
-  }
+  type AuthResponseType = 'code' | 'id_token' | 'code id_token' | 'code token' | 'code id_token token' | 'none'
 
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
    */
-  enum TokenAuthMethod {
-    BASIC = 'client_secret_basic',
-    POST = 'client_secret_post',
-    CLIENT_SECRET_JWT = 'client_secret_jwt',
-    PRIVATE_KEY_JWT = 'private_key_jwt',
-    TLS_CLIENT_AUTH = 'tls_client_auth'
-  }
+  type TokenAuthMethod = 'client_secret_basic' | 'client_secret_post' | 'client_secret_jwt' | 'private_key_jwt' | 'tls_client_auth' | 'self_signed_tls_client_auth' | 'none'
 
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#new-clientmetadata-jwks
@@ -57,14 +47,14 @@ declare module 'openid-client' {
     revocation_endpoint_auth_signing_alg?: string
     tls_client_certificate_bound_access_tokens?: boolean
 
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export interface IAuthorizationUrlParams {
     redirect_uri?: string
     response_type?: string
     scope?: string,
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export interface IEndSessionUrlParams {
@@ -74,11 +64,17 @@ declare module 'openid-client' {
   }
 
   export type CallbackParamsType = {
+    access_token?: string
+    code?: string
+    error?: string
+    error_description?: string
+    error_uri?: string
+    expires_in?: string
+    id_token?: string
     state?: string
-    response_type?: string
-    nonce?: string
-    code_verifier?: string
-    [key: string]: any
+    token_type?: string
+    session_state?: string
+    [key: string]: unknown
   }
 
   export type TokenType = string | TokenSet
@@ -140,7 +136,7 @@ declare module 'openid-client' {
 
   export interface IGrantBody {
     grant_type: string
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export interface IGrantExtras {
@@ -182,7 +178,7 @@ declare module 'openid-client' {
     iat?: number
     exp?: number
     jti?: string
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export interface IRegisterOther {
@@ -200,7 +196,7 @@ declare module 'openid-client' {
   export interface IDeviceAuthParameters {
     client_id?: string
     scope?: string
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export interface IDeviceAuthExtras {
@@ -253,7 +249,7 @@ declare module 'openid-client' {
      * @param checks
      * @param extras
      */
-    callback(redirectUri: string, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
+    callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
 
     /**
      * Pure OAuth 2.0 version of callback().
@@ -262,7 +258,7 @@ declare module 'openid-client' {
      * @param checks
      * @param extras
      */
-    oauthCallback(redirectUri: string, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
+    oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
 
     /**
      * Performs refresh_token grant type exchange.
@@ -310,7 +306,7 @@ declare module 'openid-client' {
      */
     deviceAuthorization(parameters?: IDeviceAuthParameters, extras?: IDeviceAuthExtras): Promise<IDeviceFlowHandle>
 
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export class Client implements IClient {
@@ -320,8 +316,8 @@ declare module 'openid-client' {
     authorizationUrl (parameters?: IAuthorizationUrlParams): string
     endSessionUrl (parameters?: IEndSessionUrlParams): string
     callbackParams (input: string | IncomingMessage | Http2ServerRequest): CallbackParamsType
-    callback(redirectUri: string, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
-    oauthCallback(redirectUri: string, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
+    callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
+    oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
     refresh(refreshToken: TokenType, extras?: IRefreshExtras) : Promise<TokenSet>
     userinfo(accessToken: TokenType) : Promise<object>
     grant(body: IGrantBody, extras?: IGrantExtras) : Promise<TokenSet>
@@ -346,11 +342,6 @@ declare module 'openid-client' {
     expired() : boolean
     expires_at: number
     client: IClient
-    maxAge: number
-    exchangeBody: object
-    clientAssertionPayload: object
-    response: string
-    interval: number
     user_code: string
     device_code: string
     verification_uri: string
@@ -359,17 +350,11 @@ declare module 'openid-client' {
   }
 
   export class DeviceFlowHandle implements IDeviceFlowHandle {
-    constructor (params : IDeviceFlowHandleParams)
     poll() : Promise<TokenSet>
     expired() : boolean
     // tslint:disable-next-line:variable-name
     expires_at: number
     client: IClient
-    maxAge: number
-    exchangeBody: object
-    clientAssertionPayload: object
-    response: string
-    interval: number
     // tslint:disable-next-line:variable-name
     user_code: string
     // tslint:disable-next-line:variable-name
@@ -391,16 +376,16 @@ declare module 'openid-client' {
     revocation_endpoint: string
     end_session_endpoint: string
     registration_endpoint: string
-    token_endpoint_auth_methods_supported: string
-    token_endpoint_auth_signing_alg_values_supported: string
-    introspection_endpoint_auth_methods_supported: string
-    introspection_endpoint_auth_signing_alg_values_supported: string
-    revocation_endpoint_auth_methods_supported: string
-    revocation_endpoint_auth_signing_alg_values_supported: string
-    request_object_signing_alg_values_supported: string
+    token_endpoint_auth_methods_supported: string[]
+    token_endpoint_auth_signing_alg_values_supported: string[]
+    introspection_endpoint_auth_methods_supported: string[]
+    introspection_endpoint_auth_signing_alg_values_supported: string[]
+    revocation_endpoint_auth_methods_supported: string[]
+    revocation_endpoint_auth_signing_alg_values_supported: string[]
+    request_object_signing_alg_values_supported: string[]
     mtls_endpoint_aliases: IMetadataMtlsEndpointAliases
 
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export interface IMetadataMtlsEndpointAliases {
@@ -408,6 +393,7 @@ declare module 'openid-client' {
     userinfo_endpoint: string
     revocation_endpoint: string
     introspection_endpoint: string
+    device_authorization_endpoint: string
   }
 
   /**
@@ -431,7 +417,7 @@ declare module 'openid-client' {
      */
     keystore (forceReload?: boolean): Promise<JWKS.KeyStore>
 
-    [key: string]: any
+    [key: string]: unknown
   }
 
   export class Issuer implements IIssuer {
@@ -481,9 +467,9 @@ declare module 'openid-client' {
     /**
      * State value passed in the authentication request
      */
-    session_state?: string | object
+    session_state?: string
 
-    [key: string]: any
+    [key: string]: unknown
   }
 
   /**
@@ -505,7 +491,7 @@ declare module 'openid-client' {
     // tslint:disable-next-line:variable-name
     expires_at?: number
     // tslint:disable-next-line:variable-name
-    session_state?: string | object
+    session_state?: string
     scope?: string
 
     constructor (input?: ITokenSetParams)
@@ -523,6 +509,6 @@ declare module 'openid-client' {
      */
     claims(): object
 
-    [key: string]: any
+    [key: string]: unknown
   }
 }
