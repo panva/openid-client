@@ -5,7 +5,7 @@
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
 declare module 'openid-client' {
-  import { JWKS } from '@panva/jose'
+  import { JWKS, JSONWebKeySet } from '@panva/jose'
   import { IncomingMessage } from 'http'
   import { Http2ServerRequest } from 'http2'
 
@@ -186,11 +186,11 @@ declare module 'openid-client' {
      * JWK Set formatted object with private keys used for signing client assertions or decrypting responses.
      * When neither jwks_uri or jwks is present in metadata the key's public parts will be registered as jwks.
      */
-    jwks?: object
+    jwks: JSONWebKeySet
     /**
      * Initial Access Token to use as a Bearer token during the registration call.
      */
-    initialAccessToken?: string
+    initialAccessToken: string
   }
 
   export interface IDeviceAuthParameters {
@@ -310,7 +310,7 @@ declare module 'openid-client' {
   }
 
   export class Client implements IClient {
-    constructor (metadata: IClientMetadata, jwks?: object)
+    constructor (metadata: IClientMetadata, jwks?: JSONWebKeySet)
 
     metadata: IClientMetadata
     authorizationUrl (parameters?: IAuthorizationUrlParams): string
@@ -326,15 +326,7 @@ declare module 'openid-client' {
     requestObject(payload: IRequestObjectPayload): Promise<string>
     deviceAuthorization(parameters?: IDeviceAuthParameters, extras?: IDeviceAuthExtras): Promise<IDeviceFlowHandle>
     static register(metadata: object, other?: IRegisterOther): Promise<IClient>
-    static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: object): Promise<IClient>
-  }
-
-  export interface IDeviceFlowHandleParams {
-    client: IClient
-    exchangeBody: object
-    clientAssertionPayload: object
-    response: string
-    maxAge: number
+    static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet): Promise<IClient>
   }
 
   export interface IDeviceFlowHandle {
@@ -346,24 +338,6 @@ declare module 'openid-client' {
     device_code: string
     verification_uri: string
     verification_uri_complete: string
-    expires_in: number
-  }
-
-  export class DeviceFlowHandle implements IDeviceFlowHandle {
-    poll() : Promise<TokenSet>
-    expired() : boolean
-    // tslint:disable-next-line:variable-name
-    expires_at: number
-    client: IClient
-    // tslint:disable-next-line:variable-name
-    user_code: string
-    // tslint:disable-next-line:variable-name
-    device_code: string
-    // tslint:disable-next-line:variable-name
-    verification_uri: string
-    // tslint:disable-next-line:variable-name
-    verification_uri_complete: string
-    // tslint:disable-next-line:variable-name
     expires_in: number
   }
 
@@ -404,7 +378,7 @@ declare module 'openid-client' {
     /**
      * Returns the <Client> class tied to this issuer.
      */
-    Client: { new (metadata: IClientMetadata, jwks?: object) }
+    Client: { new (metadata: IClientMetadata, jwks?: JSONWebKeySet) }
 
     /**
      * Returns metadata from the issuer's discovery document.
