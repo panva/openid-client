@@ -511,22 +511,52 @@ declare module 'openid-client' {
   export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo?: object, done?: (err: any, user?: TUser) => void) => void)
   export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done?: (err: any, user?: TUser) => void) => void
 
-  export type generators = {
-    random: GeneratorRandom
-    state: GeneratorRandom
-    nonce: GeneratorRandom
-    codeVerifier: GeneratorRandom
+  export namespace generators {
+    /**
+     * Generates random bytes and encodes them in url safe base64.
+     * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
+     */
+    export function random(bytes: number): string
+
+    /**
+     * Generates random bytes and encodes them in url safe base64.
+     * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
+     */
+    export function state(bytes: number): string
+
+    /**
+     * Generates random bytes and encodes them in url safe base64.
+     * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
+     */
+    export function nonce(bytes: number): string
+
+    /**
+     * Generates random bytes and encodes them in url safe base64.
+     * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
+     */
+    export function codeVerifier(bytes: number): string
     /**
      * Calculates the S256 PKCE code challenge for an arbitrary code verifier.
      * Encodes in url safe base64.
      * @param {string} verifier Code verifier to calculate the S256 code challenge for
      */
-    codeChallenge: (verifier: string) => string
+    export function codeChallenge(verifier: string) : string
   }
 
-  /**
-   * Generates random bytes and encodes them in url safe base64.
-   * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
-   */
-  type GeneratorRandom = (bytes: number) => string
+  export namespace custom {
+    export function setHttpOptionsDefaults(params: ISetHttpOptionsDefaults) : void
+    // tslint:disable-next-line:variable-name
+    export const http_options : Symbol
+    // tslint:disable-next-line:variable-name
+    export const clock_tolerance: Symbol
+  }
+
+  export interface ISetHttpOptionsDefaults {
+    followRedirect?: boolean
+    headers?: object
+    retry?: number,
+    timeout?: number,
+    throwHttpErrors?: boolean,
+    [key: string]: unknown
+  }
 }
