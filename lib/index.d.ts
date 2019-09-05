@@ -11,7 +11,7 @@ declare module 'openid-client' {
   import { GotOptions } from 'got'
 
   type HttpRequestOptions = GotOptions<null>
-  type CustomHttpOptionsProvider = (options: HttpRequestOptions) => HttpRequestOptions;
+  type CustomHttpOptionsProvider = (options: HttpRequestOptions) => HttpRequestOptions
 
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
@@ -341,6 +341,7 @@ declare module 'openid-client' {
     static register(metadata: object, other?: IRegisterOther): Promise<IClient>
     static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet): Promise<IClient>
     static [custom.http_options]: CustomHttpOptionsProvider
+    [key: string]: unknown
   }
 
   export interface IDeviceFlowHandle {
@@ -431,6 +432,8 @@ declare module 'openid-client' {
     static webfinger (input: string): Promise<Issuer>
 
     static [custom.http_options]: CustomHttpOptionsProvider
+
+    [key: string]: unknown
   }
 
   export interface ITokenSetParams {
@@ -576,7 +579,7 @@ declare module 'openid-client' {
      *
      * @param {IOPErrorParams} params
      * @param {IncomingMessage} response When the error is related to an http(s) request made to the OP this propetty will hold the pure node request instance.
-     **/
+     */
     export class OPError extends Error implements IOPErrorParams {
       constructor(params: IOPErrorParams, response?: IncomingMessage)
 
