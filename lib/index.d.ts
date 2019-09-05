@@ -186,11 +186,11 @@ declare module 'openid-client' {
      * JWK Set formatted object with private keys used for signing client assertions or decrypting responses.
      * When neither jwks_uri or jwks is present in metadata the key's public parts will be registered as jwks.
      */
-    jwks: JSONWebKeySet
+    jwks?: JSONWebKeySet
     /**
      * Initial Access Token to use as a Bearer token during the registration call.
      */
-    initialAccessToken: string
+    initialAccessToken?: string
   }
 
   export interface IDeviceAuthParameters {
