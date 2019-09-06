@@ -17,9 +17,9 @@ declare module 'openid-client' {
   /**
    * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
    */
-  export const custom : {
-    setHttpOptionsDefaults(params: HttpRequestOptions) : void
-    readonly http_options : unique symbol
+  export const custom: {
+    setHttpOptionsDefaults(params: HttpRequestOptions): void
+    readonly http_options: unique symbol
     readonly clock_tolerance: unique symbol
   }
 
@@ -263,7 +263,7 @@ declare module 'openid-client' {
      * @param checks
      * @param extras
      */
-    callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
+    callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
 
     /**
      * Pure OAuth 2.0 version of callback().
@@ -272,7 +272,7 @@ declare module 'openid-client' {
      * @param checks
      * @param extras
      */
-    oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
+    oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
 
     /**
      * Performs refresh_token grant type exchange.
@@ -280,7 +280,7 @@ declare module 'openid-client' {
      * will be used automatically.
      * @param extras
      */
-    refresh(refreshToken: TokenType, extras?: IRefreshExtras) : Promise<TokenSet>
+    refresh(refreshToken: TokenType, extras?: IRefreshExtras): Promise<TokenSet>
 
     /**
      * Fetches the OIDC userinfo response with the provided Access Token. Also handles signed and/or
@@ -290,22 +290,22 @@ declare module 'openid-client' {
      * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
      * will be used automatically.
      */
-    userinfo(accessToken: TokenType) : Promise<object>
+    userinfo(accessToken: TokenType): Promise<object>
 
     /**
      * Performs an arbitrary grant_type exchange at the token_endpoint.
      */
-    grant(body: IGrantBody, extras?: IGrantExtras) : Promise<TokenSet>
+    grant(body: IGrantBody, extras?: IGrantExtras): Promise<TokenSet>
 
     /**
      * Introspects a token at the Authorization Server's introspection_endpoint.
      */
-    introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras) : Promise<object>
+    introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<object>
 
     /**
      * Revokes a token at the Authorization Server's revocation_endpoint.
      */
-    revoke(token, tokenTypeHint?: string, extras?: IRevokeExtras) : Promise<void>
+    revoke(token, tokenTypeHint?: string, extras?: IRevokeExtras): Promise<void>
 
     /**
      * Creates a signed and optionally encrypted Request Object to send to the AS. Uses the client's
@@ -326,17 +326,18 @@ declare module 'openid-client' {
   export class Client implements IClient {
     constructor (metadata: IClientMetadata, jwks?: JSONWebKeySet)
     [custom.http_options]: CustomHttpOptionsProvider
+    [custom.clock_tolerance]: number
     metadata: IClientMetadata
     authorizationUrl (parameters?: IAuthorizationUrlParams): string
     endSessionUrl (parameters?: IEndSessionUrlParams): string
     callbackParams (input: string | IncomingMessage | Http2ServerRequest): CallbackParamsType
-    callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
-    oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras) : Promise<TokenSet>
-    refresh(refreshToken: TokenType, extras?: IRefreshExtras) : Promise<TokenSet>
-    userinfo(accessToken: TokenType) : Promise<object>
-    grant(body: IGrantBody, extras?: IGrantExtras) : Promise<TokenSet>
-    introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras) : Promise<object>
-    revoke(token, tokenTypeHint?: string, extras?: IRevokeExtras) : Promise<void>
+    callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
+    oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
+    refresh(refreshToken: TokenType, extras?: IRefreshExtras): Promise<TokenSet>
+    userinfo(accessToken: TokenType): Promise<object>
+    grant(body: IGrantBody, extras?: IGrantExtras): Promise<TokenSet>
+    introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<object>
+    revoke(token, tokenTypeHint?: string, extras?: IRevokeExtras): Promise<void>
     requestObject(payload: IRequestObjectPayload): Promise<string>
     deviceAuthorization(parameters?: IDeviceAuthParameters, extras?: IDeviceAuthExtras): Promise<IDeviceFlowHandle>
     static register(metadata: object, other?: IRegisterOther): Promise<IClient>
@@ -346,8 +347,8 @@ declare module 'openid-client' {
   }
 
   export interface IDeviceFlowHandle {
-    poll() : Promise<TokenSet>
-    expired() : boolean
+    poll(): Promise<TokenSet>
+    expired(): boolean
     expires_at: number
     client: IClient
     user_code: string
@@ -558,7 +559,7 @@ declare module 'openid-client' {
      * Encodes in url safe base64.
      * @param {string} verifier Code verifier to calculate the S256 code challenge for
      */
-    function codeChallenge(verifier: string) : string
+    function codeChallenge(verifier: string): string
   }
 
   /**
@@ -573,8 +574,6 @@ declare module 'openid-client' {
      * @param {IncomingMessage} response When the error is related to an http(s) request made to the OP this propetty will hold the pure node request instance.
      */
     export class OPError extends Error implements IOPErrorParams {
-      constructor(params: IOPErrorParams, response?: IncomingMessage)
-
       /**
        * The 'error_description' parameter from the AS response.
        */
@@ -595,7 +594,14 @@ declare module 'openid-client' {
        * The 'scope' parameter from the AS response.
        */
       scope?: string
+      /**
+       * The 'session_state' parameter from the AS response.
+       */
       session_state?: string
+
+      /**
+       * The 'session_state' parameter from the AS response.
+       */
       response?: IncomingMessage
     }
 
@@ -620,6 +626,9 @@ declare module 'openid-client' {
        * The 'scope' parameter from the AS response.
        */
       scope?: string
+      /**
+       * The 'session_state' parameter from the AS response.
+       */
       session_state?: string
     }
 
@@ -629,7 +638,6 @@ declare module 'openid-client' {
      * checks, jwt, params or body.
      */
     export class RPError extends Error {
-      constructor (...args: any)
       response?: IncomingMessage
     }
   }
