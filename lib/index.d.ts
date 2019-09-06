@@ -501,9 +501,10 @@ export class TokenSet implements ITokenSetParams {
   [key: string]: unknown
 }
 
-export class Strategy<TUser> {
-  constructor(options: IStrategyOptions, verify: StrategyVerifyCallbackUserInfo<TUser> | StrategyVerifyCallback<TUser>)
-}
+export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo: object, done: (err: any, user?: TUser) => void) => void
+export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void
+export type StrategyVerifyCallbackReqUserInfo<TUser> = (req: IncomingMessage, tokenset: TokenSet, userinfo: object, done: (err: any, user?: TUser) => void) => void
+export type StrategyVerifyCallbackReq<TUser> = (req: IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void
 
 export interface IStrategyOptions {
   client: IClient
@@ -523,8 +524,9 @@ export interface IStrategyOptions {
   usePKCE: boolean | string
 }
 
-export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo: object, done: (err: any, user?: TUser) => void) => void
-export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void
+export class Strategy<TUser> {
+  constructor(options: IStrategyOptions, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> | StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
+}
 
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/lib/helpers/generators.js
@@ -638,5 +640,9 @@ export namespace errors {
    */
   export class RPError extends Error {
     response?: IncomingMessage
+    jwt?: string
+    jwt?: string
+    checks?: object
+    params?: object
   }
 }
