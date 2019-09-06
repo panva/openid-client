@@ -535,25 +535,25 @@ declare module 'openid-client' {
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    function random(bytes: number): string
+    function random(bytes?: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    function state(bytes: number): string
+    function state(bytes?: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    function nonce(bytes: number): string
+    function nonce(bytes?: number): string
 
     /**
      * Generates random bytes and encodes them in url safe base64.
      * @param {number} bytes Number indicating the number of bytes to generate. Default: 32
      */
-    function codeVerifier(bytes: number): string
+    function codeVerifier(bytes?: number): string
     /**
      * Calculates the S256 PKCE code challenge for an arbitrary code verifier.
      * Encodes in url safe base64.
