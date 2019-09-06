@@ -641,8 +641,8 @@ export namespace errors {
   export class RPError extends Error {
     response?: IncomingMessage
     jwt?: string
-    jwt?: string
     checks?: object
     params?: object
+    body?: object
   }
 }
