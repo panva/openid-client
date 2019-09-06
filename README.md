@@ -260,6 +260,7 @@ results.
 - Added support for any additional token exchange parameters to support specifications such as
   Resource Indicators
 - Typed [errors][documentation-errors]
+- TypeScript definitions
 
 #### How to make the client send client_id and client_secret in the body?
 
