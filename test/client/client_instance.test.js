@@ -181,6 +181,7 @@ describe('Client', () => {
         client_id: 'identifier',
       });
       this.clientWithUris = new issuer.Client({
+        client_id: 'identifier',
         post_logout_redirect_uris: ['https://rp.example.com/logout/cb'],
       });
 
@@ -731,7 +732,7 @@ describe('Client', () => {
 
   it('#joseSecret', function () {
     const issuer = new Issuer();
-    const client = new issuer.Client({ client_secret: 'rj_JR' });
+    const client = new issuer.Client({ client_id: 'identifier', client_secret: 'rj_JR' });
 
     return client.joseSecret()
       .then((key) => {
@@ -744,7 +745,7 @@ describe('Client', () => {
 
   it('#derivedKey', function () {
     const issuer = new Issuer();
-    const client = new issuer.Client({ client_secret: 'rj_JR' });
+    const client = new issuer.Client({ client_id: 'identifier', client_secret: 'rj_JR' });
 
     return client.derivedKey('128')
       .then((key) => {
@@ -758,7 +759,7 @@ describe('Client', () => {
   describe('#userinfo', function () {
     it('takes a string token', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
@@ -772,6 +773,7 @@ describe('Client', () => {
     it('takes a tokenset', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
       const client = new issuer.Client({
+        client_id: 'identifier',
         id_token_signed_response_alg: 'none',
       });
 
@@ -792,6 +794,7 @@ describe('Client', () => {
     it('takes a tokenset and validates the subject in id_token is the same in userinfo', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
       const client = new issuer.Client({
+        client_id: 'identifier',
         id_token_signed_response_alg: 'none',
       });
 
@@ -812,7 +815,7 @@ describe('Client', () => {
 
     it('validates an access token is present in the tokenset', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.userinfo(new TokenSet({
         id_token: 'foo',
@@ -824,7 +827,7 @@ describe('Client', () => {
 
     it('can do a post call', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .post('/me').reply(200, {});
@@ -836,7 +839,7 @@ describe('Client', () => {
 
     it('can submit access token in a body when post', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -853,7 +856,7 @@ describe('Client', () => {
 
     it('can add extra params in a body when post', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -875,7 +878,7 @@ describe('Client', () => {
 
     it('can add extra params in a query when non-post', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .get('/me?foo=bar')
@@ -890,7 +893,7 @@ describe('Client', () => {
 
     it('can only submit access token in a body when post', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.userinfo('tokenValue', { via: 'body', verb: 'get' }).then(fail, ({ message }) => {
         expect(message).to.eql('can only send body on POST');
@@ -899,7 +902,7 @@ describe('Client', () => {
 
     it('can submit access token in a query when get', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .get('/me?access_token=tokenValue')
@@ -912,7 +915,7 @@ describe('Client', () => {
 
     it('can only submit access token in a query when get', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.userinfo('tokenValue', { via: 'query', verb: 'post' }).then(fail, ({ message }) => {
         expect(message).to.eql('providers should only parse query strings for GET requests');
@@ -921,7 +924,7 @@ describe('Client', () => {
 
     it('is rejected with OPError upon oidc error', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .get('/me')
@@ -940,7 +943,7 @@ describe('Client', () => {
 
     it('is rejected with OPError upon oidc error in www-authenticate header', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .get('/me')
@@ -958,7 +961,7 @@ describe('Client', () => {
 
     it('is rejected with when non 200 is returned', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .get('/me')
@@ -974,7 +977,7 @@ describe('Client', () => {
 
     it('is rejected with JSON.parse error upon invalid response', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
         .get('/me')
@@ -1082,7 +1085,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.introspect('tokenValue')
         .then((response) => expect(response).to.eql({ endpoint: 'response' }));
@@ -1104,7 +1107,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.introspect('tokenValue', 'access_token');
     });
@@ -1113,7 +1116,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
       return client.introspect('tokenValue', { nonstring: 'value' }).then(fail, ({ message }) => {
         expect(message).to.eql('hint must be a string');
       });
@@ -1130,7 +1133,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.introspect('tokenValue')
         .then(fail, function (error) {
@@ -1148,7 +1151,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.introspect('tokenValue')
         .then(fail, function (error) {
@@ -1166,7 +1169,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.introspect('tokenValue')
         .then(fail, function (error) {
@@ -1193,7 +1196,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         revocation_endpoint: 'https://op.example.com/token/revoke',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.revoke('tokenValue')
         .then((response) => expect(response).to.be.undefined);
@@ -1215,7 +1218,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         revocation_endpoint: 'https://op.example.com/token/revoke',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.revoke('tokenValue', 'access_token');
     });
@@ -1224,7 +1227,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         revocation_endpoint: 'https://op.example.com/token/revoke',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
       return client.revoke('tokenValue', { nonstring: 'value' }).then(fail, ({ message }) => {
         expect(message).to.eql('hint must be a string');
       });
@@ -1241,7 +1244,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         revocation_endpoint: 'https://op.example.com/token/revoke',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.revoke('tokenValue')
         .then(fail, function (error) {
@@ -1259,7 +1262,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         revocation_endpoint: 'https://op.example.com/token/revoke',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.revoke('tokenValue')
         .then(fail, function (error) {
@@ -1277,7 +1280,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         revocation_endpoint: 'https://op.example.com/token/revoke',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.revoke('tokenValue');
     });
@@ -1290,7 +1293,7 @@ describe('Client', () => {
       const issuer = new Issuer({
         revocation_endpoint: 'https://op.example.com/token/revoke',
       });
-      const client = new issuer.Client();
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.revoke('tokenValue');
     });
@@ -1323,6 +1326,16 @@ describe('Client', () => {
           body: { client_id: 'identifier', client_secret: 'secure' },
         });
       });
+
+      it('requires client_secret to be set', function () {
+        const issuer = new Issuer();
+        const client = new issuer.Client({ client_id: 'an:identifier', token_endpoint_auth_method: 'client_secret_post' });
+        return clientInternal.authFor.call(client, 'token')
+          .then(fail, (error) => {
+            expect(error).to.be.instanceof(TypeError);
+            expect(error.message).to.eql('client_secret_post client authentication method requires a client_secret');
+          });
+      });
     });
 
     describe('when client_secret_basic', function () {
@@ -1340,6 +1353,16 @@ describe('Client', () => {
         expect(await clientInternal.authFor.call(client, 'token')).to.eql({
           headers: { Authorization: 'Basic YW4lM0FpZGVudGlmaWVyOnNvbWUrc2VjdXJlKyUyNitub24tc3RhbmRhcmQrc2VjcmV0' },
         });
+      });
+
+      it('requires client_secret to be set', function () {
+        const issuer = new Issuer();
+        const client = new issuer.Client({ client_id: 'an:identifier' });
+        return clientInternal.authFor.call(client, 'token')
+          .then(fail, (error) => {
+            expect(error).to.be.instanceof(TypeError);
+            expect(error.message).to.eql('client_secret_basic client authentication method requires a client_secret');
+          });
       });
     });
 
@@ -1387,6 +1410,23 @@ describe('Client', () => {
 
         expect(header.alg).to.equal('HS256');
         expect(header.typ).to.equal('JWT');
+      });
+
+      it('requires client_secret to be set on the client', function () {
+        const issuer = new Issuer({
+          token_endpoint: 'https://rp.example.com/token',
+        });
+        const client = new issuer.Client({
+          client_id: 'identifier',
+          token_endpoint_auth_method: 'client_secret_jwt',
+          token_endpoint_auth_signing_alg: 'HS256',
+        });
+
+        return clientInternal.authFor.call(client, 'token')
+          .then(fail, (error) => {
+            expect(error).to.be.instanceof(TypeError);
+            expect(error.message).to.eql('client_secret is required');
+          });
       });
     });
 
@@ -1439,6 +1479,23 @@ describe('Client', () => {
           expect(header.alg).to.equal('ES256');
           expect(header.typ).to.equal('JWT');
           expect(header.kid).to.be.ok;
+        });
+
+        it('requires jwks to be provided when the client was instantiated', function () {
+          const issuer = new Issuer({
+            token_endpoint: 'https://rp.example.com/token',
+          });
+          const client = new issuer.Client({
+            client_id: 'identifier',
+            token_endpoint_auth_method: 'private_key_jwt',
+            token_endpoint_auth_signing_alg: 'RS256',
+          });
+
+          return clientInternal.authFor.call(client, 'token')
+            .then(fail, (error) => {
+              expect(error).to.be.instanceof(TypeError);
+              expect(error.message).to.eql('no client jwks provided for signing a client assertion with');
+            });
         });
       });
 
@@ -2725,6 +2782,7 @@ describe('Client', () => {
       it('to decrypt tokenset\'s id_token it must have one', async () => {
         const issuer = new Issuer();
         const client = new issuer.Client({
+          client_id: 'identifier',
           id_token_encrypted_response_alg: 'RSA-OAEP',
         });
 
@@ -2737,6 +2795,7 @@ describe('Client', () => {
       it('verifies the id token is using the right alg', async () => {
         const issuer = new Issuer();
         const client = new issuer.Client({
+          client_id: 'identifier',
           id_token_encrypted_response_alg: 'RSA-OAEP',
           id_token_encrypted_response_enc: 'A128CBC-HS256',
         });
@@ -2754,6 +2813,7 @@ describe('Client', () => {
       it('verifies the id token is using the right enc', async () => {
         const issuer = new Issuer();
         const client = new issuer.Client({
+          client_id: 'identifier',
           id_token_encrypted_response_alg: 'RSA-OAEP',
           id_token_encrypted_response_enc: 'A128CBC-HS256',
         });
@@ -2952,7 +3012,7 @@ describe('Client', () => {
     describe('#callbackParams', function () {
       before(function () {
         const issuer = new Issuer({ issuer: 'http://localhost:3000/op' });
-        this.client = new issuer.Client({ client_id: 'client_id' });
+        this.client = new issuer.Client({ client_id: 'identifier' });
       });
 
       describe('when passed a string', () => {
@@ -3062,7 +3122,7 @@ describe('Client', () => {
       after(nock.cleanAll);
 
       it('verifies keystore is set', function () {
-        const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'EdDSA' });
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'EdDSA' });
 
         return client.requestObject({ state: 'foobar' })
           .then(fail, (err) => {
@@ -3074,7 +3134,7 @@ describe('Client', () => {
       it('verifies keystore has the appropriate key', async function () {
         const keystore = new jose.JWKS.KeyStore();
         await keystore.generate('EC');
-        const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'EdDSA' }, keystore.toJWKS(true));
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'EdDSA' }, keystore.toJWKS(true));
 
         return client.requestObject({ state: 'foobar' })
           .then(fail, (err) => {
@@ -3084,7 +3144,7 @@ describe('Client', () => {
       });
 
       it('sign alg=none', function () {
-        const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'none' });
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'none' });
 
         return client.requestObject({ state: 'foobar' })
           .then((signed) => {
@@ -3094,7 +3154,7 @@ describe('Client', () => {
               jti, iat, exp, ...jwt
             } = JSON.parse(base64url.decode(parts[1]));
             expect(jwt).to.eql({
-              iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar',
+              iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
             });
             expect(jti).to.be.a('string');
             expect(iat).to.be.a('number');
@@ -3105,7 +3165,7 @@ describe('Client', () => {
       });
 
       it('sign alg=HSxxx', function () {
-        const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'HS256', client_secret: 'atleast32byteslongforHS256mmkay?' });
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'HS256', client_secret: 'atleast32byteslongforHS256mmkay?' });
 
         return client.requestObject({ state: 'foobar' })
           .then((signed) => {
@@ -3115,7 +3175,7 @@ describe('Client', () => {
               jti, iat, exp, ...jwt
             } = JSON.parse(base64url.decode(parts[1]));
             expect(jwt).to.eql({
-              iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar',
+              iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
             });
             expect(jti).to.be.a('string');
             expect(iat).to.be.a('number');
@@ -3126,7 +3186,7 @@ describe('Client', () => {
       });
 
       it('sign alg=RSxxx', function () {
-        const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'RS256' }, this.keystore.toJWKS(true));
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'RS256' }, this.keystore.toJWKS(true));
 
         return client.requestObject({ state: 'foobar' })
           .then((signed) => {
@@ -3136,7 +3196,7 @@ describe('Client', () => {
               jti, iat, exp, ...jwt
             } = JSON.parse(base64url.decode(parts[1]));
             expect(jwt).to.eql({
-              iss: 'client_id', client_id: 'client_id', aud: 'https://op.example.com', state: 'foobar',
+              iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
             });
             expect(jti).to.be.a('string');
             expect(iat).to.be.a('number');
@@ -3147,7 +3207,7 @@ describe('Client', () => {
       });
 
       it('encrypts for issuer using issuer\'s public key', function () {
-        const client = new this.issuer.Client({ client_id: 'client_id', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
 
         return client.requestObject({ state: 'foobar' })
           .then((encrypted) => {
@@ -3158,7 +3218,7 @@ describe('Client', () => {
 
       it('encrypts for issuer using pre-shared client_secret (A\\d{3}GCMKW)', function () {
         const client = new this.issuer.Client({
-          client_id: 'client_id',
+          client_id: 'identifier',
           client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
           request_object_encryption_alg: 'A128GCMKW',
         });
@@ -3172,7 +3232,7 @@ describe('Client', () => {
 
       it('encrypts for issuer using pre-shared client_secret (dir + A128CBC-HS256)', function () {
         const client = new this.issuer.Client({
-          client_id: 'client_id',
+          client_id: 'identifier',
           client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
           request_object_encryption_alg: 'dir',
           request_object_encryption_enc: 'A128CBC-HS256',
@@ -3188,7 +3248,7 @@ describe('Client', () => {
       if (!('electron' in process.versions)) {
         it('encrypts for issuer using pre-shared client_secret (PBES2)', function () {
           const client = new this.issuer.Client({
-            client_id: 'client_id',
+            client_id: 'identifier',
             client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
             request_object_encryption_alg: 'PBES2-HS256+A128KW',
           });
@@ -3202,7 +3262,7 @@ describe('Client', () => {
 
         it('encrypts for issuer using pre-shared client_secret (A\\d{3}KW)', function () {
           const client = new this.issuer.Client({
-            client_id: 'client_id',
+            client_id: 'identifier',
             client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
             request_object_encryption_alg: 'A128KW',
           });
@@ -3216,7 +3276,7 @@ describe('Client', () => {
       }
 
       it('throws on non-object inputs', function () {
-        const client = new this.issuer.Client({ client_id: 'client_id', request_object_signing_alg: 'none' });
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'none' });
         return client.requestObject(true).then(fail, (err) => {
           expect(err).to.be.instanceof(TypeError);
           expect(err.message).to.eql('requestObject must be a plain object');

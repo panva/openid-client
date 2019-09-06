@@ -46,7 +46,7 @@ describe('OpenIDConnectStrategy', () => {
 
   it('checks that issuer has an issuer identifier', () => {
     const issuer = new Issuer({});
-    const client = new issuer.Client({});
+    const client = new issuer.Client({ client_id: 'identifier' });
 
     expect(() => Strategy({ client }, () => {}))
       .to.throw('client must have an issuer with an identifier');
