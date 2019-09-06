@@ -224,6 +224,16 @@ export interface IDeviceAuthExtras {
   clientAssertionPayload?: object
 }
 
+export interface IUserinfoResponse {
+  sub: string
+  [name: string]: unknown
+}
+
+export interface IIntrospectionResponse {
+  active: boolean
+  [name: string]: unknown
+}
+
 /**
  * Encapsulates a dynamically registered, discovered or instantiated OpenID Connect Client (Client),
  * Relying Party (RP), and its metadata, its instances hold the methods for getting an authorization URL,
@@ -289,7 +299,7 @@ export interface IClient {
    * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
    * will be used automatically.
    */
-  userinfo(accessToken: TokenType): Promise<object>
+  userinfo(accessToken: TokenType): Promise<IUserinfoResponse>
 
   /**
    * Performs an arbitrary grant_type exchange at the token_endpoint.
@@ -299,7 +309,7 @@ export interface IClient {
   /**
    * Introspects a token at the Authorization Server's introspection_endpoint.
    */
-  introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<object>
+  introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<IIntrospectionResponse>
 
   /**
    * Revokes a token at the Authorization Server's revocation_endpoint.
@@ -333,9 +343,9 @@ export class Client implements IClient {
   callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
   oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
   refresh(refreshToken: TokenType, extras?: IRefreshExtras): Promise<TokenSet>
-  userinfo(accessToken: TokenType): Promise<object>
+  userinfo(accessToken: TokenType): Promise<IUserinfoResponse>
   grant(body: IGrantBody, extras?: IGrantExtras): Promise<TokenSet>
-  introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<object>
+  introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<IIntrospectionResponse>
   revoke(token, tokenTypeHint?: string, extras?: IRevokeExtras): Promise<void>
   requestObject(payload: IRequestObjectPayload): Promise<string>
   deviceAuthorization(parameters?: IDeviceAuthParameters, extras?: IDeviceAuthExtras): Promise<IDeviceFlowHandle>
