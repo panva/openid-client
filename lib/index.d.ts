@@ -478,6 +478,15 @@ export interface ITokenSetParams {
   [key: string]: unknown
 }
 
+export interface IIdTokenClaims {
+  sub: string
+  iat: number
+  exp: number
+  iss: string
+  aud: string | string[]
+  [name: string]: unknown
+}
+
 /**
  * Creates a new TokenSet from the provided response. E.g. parsed token endpoint response, parsed callback
  * parameters. You only need to instantiate a TokenSet yourself if you recall it from e.g. distributed cache
@@ -506,7 +515,7 @@ export class TokenSet implements ITokenSetParams {
    * Does not perform any validations as these were done prior to openid-client returning the
    * tokenset in the first place.
    */
-  claims(): object
+  claims(): IIdTokenClaims
 
   [key: string]: unknown
 }
