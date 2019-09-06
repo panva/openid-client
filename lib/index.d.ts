@@ -71,7 +71,7 @@ export interface IAuthorizationUrlParams {
 }
 
 export interface IEndSessionUrlParams {
-  id_token_hint?: TokenType
+  id_token_hint?: TokenSet | string
   post_logout_redirect_uri?: string
   state?: string
 }
@@ -89,8 +89,6 @@ export type CallbackParamsType = {
   session_state?: string
   [key: string]: unknown
 }
-
-export type TokenType = string | TokenSet
 
 export interface ICallbackChecks {
   /**
@@ -234,6 +232,8 @@ export interface IIntrospectionResponse {
   [name: string]: unknown
 }
 
+type TokenTypeHint = 'access_token' | 'refresh_token' | string
+
 /**
  * Encapsulates a dynamically registered, discovered or instantiated OpenID Connect Client (Client),
  * Relying Party (RP), and its metadata, its instances hold the methods for getting an authorization URL,
@@ -289,7 +289,7 @@ export interface IClient {
    * will be used automatically.
    * @param extras
    */
-  refresh(refreshToken: TokenType, extras?: IRefreshExtras): Promise<TokenSet>
+  refresh(refreshToken: TokenSet | string, extras?: IRefreshExtras): Promise<TokenSet>
 
   /**
    * Fetches the OIDC userinfo response with the provided Access Token. Also handles signed and/or
@@ -299,7 +299,7 @@ export interface IClient {
    * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
    * will be used automatically.
    */
-  userinfo(accessToken: TokenType): Promise<IUserinfoResponse>
+  userinfo(accessToken: TokenSet | string): Promise<IUserinfoResponse>
 
   /**
    * Performs an arbitrary grant_type exchange at the token_endpoint.
@@ -309,12 +309,12 @@ export interface IClient {
   /**
    * Introspects a token at the Authorization Server's introspection_endpoint.
    */
-  introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<IIntrospectionResponse>
+  introspect(token: string, tokenTypeHint?: TokenTypeHint, extras?: IIntrospectExtras): Promise<IIntrospectionResponse>
 
   /**
    * Revokes a token at the Authorization Server's revocation_endpoint.
    */
-  revoke(token, tokenTypeHint?: string, extras?: IRevokeExtras): Promise<void>
+  revoke(token, tokenTypeHint?: TokenTypeHint, extras?: IRevokeExtras): Promise<void>
 
   /**
    * Creates a signed and optionally encrypted Request Object to send to the AS. Uses the client's
@@ -342,11 +342,11 @@ export class Client implements IClient {
   callbackParams (input: string | IncomingMessage | Http2ServerRequest): CallbackParamsType
   callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: IExtendedCallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
   oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: ICallbackChecks, extras?: ICallbackExtras): Promise<TokenSet>
-  refresh(refreshToken: TokenType, extras?: IRefreshExtras): Promise<TokenSet>
-  userinfo(accessToken: TokenType): Promise<IUserinfoResponse>
+  refresh(refreshToken: TokenSet | string, extras?: IRefreshExtras): Promise<TokenSet>
+  userinfo(accessToken: TokenSet | string): Promise<IUserinfoResponse>
   grant(body: IGrantBody, extras?: IGrantExtras): Promise<TokenSet>
-  introspect(token: string, tokenTypeHint?: string, extras?: IIntrospectExtras): Promise<IIntrospectionResponse>
-  revoke(token, tokenTypeHint?: string, extras?: IRevokeExtras): Promise<void>
+  introspect(token: string, tokenTypeHint?: TokenTypeHint, extras?: IIntrospectExtras): Promise<IIntrospectionResponse>
+  revoke(token, tokenTypeHint?: TokenTypeHint, extras?: IRevokeExtras): Promise<void>
   requestObject(payload: IRequestObjectPayload): Promise<string>
   deviceAuthorization(parameters?: IDeviceAuthParameters, extras?: IDeviceAuthExtras): Promise<IDeviceFlowHandle>
   static register(metadata: object, other?: IRegisterOther): Promise<IClient>
