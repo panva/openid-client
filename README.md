@@ -76,6 +76,14 @@ or koa middlewares. Those can however be built using the exposed API.
   - [generators][documentation-generators]
   - [errors][documentation-errors]
 
+## Install
+
+Node.js version **>=12.0.0** is recommended, but **^10.13.0** lts/dubnium is also supported.
+
+```console
+npm install openid-client
+```
+
 ## Quick start
 
 Discover an Issuer configuration using its published .well-known endpoints
