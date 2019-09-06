@@ -78,6 +78,8 @@ or koa middlewares. Those can however be built using the exposed API.
 
 ## Quick start
 
+Install: `npm i openid-client --save`
+
 Discover an Issuer configuration using its published .well-known endpoints
 ```js
 const { Issuer } = require('openid-client');
