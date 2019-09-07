@@ -27,10 +27,11 @@
   "license": "MIT",
   "author": "Filip Skokan <panva.ip@gmail.com>",
   "files": [
-    "lib"
+    "lib",
+    "types/index.d.ts"
   ],
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "types": "types/index.d.ts",
   "scripts": {
     "coverage": "nyc mocha",
     "lint": "eslint lib test",

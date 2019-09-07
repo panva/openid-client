@@ -16,7 +16,9 @@ jobs:
         with:
           node-version: 12
       - run: npm install
+      - run: npm install @types/got @types/passport-strategy
       - run: npm run lint
+      - run: npx dtslint --onlyTestTsNext types
 
   test:
     name: Node Tests + Coverage
