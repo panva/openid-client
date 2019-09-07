@@ -117,12 +117,12 @@ async (req: IncomingMessage) => {
 
     // generics setup
     class CustomClient extends Client {
-        myCustomMethod () { }
+        myCustomMethod() { }
 
         static async register(metadata: object, other?: RegisterOther): Promise<CustomClient> {
             return new CustomClient({
                 client_id: 'xxxx'
-            })
+            });
         }
     }
 
@@ -136,7 +136,7 @@ async (req: IncomingMessage) => {
 
     const customIssuer = new CustomIssuer({
         issuer: 'test-issuer'
-    })
+    });
 
     const customIssuedClient = new customIssuer.Client({
         client_id: 'c',
@@ -145,11 +145,11 @@ async (req: IncomingMessage) => {
         response_types: ['code'],
     });
 
-    customIssuedClient.myCustomMethod()
+    customIssuedClient.myCustomMethod();
 
     // generics: strategy
     class PassportUser {
-        tokenset : TokenSet;
+        tokenset: TokenSet;
 
         constructor(tokenset: TokenSet) {
             this.tokenset = tokenset;
@@ -160,13 +160,11 @@ async (req: IncomingMessage) => {
         }
     }
 
-    const verify : StrategyVerifyCallback<PassportUser> = (tokenset, done) => {
+    const verify: StrategyVerifyCallback<PassportUser> = (tokenset, done) => {
         const user = new PassportUser(tokenset);
-
         const accessToken = user.getAccessToken();
-        
         done(null, user);
-    }
+    };
 
     class CustomStrategy extends Strategy<PassportUser, CustomClient> {
         client: CustomClient;
@@ -186,7 +184,7 @@ async (req: IncomingMessage) => {
 
     const strategyOptions = {
         client: customClient
-    }
+    };
 
     strategyOptions.client.myCustomMethod();
 

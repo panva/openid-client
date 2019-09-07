@@ -331,7 +331,7 @@ export class Client {
    * Starts a Device Authorization Request at the issuer's device_authorization_endpoint and returns a handle
    * for subsequent Device Access Token Request polling.
    */
-  deviceAuthorization<TClient extends Client>(parameters?: DeviceAuthorizationParameters, extras?: DeviceAuthorizationExtras): Promise<DeviceFlowHandle<TClient>>;
+  deviceAuthorization(parameters?: DeviceAuthorizationParameters, extras?: DeviceAuthorizationExtras): Promise<DeviceFlowHandle<Client>>;
   static register(metadata: object, other?: RegisterOther): Promise<Client>;
   static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet): Promise<Client>;
   static [custom.http_options]: CustomHttpOptionsProvider;
@@ -383,11 +383,11 @@ export interface MtlsEndpointAliases {
 // https://stackoverflow.com/questions/40249906/using-a-generic-type-argument-with-typeof-t
 // https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
 // https://github.com/Microsoft/TypeScript/issues/204
-export type TypeOfGenericClient<TClient extends Client> = {
-  new (metadata: ClientMetadata, jwks?: JSONWebKeySet): TClient
+export interface TypeOfGenericClient<TClient extends Client> {
+  new (metadata: ClientMetadata, jwks?: JSONWebKeySet): TClient;
   [custom.http_options]: CustomHttpOptionsProvider;
-  [custom.clock_tolerance]: number;  
-} 
+  [custom.clock_tolerance]: number;
+}
 
 /**
  * Encapsulates a discovered or instantiated OpenID Connect Issuer (Issuer), Identity Provider (IdP),
@@ -399,7 +399,7 @@ export class Issuer<TClient extends Client> {
   /**
    * Returns the <Client> class tied to this issuer.
    */
-  Client: TypeOfGenericClient<TClient>
+  Client: TypeOfGenericClient<TClient>;
 
   /**
    * Returns metadata from the issuer's discovery document.
@@ -534,7 +534,8 @@ export interface StrategyOptions<TClient extends Client> {
 }
 
 export class Strategy<TUser, TClient extends Client> extends PassportStrategy {
-  constructor(options: StrategyOptions<TClient>, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> | StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
+  constructor(options: StrategyOptions<TClient>, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> |
+    StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
 }
 
 /**
