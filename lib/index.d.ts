@@ -30,7 +30,7 @@ type AuthResponseType = 'code' | 'id_token' | 'code id_token' | 'code token' | '
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
  */
-type TokenAuthMethod = 'client_secret_basic' | 'client_secret_post' | 'client_secret_jwt' | 'private_key_jwt' | 'tls_client_auth' | 'self_signed_tls_client_auth' | 'none'
+type ClientAuthMethod = 'client_secret_basic' | 'client_secret_post' | 'client_secret_jwt' | 'private_key_jwt' | 'tls_client_auth' | 'self_signed_tls_client_auth' | 'none'
 
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#new-clientmetadata-jwks
@@ -52,9 +52,9 @@ export interface IClientMetadata {
   request_object_signing_alg?: string
   request_object_encryption_alg?: string
   request_object_encryption_enc?: string
-  token_endpoint_auth_method?: TokenAuthMethod
-  introspection_endpoint_auth_method?: TokenAuthMethod
-  revocation_endpoint_auth_method?: TokenAuthMethod
+  token_endpoint_auth_method?: ClientAuthMethod
+  introspection_endpoint_auth_method?: ClientAuthMethod
+  revocation_endpoint_auth_method?: ClientAuthMethod
   token_endpoint_auth_signing_alg?: string
   introspection_endpoint_auth_signing_alg?: string
   revocation_endpoint_auth_signing_alg?: string
@@ -66,7 +66,7 @@ export interface IClientMetadata {
 export interface IAuthorizationUrlParams {
   redirect_uri?: string
   response_type?: string
-  scope?: string,
+  scope?: string
   [key: string]: unknown
 }
 
@@ -74,6 +74,7 @@ export interface IEndSessionUrlParams {
   id_token_hint?: TokenSet | string
   post_logout_redirect_uri?: string
   state?: string
+  [key: string]: unknown
 }
 
 export type CallbackParamsType = {
