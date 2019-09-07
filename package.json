@@ -52,6 +52,8 @@
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
+    "@types/got": "^9.6.7",
+    "@types/passport-strategy": "^0.2.35",
     "chai": "^4.2.0",
     "eslint": "^6.2.2",
     "eslint-config-airbnb-base": "^14.0.0",

@@ -331,7 +331,7 @@ export class Client {
    * Starts a Device Authorization Request at the issuer's device_authorization_endpoint and returns a handle
    * for subsequent Device Access Token Request polling.
    */
-  deviceAuthorization(parameters?: DeviceAuthorizationParameters, extras?: DeviceAuthorizationExtras): Promise<DeviceFlowHandle>;
+  deviceAuthorization<TClient extends Client>(parameters?: DeviceAuthorizationParameters, extras?: DeviceAuthorizationExtras): Promise<DeviceFlowHandle<TClient>>;
   static register(metadata: object, other?: RegisterOther): Promise<Client>;
   static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet): Promise<Client>;
   static [custom.http_options]: CustomHttpOptionsProvider;
@@ -339,11 +339,11 @@ export class Client {
   [key: string]: unknown;
 }
 
-export class DeviceFlowHandle {
+export class DeviceFlowHandle<TClient extends Client> {
   poll(): Promise<TokenSet>;
   expired(): boolean;
   expires_at: number;
-  client: Client;
+  client: TClient;
   user_code: string;
   device_code: string;
   verification_uri: string;
@@ -380,17 +380,26 @@ export interface MtlsEndpointAliases {
   device_authorization_endpoint?: string;
 }
 
+// https://stackoverflow.com/questions/40249906/using-a-generic-type-argument-with-typeof-t
+// https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
+// https://github.com/Microsoft/TypeScript/issues/204
+export type TypeOfGenericClient<TClient extends Client> = {
+  new (metadata: ClientMetadata, jwks?: JSONWebKeySet): TClient
+  [custom.http_options]: CustomHttpOptionsProvider;
+  [custom.clock_tolerance]: number;  
+} 
+
 /**
  * Encapsulates a discovered or instantiated OpenID Connect Issuer (Issuer), Identity Provider (IdP),
  * Authorization Server (AS) and its metadata.
  */
-export class Issuer {
+export class Issuer<TClient extends Client> {
   constructor(metadata: IssuerMetadata);
 
   /**
    * Returns the <Client> class tied to this issuer.
    */
-  Client: typeof Client;
+  Client: TypeOfGenericClient<TClient>
 
   /**
    * Returns metadata from the issuer's discovery document.
@@ -410,13 +419,13 @@ export class Issuer {
    * performs both openid-configuration and oauth-authorization-server requests.
    * @param issuer Issuer Identifier or metadata URL
    */
-  static discover(issuer: string): Promise<Issuer>;
+  static discover(issuer: string): Promise<Issuer<Client>>;
 
   /**
    * Performs OpenID Provider Issuer Discovery based on End-User input.
    * @param input EMAIL, URL, Hostname and Port, acct or syntax input
    */
-  static webfinger(input: string): Promise<Issuer>;
+  static webfinger(input: string): Promise<Issuer<Client>>;
 
   static [custom.http_options]: CustomHttpOptionsProvider;
 
@@ -501,8 +510,8 @@ export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any
 export type StrategyVerifyCallbackReqUserInfo<TUser> = (req: IncomingMessage, tokenset: TokenSet, userinfo: object, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallbackReq<TUser> = (req: IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
 
-export interface StrategyOptions {
-  client: Client;
+export interface StrategyOptions<TClient extends Client> {
+  client: TClient;
   /**
    * Authorization Request parameters. The strategy will use these.
    */
@@ -524,8 +533,8 @@ export interface StrategyOptions {
   sessionKey?: string;
 }
 
-export class Strategy<TUser> extends PassportStrategy {
-  constructor(options: StrategyOptions, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> | StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
+export class Strategy<TUser, TClient extends Client> extends PassportStrategy {
+  constructor(options: StrategyOptions<TClient>, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> | StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
 }
 
 /**

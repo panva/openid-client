@@ -1,7 +1,7 @@
 import { IncomingMessage } from 'http';
 
 // tslint:disable-next-line:no-relative-import-in-test
-import { custom, generators, Issuer } from './index.d';
+import { custom, generators, Issuer, Client, Strategy, StrategyVerifyCallback, StrategyOptions, TokenSet, RegisterOther, IssuerMetadata } from './index.d';
 
 async (req: IncomingMessage) => {
     // Custom HTTP options on the `Issuer` _c'tor_ (e.g. used for `Issuer.discover()`):
@@ -114,4 +114,83 @@ async (req: IncomingMessage) => {
     await client.refresh('token');
     await client.refresh('token', {});
     await client.refresh('token', { exchangeBody: {}, clientAssertionPayload: {} });
+
+    // generics setup
+    class CustomClient extends Client {
+        myCustomMethod () { }
+
+        static async register(metadata: object, other?: RegisterOther): Promise<CustomClient> {
+            return new CustomClient({
+                client_id: 'xxxx'
+            })
+        }
+    }
+
+    // generics: issuer
+
+    class CustomIssuer extends Issuer<CustomClient> {
+        constructor(metadata: IssuerMetadata) {
+            super(metadata);
+        }
+    }
+
+    const customIssuer = new CustomIssuer({
+        issuer: 'test-issuer'
+    })
+
+    const customIssuedClient = new customIssuer.Client({
+        client_id: 'c',
+        client_secret: 's',
+        redirect_uris: ['http://localhost:3000/cb'],
+        response_types: ['code'],
+    });
+
+    customIssuedClient.myCustomMethod()
+
+    // generics: strategy
+    class PassportUser {
+        tokenset : TokenSet;
+
+        constructor(tokenset: TokenSet) {
+            this.tokenset = tokenset;
+        }
+
+        getAccessToken() {
+            return this.tokenset.access_token;
+        }
+    }
+
+    const verify : StrategyVerifyCallback<PassportUser> = (tokenset, done) => {
+        const user = new PassportUser(tokenset);
+
+        const accessToken = user.getAccessToken();
+        
+        done(null, user);
+    }
+
+    class CustomStrategy extends Strategy<PassportUser, CustomClient> {
+        client: CustomClient;
+
+        constructor(options: StrategyOptions<CustomClient>, verify: StrategyVerifyCallback<PassportUser>) {
+            super(options, verify);
+
+            this.client = options.client;
+        }
+
+        authenticate() {
+            this.client.myCustomMethod();
+        }
+    }
+
+    const customClient = await CustomClient.register({});
+
+    const strategyOptions = {
+        client: customClient
+    }
+
+    strategyOptions.client.myCustomMethod();
+
+    const customStrategy = new CustomStrategy(strategyOptions, verify);
+
+    customStrategy.authenticate();
 };
