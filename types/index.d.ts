@@ -64,10 +64,45 @@ export interface ClientMetadata {
   [key: string]: unknown;
 }
 
+export interface ClaimsParameterMember {
+  essential?: boolean;
+  value?: string;
+  values?: string[];
+
+  [key: string]: unknown;
+}
+
 export interface AuthorizationParameters {
+  acr_values?: string;
+  audience?: string;
+  claims?: string | {
+    id_token?: {
+      [key: string]: null | ClaimsParameterMember
+    }
+    userinfo?: {
+      [key: string]: null | ClaimsParameterMember
+    }
+  };
+  claims_locales?: string;
+  client_id?: string;
+  code_challenge_method?: string;
+  code_challenge?: string;
+  display?: string;
+  id_token_hint?: string;
+  login_hint?: string;
+  max_age?: string;
+  nonce?: string;
+  prompt?: string;
   redirect_uri?: string;
+  registration?: string;
+  request_uri?: string;
+  request?: string;
+  resource?: string | string[];
+  response_mode?: string;
   response_type?: string;
   scope?: string;
+  ui_locales?: string;
+
   [key: string]: unknown;
 }
 
