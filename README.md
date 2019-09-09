@@ -242,7 +242,8 @@ standard Node.js OpenSSL.
 
 #### Semver?
 
-**Yes.** Everything that's [documented][documentation] is subject to
+**Yes.** Everything that's either exported in the TypeScript definitions file or
+[documented][documentation] is subject to
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html). The rest is to be considered
 private API and is subject to change between any versions.
 
