@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.7.0](https://github.com/panva/node-openid-client/compare/v3.6.2...v3.7.0) (2019-09-09)
+
+
+### Bug Fixes
+
+* assert client_secret is present when required, require client_id, etc ([82855a5](https://github.com/panva/node-openid-client/commit/82855a5))
+
+
+### Features
+
+* Add Typescript definitions ([#184](https://github.com/panva/node-openid-client/issues/184)) ([c37130b](https://github.com/panva/node-openid-client/commit/c37130b))
+* allow clientAssertionPayload to overwrite default payload ([28c8964](https://github.com/panva/node-openid-client/commit/28c8964))
+
+
+
 ## [3.6.2](https://github.com/panva/node-openid-client/compare/v3.6.1...v3.6.2) (2019-09-03)
 
 
