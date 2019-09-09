@@ -27,9 +27,11 @@
   "license": "MIT",
   "author": "Filip Skokan <panva.ip@gmail.com>",
   "files": [
-    "lib"
+    "lib",
+    "types/index.d.ts"
   ],
   "main": "lib/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "coverage": "nyc mocha",
     "lint": "eslint lib test",
@@ -50,6 +52,7 @@
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
+    "@types/got": "^9.6.7",
     "chai": "^4.2.0",
     "eslint": "^6.2.2",
     "eslint-config-airbnb-base": "^14.0.0",
