@@ -36,29 +36,32 @@ export type ClientAuthMethod = 'client_secret_basic' | 'client_secret_post' | 'c
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#new-clientmetadata-jwks
  */
 export interface ClientMetadata {
+  // important
   client_id: string;
-  client_secret?: string;
   id_token_signed_response_alg?: string;
-  id_token_encrypted_response_alg?: string;
-  id_token_encrypted_response_enc?: string;
-  userinfo_signed_response_alg?: string;
-  userinfo_encrypted_response_alg?: string;
-  userinfo_encrypted_response_enc?: string;
+  token_endpoint_auth_method?: ClientAuthMethod;
+  client_secret?: string;
   redirect_uris?: string[];
   response_types?: ResponseType[];
   post_logout_redirect_uris?: string[];
   default_max_age?: number;
   require_auth_time?: boolean;
+  tls_client_certificate_bound_access_tokens?: boolean;
   request_object_signing_alg?: string;
+
+  // less important
+  id_token_encrypted_response_alg?: string;
+  id_token_encrypted_response_enc?: string;
+  introspection_endpoint_auth_method?: ClientAuthMethod;
+  introspection_endpoint_auth_signing_alg?: string;
   request_object_encryption_alg?: string;
   request_object_encryption_enc?: string;
-  token_endpoint_auth_method?: ClientAuthMethod;
-  introspection_endpoint_auth_method?: ClientAuthMethod;
   revocation_endpoint_auth_method?: ClientAuthMethod;
-  token_endpoint_auth_signing_alg?: string;
-  introspection_endpoint_auth_signing_alg?: string;
   revocation_endpoint_auth_signing_alg?: string;
-  tls_client_certificate_bound_access_tokens?: boolean;
+  token_endpoint_auth_signing_alg?: string;
+  userinfo_encrypted_response_alg?: string;
+  userinfo_encrypted_response_enc?: string;
+  userinfo_signed_response_alg?: string;
 
   [key: string]: unknown;
 }
@@ -221,7 +224,7 @@ export interface RevokeExtras {
   clientAssertionPayload?: object;
 }
 
-export interface RequestObjectPayload {
+export interface RequestObjectPayload extends AuthorizationParameters {
   client_id?: string;
   iss?: string;
   aud?: string;
@@ -265,12 +268,54 @@ export interface DeviceAuthorizationExtras {
 
 export interface UserinfoResponse {
   sub: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  middle_name?: string;
+  nickname?: string;
+  preferred_username?: string;
+  profile?: string;
+  picture?: string;
+  website?: string;
+  email?: string;
+  email_verified?: boolean;
+  gender?: string;
+  birthdate?: string;
+  zoneinfo?: string;
+  locale?: string;
+  phone_number?: string;
+  updated_at?: number;
+  address?: {
+    formatted?: string;
+    street_address?: string;
+    locality?: string;
+    region?: string;
+    postal_code?: string;
+    country?: string;
+
+    [key: string]: unknown;
+  };
 
   [key: string]: unknown;
 }
 
 export interface IntrospectionResponse {
   active: boolean;
+  client_id?: string;
+  exp?: number;
+  iat?: number;
+  sid?: string;
+  iss?: string;
+  jti?: string;
+  username?: string;
+  aud?: string | string[];
+  scope: string;
+  token_type?: string;
+  cnf?: {
+    'x5t#S256'?: string;
+
+    [key: string]: unknown;
+  };
 
   [key: string]: unknown;
 }
@@ -494,7 +539,11 @@ export interface TokenSetParameters {
    * space-separated scope(s) used for the authentication request
    */
   scope?: string;
-  expires_in?: number;
+
+  /**
+   * When the token set was received the expires_at field was calculated based on current timestamp
+   * and the expires_in. When recalling a TokenSet instance just the expires_at should be passed in.
+   */
   expires_at?: number;
   /**
    * State value passed in the authentication request
@@ -504,12 +553,20 @@ export interface TokenSetParameters {
   [key: string]: unknown;
 }
 
-export interface IdTokenClaims {
-  sub: string;
-  iat: number;
-  exp: number;
-  iss: string;
+export interface IdTokenClaims extends UserinfoResponse {
+  acr?: string;
+  amr?: string[];
+  at_hash?: string;
   aud: string | string[];
+  auth_time?: number;
+  azp?: string;
+  c_hash?: string;
+  exp: number;
+  iat: number;
+  iss: string;
+  nonce?: string;
+  s_hash?: string;
+  sub: string;
 
   [key: string]: unknown;
 }
@@ -547,9 +604,9 @@ export class TokenSet implements TokenSetParameters {
   [key: string]: unknown;
 }
 
-export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo: object, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo: UserinfoResponse, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallbackReqUserInfo<TUser> = (req: IncomingMessage, tokenset: TokenSet, userinfo: object, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackReqUserInfo<TUser> = (req: IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallbackReq<TUser> = (req: IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
 
 export interface StrategyOptions<TClient extends Client> {
