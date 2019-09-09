@@ -538,8 +538,7 @@ you need to work around, e.g. adding custom headers or body payload parameters.
 const { custom } = require('openid-client');
 client[custom.http_options] = function (options) {
   // see https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options
-  // key, cert, ca, ciphers, clientCertEngine, crl, dhparam, ecdhCurve, honorCipherOrder, passphrase
-  // pfx, rejectUnauthorized, secureOptions, secureProtocol, servername, sessionIdContext
+  // key, cert, ca, rejectUnauthorized
   options.cert = cert; // <string> | <string[]> | <Buffer> | <Buffer[]>
   options.key = key; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
   // custom CA
@@ -571,15 +570,6 @@ client[custom.http_options] = function (options) {
 
   // https://github.com/sindresorhus/got/tree/v9.6.0#followredirect
   // options.followRedirect = false;
-
-  // https://github.com/sindresorhus/got/tree/v9.6.0#cache
-  // options.cache = cache;
-
-  // https://github.com/sindresorhus/got/tree/v9.6.0#request
-  // options.request = request;
-
-  // github.com/sindresorhus/got/tree/v9.6.0#hooks
-  // options.hooks = hooks;
 
   // use HTTP(S)_PROXY
   // https://github.com/sindresorhus/got/tree/v9.6.0#agent

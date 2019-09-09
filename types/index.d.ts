@@ -3,13 +3,56 @@
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
-import { IncomingMessage } from 'http';
-import { Http2ServerRequest } from 'http2';
+import * as http from 'http';
+import * as https from 'https';
+import * as http2 from 'http2';
+import * as tls from 'tls';
 
 import { JWKS, JSONWebKeySet } from '@panva/jose';
-import { GotOptions } from 'got';
 
-export type HttpRequestOptions = GotOptions<null>;
+export type RetryFunction = (retry: number, error: Error) => number;
+
+/**
+ * @see https://github.com/sindresorhus/got/tree/v9.6.0#options
+ */
+export interface HttpRequestOptions extends tls.SecureContextOptions {
+  url?: string;
+  headers?: {
+    [key: string]: unknown;
+  };
+  query?: {
+    [key: string]: unknown;
+  };
+  body?: {
+    [key: string]: unknown;
+  };
+  form?: boolean;
+  json?: boolean;
+  timeout?: number | {
+    lookup?: number;
+    connect?: number;
+    secureConnect?: number;
+    socket?: number;
+    response?: number;
+    send?: number;
+    request?: number;
+  };
+  retry?: number | {
+    retries?: number | RetryFunction;
+    methods?: Array<'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE' | 'OPTIONS' | 'TRACE'>;
+    statusCodes?: Array<408 | 413 | 429 | 500 | 502 | 503 | 504>;
+    maxRetryAfter?: number;
+    errorCodes?: string[];
+  };
+  followRedirect?: boolean;
+  throwHttpErrors?: boolean;
+  agent?: http.Agent | https.Agent | boolean | {
+    http: http.Agent,
+    https: https.Agent,
+  };
+
+  [key: string]: unknown;
+}
 export type CustomHttpOptionsProvider = (options: HttpRequestOptions) => HttpRequestOptions;
 export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
 
@@ -353,7 +396,7 @@ export class Client {
    * an object. Note: the request read stream will not be parsed, it is expected that you will have a body parser
    * prior to calling this method. This parser would set the req.body property
    */
-  callbackParams(input: string | IncomingMessage | Http2ServerRequest): CallbackParamsType;
+  callbackParams(input: string | http.IncomingMessage | http2.Http2ServerRequest): CallbackParamsType;
 
   /**
    * Performs the callback for Authorization Server's authorization response.
@@ -606,8 +649,8 @@ export class TokenSet implements TokenSetParameters {
 
 export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo: UserinfoResponse, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallbackReqUserInfo<TUser> = (req: IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallbackReq<TUser> = (req: IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackReqUserInfo<TUser> = (req: http.IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackReq<TUser> = (req: http.IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
 
 export interface StrategyOptions<TClient extends Client> {
   client: TClient;
@@ -708,9 +751,10 @@ export namespace errors {
     session_state?: string;
 
     /**
-     * The 'session_state' parameter from the AS response.
+     * When the error is related to an http(s) request this propetty will hold the  response object
+     * from got.
      */
-    response?: IncomingMessage;
+    response?: any;
   }
 
   /**
@@ -719,10 +763,14 @@ export namespace errors {
    * checks, jwt, params or body.
    */
   class RPError extends Error {
-    response?: IncomingMessage;
     jwt?: string;
     checks?: object;
     params?: object;
     body?: object;
+    /**
+     * When the error is related to an http(s) request this propetty will hold the response object
+     * from got.
+     */
+    response?: any;
   }
 }
