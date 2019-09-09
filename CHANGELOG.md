@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.1](https://github.com/panva/node-openid-client/compare/v3.7.0...v3.7.1) (2019-09-09)
+
+
+### Bug Fixes
+
+* **typescript:** remove the need for @types/got dependency ([e5a50d7](https://github.com/panva/node-openid-client/commit/e5a50d7))
+
+
+
 # [3.7.0](https://github.com/panva/node-openid-client/compare/v3.6.2...v3.7.0) (2019-09-09)
 
 
