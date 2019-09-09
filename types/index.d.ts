@@ -109,6 +109,7 @@ export interface EndSessionParameters {
   id_token_hint?: TokenSet | string;
   post_logout_redirect_uri?: string;
   state?: string;
+
   [key: string]: unknown;
 }
 
@@ -123,6 +124,7 @@ export interface CallbackParamsType {
   state?: string;
   token_type?: string;
   session_state?: string;
+
   [key: string]: unknown;
 }
 
@@ -183,6 +185,7 @@ export interface RefreshExtras {
 
 export interface GrantBody {
   grant_type: string;
+
   [key: string]: unknown;
 }
 
@@ -225,6 +228,7 @@ export interface RequestObjectPayload {
   iat?: number;
   exp?: number;
   jti?: string;
+
   [key: string]: unknown;
 }
 
@@ -243,6 +247,7 @@ export interface RegisterOther {
 export interface DeviceAuthorizationParameters {
   client_id?: string;
   scope?: string;
+
   [key: string]: unknown;
 }
 
@@ -260,12 +265,14 @@ export interface DeviceAuthorizationExtras {
 
 export interface UserinfoResponse {
   sub: string;
-  [name: string]: unknown;
+
+  [key: string]: unknown;
 }
 
 export interface IntrospectionResponse {
   active: boolean;
-  [name: string]: unknown;
+
+  [key: string]: unknown;
 }
 
 /**
@@ -503,7 +510,8 @@ export interface IdTokenClaims {
   exp: number;
   iss: string;
   aud: string | string[];
-  [name: string]: unknown;
+
+  [key: string]: unknown;
 }
 
 /**
