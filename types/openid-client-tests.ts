@@ -174,10 +174,6 @@ async (req: IncomingMessage) => {
 
             this.client = options.client;
         }
-
-        authenticate() {
-            this.client.myCustomMethod();
-        }
     }
 
     const customClient = await CustomClient.register({});
@@ -189,6 +185,4 @@ async (req: IncomingMessage) => {
     strategyOptions.client.myCustomMethod();
 
     const customStrategy = new CustomStrategy(strategyOptions, verify);
-
-    customStrategy.authenticate();
 };

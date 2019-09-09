@@ -8,7 +8,6 @@ import { Http2ServerRequest } from 'http2';
 
 import { JWKS, JSONWebKeySet } from '@panva/jose';
 import { GotOptions } from 'got';
-import { Strategy as PassportStrategy } from 'passport-strategy';
 
 export type HttpRequestOptions = GotOptions<null>;
 export type CustomHttpOptionsProvider = (options: HttpRequestOptions) => HttpRequestOptions;
@@ -568,7 +567,8 @@ export interface StrategyOptions<TClient extends Client> {
   sessionKey?: string;
 }
 
-export class Strategy<TUser, TClient extends Client> extends PassportStrategy {
+// tslint:disable-next-line:no-unnecessary-class
+export class Strategy<TUser, TClient extends Client> {
   constructor(options: StrategyOptions<TClient>, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> |
     StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
 }
