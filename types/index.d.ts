@@ -679,6 +679,14 @@ export interface StrategyOptions<TClient extends Client> {
 export class Strategy<TUser, TClient extends Client> {
   constructor(options: StrategyOptions<TClient>, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> |
     StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
+
+  authenticate(req: any, options?: any): void;
+  success(user: any, info?: any): void;
+  fail(challenge: any, status: number): void;
+  fail(status: number): void;
+  redirect(url: string, status?: number): void;
+  pass(): void;
+  error(err: Error): void;
 }
 
 /**

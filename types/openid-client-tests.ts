@@ -2,6 +2,7 @@ import { IncomingMessage } from 'http';
 
 // tslint:disable-next-line:no-relative-import-in-test
 import { custom, generators, Issuer, Client, Strategy, StrategyVerifyCallback, StrategyOptions, TokenSet, RegisterOther, IssuerMetadata } from './index.d';
+import passport from 'passport';
 
 async (req: IncomingMessage) => {
     // Custom HTTP options on the `Issuer` _c'tor_ (e.g. used for `Issuer.discover()`):
@@ -185,4 +186,9 @@ async (req: IncomingMessage) => {
     strategyOptions.client.myCustomMethod();
 
     const customStrategy = new CustomStrategy(strategyOptions, verify);
+
+    passport.use(
+        'oidc',
+        new Strategy({ client, params: { foo: 'bar ' } }, verify)
+    );
 };
