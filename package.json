@@ -34,12 +34,12 @@
   "types": "types/index.d.ts",
   "scripts": {
     "coverage": "nyc mocha",
-    "lint": "eslint lib test && npx dtslint --onlyTestTsNext types",
+    "lint": "eslint lib test && dtslint types",
     "lint-fix": "eslint lib test --fix",
     "test": "mocha"
   },
   "dependencies": {
-    "@panva/jose": "^1.9.0",
+    "@panva/jose": "^1.9.2",
     "base64url": "^3.0.1",
     "got": "^9.6.0",
     "lodash": "^4.17.13",
@@ -50,22 +50,23 @@
     "p-any": "^2.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.1.0",
-    "@commitlint/config-conventional": "^8.1.0",
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
     "@types/got": "^9.6.7",
     "@types/passport": "^1.0.1",
     "chai": "^4.2.0",
     "dtslint": "^0.9.8",
-    "eslint": "^6.2.2",
+    "eslint": "^6.5.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "husky": "^3.0.4",
-    "mocha": "^6.2.0",
-    "nock": "^11.3.2",
+    "husky": "^3.0.7",
+    "mocha": "^6.2.1",
+    "nock": "^11.3.5",
     "nyc": "^14.1.1",
     "readable-mock-req": "^0.2.2",
-    "sinon": "^7.3.2",
-    "timekeeper": "^2.2.0"
+    "sinon": "^7.5.0",
+    "timekeeper": "^2.2.0",
+    "typescript": "^3.6.3"
   },
   "engines": {
     "node": "^10.13.0 || >=12.0.0"
