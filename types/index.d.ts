@@ -61,7 +61,7 @@ export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
  * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
  */
 export const custom: {
-  setHttpOptionsDefaults(params: HttpRequestOptions): void;
+  setHttpOptionsDefaults(params: HttpRequestOptions): undefined;
   readonly http_options: unique symbol;
   readonly clock_tolerance: unique symbol;
 };
@@ -448,7 +448,7 @@ export class Client {
   /**
    * Revokes a token at the Authorization Server's revocation_endpoint.
    */
-  revoke(token: string, tokenTypeHint?: TokenTypeHint, extras?: RevokeExtras): Promise<void>;
+  revoke(token: string, tokenTypeHint?: TokenTypeHint, extras?: RevokeExtras): Promise<undefined>;
 
   /**
    * Creates a signed and optionally encrypted Request Object to send to the AS. Uses the client's
@@ -469,7 +469,7 @@ export class Client {
   [key: string]: unknown;
 }
 
-export class DeviceFlowHandle<TClient extends Client> {
+export class DeviceFlowHandle<TClient extends Client> { // tslint:disable-line:no-unnecessary-generics
   poll(): Promise<TokenSet>;
   expired(): boolean;
   expires_at: number;
@@ -523,7 +523,7 @@ export interface TypeOfGenericClient<TClient extends Client> {
  * Encapsulates a discovered or instantiated OpenID Connect Issuer (Issuer), Identity Provider (IdP),
  * Authorization Server (AS) and its metadata.
  */
-export class Issuer<TClient extends Client> {
+export class Issuer<TClient extends Client> { // tslint:disable-line:no-unnecessary-generics
   constructor(metadata: IssuerMetadata);
 
   /**
@@ -677,7 +677,7 @@ export interface StrategyOptions<TClient extends Client> {
 }
 
 // tslint:disable-next-line:no-unnecessary-class
-export class Strategy<TUser, TClient extends Client> {
+export class Strategy<TUser, TClient extends Client> { // tslint:disable-line:no-unnecessary-generics
   constructor(options: StrategyOptions<TClient>, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> |
     StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
 
