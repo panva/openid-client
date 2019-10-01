@@ -7,7 +7,7 @@ const { expect } = require('chai');
 const base64url = require('base64url');
 const nock = require('nock');
 const sinon = require('sinon');
-const jose = require('@panva/jose');
+const jose = require('jose');
 const timekeeper = require('timekeeper');
 
 const TokenSet = require('../../lib/token_set');

@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const LRU = require('lru-cache');
 const nock = require('nock');
 const sinon = require('sinon');
-const jose = require('@panva/jose');
+const jose = require('jose');
 
 const { Issuer, custom } = require('../../lib');
 

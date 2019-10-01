@@ -97,7 +97,7 @@ Returns metadata from the issuer's discovery document.
 
 #### `issuer.keystore([forceReload])`
 
-Returns the issuer's `jwks_uri` keys as a [`@panva/jose`][jose] parsed JWKS.Keystore.
+Returns the issuer's `jwks_uri` keys as a [`jose`][jose] parsed JWKS.Keystore.
 
 - `forceReload`: `<boolean>` forces a reload of the issuer's jwks_uri. **Default:** 'false'
 - Returns: `Promise<jose.JWKS.KeyStore>`

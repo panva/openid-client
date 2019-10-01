@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const jose = require('@panva/jose');
+const jose = require('jose');
 const sinon = require('sinon');
 const nock = require('nock');
 

@@ -11,7 +11,7 @@ import * as https from 'https';
 import * as http2 from 'http2';
 import * as tls from 'tls';
 
-import { JWKS, JSONWebKeySet } from '@panva/jose';
+import { JWKS, JSONWebKeySet } from 'jose';
 
 export type RetryFunction = (retry: number, error: Error) => number;
 
@@ -540,7 +540,7 @@ export class Issuer<TClient extends Client> { // tslint:disable-line:no-unnecess
   [custom.http_options]: CustomHttpOptionsProvider;
 
   /**
-   * Returns the issuer's jwks_uri keys as a @panva/jose parsed JWKS.Keystore.
+   * Returns the issuer's jwks_uri keys as a `jose` parsed JWKS.Keystore.
    * @param forceReload forces a reload of the issuer's jwks_uri
    */
   keystore(forceReload?: boolean): Promise<JWKS.KeyStore>;
