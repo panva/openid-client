@@ -1,6 +1,8 @@
 /// <reference types="node" />
 // TypeScript Version: 3.6
 
+/* tslint:disable:strict-export-declare-modifiers */
+
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
