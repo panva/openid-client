@@ -142,7 +142,7 @@ When end-users are redirected back to your `redirect_uri` your application consu
 passes in the `code_verifier` to include it in the authorization code grant token exchange.
 ```js
 const params = client.callbackParams(req);
-client.callback('https://client.example.com/callback', params, { code_verifier }) // => Promise
+client.callback('https://client.example.com/callback', params, { code_verifier:  code_verifier }) // => Promise
   .then(function (tokenSet) {
     console.log('received and validated tokens %j', tokenSet);
     console.log('validated ID Token claims %j', tokenSet.claims());
