@@ -292,7 +292,7 @@ See [Client Authentication Methods][documentation-methods].
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
 [sponsor-auth0]: https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=openid-client&utm_content=auth
-[support-sponsor]: https://github.com/users/panva/sponsorship
+[support-sponsor]: https://github.com/sponsors/panva
 [documentation]: https://github.com/panva/node-openid-client/blob/master/docs/README.md
 [documentation-issuer]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#issuer
 [documentation-client]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#client
