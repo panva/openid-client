@@ -624,7 +624,7 @@ undergo any validations.**
   - `id_token`: `<string>`
   - `refresh_token`: `<string>`
   - `expires_in`: `<number>`
-  - `expires_at`: `<number>`
+  - `expires_at`: `<number>` Access token expiration timestamp, represented as the number of seconds since the epoch (January 1, 1970 00:00:00 UTC).
   - `session_state`: `<string>`
   - other properties may be present and they'll be passthrough available on the TokenSet instance
 - Returns: `<TokenSet>`
