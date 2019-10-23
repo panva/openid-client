@@ -1,9 +1,10 @@
 name: Continuous Integration
 
 on:
-  paths-ignore:
-    - '**.yml'
-    - '**.md'
+  push:
+    paths-ignore:
+      - '**.yml'
+      - '**.md'
   pull_request:
     paths-ignore:
       - '**.yml'
