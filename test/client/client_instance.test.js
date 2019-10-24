@@ -2442,7 +2442,7 @@ describe('Client', () => {
         });
       });
 
-      it('validates claims that should be present are', function () {
+      it('allows claims to be omitted', function () {
         return getJWT({
           // credit_history: 'foobar',
         }, 'src1').then((jwt) => {
@@ -2460,9 +2460,9 @@ describe('Client', () => {
           };
 
           return this.client.fetchDistributedClaims(userinfo)
-            .then(fail, function (error) {
-              expect(error).to.have.property('src', 'src1');
-              expect(error.message).to.equal('expected claim "credit_history" in "src1"');
+            .then((result) => {
+              expect(result).to.eql({ sub: 'userID' });
+              expect(result).to.equal(userinfo);
             });
         });
       });
