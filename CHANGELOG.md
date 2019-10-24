@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.4](https://github.com/panva/node-openid-client/compare/v3.7.3...v3.7.4) (2019-10-24)
+
+
+### Bug Fixes
+
+* allow distributed claims to be missing from the response ([48d6633](https://github.com/panva/node-openid-client/commit/48d6633af2bb5d724c2fee2628fdfc871324bb94)), closes [#197](https://github.com/panva/node-openid-client/issues/197)
+
+
+
 ## [3.7.3](https://github.com/panva/node-openid-client/compare/v3.7.2...v3.7.3) (2019-10-01)
 
 
