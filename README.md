@@ -241,8 +241,8 @@ but upon any other error it will reject. With tokenSet received you can throw aw
 
 ## Electron Support
 
-Electron v6.x runtime is supported to the extent of the crypto engine BoringSSL feature parity with
-standard Node.js OpenSSL.
+Electron >=v6.0.0 runtime is supported to the extent of the crypto engine BoringSSL feature parity
+with standard Node.js OpenSSL.
 
 ## FAQ
 
