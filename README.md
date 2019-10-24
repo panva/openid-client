@@ -1,7 +1,5 @@
 # openid-client
 
-![build][actions-image] [![codecov][codecov-image]][codecov-url]
-
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
 Node.js runtime, supports [passport][passport-url].
 
@@ -276,9 +274,6 @@ results.
 See [Client Authentication Methods][documentation-methods].
 
 
-[actions-image]: https://github.com/panva/node-openid-client/workflows/Continuous%20Integration/badge.svg
-[codecov-image]: https://img.shields.io/codecov/c/github/panva/node-openid-client/master.svg
-[codecov-url]: https://codecov.io/gh/panva/node-openid-client
 [openid-connect]: https://openid.net/connect/
 [feature-core]: https://openid.net/specs/openid-connect-core-1_0.html
 [feature-discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html
