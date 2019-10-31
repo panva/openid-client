@@ -55,7 +55,7 @@
     "@types/got": "^9.6.7",
     "@types/passport": "^1.0.1",
     "chai": "^4.2.0",
-    "dtslint": "^0.9.9",
+    "dtslint": "^1.0.2",
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
