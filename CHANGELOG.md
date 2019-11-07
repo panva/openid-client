@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.8.1](https://github.com/panva/node-openid-client/compare/v3.8.0...v3.8.1) (2019-11-07)
+
+
+### Bug Fixes
+
+* use sha512 for Ed25519 and shake256 for Ed448 ID Token _hash claims ([31f7a04](https://github.com/panva/node-openid-client/commit/31f7a040c289e7fd389a0083803f2998bf62b660))
+
+
+
 # [3.8.0](https://github.com/panva/node-openid-client/compare/v3.7.4...v3.8.0) (2019-11-07)
 
 
