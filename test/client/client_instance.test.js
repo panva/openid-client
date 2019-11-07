@@ -763,9 +763,26 @@ describe('Client', () => {
 
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
-        .get('/me').reply(200, {});
+        .matchHeader('Authorization', 'Bearer tokenValue')
+        .get('/me')
+        .reply(200, {});
 
       return client.userinfo('tokenValue').then(() => {
+        expect(nock.isDone()).to.be.true;
+      });
+    });
+
+    it('takes a string token and a tokenType option', function () {
+      const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
+
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .matchHeader('Authorization', 'DPoP tokenValue')
+        .get('/me')
+        .reply(200, {});
+
+      return client.userinfo('tokenValue', { tokenType: 'DPoP' }).then(() => {
         expect(nock.isDone()).to.be.true;
       });
     });
@@ -778,7 +795,9 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
-        .get('/me').reply(200, {
+        .matchHeader('Authorization', 'Bearer tokenValue')
+        .get('/me')
+        .reply(200, {
           sub: 'subject',
         });
 
@@ -786,6 +805,30 @@ describe('Client', () => {
         id_token: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
         refresh_token: 'bar',
         access_token: 'tokenValue',
+      })).then(() => {
+        expect(nock.isDone()).to.be.true;
+      });
+    });
+
+    it('takes a tokenset with a token_type', function () {
+      const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+      const client = new issuer.Client({
+        client_id: 'identifier',
+        id_token_signed_response_alg: 'none',
+      });
+
+      nock('https://op.example.com')
+        .matchHeader('Authorization', 'DPoP tokenValue')
+        .get('/me')
+        .reply(200, {
+          sub: 'subject',
+        });
+
+      return client.userinfo(new TokenSet({
+        id_token: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
+        refresh_token: 'bar',
+        access_token: 'tokenValue',
+        token_type: 'DPoP',
       })).then(() => {
         expect(nock.isDone()).to.be.true;
       });

@@ -137,7 +137,7 @@ Performs [OpenID Provider Issuer Discovery][webfinger-discovery] based on End-Us
   - [client.callbackParams(input)](#clientcallbackparamsinput)
   - [client.callback(redirectUri, parameters[, checks[, extras]])](#clientcallbackredirecturi-parameters-checks-extras)
   - [client.refresh(refreshToken[, extras])](#clientrefreshrefreshtoken-extras)
-  - [client.userinfo(accessToken)](#clientuserinfoaccesstoken)
+  - [client.userinfo(accessToken[, options])](#clientuserinfoaccesstoken-options)
   - [client.grant(body[, extras])](#clientgrantbody-extras)
   - [client.introspect(token[, tokenTypeHint[, extras]])](#clientintrospecttoken-tokentypehint-extras)
   - [client.revoke(token[, tokenTypeHint[, extras]])](#clientrevoketoken-tokentypehint-extras)
@@ -311,7 +311,7 @@ Performs `refresh_token` grant type exchange.
 
 ---
 
-#### `client.userinfo(accessToken)`
+#### `client.userinfo(accessToken[, options])`
 
 Fetches the OIDC `userinfo` response with the provided Access Token. Also handles signed and/or
 encrypted userinfo responses. When TokenSet is provided as an argument the userinfo `sub` property
@@ -319,6 +319,12 @@ will also be checked to match the on in the TokenSet's ID Token.
 
 - `accessToken`: `<string>` &vert; `<TokenSet>` Access Token value. When TokenSet instance is
   provided its `access_token` property will be used automatically.
+- `extras`: `<Object>`
+  - `verb`: `<string>` The HTTP verb to use for the request 'GET' or 'POST'. **Default:** 'GET'
+  - `via`: `<string>` The mechanism to use to attach the Access Token to the request. Valid values
+    are `header`, `body`, or `query`. **Default:** 'header'.
+  - `tokenType`: `<string>` The token type as the Authorization Header scheme. **Default:** 'Bearer'
+    or the `token_type` property from a passed in TokenSet.
 - Returns: `Promise<Object>` Parsed userinfo response.
 
 ---

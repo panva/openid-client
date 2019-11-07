@@ -434,8 +434,9 @@ export class Client {
    *
    * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
    * will be used automatically.
+   * @param options Options for the UserInfo request.
    */
-  userinfo(accessToken: TokenSet | string): Promise<UserinfoResponse>;
+  userinfo(accessToken: TokenSet | string, options?: { verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string }): Promise<UserinfoResponse>;
 
   /**
    * Performs an arbitrary grant_type exchange at the token_endpoint.
