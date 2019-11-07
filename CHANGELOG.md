@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.8.0](https://github.com/panva/node-openid-client/compare/v3.7.4...v3.8.0) (2019-11-07)
+
+
+### Features
+
+* allow tokenType for userinfo to use as authorization header scheme ([4eaa75f](https://github.com/panva/node-openid-client/commit/4eaa75f714a744f9e712615dedc6702f4f9b7a64))
+
+
+
 ## [3.7.4](https://github.com/panva/node-openid-client/compare/v3.7.3...v3.7.4) (2019-10-24)
 
 
