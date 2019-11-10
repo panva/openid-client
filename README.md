@@ -271,7 +271,15 @@ results.
 
 #### How to make the client send client_id and client_secret in the body?
 
-See [Client Authentication Methods][documentation-methods].
+See [Client Authentication Methods (docs)][documentation-methods].
+
+#### Can I adjust the HTTP timeout?
+
+See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master/docs/README.md#customizing).
+
+#### How can I debug the requests and responses?
+
+See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master/docs/README.md#customizing).
 
 
 [openid-connect]: https://openid.net/connect/

@@ -506,6 +506,41 @@ custom.setHttpOptionsDefaults({
 
 This is meant to change global request options such as `timeout` or the default `User-Agent` header.
 
+<details>
+  <summary><em><strong>Example</strong></em> (Click to expand) debugging HTTP requests and responses</summary>
+
+You can use the [`got`][got-library] request
+[options.hooks](https://github.com/sindresorhus/got/tree/v9.6.0#options) to log outgoing requests and their responses.
+
+```js
+const { custom } = require('openid-client')
+
+custom.setHttpOptionsDefaults({
+  hooks: {
+    beforeRequest: [
+      (options) => {
+        console.log('--> %s %s', options.method.toUpperCase(), options.href);
+        console.log('--> HEADERS %o', options.headers);
+        if (options.body) {
+          console.log('--> BODY %s', options.body);
+        }
+      },
+    ],
+    afterResponse: [
+      (response) => {
+        console.log('<-- %i FROM %s %s', response.statusCode, response.request.gotOptions.method.toUpperCase(), response.request.gotOptions.href);
+        console.log('<-- HEADERS %o', response.headers);
+        if (response.body) {
+          console.log('<-- BODY %s', response.body);
+        }
+        return response;
+      },
+    ],
+  },
+});
+```
+</details>
+
 #### Customizing individual HTTP requests
 
 You change options on a per-request basis by assigning a function to
