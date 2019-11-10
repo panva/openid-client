@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.8.2](https://github.com/panva/node-openid-client/compare/v3.8.1...v3.8.2) (2019-11-10)
+
+
+### Bug Fixes
+
+* assert jwks is present for private_key_jwk first ([c1f875c](https://github.com/panva/node-openid-client/commit/c1f875c0c4a472b2dc424bc9de21a9cbdc8ca8ad))
+
+
+
 ## [3.8.1](https://github.com/panva/node-openid-client/compare/v3.8.0...v3.8.1) (2019-11-07)
 
 
