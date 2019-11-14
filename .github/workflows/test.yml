@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npx npm-install-retry
+      - run: npx panva/npm-install-retry
       - run: npm run lint
 
   test:
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx npm-install-retry
+      - run: npx panva/npm-install-retry
       - run: npm run coverage
       - env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npx npm-install-retry
+      - run: npx panva/npm-install-retry
       - run: npx xvfb-maybe npx electron@${{ matrix.electron-version }} ./test/electron
 
   oidc-conformance:
@@ -89,7 +89,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npx npm-install-retry
+      - run: npx panva/npm-install-retry
       - run: npm install ${{ github.repository }}#${{ github.sha }}
       - run: npm run test
         env:
