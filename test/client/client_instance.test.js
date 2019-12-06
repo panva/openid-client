@@ -961,7 +961,7 @@ describe('Client', () => {
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.userinfo('tokenValue', { via: 'query', verb: 'post' }).then(fail, ({ message }) => {
-        expect(message).to.eql('providers should only parse query strings for GET requests');
+        expect(message).to.eql('resource servers should only parse query strings for GET requests');
       });
     });
 

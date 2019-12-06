@@ -399,6 +399,16 @@ export class Client {
   userinfo(accessToken: TokenSet | string, options?: { verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string }): Promise<UserinfoResponse>;
 
   /**
+   * Fetches an arbitrary resource with the provided Access Token.
+   *
+   * @param resourceUrl Resource URL to request a response from.
+   * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
+   * will be used automatically.
+   * @param options Options for the request.
+   */
+  resource(resourceUrl: string, accessToken: TokenSet | string, options?: { headers?: object, verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string }): GotPromise<Buffer>;
+
+  /**
    * Performs an arbitrary grant_type exchange at the token_endpoint.
    */
   grant(body: GrantBody, extras?: GrantExtras): Promise<TokenSet>;

@@ -85,6 +85,13 @@ async (req: IncomingMessage) => {
 
     //
 
+    await client.resource('https://rs.example.com/resource', 'access token', { headers: { Accept: 'application/json' } });
+    const resource = await client.resource('https://rs.example.com/resource', callbackResponse, { headers: { Accept: 'application/json' } });
+    console.log(resource.body.byteLength);
+    console.log(resource.body.toString('utf-8'));
+
+    //
+
     const grantResponse = await client.grant({
         grant_type: 'client_credentials',
         acr_values: 'acr_values',
