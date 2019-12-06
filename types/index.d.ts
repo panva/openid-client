@@ -11,59 +11,19 @@ import * as https from 'https';
 import * as http2 from 'http2';
 import * as tls from 'tls';
 
+import { GotOptions, GotPromise } from 'got';
 import { JWKS, JSONWebKeySet } from 'jose';
 
+export type HttpOptions = GotOptions<string | null>;
 export type RetryFunction = (retry: number, error: Error) => number;
-
-/**
- * @see https://github.com/sindresorhus/got/tree/v9.6.0#options
- */
-export interface HttpRequestOptions extends tls.SecureContextOptions {
-  url?: string;
-  headers?: {
-    [key: string]: unknown;
-  };
-  query?: {
-    [key: string]: unknown;
-  };
-  body?: {
-    [key: string]: unknown;
-  };
-  form?: boolean;
-  json?: boolean;
-  timeout?: number | {
-    lookup?: number;
-    connect?: number;
-    secureConnect?: number;
-    socket?: number;
-    response?: number;
-    send?: number;
-    request?: number;
-  };
-  retry?: number | {
-    retries?: number | RetryFunction;
-    methods?: Array<'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE' | 'OPTIONS' | 'TRACE'>;
-    statusCodes?: Array<408 | 413 | 429 | 500 | 502 | 503 | 504>;
-    maxRetryAfter?: number;
-    errorCodes?: string[];
-  };
-  followRedirect?: boolean;
-  throwHttpErrors?: boolean;
-  agent?: http.Agent | https.Agent | boolean | {
-    http: http.Agent,
-    https: https.Agent,
-  };
-
-  [key: string]: unknown;
-}
-export type CustomHttpOptionsProvider = (options: HttpRequestOptions) => HttpRequestOptions;
+export type CustomHttpOptionsProvider = (options: HttpOptions) => HttpOptions;
 export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
 
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
  */
 export const custom: {
-  setHttpOptionsDefaults(params: HttpRequestOptions): undefined;
+  setHttpOptionsDefaults(params: HttpOptions): undefined;
   readonly http_options: unique symbol;
   readonly clock_tolerance: unique symbol;
 };

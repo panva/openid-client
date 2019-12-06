@@ -40,6 +40,7 @@
     "test": "mocha"
   },
   "dependencies": {
+    "@types/got": "^9.6.9",
     "base64url": "^3.0.1",
     "got": "^9.6.0",
     "jose": "^1.14.0",
@@ -53,7 +54,6 @@
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
-    "@types/got": "^9.6.9",
     "@types/passport": "^1.0.2",
     "chai": "^4.2.0",
     "dtslint": "^2.0.2",
