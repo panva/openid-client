@@ -319,7 +319,7 @@ will also be checked to match the on in the TokenSet's ID Token.
 
 - `accessToken`: `<string>` &vert; `<TokenSet>` Access Token value. When TokenSet instance is
   provided its `access_token` property will be used automatically.
-- `extras`: `<Object>`
+- `options`: `<Object>`
   - `verb`: `<string>` The HTTP verb to use for the request 'GET' or 'POST'. **Default:** 'GET'
   - `via`: `<string>` The mechanism to use to attach the Access Token to the request. Valid values
     are `header`, `body`, or `query`. **Default:** 'header'.
