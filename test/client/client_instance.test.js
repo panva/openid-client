@@ -1589,6 +1589,11 @@ describe('Client', () => {
         client_secret: 'its gotta be a long secret and i mean at least 32 characters',
       });
 
+      this.fapiClient = new this.issuer.FAPIClient({
+        client_id: 'identifier',
+        client_secret: 'secure',
+      });
+
       this.IdToken = async (key, alg, payload) => {
         return jose.JWS.sign(payload, key, {
           alg,
@@ -2190,6 +2195,48 @@ describe('Client', () => {
         })
         .then(fail, (error) => {
           expect(error).to.have.property('message', 'missing required property c_hash');
+        });
+    });
+
+    it('FAPIClient validates s_hash presence', function () {
+      const code = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+      const c_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
+
+      return this.IdToken(this.keystore.get(), 'RS256', {
+        c_hash,
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: this.fapiClient.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      })
+        .then((token) => {
+        // const tokenset = new TokenSet();
+          return this.fapiClient.callback(null, { code, id_token: token, state: 'foo' }, { state: 'foo' });
+        })
+        .then(fail, (error) => {
+          expect(error).to.have.property('message', 'missing required property s_hash');
+        });
+    });
+
+    it('FAPIClient checks iat is fresh', function () {
+      const code = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
+      const c_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
+
+      return this.IdToken(this.keystore.get(), 'RS256', {
+        c_hash,
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: this.fapiClient.client_id,
+        exp: now() + 3600,
+        iat: now() - 3601,
+      })
+        .then((token) => {
+        // const tokenset = new TokenSet();
+          return this.fapiClient.callback(null, { code, id_token: token, state: 'foo' }, { state: 'foo' });
+        })
+        .then(fail, (error) => {
+          expect(error).to.have.property('message').matches(/^id_token issued too far in the past, now \d+, iat \d+/);
         });
     });
 

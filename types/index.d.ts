@@ -505,6 +505,11 @@ export class Issuer<TClient extends Client> { // tslint:disable-line:no-unnecess
   Client: TypeOfGenericClient<TClient>;
 
   /**
+   * Returns the <FAPIClient> class tied to this issuer.
+   */
+  FAPIClient: TypeOfGenericClient<TClient>;
+
+  /**
    * Returns metadata from the issuer's discovery document.
    */
   metadata: IssuerMetadata;

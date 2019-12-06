@@ -29,6 +29,7 @@ If you or your business use openid-client, please consider becoming a [sponsor][
 - [Class: &lt;Issuer&gt;](#class-issuer)
   - [new Issuer(metadata)](#new-issuermetadata)
   - [issuer.Client](#issuerclient)
+  - [issuer.FAPIClient](#issuerfapiclient)
   - [issuer.metadata](#issuermetadata)
   - [issuer.keystore([forceReload])](#issuerkeystoreforcereload)
 - [Issuer.discover(issuer)](#issuerdiscoverissuer)
@@ -84,6 +85,16 @@ Creates a new Issuer with the provided metadata
 Returns the `<Client>` class tied to this issuer.
 
 - Returns: `<Client>`
+
+---
+
+#### `issuer.FAPIClient`
+
+Returns the `<FAPIClient>` class tied to this issuer. `<FAPIClient>` inherits from `<Client>` and
+adds necessary FAPI related checks. `s_hash` presence in authorization endpoint response ID Tokens
+as well as authorization endpoint `iat` not being too far in the past (fixed to be 1 hour).
+
+- Returns: `<FAPIClient>`
 
 ---
 
