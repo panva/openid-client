@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.9.0](https://github.com/panva/node-openid-client/compare/v3.8.4...v3.9.0) (2019-12-06)
+
+
+### Bug Fixes
+
+* check for mTLS request options during token_endpoint calls ([269569f](https://github.com/panva/node-openid-client/commit/269569fbb08139694589f1b27bda690b8d8474fe))
+* **typescript:** complete http options ([3997687](https://github.com/panva/node-openid-client/commit/3997687cc68bf76bc92ac143c5e5fe3b9cbd3914))
+
+
+### Features
+
+* added API for fetching any resource ([ae242a5](https://github.com/panva/node-openid-client/commit/ae242a5c058386a3607af4a662dbf696938bc6f1))
+* added issuer.FAPIClient for FAPI RW integrations ([ab88aa5](https://github.com/panva/node-openid-client/commit/ab88aa590fb5a853ddbd8273a713bf142a9f5049))
+
+
+
 ## [3.8.4](https://github.com/panva/node-openid-client/compare/v3.8.3...v3.8.4) (2019-11-26)
 
 
