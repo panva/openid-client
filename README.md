@@ -26,7 +26,7 @@ openid-client.
     - private_key_jwt
 - [RFC8414 - OAuth 2.0 Authorization Server Metadata][feature-oauth-discovery] and [OpenID Connect Discovery 1.0][feature-discovery]
   - Discovery of OpenID Provider (Issuer) Metadata
-  - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (see [WebFinger](#webfinger-discovery))
+  - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (via [webfinger][documentation-webfinger])
 - [OpenID Connect Dynamic Client Registration 1.0][feature-registration]
   - Dynamic Client Registration request
   - Client initialization via registration client uri
@@ -44,9 +44,11 @@ openid-client.
 
 ## Certification
 [<img width="184" height="96" align="right" src="https://cdn.jsdelivr.net/gh/panva/node-openid-client@38cf016b0837e6d4116de3780b28d222d5780bc9/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
-Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
-conforms to the RP Basic, RP Implicit, RP Hybrid, RP Config, RP Dynamic and RP Form Post profiles
-of the OpenID Connect™ protocol.
+Filip Skokan has [certified][openid-certified-link] that [oidc-provider][npm-url]
+conforms to the following profiles of the OpenID Connect™ protocol
+
+- RP [Basic](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Basic-11-May-2019.zip), [Implicit](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Implicit-11-May-2019.zip), [Hybrid](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Hybrid-11-May-2019.zip), [Config](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Config-11-May-2019.zip), [Dynamic](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Dynamic-11-May-2019.zip), and [Form Post](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-FormPost-11-May-2019.zip)
+- RP FAPI R/W [MTLS](https://openid.net/wordpress-content/uploads/2019/12/FilipSkokan_openid-client-FAPI-RW-ID2-OAuth-MTLS-6-Dec-2019.zip) and [Private Key](https://openid.net/wordpress-content/uploads/2019/12/FilipSkokan_openid-client-FAPI-RW-ID2-OAuth-private_key_jwt-6-Dec-2019.zip)
 
 
 ## Sponsor
@@ -305,3 +307,4 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [documentation-errors]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#errors
 [documentation-generators]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#generators
 [documentation-methods]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
+[documentation-webfinger]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#issuerwebfingerinput
