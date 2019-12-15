@@ -50,21 +50,6 @@ describe('Client', () => {
       });
     });
 
-    const nononce = ['none', 'code', 'code token'];
-    const nonce = ['id_token', 'id_token token', 'code id_token', 'code id_token token'];
-
-    nononce.forEach((type) => {
-      it(`allows response_type=${type} without nonce`, function () {
-        expect(() => this.client.authorizationUrl({ response_type: type })).not.to.throw();
-      });
-    });
-
-    nonce.forEach((type) => {
-      it(`requires nonce for response_type=${type}`, function () {
-        expect(() => this.client.authorizationUrl({ response_type: type })).to.throw(TypeError, 'nonce MUST be provided for implicit and hybrid flows');
-      });
-    });
-
     it('returns a string with the url with some basic defaults', function () {
       expect(url.parse(this.client.authorizationUrl({
         redirect_uri: 'https://rp.example.com/cb',
