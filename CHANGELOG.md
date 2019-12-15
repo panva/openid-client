@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.9.1](https://github.com/panva/node-openid-client/compare/v3.9.0...v3.9.1) (2019-12-15)
+
+
+### Bug Fixes
+
+* remove check for nonce presence in params ([cac46fb](https://github.com/panva/node-openid-client/commit/cac46fb1846c853f6c519beddd5ab5bdaf0770b1))
+
+
+
 # [3.9.0](https://github.com/panva/node-openid-client/compare/v3.8.4...v3.9.0) (2019-12-06)
 
 
