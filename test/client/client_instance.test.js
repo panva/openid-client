@@ -1884,22 +1884,6 @@ describe('Client', () => {
         });
     });
 
-    it('verifies iat is in the past', function () {
-      const payload = {
-        iss: this.issuer.issuer,
-        sub: 'userId',
-        aud: this.client.client_id,
-        exp: now() + 3600,
-        iat: now() + 20,
-      };
-
-      return this.IdToken(this.keystore.get(), 'RS256', payload)
-        .then((token) => this.client.validateIdToken(token))
-        .then(fail, (error) => {
-          expect(error).to.have.property('message').that.matches(/^id_token issued in the future, now \d+, iat \d+$/);
-        });
-    });
-
     it('allows iat skew', function () {
       this.client[custom.clock_tolerance] = 5;
       const payload = {
