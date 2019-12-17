@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.9.2](https://github.com/panva/node-openid-client/compare/v3.9.1...v3.9.2) (2019-12-17)
+
+
+### Bug Fixes
+
+* skip validating iat is in the past ([0791001](https://github.com/panva/node-openid-client/commit/0791001a6e0244ac3fbde8b9e6cf206d97f82fbe))
+
+
+
 ## [3.9.1](https://github.com/panva/node-openid-client/compare/v3.9.0...v3.9.1) (2019-12-15)
 
 
