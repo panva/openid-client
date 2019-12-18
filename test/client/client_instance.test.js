@@ -2589,12 +2589,24 @@ describe('Client', () => {
     });
 
     describe('Client#unpackAggregatedClaims', function () {
+      afterEach(nock.cleanAll);
       before(function () {
         const issuer = new Issuer({
+          issuer: 'https://op.example.com',
+          jwks_uri: 'https://op.example.com/jwks',
           authorization_endpoint: 'https://op.example.com/auth',
         });
         this.client = new issuer.Client({
           client_id: 'identifier',
+        });
+        const store = new jose.JWKS.KeyStore();
+
+        return store.generate('RSA').then(() => {
+          nock(issuer.issuer)
+            .get('/jwks')
+            .reply(200, store.toJWKS(true));
+
+          return issuer.keystore();
         });
       });
 
@@ -2658,72 +2670,95 @@ describe('Client', () => {
         });
       });
 
-      it('verifies the JWT (1/3)', function () {
-        return Promise.all([
-          getJWT({ credit_history: 'foobar' }, 'src1'),
-        ]).then((jwts) => {
-          const userinfo = {
-            sub: 'userID',
-            _claim_names: {
-              credit_history: 'src1',
-              email: 'src2',
-            },
-            _claim_sources: {
-              src1: { JWT: jwts[0] },
-              src2: { JWT: {} },
-            },
-          };
+      describe('JWT validation', function () {
+        it('verifies the JWT is a compact format JWS', function () {
+          return Promise.all([
+            getJWT({ credit_history: 'foobar' }, 'src1'),
+          ]).then((jwts) => {
+            const userinfo = {
+              sub: 'userID',
+              _claim_names: {
+                credit_history: 'src1',
+                email: 'src2',
+              },
+              _claim_sources: {
+                src1: { JWT: jwts[0] },
+                src2: { JWT: {} },
+              },
+            };
 
-          return this.client.unpackAggregatedClaims(userinfo)
-            .then(fail, (err) => {
-              expect(err).to.have.property('message', 'invalid JWT type, expected a string, got: object');
-            });
+            return this.client.unpackAggregatedClaims(userinfo)
+              .then(fail, (err) => {
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (TypeError: JWT must be a string)');
+              });
+          });
         });
-      });
 
-      it('verifies the JWT (2/3)', function () {
-        return Promise.all([
-          getJWT({ credit_history: 'foobar' }, 'src1'),
-        ]).then((jwts) => {
-          const userinfo = {
-            sub: 'userID',
-            _claim_names: {
-              credit_history: 'src1',
-              email: 'src2',
-            },
-            _claim_sources: {
-              src1: { JWT: jwts[0] },
-              src2: { JWT: '....' },
-            },
-          };
+        it('verifies the JWT is not encrypted', function () {
+          return Promise.all([
+            getJWT({ credit_history: 'foobar' }, 'src1'),
+          ]).then((jwts) => {
+            const userinfo = {
+              sub: 'userID',
+              _claim_names: {
+                credit_history: 'src1',
+                email: 'src2',
+              },
+              _claim_sources: {
+                src1: { JWT: jwts[0] },
+                src2: { JWT: '....' },
+              },
+            };
 
-          return this.client.unpackAggregatedClaims(userinfo)
-            .then(fail, (err) => {
-              expect(err).to.have.property('message', 'invalid JWT format, expected three parts');
-            });
+            return this.client.unpackAggregatedClaims(userinfo)
+              .then(fail, (err) => {
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (TypeError: JWTs must be decrypted first)');
+              });
+          });
         });
-      });
 
-      it('verifies the JWT (3/3)', function () {
-        return Promise.all([
-          getJWT({ credit_history: 'foobar' }, 'src1'),
-        ]).then((jwts) => {
-          const userinfo = {
-            sub: 'userID',
-            _claim_names: {
-              credit_history: 'src1',
-              email: 'src2',
-            },
-            _claim_sources: {
-              src1: { JWT: jwts[0] },
-              src2: { JWT: 'e30.e30.' },
-            },
-          };
+        it('verifies the JWT has an alg', function () {
+          return Promise.all([
+            getJWT({ credit_history: 'foobar' }, 'src1'),
+          ]).then((jwts) => {
+            const userinfo = {
+              sub: 'userID',
+              _claim_names: {
+                credit_history: 'src1',
+                email: 'src2',
+              },
+              _claim_sources: {
+                src1: { JWT: jwts[0] },
+                src2: { JWT: 'e30.e30.' },
+              },
+            };
 
-          return this.client.unpackAggregatedClaims(userinfo)
-            .then(fail, (err) => {
-              expect(err).to.have.property('message', 'claim source is missing JWT header alg property');
-            });
+            return this.client.unpackAggregatedClaims(userinfo)
+              .then(fail, (err) => {
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWSInvalid: missing JWS signature algorithm)');
+              });
+          });
+        });
+
+        it('verifies the JWT is not expired', function () {
+          return Promise.all([
+            getJWT({ credit_history: 'foobar', exp: 0 }, 'src1'),
+          ]).then((jwts) => {
+            const userinfo = {
+              sub: 'userID',
+              _claim_names: {
+                credit_history: 'src1',
+              },
+              _claim_sources: {
+                src1: { JWT: jwts[0] },
+              },
+            };
+
+            return this.client.unpackAggregatedClaims(userinfo)
+              .then(fail, (err) => {
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWTClaimInvalid: token is expired)');
+              });
+          });
         });
       });
 
