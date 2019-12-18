@@ -34,7 +34,7 @@ describe('Azure AD multi-tenant applications', () => {
         const aad = await Issuer.discover(input);
         const client = new aad.Client({ client_id: 'foo' });
         return client.validateIdToken(idToken).then(fail).catch((err) => {
-          expect(err.message).to.match(/^id_token expired, now \d+, exp 12345$/);
+          expect(err.message).to.match(/^JWT expired, now \d+, exp 12345$/);
         });
       });
     });

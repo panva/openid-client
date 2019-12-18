@@ -1926,7 +1926,7 @@ describe('Client', () => {
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
-          expect(error).to.have.property('message').that.matches(/^id_token expired, now \d+, exp \d+$/);
+          expect(error).to.have.property('message').that.matches(/^JWT expired, now \d+, exp \d+$/);
         });
     });
 
@@ -1974,7 +1974,7 @@ describe('Client', () => {
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
-          expect(error).to.have.property('message').that.matches(/^id_token not active yet, now \d+, nbf \d+$/);
+          expect(error).to.have.property('message').that.matches(/^JWT not active yet, now \d+, nbf \d+$/);
         });
     });
 
@@ -2205,7 +2205,7 @@ describe('Client', () => {
           return this.fapiClient.callback(null, { code, id_token: token, state: 'foo' }, { state: 'foo' });
         })
         .then(fail, (error) => {
-          expect(error).to.have.property('message').matches(/^id_token issued too far in the past, now \d+, iat \d+/);
+          expect(error).to.have.property('message').matches(/^JWT issued too far in the past, now \d+, iat \d+/);
         });
     });
 
