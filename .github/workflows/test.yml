@@ -76,9 +76,6 @@ jobs:
   oidc-conformance:
     name: OIDC Conformance Suite
     runs-on: ubuntu-latest
-    needs:
-      - test
-      - test-electron
     steps:
       - run: |
           docker pull panvafs/oidc-certification-rp-ci
