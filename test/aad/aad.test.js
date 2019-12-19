@@ -18,7 +18,7 @@ const INPUTS = {
   ],
 };
 
-const idToken = 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmb28iLCJhdWQiOiJmb28iLCJpYXQiOjEyMzQ1LCJleHAiOjEyMzQ1LCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZm9vL3YyLjAiLCJ0aWQiOiJmb28ifQ';
+const idToken = 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmb28iLCJhdWQiOiJmb28iLCJpYXQiOjEyMzQ1LCJleHAiOjEyMzQ1LCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZm9vL3YyLjAiLCJ0aWQiOiJmb28ifQ.';
 const fail = () => { throw new Error('expected promise to be rejected'); };
 
 describe('Azure AD multi-tenant applications', () => {
