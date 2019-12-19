@@ -68,6 +68,9 @@ export interface ClientMetadata {
   userinfo_encrypted_response_alg?: string;
   userinfo_encrypted_response_enc?: string;
   userinfo_signed_response_alg?: string;
+  authorization_encrypted_response_alg?: string;
+  authorization_encrypted_response_enc?: string;
+  authorization_signed_response_alg?: string;
 
   [key: string]: unknown;
 }
@@ -133,6 +136,7 @@ export interface CallbackParamsType {
   state?: string;
   token_type?: string;
   session_state?: string;
+  response?: string;
 
   [key: string]: unknown;
 }
@@ -153,6 +157,10 @@ export interface OAuthCallbackChecks {
    * if you sent a code_challenge parameter into an authorization request.
    */
   code_verifier?: string;
+  /**
+   * This must be set to true when requesting JARM responses.
+   */
+  jarm?: boolean;
 }
 
 export interface OpenIDCallbackChecks extends OAuthCallbackChecks {

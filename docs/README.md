@@ -283,6 +283,7 @@ Performs the callback for Authorization Server's authorization response.
   - `state`: `<string>` When provided the authorization response's state parameter will be checked
     to be the this expected one. Use of this check is required if you sent a state parameter into an
     authorization request.
+  - `jarm`: `<boolean>` When provided the authorization response must be a JARM one.
   - `nonce`: `<string>` When provided the authorization response's ID Token nonce parameter will be
     checked to be the this expected one. Use of this check is required if you sent a nonce parameter
     into an authorization request.
