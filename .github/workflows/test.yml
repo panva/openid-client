@@ -81,7 +81,6 @@ jobs:
           docker pull panvafs/oidc-certification-rp-ci
           docker run -d -p 8080:8080 panvafs/oidc-certification-rp-ci
           while ! curl -sk https://127.0.0.1:8080 >/dev/null; do sleep 2; done
-          cd .. && rm -rf oidctest
       - run: git clone https://github.com/panva/openid-client-conformance-tests.git .
       - uses: actions/setup-node@v1
         with:
@@ -93,3 +92,43 @@ jobs:
           ISSUER: https://localhost:8080
           NODE_TLS_REJECT_UNAUTHORIZED: 0
           CI: true
+
+  fapi-conformance:
+    name: FAPI Conformance Suite
+    runs-on: ubuntu-latest
+    steps:
+      - run: git clone https://gitlab.com/openid/conformance-suite.git
+      - env:
+          MAVEN_CACHE: ./m2
+        run: |
+          git checkout release-v3.2.7
+          sed -i -e 's/localhost/localhost.emobix.co.uk/g' src/main/resources/application.properties
+          sed -i -e 's/-B/-B -DskipTests=true/g' builder-compose.yml
+          docker-compose -f builder-compose.yml run builder
+          docker-compose -f docker-compose-dev.yml up -d
+          while ! curl -skfail https://localhost.emobix.co.uk:8443/api/runner/available >/dev/null; do sleep 2; done
+        working-directory: ./conformance-suite
+      - run: git clone https://github.com/panva/openid-client-fapi-certification.git runner
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npx panva/npm-install-retry
+        working-directory: ./runner
+      - run: npm install ${{ github.repository }}#${{ github.sha }}
+        working-directory: ./runner
+      - name: run mtls variant
+        run: npm run test
+        working-directory: ./runner
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+          DEBUG: runner,fapi-rw-id2-*
+          VARIANT: 'mtls'
+          SUITE_BASE_URL: https://localhost.emobix.co.uk:8443
+      - name: run private_key_jwt variant
+        run: npm run test
+        working-directory: ./runner
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+          DEBUG: runner,fapi-rw-id2-*
+          VARIANT: 'private_key_jwt'
+          SUITE_BASE_URL: https://localhost.emobix.co.uk:8443
