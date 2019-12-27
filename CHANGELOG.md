@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.10.0](https://github.com/panva/node-openid-client/compare/v3.9.2...v3.10.0) (2019-12-27)
+
+
+### Bug Fixes
+
+* enabled full JWT validation on distributed and aggregated claims ([d95e31b](https://github.com/panva/node-openid-client/commit/d95e31bf33bf3dc9a90e420a6dc90bbfd964d885))
+
+
+### Features
+
+* allow consuming JARM responses (jwt response mode) ([dd4aae9](https://github.com/panva/node-openid-client/commit/dd4aae92eafbdde5ac11c2d7d422d150ceed45da))
+
+
+
 ## [3.9.2](https://github.com/panva/node-openid-client/compare/v3.9.1...v3.9.2) (2019-12-17)
 
 
