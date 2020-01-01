@@ -2733,7 +2733,7 @@ describe('Client', () => {
 
             return this.client.unpackAggregatedClaims(userinfo)
               .then(fail, (err) => {
-                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWTClaimInvalid: token is expired)');
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWTClaimInvalid: "exp" claim timestamp check failed)');
               });
           });
         });
