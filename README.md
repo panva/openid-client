@@ -128,7 +128,7 @@ const code_verifier = generators.codeVerifier();
 // store the code_verifier in your framework's session mechanism, if it is a cookie based solution
 // it should be httpOnly (not readable by javascript) and encrypted.
 
-const code_challenge = generators.codeChallenge(verifier);
+const code_challenge = generators.codeChallenge(code_verifier);
 
 client.authorizationUrl({
   scope: 'openid email profile',
