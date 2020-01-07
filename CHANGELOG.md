@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.10.1](https://github.com/panva/node-openid-client/compare/v3.10.0...v3.10.1) (2020-01-07)
+
+
+### Bug Fixes
+
+* allow duplicate "kid" values in issuer's jwks_uri (sigh) ([8840fb6](https://github.com/panva/node-openid-client/commit/8840fb6e9cb2b3f8e6396b596ff90f8f080e7f7a))
+
+
+
 # [3.10.0](https://github.com/panva/node-openid-client/compare/v3.9.2...v3.10.0) (2019-12-27)
 
 
