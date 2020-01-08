@@ -31,8 +31,7 @@ export const custom: {
 /**
  * @see https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
  */
-export type ResponseType = 'code' | 'id_token' | 'code id_token' | 'code token' | 'code id_token token' | 'none';
-
+export type ResponseType = 'code' | 'id_token' | 'code id_token' | 'id_token token' | 'code token' | 'code id_token token' | 'none';
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
  */
