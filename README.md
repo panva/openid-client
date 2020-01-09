@@ -24,6 +24,7 @@ openid-client.
     - client_secret_post
     - client_secret_jwt
     - private_key_jwt
+  - Consuming Self-Issued OpenID Provider ID Token response
 - [RFC8414 - OAuth 2.0 Authorization Server Metadata][feature-oauth-discovery] and [OpenID Connect Discovery 1.0][feature-discovery]
   - Discovery of OpenID Provider (Issuer) Metadata
   - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (via [webfinger][documentation-webfinger])
