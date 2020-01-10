@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.11.0](https://github.com/panva/node-openid-client/compare/v3.10.1...v3.11.0) (2020-01-10)
+
+
+### Bug Fixes
+
+* **typescript:** allow 'id_token token' as a response type ([61c486c](https://github.com/panva/node-openid-client/commit/61c486c2b800c9299f4eaf3649711c39a6e5ce57))
+
+
+### Features
+
+* detect self-issued OP and validate ID Token accordingly ([c5d3158](https://github.com/panva/node-openid-client/commit/c5d315826a767d1479509931eddb5ae6e3b99532)), closes [#220](https://github.com/panva/node-openid-client/issues/220) [#221](https://github.com/panva/node-openid-client/issues/221)
+
+
+
 ## [3.10.1](https://github.com/panva/node-openid-client/compare/v3.10.0...v3.10.1) (2020-01-07)
 
 
