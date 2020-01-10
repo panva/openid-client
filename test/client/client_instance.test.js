@@ -327,6 +327,7 @@ describe('Client', () => {
   describe('#callback', function () {
     before(function () {
       this.issuer = new Issuer({
+        issuer: 'https://op.example.com',
         token_endpoint: 'https://op.example.com/token',
       });
       this.client = new this.issuer.Client({
@@ -430,6 +431,119 @@ describe('Client', () => {
       });
     });
 
+    describe('jarm response mode', function () {
+      it('consumes JARM responses', async function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'secure',
+          authorization_signed_response_alg: 'HS256',
+        });
+
+        const response = jose.JWT.sign({
+          code: 'foo',
+        }, client.client_secret, {
+          issuer: this.issuer.issuer,
+          audience: client.client_id,
+          expiresIn: '5m',
+        });
+
+        nock('https://op.example.com')
+          .filteringRequestBody(function (body) {
+            expect(querystring.parse(body)).to.eql({
+              code: 'foo',
+              redirect_uri: 'https://rp.example.com/cb',
+              grant_type: 'authorization_code',
+            });
+          })
+          .post('/token', () => true)
+          .reply(200, {});
+
+        await client.callback('https://rp.example.com/cb', {
+          response,
+        }, {
+          jarm: true,
+        }).then(() => {}, () => {});
+
+        expect(nock.isDone()).to.be.true;
+      });
+
+      it('consumes encrypted JARM responses', async function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'secure',
+          authorization_signed_response_alg: 'HS256',
+          authorization_encrypted_response_alg: 'PBES2-HS256+A128KW',
+          authorization_encrypted_response_enc: 'A128GCM',
+        });
+
+        const response = jose.JWE.encrypt(jose.JWT.sign({
+          code: 'foo',
+        }, client.client_secret, {
+          issuer: this.issuer.issuer,
+          audience: client.client_id,
+          expiresIn: '5m',
+        }), 'secure', {
+          alg: 'PBES2-HS256+A128KW',
+          enc: 'A128GCM',
+        });
+
+        nock('https://op.example.com')
+          .filteringRequestBody(function (body) {
+            expect(querystring.parse(body)).to.eql({
+              code: 'foo',
+              redirect_uri: 'https://rp.example.com/cb',
+              grant_type: 'authorization_code',
+            });
+          })
+          .post('/token', () => true)
+          .reply(200, {});
+
+        await client.callback('https://rp.example.com/cb', {
+          response,
+        }, {
+          jarm: true,
+        }).then(() => {}, () => {});
+
+        expect(nock.isDone()).to.be.true;
+      });
+
+      it('rejects the callback unless JARM was used', function () {
+        return this.client.callback('https://rp.example.com/cb', {
+          code: 'foo',
+        }, {
+          jarm: true,
+        }).then(fail, (error) => {
+          expect(error).to.be.instanceof(Error);
+          expect(error).to.have.property('message', 'expected a JARM response');
+        });
+      });
+
+      it('verifies the JARM alg', async function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'secure',
+          authorization_signed_response_alg: 'HS256',
+        });
+
+        const response = jose.JWT.sign({
+          code: 'foo',
+        }, client.client_secret, {
+          issuer: this.issuer.issuer,
+          audience: client.client_id,
+          expiresIn: '5m',
+        });
+
+        return this.client.callback('https://rp.example.com/cb', {
+          response,
+        }, {
+          jarm: true,
+        }).then(fail, (error) => {
+          expect(error).to.be.instanceof(Error);
+          expect(error).to.have.property('message', 'unexpected JWT alg received, expected RS256, got: HS256');
+        });
+      });
+    });
+
     describe('response type checks', function () {
       it('rejects with an Error when code is missing', function () {
         return this.client.callback('https://rp.example.com/cb', {
@@ -505,6 +619,7 @@ describe('Client', () => {
   describe('#oauthCallback', function () {
     before(function () {
       this.issuer = new Issuer({
+        issuer: 'https://op.example.com',
         token_endpoint: 'https://op.example.com/token',
       });
       this.client = new this.issuer.Client({
@@ -542,6 +657,119 @@ describe('Client', () => {
       }).then((set) => {
         expect(set).to.be.instanceof(TokenSet);
         expect(set).to.have.property('access_token', 'tokenValue');
+      });
+    });
+
+    describe('jarm response mode', function () {
+      it('consumes JARM responses', async function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'secure',
+          authorization_signed_response_alg: 'HS256',
+        });
+
+        const response = jose.JWT.sign({
+          code: 'foo',
+        }, client.client_secret, {
+          issuer: this.issuer.issuer,
+          audience: client.client_id,
+          expiresIn: '5m',
+        });
+
+        nock('https://op.example.com')
+          .filteringRequestBody(function (body) {
+            expect(querystring.parse(body)).to.eql({
+              code: 'foo',
+              redirect_uri: 'https://rp.example.com/cb',
+              grant_type: 'authorization_code',
+            });
+          })
+          .post('/token', () => true)
+          .reply(200, {});
+
+        await client.oauthCallback('https://rp.example.com/cb', {
+          response,
+        }, {
+          jarm: true,
+        }).then(() => {}, () => {});
+
+        expect(nock.isDone()).to.be.true;
+      });
+
+      it('consumes encrypted JARM responses', async function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'secure',
+          authorization_signed_response_alg: 'HS256',
+          authorization_encrypted_response_alg: 'PBES2-HS256+A128KW',
+          authorization_encrypted_response_enc: 'A128GCM',
+        });
+
+        const response = jose.JWE.encrypt(jose.JWT.sign({
+          code: 'foo',
+        }, client.client_secret, {
+          issuer: this.issuer.issuer,
+          audience: client.client_id,
+          expiresIn: '5m',
+        }), 'secure', {
+          alg: 'PBES2-HS256+A128KW',
+          enc: 'A128GCM',
+        });
+
+        nock('https://op.example.com')
+          .filteringRequestBody(function (body) {
+            expect(querystring.parse(body)).to.eql({
+              code: 'foo',
+              redirect_uri: 'https://rp.example.com/cb',
+              grant_type: 'authorization_code',
+            });
+          })
+          .post('/token', () => true)
+          .reply(200, {});
+
+        await client.oauthCallback('https://rp.example.com/cb', {
+          response,
+        }, {
+          jarm: true,
+        }).then(() => {}, () => {});
+
+        expect(nock.isDone()).to.be.true;
+      });
+
+      it('rejects the callback unless JARM was used', function () {
+        return this.client.oauthCallback('https://rp.example.com/cb', {
+          code: 'foo',
+        }, {
+          jarm: true,
+        }).then(fail, (error) => {
+          expect(error).to.be.instanceof(Error);
+          expect(error).to.have.property('message', 'expected a JARM response');
+        });
+      });
+
+      it('verifies the JARM alg', async function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'secure',
+          authorization_signed_response_alg: 'HS256',
+        });
+
+        const response = jose.JWT.sign({
+          code: 'foo',
+        }, client.client_secret, {
+          issuer: this.issuer.issuer,
+          audience: client.client_id,
+          expiresIn: '5m',
+        });
+
+        return this.client.oauthCallback('https://rp.example.com/cb', {
+          response,
+        }, {
+          jarm: true,
+        }).then(fail, (error) => {
+          expect(error).to.be.instanceof(Error);
+          expect(error).to.have.property('message', 'unexpected JWT alg received, expected RS256, got: HS256');
+        });
       });
     });
 
