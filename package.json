@@ -34,10 +34,10 @@
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "coverage": "nyc mocha",
+    "coverage": "nyc mocha test/**/*.test.js",
     "lint": "eslint lib test && dtslint types",
     "lint-fix": "eslint lib test --fix",
-    "test": "mocha"
+    "test": "mocha test/**/*.test.js"
   },
   "dependencies": {
     "@types/got": "^9.6.9",
