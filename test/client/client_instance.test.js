@@ -2961,7 +2961,7 @@ describe('Client', () => {
 
             return this.client.unpackAggregatedClaims(userinfo)
               .then(fail, (err) => {
-                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWTClaimInvalid: "exp" claim timestamp check failed)');
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWTExpired: "exp" claim timestamp check failed)');
               });
           });
         });
