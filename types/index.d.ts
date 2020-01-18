@@ -12,6 +12,7 @@ import * as http2 from 'http2';
 import * as tls from 'tls';
 
 import { GotOptions, GotPromise } from 'got';
+import { URL } from 'url';
 import { JWKS, JSONWebKeySet } from 'jose';
 
 export type HttpOptions = GotOptions<string | null>;
@@ -403,17 +404,27 @@ export class Client {
    * will be used automatically.
    * @param options Options for the UserInfo request.
    */
-  userinfo(accessToken: TokenSet | string, options?: { verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string }): Promise<UserinfoResponse>;
+  userinfo(accessToken: TokenSet | string, options?: { verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object }): Promise<UserinfoResponse>;
 
   /**
-   * Fetches an arbitrary resource with the provided Access Token.
+   * @deprecated in favor of client.requestResource
+   */
+  resource(resourceUrl: string, accessToken: TokenSet | string, options?: { headers?: object, verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string }): GotPromise<Buffer>;
+
+  /**
+   * Fetches an arbitrary resource with the provided Access Token in an Authorization header.
    *
    * @param resourceUrl Resource URL to request a response from.
    * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
    * will be used automatically.
    * @param options Options for the request.
    */
-  resource(resourceUrl: string, accessToken: TokenSet | string, options?: { headers?: object, verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string }): GotPromise<Buffer>;
+  requestResource(resourceUrl: string | URL, accessToken: TokenSet | string, options?: {
+    headers?: object
+    body: string | Buffer
+    method?: 'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE' | 'OPTIONS' | 'TRACE'
+    tokenType?: string
+  }): GotPromise<Buffer>;
 
   /**
    * Performs an arbitrary grant_type exchange at the token_endpoint.

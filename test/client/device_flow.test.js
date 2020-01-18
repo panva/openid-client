@@ -40,7 +40,7 @@ describe('Device Flow features', () => {
             foo: 'bar',
           });
         })
-        .post('/auth/device', () => true)
+        .post('/auth/device', () => true) // to make sure filteringRequestBody works
         .reply(200, {
           verification_uri: 'https://op.example.com/device',
           user_code: 'AAAA-AAAA',
@@ -139,7 +139,7 @@ describe('Device Flow features', () => {
               device_code: 'foobar',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(200, {
             expires_in: 300,
             access_token: 'at',
@@ -173,7 +173,7 @@ describe('Device Flow features', () => {
               device_code: 'foobar',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(400, { error: 'slow_down' })
           .post('/token')
           .reply(200, {
@@ -210,7 +210,7 @@ describe('Device Flow features', () => {
               device_code: 'foobar',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(400, { error: 'authorization_pending' })
           .post('/token')
           .reply(200, {
@@ -275,7 +275,7 @@ describe('Device Flow features', () => {
               device_code: 'foobar',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(400, { error: 'authorization_pending' })
           .post('/token')
           .reply(400, {

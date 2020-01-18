@@ -345,7 +345,7 @@ describe('Client', () => {
             grant_type: 'authorization_code',
           });
         })
-        .post('/token', () => true)
+        .post('/token', () => true) // to make sure filteringRequestBody works
         .reply(200, {});
 
       return this.client.callback('https://rp.example.com/cb', {
@@ -455,7 +455,7 @@ describe('Client', () => {
               grant_type: 'authorization_code',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(200, {});
 
         await client.callback('https://rp.example.com/cb', {
@@ -495,7 +495,7 @@ describe('Client', () => {
               grant_type: 'authorization_code',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(200, {});
 
         await client.callback('https://rp.example.com/cb', {
@@ -637,7 +637,7 @@ describe('Client', () => {
             grant_type: 'authorization_code',
           });
         })
-        .post('/token', () => true)
+        .post('/token', () => true) // to make sure filteringRequestBody works
         .reply(200, {
           access_token: 'tokenValue',
         });
@@ -684,7 +684,7 @@ describe('Client', () => {
               grant_type: 'authorization_code',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(200, {});
 
         await client.oauthCallback('https://rp.example.com/cb', {
@@ -724,7 +724,7 @@ describe('Client', () => {
               grant_type: 'authorization_code',
             });
           })
-          .post('/token', () => true)
+          .post('/token', () => true) // to make sure filteringRequestBody works
           .reply(200, {});
 
         await client.oauthCallback('https://rp.example.com/cb', {
@@ -889,7 +889,7 @@ describe('Client', () => {
             grant_type: 'refresh_token',
           });
         })
-        .post('/token', () => true)
+        .post('/token', () => true) // to make sure filteringRequestBody works
         .reply(200, {});
 
       return this.client.refresh('refreshValue').then(() => {
@@ -919,7 +919,7 @@ describe('Client', () => {
             grant_type: 'refresh_token',
           });
         })
-        .post('/token', () => true)
+        .post('/token', () => true) // to make sure filteringRequestBody works
         .reply(200, {});
 
       return this.client.refresh(new TokenSet({
@@ -982,6 +982,16 @@ describe('Client', () => {
 
       return client.userinfo('tokenValue').then(() => {
         expect(nock.isDone()).to.be.true;
+      });
+    });
+
+    it('only GET and POST is supported', function () {
+      const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
+
+      return client.userinfo('tokenValue', { verb: 'PUT' }).then(fail, (error) => {
+        expect(error).to.be.instanceof(TypeError);
+        expect(error.message).to.eql('#userinfo() verb can only be POST or a GET');
       });
     });
 
@@ -1086,6 +1096,7 @@ describe('Client', () => {
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
+        .matchHeader('Content-Type', '')
         .post('/me').reply(200, {});
 
       return client.userinfo('tokenValue', { verb: 'POST' }).then(() => {
@@ -1098,12 +1109,14 @@ describe('Client', () => {
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
+        .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             access_token: 'tokenValue',
           });
         })
-        .post('/me').reply(200, {});
+        .post('/me', () => true) // to make sure filteringRequestBody works
+        .reply(200, {});
 
       return client.userinfo('tokenValue', { verb: 'POST', via: 'body' }).then(() => {
         expect(nock.isDone()).to.be.true;
@@ -1115,17 +1128,42 @@ describe('Client', () => {
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
+        .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             access_token: 'tokenValue',
             foo: 'bar',
           });
         })
-        .post('/me').reply(200, {});
+        .post('/me', () => true) // to make sure filteringRequestBody works
+        .reply(200, {});
 
       return client.userinfo('tokenValue', {
         verb: 'POST',
         via: 'body',
+        params: { foo: 'bar' },
+      }).then(() => {
+        expect(nock.isDone()).to.be.true;
+      });
+    });
+
+    it('can add extra params in a body when post (but via header)', function () {
+      const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
+      const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
+
+      nock('https://op.example.com')
+        .matchHeader('Authorization', 'Bearer tokenValue')
+        .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
+        .filteringRequestBody(function (body) {
+          expect(querystring.parse(body)).to.eql({
+            foo: 'bar',
+          });
+        })
+        .post('/me', () => true) // to make sure filteringRequestBody works
+        .reply(200, {});
+
+      return client.userinfo('tokenValue', {
+        verb: 'POST',
         params: { foo: 'bar' },
       }).then(() => {
         expect(nock.isDone()).to.be.true;
@@ -1137,6 +1175,7 @@ describe('Client', () => {
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
+        .matchHeader('Authorization', 'Bearer tokenValue')
         .get('/me?foo=bar')
         .reply(200, {});
 
@@ -1161,6 +1200,7 @@ describe('Client', () => {
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       nock('https://op.example.com')
+        .matchHeader('Authorization', '')
         .get('/me?access_token=tokenValue')
         .reply(200, {});
 
@@ -1174,7 +1214,7 @@ describe('Client', () => {
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
       return client.userinfo('tokenValue', { via: 'query', verb: 'post' }).then(fail, ({ message }) => {
-        expect(message).to.eql('resource servers should only parse query strings for GET requests');
+        expect(message).to.eql('userinfo endpoints will only parse query strings for GET requests');
       });
     });
 
@@ -1331,9 +1371,10 @@ describe('Client', () => {
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             token: 'tokenValue',
+            client_id: 'identifier',
           });
         })
-        .post('/token/introspect')
+        .post('/token/introspect', () => true) // to make sure filteringRequestBody works
         .reply(200, {
           endpoint: 'response',
         });
@@ -1351,11 +1392,12 @@ describe('Client', () => {
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
+            client_id: 'identifier',
             token: 'tokenValue',
             token_type_hint: 'access_token',
           });
         })
-        .post('/token/introspect')
+        .post('/token/introspect', () => true) // to make sure filteringRequestBody works
         .reply(200, {
           endpoint: 'response',
         });
@@ -1441,10 +1483,11 @@ describe('Client', () => {
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
+            client_id: 'identifier',
             token: 'tokenValue',
           });
         })
-        .post('/token/revoke')
+        .post('/token/revoke', () => true) // to make sure filteringRequestBody works
         .reply(200, {
           endpoint: 'response',
         });
@@ -1462,11 +1505,12 @@ describe('Client', () => {
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
+            client_id: 'identifier',
             token: 'tokenValue',
             token_type_hint: 'access_token',
           });
         })
-        .post('/token/revoke')
+        .post('/token/revoke', () => true) // to make sure filteringRequestBody works
         .reply(200, {
           endpoint: 'response',
         });
