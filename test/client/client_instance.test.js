@@ -3096,7 +3096,6 @@ describe('Client', () => {
         const client = new issuer.Client({
           client_id: 'identifier',
           id_token_encrypted_response_alg: 'RSA-OAEP',
-          id_token_encrypted_response_enc: 'A128CBC-HS256',
         });
 
         const header = base64url.encode(JSON.stringify({
@@ -3109,12 +3108,29 @@ describe('Client', () => {
         });
       });
 
-      it('verifies the id token is using the right enc', async () => {
+      it('verifies the id token is using the right enc (explicit)', async () => {
         const issuer = new Issuer();
         const client = new issuer.Client({
           client_id: 'identifier',
           id_token_encrypted_response_alg: 'RSA-OAEP',
           id_token_encrypted_response_enc: 'A128CBC-HS256',
+        });
+
+        const header = base64url.encode(JSON.stringify({
+          alg: 'RSA-OAEP',
+          enc: 'A128GCM',
+        }));
+
+        return client.decryptIdToken(`${header}....`).then(fail, (err) => {
+          expect(err).to.have.property('message', 'unexpected JWE enc received, expected A128CBC-HS256, got: A128GCM');
+        });
+      });
+
+      it('verifies the id token is using the right enc (defaulted to)', async () => {
+        const issuer = new Issuer();
+        const client = new issuer.Client({
+          client_id: 'identifier',
+          id_token_encrypted_response_alg: 'RSA-OAEP',
         });
 
         const header = base64url.encode(JSON.stringify({
@@ -3168,7 +3184,6 @@ describe('Client', () => {
           client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
           client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
           id_token_encrypted_response_alg: 'ECDH-ES',
-          id_token_encrypted_response_enc: 'A128CBC-HS256',
           id_token_signed_response_alg: 'HS256',
         }, this.keystore.toJWKS(true));
 
@@ -3202,7 +3217,6 @@ describe('Client', () => {
           client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
           client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
           id_token_encrypted_response_alg: 'ECDH-ES',
-          id_token_encrypted_response_enc: 'A128CBC-HS256',
           id_token_signed_response_alg: 'HS256',
         }, this.keystore.toJWKS(true));
 
@@ -3228,7 +3242,6 @@ describe('Client', () => {
         const client = new issuer.Client({
           client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
           userinfo_encrypted_response_alg: 'ECDH-ES',
-          userinfo_encrypted_response_enc: 'A128CBC-HS256',
         }, this.keystore.toJWKS(true));
 
         return client.userinfo('accesstoken').then((userinfo) => {
@@ -3256,7 +3269,6 @@ describe('Client', () => {
         const client = new issuer.Client({
           client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
           userinfo_encrypted_response_alg: 'ECDH-ES',
-          userinfo_encrypted_response_enc: 'A128CBC-HS256',
         }, this.keystore.toJWKS(true));
 
         return client.userinfo('accesstoken').then(fail, (err) => {
@@ -3281,7 +3293,6 @@ describe('Client', () => {
         const client = new issuer.Client({
           client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
           userinfo_encrypted_response_alg: 'ECDH-ES',
-          userinfo_encrypted_response_enc: 'A128CBC-HS256',
         }, this.keystore.toJWKS(true));
 
         return client.userinfo('accesstoken').then(fail, (err) => {
@@ -3298,7 +3309,6 @@ describe('Client', () => {
           client_id: '0d9413a4-61c1-4b2b-8d84-a82464c1556c',
           client_secret: 'l73jho9z9mL0GAomiQwbw08ARqro2tJ4E4qhJ+PZhNQoU6G6D23UDF91L9VR7iJ4',
           id_token_encrypted_response_alg: 'A128GCMKW',
-          id_token_encrypted_response_enc: 'A128CBC-HS256',
           id_token_signed_response_alg: 'HS256',
         });
 
@@ -3505,8 +3515,18 @@ describe('Client', () => {
           });
       });
 
-      it('encrypts for issuer using issuer\'s public key', function () {
+      it('encrypts for issuer using issuer\'s public key (explicit enc)', function () {
         const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'JWT' }).and.have.property('kid');
+          });
+      });
+
+      it('encrypts for issuer using issuer\'s public key (default enc)', function () {
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5' });
 
         return client.requestObject({ state: 'foobar' })
           .then((encrypted) => {
@@ -3535,6 +3555,20 @@ describe('Client', () => {
           client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
           request_object_encryption_alg: 'dir',
           request_object_encryption_enc: 'A128CBC-HS256',
+        });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A128CBC-HS256', cty: 'JWT' }).and.not.have.property('kid');
+          });
+      });
+
+      it('encrypts for issuer using pre-shared client_secret (dir + defaulted to A128CBC-HS256)', function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+          request_object_encryption_alg: 'dir',
         });
 
         return client.requestObject({ state: 'foobar' })
