@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.12.0](https://github.com/panva/node-openid-client/compare/v3.11.0...v3.12.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* allow omitting the `*_enc` attributes (default 'A128CBC-HS256') ([6567c73](https://github.com/panva/node-openid-client/commit/6567c73996ba247d1bd46796d37a32ffa93d74a5))
+
+
+### Features
+
+* new API for fetching arbitrary resources with the access token ([c981ed6](https://github.com/panva/node-openid-client/commit/c981ed68e5cb0a53f064eb27604d8790ef3dac91)), closes [#222](https://github.com/panva/node-openid-client/issues/222)
+
+
+
 # [3.11.0](https://github.com/panva/node-openid-client/compare/v3.10.1...v3.11.0) (2020-01-10)
 
 
