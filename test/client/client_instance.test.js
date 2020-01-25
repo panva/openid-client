@@ -3660,5 +3660,52 @@ describe('Client', () => {
         });
       });
     });
+
+    describe('#requestObject (encryption when multiple keys match)', function () {
+      before(function () {
+        this.keystore = new jose.JWKS.KeyStore();
+        return Promise.all([
+          this.keystore.generate('RSA'),
+          this.keystore.generate('RSA'),
+        ]);
+      });
+
+      before(function () {
+        this.issuer = new Issuer({
+          issuer: 'https://op.example.com',
+          jwks_uri: 'https://op.example.com/certs',
+        });
+      });
+
+      before(function () {
+        nock('https://op.example.com')
+          .get('/certs')
+          .reply(200, this.keystore.toJWKS());
+
+        return this.issuer.keystore();
+      });
+
+      after(nock.cleanAll);
+
+      it('encrypts for issuer using issuer\'s public key (explicit enc)', function () {
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'JWT' }).and.have.property('kid');
+          });
+      });
+
+      it('encrypts for issuer using issuer\'s public key (default enc)', function () {
+        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5' });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'JWT' }).and.have.property('kid');
+          });
+      });
+    });
   });
 });
