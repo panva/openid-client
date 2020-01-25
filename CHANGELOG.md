@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.1](https://github.com/panva/node-openid-client/compare/v3.12.0...v3.12.1) (2020-01-25)
+
+
+### Bug Fixes
+
+* allow multiple keys to match when selecting encryption key for request object ([fa3fa67](https://github.com/panva/node-openid-client/commit/fa3fa677709f4e229c6356896731416feff71509))
+
+
+
 # [3.12.0](https://github.com/panva/node-openid-client/compare/v3.11.0...v3.12.0) (2020-01-23)
 
 
