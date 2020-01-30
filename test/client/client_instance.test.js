@@ -2984,7 +2984,7 @@ describe('Client', () => {
 
             return this.client.unpackAggregatedClaims(userinfo)
               .then(fail, (err) => {
-                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWTClaimInvalid: "alg" header parameter is missing)');
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWSInvalid: missing JWS signature algorithm)');
               });
           });
         });
