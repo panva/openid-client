@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.2](https://github.com/panva/node-openid-client/compare/v3.12.1...v3.12.2) (2020-01-30)
+
+
+### Bug Fixes
+
+* ensure jose version that handles ECDH-ES for larger key sizes right ([e91001a](https://github.com/panva/node-openid-client/commit/e91001a30e0c429ef5bb49e0fda58a54f765c346))
+
+
+
 ## [3.12.1](https://github.com/panva/node-openid-client/compare/v3.12.0...v3.12.1) (2020-01-25)
 
 
