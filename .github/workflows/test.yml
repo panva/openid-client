@@ -68,7 +68,7 @@ jobs:
         with:
           node-version: 12
       - run: npx panva/npm-install-retry
-      - run: npx xvfb-maybe npx electron@${{ matrix.electron-version }} ./test/electron
+      - run: npx xvfb-maybe npx electron@${{ matrix.electron-version }} ./test/electron test/**/*.test.js
 
   oidc-conformance:
     runs-on: ubuntu-latest

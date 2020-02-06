@@ -472,7 +472,7 @@ describe('Client', () => {
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
-          authorization_encrypted_response_alg: 'PBES2-HS256+A128KW',
+          authorization_encrypted_response_alg: 'dir',
           authorization_encrypted_response_enc: 'A128GCM',
         });
 
@@ -482,8 +482,8 @@ describe('Client', () => {
           issuer: this.issuer.issuer,
           audience: client.client_id,
           expiresIn: '5m',
-        }), 'secure', {
-          alg: 'PBES2-HS256+A128KW',
+        }), await client.joseSecret('A128GCM'), {
+          alg: 'dir',
           enc: 'A128GCM',
         });
 
@@ -701,7 +701,7 @@ describe('Client', () => {
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
-          authorization_encrypted_response_alg: 'PBES2-HS256+A128KW',
+          authorization_encrypted_response_alg: 'dir',
           authorization_encrypted_response_enc: 'A128GCM',
         });
 
@@ -711,8 +711,8 @@ describe('Client', () => {
           issuer: this.issuer.issuer,
           audience: client.client_id,
           expiresIn: '5m',
-        }), 'secure', {
-          alg: 'PBES2-HS256+A128KW',
+        }), await client.joseSecret('A128GCM'), {
+          alg: 'dir',
           enc: 'A128GCM',
         });
 

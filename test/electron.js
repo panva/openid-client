@@ -8,9 +8,9 @@ const orig = Base.prototype.epilogue;
 
 Base.prototype.epilogue = function epilogue() {
   orig.call(this);
-  const { stats: { failures } } = this;
+  const { stats: { failures, passes } } = this;
 
-  app.exit(failures ? 1 : 0);
+  app.exit(failures || passes === 0 ? 1 : 0);
 }
 
 require('mocha/bin/mocha');
