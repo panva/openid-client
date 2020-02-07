@@ -42,6 +42,8 @@ openid-client.
   - Client Authentication
     - tls_client_auth
     - self_signed_tls_client_auth
+- [OpenID Connect Session Management 1.0 - draft 28][feature-rp-logout]
+  - RP-Initiated Logout
 
 ## Certification
 [<img width="184" height="96" align="right" src="https://cdn.jsdelivr.net/gh/panva/node-openid-client@38cf016b0837e6d4116de3780b28d222d5780bc9/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
@@ -294,6 +296,7 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
 [feature-mtls]: https://tools.ietf.org/html/draft-ietf-oauth-mtls-17
 [feature-device-flow]: https://tools.ietf.org/html/rfc8628
+[feature-rp-logout]: https://openid.net/specs/openid-connect-session-1_0.html#RPLogout
 [openid-certified-link]: https://openid.net/certification/
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
