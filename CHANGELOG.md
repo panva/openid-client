@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.13.0](https://github.com/panva/node-openid-client/compare/v3.12.2...v3.13.0) (2020-02-18)
+
+
+### Features
+
+* add support for RSA-OAEP-384 and RSA-OAEP-512 JWE algorithms ([6c696e9](https://github.com/panva/node-openid-client/commit/6c696e98202af2a358fde72bd0718c7dff7f3a96))
+
+
+
 ## [3.12.2](https://github.com/panva/node-openid-client/compare/v3.12.1...v3.12.2) (2020-01-30)
 
 
