@@ -211,6 +211,8 @@ Creates a new Client with the provided metadata
 - `jwks`: `<Object>` JWK Set formatted object with private keys used for signing client assertions
   or decrypting responses.
 - `options`: `<Object>` additional options for the client
+  - `additionalAuthorizedParties`: `<string>` &vert; `string[]` additional accepted values for the
+    Authorized Party (`azp`) claim. **Default:** only the client's client_id value is accepted.
 - Returns: `<Client>`
 
 ---
@@ -488,6 +490,8 @@ Performs Dynamic Client Registration with the provided metadata at the issuer's
     public parts will be registered as `jwks`.
   - `initialAccessToken`: `<string>` Initial Access Token to use as a Bearer token during the
     registration call.
+  - `additionalAuthorizedParties`: `<string>` &vert; `string[]` additional accepted values for the
+    Authorized Party (`azp`) claim. **Default:** only the client's client_id value is accepted.
 
 ---
 
@@ -501,6 +505,8 @@ Performs Dynamic Client Read Request to retrieve a Client instance.
 - `jwks`: `<Object>` JWK Set formatted object with private keys used for signing client assertions
   or decrypting responses.
 - `clientOptions`: `<Object>` additional options passed to the `Client` constructor
+  - `additionalAuthorizedParties`: `<string>` &vert; `string[]` additional accepted values for the
+    Authorized Party (`azp`) claim. **Default:** only the client's client_id value is accepted.
 
 ---
 

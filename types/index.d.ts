@@ -335,6 +335,7 @@ export interface IntrospectionResponse {
 }
 
 export interface ClientOptions {
+  additionalAuthorizedParties?: string | string[];
 }
 
 /**
