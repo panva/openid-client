@@ -141,7 +141,7 @@ Performs [OpenID Provider Issuer Discovery][webfinger-discovery] based on End-Us
 
 <!-- TOC Client START -->
 - [Class: &lt;Client&gt;](#class-client)
-  - [new Client(metadata[, jwks])](#new-clientmetadata-jwks)
+  - [new Client(metadata[, jwks[, options]])](#new-clientmetadata-jwks-options)
   - [client.metadata](#clientmetadata)
   - [client.authorizationUrl(parameters)](#clientauthorizationurlparameters)
   - [client.endSessionUrl(parameters)](#clientendsessionurlparameters)
@@ -157,7 +157,7 @@ Performs [OpenID Provider Issuer Discovery][webfinger-discovery] based on End-Us
   - [client.deviceAuthorization(parameters[, extras])](#clientdeviceauthorizationparameters-extras)
 - [Client Authentication Methods](#client-authentication-methods)
 - [Client.register(metadata[, other])](#clientregistermetadata-other)
-- [Client.fromUri(registrationClientUri, registrationAccessToken[, jwks])](#clientfromuriregistrationclienturi-registrationaccesstoken-jwks)
+- [Client.fromUri(registrationClientUri, registrationAccessToken[, jwks[, clientOptions]])](#clientfromuriregistrationclienturi-registrationaccesstoken-jwks-clientoptions)
 <!-- TOC Client END -->
 
 ---
@@ -179,7 +179,7 @@ const { Issuer } = require('openid-client');
 
 ---
 
-#### `new Client(metadata[, jwks])`
+#### `new Client(metadata[, jwks[, options]])`
 
 Creates a new Client with the provided metadata
 
@@ -210,6 +210,7 @@ Creates a new Client with the provided metadata
   - other metadata may be present but currently doesn't have any special handling
 - `jwks`: `<Object>` JWK Set formatted object with private keys used for signing client assertions
   or decrypting responses.
+- `options`: `<Object>` additional options for the client
 - Returns: `<Client>`
 
 ---
@@ -487,10 +488,11 @@ Performs Dynamic Client Registration with the provided metadata at the issuer's
     public parts will be registered as `jwks`.
   - `initialAccessToken`: `<string>` Initial Access Token to use as a Bearer token during the
     registration call.
+  - Other fields get passed to the `Client` constructor in the `options` parameter.
 
 ---
 
-#### `Client.fromUri(registrationClientUri, registrationAccessToken[, jwks])`
+#### `Client.fromUri(registrationClientUri, registrationAccessToken[, jwks[, clientOptions]])`
 
 Performs Dynamic Client Read Request to retrieve a Client instance.
 
@@ -499,6 +501,7 @@ Performs Dynamic Client Read Request to retrieve a Client instance.
   the Client Read Request
 - `jwks`: `<Object>` JWK Set formatted object with private keys used for signing client assertions
   or decrypting responses.
+- `clientOptions`: `<Object>` additional options passed to the `Client` constructor
 
 ---
 
