@@ -1845,6 +1845,14 @@ describe('Client', () => {
         client_id: 'identifier',
         client_secret: 'its gotta be a long secret and i mean at least 32 characters',
       });
+      this.clientWith3rdParty = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+      }, undefined, { additionalAuthorizedParties: 'authorized third party' });
+      this.clientWith3rdParties = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'its gotta be a long secret and i mean at least 32 characters',
+      }, undefined, { additionalAuthorizedParties: ['authorized third party', 'another third party'] });
 
       this.fapiClient = new this.issuer.FAPIClient({
         client_id: 'identifier',
@@ -1980,7 +1988,7 @@ describe('Client', () => {
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
-          expect(error).to.have.property('message', 'azp must be the client_id, expected identifier, got: not the client');
+          expect(error).to.have.property('message', 'azp mismatch, got: not the client');
         });
     });
 
@@ -2012,6 +2020,96 @@ describe('Client', () => {
 
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token));
+    });
+
+    it('rejects unknown additional party azp values (single additional value)', function () {
+      const payload = {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: [this.client.client_id, 'someone else'],
+        azp: 'some unknown third party',
+        exp: now() + 3600,
+        iat: now(),
+      };
+
+      return this.IdToken(this.keystore.get(), 'RS256', payload)
+        .then((token) => this.clientWith3rdParty.validateIdToken(token))
+        .then(fail, (error) => {
+          expect(error).to.have.property('message', 'azp mismatch, got: some unknown third party');
+        });
+    });
+
+    it('allows configured additional party azp value (single additional value)', function () {
+      const payload = {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: [this.client.client_id, 'someone else'],
+        azp: 'authorized third party',
+        exp: now() + 3600,
+        iat: now(),
+      };
+
+      return this.IdToken(this.keystore.get(), 'RS256', payload)
+        .then((token) => this.clientWith3rdParty.validateIdToken(token));
+    });
+
+    it('allows the default (client_id) additional party azp value (single additional value)', function () {
+      const payload = {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: [this.client.client_id, 'someone else'],
+        azp: this.client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      };
+
+      return this.IdToken(this.keystore.get(), 'RS256', payload)
+        .then((token) => this.clientWith3rdParty.validateIdToken(token));
+    });
+
+    it('rejects unknown additional party azp values (multiple additional values)', function () {
+      const payload = {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: [this.client.client_id, 'someone else'],
+        azp: 'some unknown third party',
+        exp: now() + 3600,
+        iat: now(),
+      };
+
+      return this.IdToken(this.keystore.get(), 'RS256', payload)
+        .then((token) => this.clientWith3rdParties.validateIdToken(token))
+        .then(fail, (error) => {
+          expect(error).to.have.property('message', 'azp mismatch, got: some unknown third party');
+        });
+    });
+
+    it('allows configured additional party azp value (multiple additional values)', function () {
+      const payload = {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: [this.client.client_id, 'someone else'],
+        azp: 'authorized third party',
+        exp: now() + 3600,
+        iat: now(),
+      };
+
+      return this.IdToken(this.keystore.get(), 'RS256', payload)
+        .then((token) => this.clientWith3rdParties.validateIdToken(token));
+    });
+
+    it('allows the default (client_id) additional party azp value (multiple additional values)', function () {
+      const payload = {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: [this.client.client_id, 'someone else'],
+        azp: this.client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      };
+
+      return this.IdToken(this.keystore.get(), 'RS256', payload)
+        .then((token) => this.clientWith3rdParties.validateIdToken(token));
     });
 
     it('verifies the audience when string', function () {

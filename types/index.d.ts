@@ -334,13 +334,17 @@ export interface IntrospectionResponse {
   [key: string]: unknown;
 }
 
+export interface ClientOptions {
+  additionalAuthorizedParties?: string | string[];
+}
+
 /**
  * Encapsulates a dynamically registered, discovered or instantiated OpenID Connect Client (Client),
  * Relying Party (RP), and its metadata, its instances hold the methods for getting an authorization URL,
  * consuming callbacks, triggering token endpoint grants, revoking and introspecting tokens.
  */
 export class Client {
-  constructor(metadata: ClientMetadata, jwks?: JSONWebKeySet);
+  constructor(metadata: ClientMetadata, jwks?: JSONWebKeySet, options?: ClientOptions);
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
@@ -453,8 +457,8 @@ export class Client {
    * for subsequent Device Access Token Request polling.
    */
   deviceAuthorization(parameters?: DeviceAuthorizationParameters, extras?: DeviceAuthorizationExtras): Promise<DeviceFlowHandle<Client>>;
-  static register(metadata: object, other?: RegisterOther): Promise<Client>;
-  static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet): Promise<Client>;
+  static register(metadata: object, other?: RegisterOther & ClientOptions): Promise<Client>;
+  static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet, clientOptions?: ClientOptions): Promise<Client>;
   static [custom.http_options]: CustomHttpOptionsProvider;
 
   [key: string]: unknown;
