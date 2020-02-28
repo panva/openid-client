@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.14.0](https://github.com/panva/node-openid-client/compare/v3.13.0...v3.14.0) (2020-02-28)
+
+
+### Features
+
+* support additional authorized parties ([c9268ce](https://github.com/panva/node-openid-client/commit/c9268ce24c0080729652d7ba67a7f313227dc815)), closes [#231](https://github.com/panva/node-openid-client/issues/231)
+
+
+
 # [3.13.0](https://github.com/panva/node-openid-client/compare/v3.12.2...v3.13.0) (2020-02-18)
 
 
