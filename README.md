@@ -36,7 +36,7 @@ openid-client.
 - [RFC7662 - OAuth 2.0 Token introspection][feature-introspection]
   - Client Authenticated request to token introspection
 - [RFC8628 - OAuth 2.0 Device Authorization Grant (Device Flow)][feature-device-flow]
-- [draft-ietf-oauth-mtls - OAuth 2.0 Mutual TLS Client Authentication and Certificate-Bound Access Tokens][feature-mtls]
+- [RFC8705 - OAuth 2.0 Mutual TLS Client Authentication and Certificate-Bound Access Tokens][feature-mtls]
   - Mutual TLS Client Certificate-Bound Access Tokens
   - Metadata for Mutual TLS Endpoint Aliases
   - Client Authentication
@@ -294,7 +294,7 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [feature-registration]: https://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
-[feature-mtls]: https://tools.ietf.org/html/draft-ietf-oauth-mtls-17
+[feature-mtls]: https://tools.ietf.org/html/rfc8705
 [feature-device-flow]: https://tools.ietf.org/html/rfc8628
 [feature-rp-logout]: https://openid.net/specs/openid-connect-session-1_0.html#RPLogout
 [openid-certified-link]: https://openid.net/certification/
