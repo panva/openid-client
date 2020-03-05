@@ -1,6 +1,5 @@
 import { IncomingMessage } from 'http';
 
-// tslint:disable-next-line:no-relative-import-in-test
 import { custom, generators, Issuer, Client, Strategy, StrategyVerifyCallback, StrategyOptions, TokenSet, RegisterOther, IssuerMetadata } from './index.d';
 import passport from 'passport';
 

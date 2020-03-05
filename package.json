@@ -35,7 +35,8 @@
   "types": "types/index.d.ts",
   "scripts": {
     "coverage": "nyc mocha test/**/*.test.js",
-    "lint": "eslint lib test && dtslint types",
+    "lint": "eslint lib test",
+    "lint-ts": "npx typescript@~3.6.0 --build types",
     "lint-fix": "eslint lib test --fix",
     "test": "mocha test/**/*.test.js"
   },
@@ -56,7 +57,6 @@
     "@commitlint/config-conventional": "^8.3.4",
     "@types/passport": "^1.0.2",
     "chai": "^4.2.0",
-    "dtslint": "^2.0.5",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.19.1",
