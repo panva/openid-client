@@ -377,7 +377,7 @@ Performs an arbitrary `grant_type` exchange at the `token_endpoint`.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
   part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
   is either `client_secret_jwt` or `private_key_jwt`.
-- Returns: `Promise<TokenSet>` Revocation responses are not parsed as per the specification.
+- Returns: `Promise<TokenSet>`
 
 ---
 
@@ -408,7 +408,7 @@ Revokes a token at the Authorization Server's `revocation_endpoint`.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
   part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
   is either `client_secret_jwt` or `private_key_jwt`.
-- Returns: `Promise<undefined>`
+- Returns: `Promise<undefined>` Revocation responses are not parsed as per the specification.
 
 ---
 
