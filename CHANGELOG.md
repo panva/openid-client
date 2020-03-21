@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.14.1](https://github.com/panva/node-openid-client/compare/v3.14.0...v3.14.1) (2020-03-21)
+
+
+### Bug Fixes
+
+* assert refresh_token grant ID Token sub to equal previous ([23f3f9f](https://github.com/panva/node-openid-client/commit/23f3f9fcb88c157cf9bbfa7cc2444e07f0cedc18))
+
+
+
 # [3.14.0](https://github.com/panva/node-openid-client/compare/v3.13.0...v3.14.0) (2020-02-28)
 
 
