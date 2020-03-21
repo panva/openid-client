@@ -873,11 +873,13 @@ describe('Client', () => {
   describe('#refresh', function () {
     before(function () {
       const issuer = new Issuer({
+        issuer: 'https://op.example.com',
         token_endpoint: 'https://op.example.com/token',
       });
       this.client = new issuer.Client({
         client_id: 'identifier',
         client_secret: 'secure',
+        id_token_signed_response_alg: 'HS256',
       });
     });
 
@@ -928,6 +930,65 @@ describe('Client', () => {
       }))
         .then(() => {
           expect(nock.isDone()).to.be.true;
+        });
+    });
+
+    it('passes ID Token validations when ID Token is returned', function () {
+      nock('https://op.example.com')
+        .post('/token') // to make sure filteringRequestBody works
+        .reply(200, {
+          access_token: 'present',
+          refresh_token: 'refreshValue',
+          id_token: jose.JWT.sign({
+            sub: 'foo',
+          }, this.client.client_secret, {
+            issuer: this.client.issuer.issuer,
+            audience: this.client.client_id,
+            expiresIn: '5m',
+          }),
+        });
+
+      return this.client.refresh(new TokenSet({
+        access_token: 'present',
+        refresh_token: 'refreshValue',
+        id_token: jose.JWT.sign({
+          sub: 'foo',
+        }, this.client.client_secret, {
+          issuer: this.client.issuer.issuer,
+          audience: this.client.client_id,
+          expiresIn: '6m',
+        }),
+      }));
+    });
+
+    it('rejects when returned ID Token sub does not match the one passed in', function () {
+      nock('https://op.example.com')
+        .post('/token') // to make sure filteringRequestBody works
+        .reply(200, {
+          access_token: 'present',
+          refresh_token: 'refreshValue',
+          id_token: jose.JWT.sign({
+            sub: 'bar',
+          }, this.client.client_secret, {
+            issuer: this.client.issuer.issuer,
+            audience: this.client.client_id,
+            expiresIn: '5m',
+          }),
+        });
+
+      return this.client.refresh(new TokenSet({
+        access_token: 'present',
+        refresh_token: 'refreshValue',
+        id_token: jose.JWT.sign({
+          sub: 'foo',
+        }, this.client.client_secret, {
+          issuer: this.client.issuer.issuer,
+          audience: this.client.client_id,
+          expiresIn: '5m',
+        }),
+      }))
+        .then(fail, (error) => {
+          expect(error).to.have.property('message', 'sub mismatch, expected foo, got: bar');
         });
     });
 
