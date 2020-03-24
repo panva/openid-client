@@ -507,7 +507,7 @@ export interface MtlsEndpointAliases {
 // https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
 // https://github.com/Microsoft/TypeScript/issues/204
 export interface TypeOfGenericClient<TClient extends Client> {
-  new (metadata: ClientMetadata, jwks?: JSONWebKeySet): TClient;
+  new (metadata: ClientMetadata, jwks?: JSONWebKeySet, options?: ClientOptions): TClient;
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
 }
