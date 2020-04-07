@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.14.2](https://github.com/panva/node-openid-client/compare/v3.14.1...v3.14.2) (2020-04-07)
+
+
+### Bug Fixes
+
+* **typescript:** add options arg to TypeOfGenericClient ([b97b028](https://github.com/panva/node-openid-client/commit/b97b0288d5d79f25cad3d0009212878c5d42a2e0))
+
+
+
 ## [3.14.1](https://github.com/panva/node-openid-client/compare/v3.14.0...v3.14.1) (2020-03-21)
 
 
