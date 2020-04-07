@@ -1,6 +1,7 @@
 ---
-name: Feature request
-about: Suggest a feature for openid-client
+name: ⭐ Feature request
+about: I have an idea for a new feature
+labels: enhancement
 
 ---
 

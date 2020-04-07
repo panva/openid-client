@@ -1,6 +1,7 @@
 ---
-name: Bug report
-about: Create a report to help improve openid-client
+name: 🐞Bug report
+about: Something is not working as I think it should be
+labels: bug, triage
 
 ---
 
@@ -31,7 +32,7 @@ Steps to reproduce the behaviour:
 A clear and concise description of what you expected to happen.
 
 **Environment:**
- - openid-client version: [e.g. v2.4.3]
+ - openid-client version: [e.g. v3.14.0]
  - node version: [e.g. v8.9.0]
 
 **Additional context**
