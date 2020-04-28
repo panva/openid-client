@@ -779,5 +779,11 @@ export namespace errors {
      * from got.
      */
     response?: any;
+    now?: number;
+    tolerance?: number;
+    nbf?: number;
+    exp?: number;
+    iat?: number;
+    auth_time?: number;
   }
 }
