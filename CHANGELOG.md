@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.15.0](https://github.com/panva/node-openid-client/compare/v3.14.2...v3.15.0) (2020-04-28)
+
+
+### Features
+
+* add RPError indicators for unix timestamp comparison failures ([fe3db5c](https://github.com/panva/node-openid-client/commit/fe3db5c46a04cab024901782f202d08234b4cd96)), closes [#250](https://github.com/panva/node-openid-client/issues/250)
+
+
+
 ## [3.14.2](https://github.com/panva/node-openid-client/compare/v3.14.1...v3.14.2) (2020-04-07)
 
 
