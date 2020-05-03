@@ -604,6 +604,8 @@ This function will then be called before executing each and every request on the
 
 ```js
 const { custom } = require('openid-client');
+
+// you can also set this on Issuer constructor, Issuer instance, or Client constructor
 client[custom.http_options] = function (options) {
   // console.log(options);
   options.timeout = 5000;
