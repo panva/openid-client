@@ -1017,16 +1017,25 @@ describe('Client', () => {
       });
   });
 
-  it('#derivedKey', function () {
+  it('#derivedKey', async function () {
     const issuer = new Issuer();
     const client = new issuer.Client({ client_id: 'identifier', client_secret: 'rj_JR' });
 
-    return client.derivedKey('128')
-      .then((key) => {
-        expect(key).to.have.property('kty', 'oct');
-        return client.derivedKey('128').then((cached) => {
-          expect(key).to.equal(cached);
+    for (const len of [120, 128, 184, 192, 248, 256]) { // eslint-disable-line no-restricted-syntax
+      await client.derivedKey(String(len)) // eslint-disable-line no-await-in-loop
+        .then((key) => {
+          expect(key).to.have.property('kty', 'oct');
+          expect(key).to.have.property('length', len);
+          return client.derivedKey(String(len)).then((cached) => {
+            expect(key).to.equal(cached);
+          });
         });
+    }
+
+    await client.derivedKey('1024') // eslint-disable-line no-await-in-loop
+      .then(fail, (err) => {
+        expect(err).to.be.instanceof(Error);
+        expect(err.message).to.eql('unsupported symmetric encryption key derivation');
       });
   });
 
@@ -3764,6 +3773,36 @@ describe('Client', () => {
           .then((encrypted) => {
             const parts = encrypted.split('.');
             expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A128CBC-HS256', cty: 'JWT' }).and.not.have.property('kid');
+          });
+      });
+
+      it('encrypts for issuer using pre-shared client_secret (dir + A192CBC-HS384)', function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+          request_object_encryption_alg: 'dir',
+          request_object_encryption_enc: 'A192CBC-HS384',
+        });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A192CBC-HS384', cty: 'JWT' }).and.not.have.property('kid');
+          });
+      });
+
+      it('encrypts for issuer using pre-shared client_secret (dir + A256CBC-HS512)', function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+          request_object_encryption_alg: 'dir',
+          request_object_encryption_enc: 'A256CBC-HS512',
+        });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A256CBC-HS512', cty: 'JWT' }).and.not.have.property('kid');
           });
       });
 
