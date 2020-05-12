@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.1](https://github.com/panva/node-openid-client/compare/v3.15.0...v3.15.1) (2020-05-12)
+
+
+### Bug Fixes
+
+* A192CBC-HS384 and A256CBC-HS512 direct encryption key derivation ([c356bbe](https://github.com/panva/node-openid-client/commit/c356bbeaba1e28b6a56534b9ba503cb536c14d57))
+
+
+
 # [3.15.0](https://github.com/panva/node-openid-client/compare/v3.14.2...v3.15.0) (2020-04-28)
 
 
