@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.2](https://github.com/panva/node-openid-client/compare/v3.15.1...v3.15.2) (2020-06-01)
+
+
+### Bug Fixes
+
+* allow any JSON numeric value for timestamp values ([a24a759](https://github.com/panva/node-openid-client/commit/a24a7596c038bacd5bdbfc5b8678a96e62b86fd2)), closes [#263](https://github.com/panva/node-openid-client/issues/263)
+
+
+
 ## [3.15.1](https://github.com/panva/node-openid-client/compare/v3.15.0...v3.15.1) (2020-05-12)
 
 
