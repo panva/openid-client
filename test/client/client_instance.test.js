@@ -2297,7 +2297,7 @@ describe('Client', () => {
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
-          expect(error).to.have.property('message', 'JWT iat claim must be a JSON number integer');
+          expect(error).to.have.property('message', 'JWT iat claim must be a JSON numeric value');
         });
     });
 
@@ -2327,7 +2327,7 @@ describe('Client', () => {
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
-          expect(error).to.have.property('message', 'JWT exp claim must be a JSON number integer');
+          expect(error).to.have.property('message', 'JWT exp claim must be a JSON numeric value');
         });
     });
 
@@ -2374,7 +2374,7 @@ describe('Client', () => {
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token))
         .then(fail, (error) => {
-          expect(error).to.have.property('message', 'JWT nbf claim must be a JSON number integer');
+          expect(error).to.have.property('message', 'JWT nbf claim must be a JSON numeric value');
         });
     });
 
@@ -2469,7 +2469,7 @@ describe('Client', () => {
       return this.IdToken(this.keystore.get(), 'RS256', payload)
         .then((token) => this.client.validateIdToken(token, null, null, 300))
         .then(fail, (error) => {
-          expect(error).to.have.property('message', 'JWT auth_time claim must be a JSON number integer');
+          expect(error).to.have.property('message', 'JWT auth_time claim must be a JSON numeric value');
         });
     });
 
