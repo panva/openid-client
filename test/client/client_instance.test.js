@@ -26,6 +26,7 @@ describe('Client', () => {
   describe('#authorizationUrl', function () {
     before(function () {
       const issuer = new Issuer({
+        issuer: 'https://rp.example.com',
         authorization_endpoint: 'https://op.example.com/auth',
       });
       this.client = new issuer.Client({
@@ -1739,6 +1740,7 @@ describe('Client', () => {
     describe('when client_secret_jwt', function () {
       before(function () {
         const issuer = new Issuer({
+          issuer: 'https://rp.example.com',
           token_endpoint: 'https://rp.example.com/token',
           token_endpoint_auth_signing_alg_values_supported: ['HS256', 'HS384'],
         });
@@ -1749,7 +1751,10 @@ describe('Client', () => {
           token_endpoint_auth_method: 'client_secret_jwt',
         });
 
-        return clientInternal.authFor.call(client, 'token').then((auth) => { this.auth = auth; });
+        return Promise.all([
+          clientInternal.authFor.call(client, 'token').then((auth) => { this.auth = auth; }),
+          clientInternal.authFor.call(client, 'token', { clientAssertionPayload: { aud: 'https://rp.example.com' } }).then((auth) => { this.authWithClientAssertionPayload = auth; }),
+        ]);
       });
 
       it('promises a body', function () {
@@ -1772,6 +1777,17 @@ describe('Client', () => {
         expect(payload.aud).to.equal('https://rp.example.com/token');
       });
 
+      it('can use clientAssertionPayload to change the default payload properties', function () {
+        const payload = JSON.parse(base64url.decode(this.authWithClientAssertionPayload.body.client_assertion.split('.')[1]));
+        expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud']);
+
+        expect(payload.iss).to.equal(payload.sub).to.equal('identifier');
+        expect(payload.jti).to.be.a('string');
+        expect(payload.iat).to.be.a('number');
+        expect(payload.exp).to.be.a('number');
+        expect(payload.aud).to.equal('https://rp.example.com');
+      });
+
       it('has the right header properties', function () {
         const header = JSON.parse(base64url.decode(this.auth.body.client_assertion.split('.')[0]));
         expect(header).to.have.keys([
@@ -1784,6 +1800,7 @@ describe('Client', () => {
 
       it('requires client_secret to be set on the client', function () {
         const issuer = new Issuer({
+          issuer: 'https://rp.example.com',
           token_endpoint: 'https://rp.example.com/token',
         });
         const client = new issuer.Client({
@@ -1804,6 +1821,7 @@ describe('Client', () => {
       describe('works as expected', () => {
         before(function () {
           const issuer = new Issuer({
+            issuer: 'https://rp.example.com',
             token_endpoint: 'https://rp.example.com/token',
             token_endpoint_auth_signing_alg_values_supported: ['ES256', 'ES384'],
           });
@@ -1816,7 +1834,10 @@ describe('Client', () => {
               token_endpoint_auth_method: 'private_key_jwt',
             }, keystore.toJWKS(true));
 
-            return clientInternal.authFor.call(client, 'token').then((auth) => { this.auth = auth; });
+            return Promise.all([
+              clientInternal.authFor.call(client, 'token').then((auth) => { this.auth = auth; }),
+              clientInternal.authFor.call(client, 'token', { clientAssertionPayload: { aud: 'https://rp.example.com' } }).then((auth) => { this.authWithClientAssertionPayload = auth; }),
+            ]);
           });
         });
 
@@ -1840,6 +1861,17 @@ describe('Client', () => {
           expect(payload.aud).to.equal('https://rp.example.com/token');
         });
 
+        it('can use clientAssertionPayload to change the default payload properties', function () {
+          const payload = JSON.parse(base64url.decode(this.authWithClientAssertionPayload.body.client_assertion.split('.')[1]));
+          expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud']);
+
+          expect(payload.iss).to.equal(payload.sub).to.equal('identifier');
+          expect(payload.jti).to.be.a('string');
+          expect(payload.iat).to.be.a('number');
+          expect(payload.exp).to.be.a('number');
+          expect(payload.aud).to.equal('https://rp.example.com');
+        });
+
         it('has the right header properties', function () {
           const header = JSON.parse(base64url.decode(this.auth.body.client_assertion.split('.')[0]));
           expect(header).to.have.keys([
@@ -1853,6 +1885,7 @@ describe('Client', () => {
 
         it('requires jwks to be provided when the client was instantiated', function () {
           const issuer = new Issuer({
+            issuer: 'https://rp.example.com',
             token_endpoint: 'https://rp.example.com/token',
           });
           const client = new issuer.Client({
@@ -1872,6 +1905,7 @@ describe('Client', () => {
       describe('alg resolution', () => {
         it('rejects when no valid key is present', () => {
           const issuer = new Issuer({
+            issuer: 'https://rp.example.com',
             token_endpoint: 'https://rp.example.com/token',
           });
 
