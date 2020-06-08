@@ -408,7 +408,7 @@ export class Client {
    * will be used automatically.
    * @param options Options for the UserInfo request.
    */
-  userinfo(accessToken: TokenSet | string, options?: { verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object }): Promise<UserinfoResponse>;
+  userinfo(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object }): Promise<UserinfoResponse>;
 
   /**
    * Fetches an arbitrary resource with the provided Access Token in an Authorization header.

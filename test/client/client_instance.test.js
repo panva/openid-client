@@ -1060,7 +1060,7 @@ describe('Client', () => {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
-      return client.userinfo('tokenValue', { verb: 'PUT' }).then(fail, (error) => {
+      return client.userinfo('tokenValue', { method: 'PUT' }).then(fail, (error) => {
         expect(error).to.be.instanceof(TypeError);
         expect(error.message).to.eql('#userinfo() verb can only be POST or a GET');
       });
@@ -1170,7 +1170,7 @@ describe('Client', () => {
         .matchHeader('Content-Type', '')
         .post('/me').reply(200, {});
 
-      return client.userinfo('tokenValue', { verb: 'POST' }).then(() => {
+      return client.userinfo('tokenValue', { method: 'POST' }).then(() => {
         expect(nock.isDone()).to.be.true;
       });
     });
@@ -1189,7 +1189,7 @@ describe('Client', () => {
         .post('/me', () => true) // to make sure filteringRequestBody works
         .reply(200, {});
 
-      return client.userinfo('tokenValue', { verb: 'POST', via: 'body' }).then(() => {
+      return client.userinfo('tokenValue', { method: 'POST', via: 'body' }).then(() => {
         expect(nock.isDone()).to.be.true;
       });
     });
@@ -1210,7 +1210,7 @@ describe('Client', () => {
         .reply(200, {});
 
       return client.userinfo('tokenValue', {
-        verb: 'POST',
+        method: 'POST',
         via: 'body',
         params: { foo: 'bar' },
       }).then(() => {
@@ -1234,7 +1234,7 @@ describe('Client', () => {
         .reply(200, {});
 
       return client.userinfo('tokenValue', {
-        verb: 'POST',
+        method: 'POST',
         params: { foo: 'bar' },
       }).then(() => {
         expect(nock.isDone()).to.be.true;
@@ -1261,7 +1261,7 @@ describe('Client', () => {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
-      return client.userinfo('tokenValue', { via: 'body', verb: 'get' }).then(fail, ({ message }) => {
+      return client.userinfo('tokenValue', { via: 'body', method: 'get' }).then(fail, ({ message }) => {
         expect(message).to.eql('can only send body on POST');
       });
     });
@@ -1284,7 +1284,7 @@ describe('Client', () => {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
       const client = new issuer.Client({ client_id: 'identifier', token_endpoint_auth_method: 'none' });
 
-      return client.userinfo('tokenValue', { via: 'query', verb: 'post' }).then(fail, ({ message }) => {
+      return client.userinfo('tokenValue', { via: 'query', method: 'post' }).then(fail, ({ message }) => {
         expect(message).to.eql('userinfo endpoints will only parse query strings for GET requests');
       });
     });
