@@ -411,11 +411,6 @@ export class Client {
   userinfo(accessToken: TokenSet | string, options?: { verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object }): Promise<UserinfoResponse>;
 
   /**
-   * @deprecated in favor of client.requestResource
-   */
-  resource(resourceUrl: string, accessToken: TokenSet | string, options?: { headers?: object, verb?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string }): GotPromise<Buffer>;
-
-  /**
    * Fetches an arbitrary resource with the provided Access Token in an Authorization header.
    *
    * @param resourceUrl Resource URL to request a response from.
