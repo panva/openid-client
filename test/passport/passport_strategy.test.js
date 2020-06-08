@@ -86,7 +86,7 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('redirect_uri=');
       expect(target).to.include('scope=');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type');
+      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type', 'code_verifier');
     });
 
     it('starts authentication requests for POSTs', function () {
@@ -104,7 +104,7 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('redirect_uri=');
       expect(target).to.include('scope=');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type');
+      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type', 'code_verifier');
     });
 
     it('can have redirect_uri and scope specified', function () {
@@ -170,20 +170,20 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('nonce=');
       expect(target).to.include('response_mode=form_post');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce', 'response_type');
+      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce', 'response_type', 'code_verifier');
     });
 
     describe('use pkce', () => {
       it('can be set to use PKCE with boolean', function () {
         instance(this.issuer).get('metadata').set('code_challenge_methods_supported', ['S256', 'plain']);
-        const s256 = new Strategy({ // eslint-disable-line no-new
+        const s256 = new Strategy({
           client: this.client,
           usePKCE: true,
         }, () => {});
         expect(s256).to.have.property('_usePKCE', 'S256');
 
         instance(this.issuer).get('metadata').set('code_challenge_methods_supported', ['plain']);
-        const plain = new Strategy({ // eslint-disable-line no-new
+        const plain = new Strategy({
           client: this.client,
           usePKCE: true,
         }, () => {});
@@ -191,12 +191,11 @@ describe('OpenIDConnectStrategy', () => {
 
         ['foobar', undefined, false].forEach((invalidDiscoveryValue) => {
           instance(this.issuer).get('metadata').set('code_challenge_methods_supported', invalidDiscoveryValue);
-          expect(() => {
-            new Strategy({ // eslint-disable-line no-new
-              client: this.client,
-              usePKCE: true,
-            }, () => {});
-          }).to.throw('code_challenge_methods_supported is not properly set on issuer');
+          const defaultS256 = new Strategy({
+            client: this.client,
+            usePKCE: true,
+          }, () => {});
+          expect(defaultS256).to.have.property('_usePKCE', 'S256');
         });
 
         instance(this.issuer).get('metadata').set('code_challenge_methods_supported', []);
@@ -205,7 +204,7 @@ describe('OpenIDConnectStrategy', () => {
             client: this.client,
             usePKCE: true,
           }, () => {});
-        }).to.throw('neither supported code_challenge_method is supported by the issuer');
+        }).to.throw('neither code_challenge_method supported by the client is supported by the issuer');
 
         instance(this.issuer).get('metadata').set('code_challenge_methods_supported', ['not supported']);
         expect(() => {
@@ -213,7 +212,7 @@ describe('OpenIDConnectStrategy', () => {
             client: this.client,
             usePKCE: true,
           }, () => {});
-        }).to.throw('neither supported code_challenge_method is supported by the issuer');
+        }).to.throw('neither code_challenge_method supported by the client is supported by the issuer');
       });
 
       it('will throw when explictly provided value is not supported', function () {
@@ -279,7 +278,7 @@ describe('OpenIDConnectStrategy', () => {
       strategy.authenticate(req);
 
       expect(req.session).to.have.property('oidc:op.example.com:foo');
-      expect(req.session['oidc:op.example.com:foo']).to.have.keys('state', 'response_type');
+      expect(req.session['oidc:op.example.com:foo']).to.have.keys('state', 'response_type', 'code_verifier');
     });
   });
 
