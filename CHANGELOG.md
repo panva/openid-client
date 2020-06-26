@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.5](https://github.com/panva/node-openid-client/compare/v3.15.4...v3.15.5) (2020-06-26)
+
+
+### Bug Fixes
+
+* regression from [#272](https://github.com/panva/node-openid-client/issues/272) ([9bff960](https://github.com/panva/node-openid-client/commit/9bff960bda42fd8af7b8569f121ca35c7f4cfae4))
+
+
+
 ## [3.15.4](https://github.com/panva/node-openid-client/compare/v3.15.3...v3.15.4) (2020-06-26)
 
 
