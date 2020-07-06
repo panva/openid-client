@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.6](https://github.com/panva/node-openid-client/compare/v3.15.5...v3.15.6) (2020-07-06)
+
+
+### Bug Fixes
+
+* merge helper returns modified object, leftovers removed ([2e3339b](https://github.com/panva/node-openid-client/commit/2e3339bd82297d6e37574e007b8a443087f3291e))
+
+
+
 ## [3.15.5](https://github.com/panva/node-openid-client/compare/v3.15.4...v3.15.5) (2020-06-26)
 
 
