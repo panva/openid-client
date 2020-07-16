@@ -47,7 +47,7 @@ openid-client.
 
 ## Certification
 [<img width="184" height="96" align="right" src="https://cdn.jsdelivr.net/gh/panva/node-openid-client@38cf016b0837e6d4116de3780b28d222d5780bc9/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
-Filip Skokan has [certified][openid-certified-link] that [oidc-provider][npm-url]
+Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
 conforms to the following profiles of the OpenID Connect™ protocol
 
 - RP [Basic](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Basic-11-May-2019.zip), [Implicit](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Implicit-11-May-2019.zip), [Hybrid](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Hybrid-11-May-2019.zip), [Config](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Config-11-May-2019.zip), [Dynamic](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Dynamic-11-May-2019.zip), and [Form Post](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-FormPost-11-May-2019.zip)
