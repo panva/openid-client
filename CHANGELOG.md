@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.8](https://github.com/panva/node-openid-client/compare/v3.15.7...v3.15.8) (2020-07-17)
+
+
+### Bug Fixes
+
+* allow AAD appid including discovery URLs to be multi-tenant ([c27caab](https://github.com/panva/node-openid-client/commit/c27caab9b9df92b591c4f0491fd2ec346ff48988))
+
+
+
 ## [3.15.7](https://github.com/panva/node-openid-client/compare/v3.15.6...v3.15.7) (2020-07-16)
 
 
