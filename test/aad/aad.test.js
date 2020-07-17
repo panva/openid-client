@@ -37,6 +37,20 @@ describe('Azure AD multi-tenant applications', () => {
           expect(err.message).to.match(/^JWT expired, now \d+, exp 12345$/);
         });
       });
+
+      it(`changes the "iss" validation when Issuer is discovered with an appid query string (${input})`, async () => {
+        nock('https://login.microsoftonline.com')
+          .get(`/${bucket}/v2.0/.well-known/openid-configuration?appid=6731de76-14a6-49ae-97bc-6eba6914391e`)
+          .reply(200, {
+            issuer: 'https://login.microsoftonline.com/{tenantid}/v2.0',
+          });
+
+        const aad = await Issuer.discover(`${input}?appid=6731de76-14a6-49ae-97bc-6eba6914391e`);
+        const client = new aad.Client({ client_id: 'foo' });
+        return client.validateIdToken(idToken).then(fail).catch((err) => {
+          expect(err.message).to.match(/^JWT expired, now \d+, exp 12345$/);
+        });
+      });
     });
 
     it('no changes to "iss" validation when Issuer is constructed', async () => {
