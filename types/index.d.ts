@@ -99,7 +99,7 @@ export interface AuthorizationParameters {
   display?: string;
   id_token_hint?: string;
   login_hint?: string;
-  max_age?: string;
+  max_age?: number;
   nonce?: string;
   prompt?: string;
   redirect_uri?: string;
