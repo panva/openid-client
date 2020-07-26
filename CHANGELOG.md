@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.9](https://github.com/panva/node-openid-client/compare/v3.15.8...v3.15.9) (2020-07-26)
+
+
+### Bug Fixes
+
+* **typescript:** max_age in AuthorizationParameters is a number ([5ce2a73](https://github.com/panva/node-openid-client/commit/5ce2a733890dba6ba2bc2f8f296a4235c0c5cdd6)), closes [#279](https://github.com/panva/node-openid-client/issues/279)
+
+
+
 ## [3.15.8](https://github.com/panva/node-openid-client/compare/v3.15.7...v3.15.8) (2020-07-17)
 
 
