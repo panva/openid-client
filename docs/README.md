@@ -456,7 +456,7 @@ a handle for subsequent Device Access Token Request polling.
 
 #### Client Authentication Methods
 
-Defined in [Core 1.0][client-authentication] and [draft-ietf-oauth-mtls-14](https://tools.ietf.org/html/draft-ietf-oauth-mtls-14)
+Defined in [Core 1.0][client-authentication] and [RFC 8705](https://tools.ietf.org/html/rfc8705)
 the following are valid values for `token_endpoint_auth_method`.
 
 - `none` - only client_id is sent in the request body
