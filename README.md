@@ -50,8 +50,8 @@ openid-client.
 Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
 conforms to the following profiles of the OpenID Connect™ protocol
 
-- RP [Basic](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Basic-11-May-2019.zip), [Implicit](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Implicit-11-May-2019.zip), [Hybrid](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Hybrid-11-May-2019.zip), [Config](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Config-11-May-2019.zip), [Dynamic](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-Dynamic-11-May-2019.zip), and [Form Post](https://openid.net/wordpress-content/uploads/2019/05/FilipSkokan_openid-client_RP-FormPost-11-May-2019.zip)
-- RP FAPI R/W [MTLS](https://openid.net/wordpress-content/uploads/2019/12/FilipSkokan_openid-client-FAPI-RW-ID2-OAuth-MTLS-6-Dec-2019.zip) and [Private Key](https://openid.net/wordpress-content/uploads/2019/12/FilipSkokan_openid-client-FAPI-RW-ID2-OAuth-private_key_jwt-6-Dec-2019.zip)
+- RP Basic, Implicit, Hybrid, Config, Dynamic, and Form Post
+- RP FAPI R/W MTLS and Private Key
 
 
 ## Sponsor
