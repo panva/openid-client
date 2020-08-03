@@ -12,17 +12,33 @@ on:
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Setup node
+        uses: actions/setup-node@v2-beta
         with:
           node-version: 12
-      - run: npx panva/npm-install-retry
+      - name: Store node version variable
+        id: node
+        run: |
+          echo "::set-output name=version::$(node -v)"
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: node_modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package.json') }}-${{ steps.node.outputs.version }}
+      - name: Install dependencies
+        run: npx panva/npm-install-retry
+        if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
       - run: npm run lint
       - run: npm run lint-ts
 
   test:
+    name: Node Tests + Coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -40,11 +56,25 @@ jobs:
           - windows-latest
           - macOS-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Setup node
+        uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx panva/npm-install-retry
+      - name: Store node version variable
+        id: node
+        run: |
+          echo "::set-output name=version::$(node -v)"
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: node_modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package.json') }}-${{ steps.node.outputs.version }}
+      - name: Install dependencies
+        run: npx panva/npm-install-retry
+        if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
       - run: npm run coverage
       - env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -72,7 +102,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npx panva/npm-install-retry
+      - name: Store node version variable
+        id: node
+        run: |
+          echo "::set-output name=version::$(node -v)"
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: node_modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package.json') }}-${{ steps.node.outputs.version }}
+      - name: Install dependencies
+        run: npx panva/npm-install-retry
+        if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
       - run: npx xvfb-maybe npx electron@${{ matrix.electron-version }} ./test/electron test/**/*.test.js
 
   oidc-conformance:
@@ -101,7 +143,7 @@ jobs:
       - env:
           MAVEN_CACHE: ./m2
         run: |
-          git checkout release-v4.0.0
+          git checkout release-v4.0.10
           sed -i -e 's/localhost/localhost.emobix.co.uk/g' src/main/resources/application.properties
           sed -i -e 's/-B/-B -DskipTests=true/g' builder-compose.yml
           docker-compose -f builder-compose.yml run builder
