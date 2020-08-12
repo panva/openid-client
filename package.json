@@ -85,5 +85,10 @@
       "lcov",
       "text-summary"
     ]
+  },
+  "standard-version": {
+    "scripts": {
+      "postchangelog": "sed -i '' -e 's/### \\[/## [/g' CHANGELOG.md"
+    }
   }
 }

@@ -73,7 +73,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.15.0](https://github.com/panva/node-openid-client/compare/v3.14.2...v3.15.0) (2020-04-28)
+## [3.15.0](https://github.com/panva/node-openid-client/compare/v3.14.2...v3.15.0) (2020-04-28)
 
 
 ### Features
@@ -100,7 +100,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.14.0](https://github.com/panva/node-openid-client/compare/v3.13.0...v3.14.0) (2020-02-28)
+## [3.14.0](https://github.com/panva/node-openid-client/compare/v3.13.0...v3.14.0) (2020-02-28)
 
 
 ### Features
@@ -109,7 +109,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.13.0](https://github.com/panva/node-openid-client/compare/v3.12.2...v3.13.0) (2020-02-18)
+## [3.13.0](https://github.com/panva/node-openid-client/compare/v3.12.2...v3.13.0) (2020-02-18)
 
 
 ### Features
@@ -136,7 +136,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.12.0](https://github.com/panva/node-openid-client/compare/v3.11.0...v3.12.0) (2020-01-23)
+## [3.12.0](https://github.com/panva/node-openid-client/compare/v3.11.0...v3.12.0) (2020-01-23)
 
 
 ### Bug Fixes
@@ -150,7 +150,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.11.0](https://github.com/panva/node-openid-client/compare/v3.10.1...v3.11.0) (2020-01-10)
+## [3.11.0](https://github.com/panva/node-openid-client/compare/v3.10.1...v3.11.0) (2020-01-10)
 
 
 ### Bug Fixes
@@ -173,7 +173,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.10.0](https://github.com/panva/node-openid-client/compare/v3.9.2...v3.10.0) (2019-12-27)
+## [3.10.0](https://github.com/panva/node-openid-client/compare/v3.9.2...v3.10.0) (2019-12-27)
 
 
 ### Bug Fixes
@@ -205,7 +205,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.9.0](https://github.com/panva/node-openid-client/compare/v3.8.4...v3.9.0) (2019-12-06)
+## [3.9.0](https://github.com/panva/node-openid-client/compare/v3.8.4...v3.9.0) (2019-12-06)
 
 
 ### Bug Fixes
@@ -252,7 +252,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.8.0](https://github.com/panva/node-openid-client/compare/v3.7.4...v3.8.0) (2019-11-07)
+## [3.8.0](https://github.com/panva/node-openid-client/compare/v3.7.4...v3.8.0) (2019-11-07)
 
 
 ### Features
@@ -297,7 +297,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.7.0](https://github.com/panva/node-openid-client/compare/v3.6.2...v3.7.0) (2019-09-09)
+## [3.7.0](https://github.com/panva/node-openid-client/compare/v3.6.2...v3.7.0) (2019-09-09)
 
 
 ### Bug Fixes
@@ -330,7 +330,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.6.0](https://github.com/panva/node-openid-client/compare/v3.5.0...v3.6.0) (2019-08-24)
+## [3.6.0](https://github.com/panva/node-openid-client/compare/v3.5.0...v3.6.0) (2019-08-24)
 
 
 ### Features
@@ -340,7 +340,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.5.0](https://github.com/panva/node-openid-client/compare/v3.4.0...v3.5.0) (2019-08-22)
+## [3.5.0](https://github.com/panva/node-openid-client/compare/v3.4.0...v3.5.0) (2019-08-22)
 
 
 ### Features
@@ -349,7 +349,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.4.0](https://github.com/panva/node-openid-client/compare/v3.3.0...v3.4.0) (2019-08-13)
+## [3.4.0](https://github.com/panva/node-openid-client/compare/v3.3.0...v3.4.0) (2019-08-13)
 
 
 ### Features
@@ -358,7 +358,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.3.0](https://github.com/panva/node-openid-client/compare/v3.2.3...v3.3.0) (2019-08-02)
+## [3.3.0](https://github.com/panva/node-openid-client/compare/v3.2.3...v3.3.0) (2019-08-02)
 
 
 ### Features
@@ -394,7 +394,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.2.0](https://github.com/panva/node-openid-client/compare/v3.1.2...v3.2.0) (2019-06-27)
+## [3.2.0](https://github.com/panva/node-openid-client/compare/v3.1.2...v3.2.0) (2019-06-27)
 
 
 ### Features
@@ -421,7 +421,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.1.0](https://github.com/panva/node-openid-client/compare/v3.0.0...v3.1.0) (2019-05-13)
+## [3.1.0](https://github.com/panva/node-openid-client/compare/v3.0.0...v3.1.0) (2019-05-13)
 
 
 ### Features
@@ -430,7 +430,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [3.0.0](https://github.com/panva/node-openid-client/compare/v2.5.0...v3.0.0) (2019-05-11)
+## [3.0.0](https://github.com/panva/node-openid-client/compare/v2.5.0...v3.0.0) (2019-05-11)
 
 
 ### Bug Fixes
@@ -500,7 +500,7 @@ access token is returned from the OP.
 
 
 
-# [2.5.0](https://github.com/panva/node-openid-client/compare/v2.4.5...v2.5.0) (2019-04-29)
+## [2.5.0](https://github.com/panva/node-openid-client/compare/v2.4.5...v2.5.0) (2019-04-29)
 
 
 ### Bug Fixes
@@ -514,7 +514,6 @@ access token is returned from the OP.
 
 
 
-<a name="2.4.5"></a>
 ## [2.4.5](https://github.com/panva/node-openid-client/compare/v2.4.4...v2.4.5) (2018-11-05)
 
 
@@ -524,7 +523,6 @@ access token is returned from the OP.
 
 
 
-<a name="2.4.4"></a>
 ## [2.4.4](https://github.com/panva/node-openid-client/compare/v2.4.3...v2.4.4) (2018-10-18)
 
 
@@ -534,7 +532,6 @@ access token is returned from the OP.
 
 
 
-<a name="2.4.3"></a>
 ## [2.4.3](https://github.com/panva/node-openid-client/compare/v2.4.2...v2.4.3) (2018-10-10)
 
 
@@ -544,7 +541,6 @@ access token is returned from the OP.
 
 
 
-<a name="2.4.2"></a>
 ## [2.4.2](https://github.com/panva/node-openid-client/compare/v2.4.1...v2.4.2) (2018-09-27)
 
 
@@ -554,7 +550,6 @@ access token is returned from the OP.
 
 
 
-<a name="2.4.1"></a>
 ## [2.4.1](https://github.com/panva/node-openid-client/compare/v2.4.0...v2.4.1) (2018-09-16)
 
 
@@ -564,8 +559,7 @@ access token is returned from the OP.
 
 
 
-<a name="2.4.0"></a>
-# [2.4.0](https://github.com/panva/node-openid-client/compare/v2.3.1...v2.4.0) (2018-09-16)
+## [2.4.0](https://github.com/panva/node-openid-client/compare/v2.3.1...v2.4.0) (2018-09-16)
 
 
 ### Bug Fixes
@@ -580,7 +574,6 @@ access token is returned from the OP.
 
 
 
-<a name="2.3.1"></a>
 ## [2.3.1](https://github.com/panva/node-openid-client/compare/v2.3.0...v2.3.1) (2018-08-23)
 
 
@@ -591,8 +584,7 @@ access token is returned from the OP.
 
 
 
-<a name="2.3.0"></a>
-# [2.3.0](https://github.com/panva/node-openid-client/compare/v2.2.1...v2.3.0) (2018-08-11)
+## [2.3.0](https://github.com/panva/node-openid-client/compare/v2.2.1...v2.3.0) (2018-08-11)
 
 
 ### Features
