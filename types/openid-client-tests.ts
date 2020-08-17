@@ -84,8 +84,8 @@ async (req: IncomingMessage) => {
 
     //
 
-    await client.resource('https://rs.example.com/resource', 'access token', { headers: { Accept: 'application/json' } });
-    const resource = await client.resource('https://rs.example.com/resource', callbackResponse, { headers: { Accept: 'application/json' } });
+    await client.requestResource('https://rs.example.com/resource', 'access token', { headers: { Accept: 'application/json' } });
+    const resource = await client.requestResource('https://rs.example.com/resource', callbackResponse, { headers: { Accept: 'application/json' } });
     console.log(resource.body.byteLength);
     console.log(resource.body.toString('utf-8'));
 

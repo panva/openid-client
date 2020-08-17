@@ -87,7 +87,7 @@ describe('Client#register', () => {
     return issuer.Client.register({})
       .then(fail, function (error) {
         expect(error.name).to.eql('ParseError');
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/client/registration": \n{"notavalid"}...');
+        expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/client/registration"');
         expect(error).to.have.property('response');
       });
   });

@@ -1353,7 +1353,7 @@ describe('Client', () => {
       return client.userinfo()
         .then(fail, function (error) {
           expect(error.name).to.eql('ParseError');
-          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/me": \n{"notavalid"}...');
+          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/me"');
           expect(error).to.have.property('response');
         });
     });
@@ -1543,7 +1543,7 @@ describe('Client', () => {
       return client.introspect('tokenValue')
         .then(fail, function (error) {
           expect(error.name).to.eql('ParseError');
-          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/token/introspect": \n{"notavalid"}...');
+          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/token/introspect"');
           expect(error).to.have.property('response');
         });
     });
@@ -1680,7 +1680,7 @@ describe('Client', () => {
           token_endpoint_auth_method: 'none',
         });
         expect(await clientInternal.authFor.call(client, 'token')).to.eql({
-          body: { client_id: 'identifier' },
+          form: { client_id: 'identifier' },
         });
       });
     });
@@ -1694,7 +1694,7 @@ describe('Client', () => {
           token_endpoint_auth_method: 'client_secret_post',
         });
         expect(await clientInternal.authFor.call(client, 'token')).to.eql({
-          body: { client_id: 'identifier', client_secret: 'secure' },
+          form: { client_id: 'identifier', client_secret: 'secure' },
         });
       });
 
@@ -1758,16 +1758,16 @@ describe('Client', () => {
       });
 
       it('promises a body', function () {
-        expect(this.auth).to.have.property('body').and.is.an('object');
-        expect(this.auth.body).to.have.property(
+        expect(this.auth).to.have.property('form').and.is.an('object');
+        expect(this.auth.form).to.have.property(
           'client_assertion_type',
           'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
         );
-        expect(this.auth.body).to.have.property('client_assertion');
+        expect(this.auth.form).to.have.property('client_assertion');
       });
 
       it('has a predefined payload properties', function () {
-        const payload = JSON.parse(base64url.decode(this.auth.body.client_assertion.split('.')[1]));
+        const payload = JSON.parse(base64url.decode(this.auth.form.client_assertion.split('.')[1]));
         expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud']);
 
         expect(payload.iss).to.equal(payload.sub).to.equal('identifier');
@@ -1778,7 +1778,7 @@ describe('Client', () => {
       });
 
       it('can use clientAssertionPayload to change the default payload properties', function () {
-        const payload = JSON.parse(base64url.decode(this.authWithClientAssertionPayload.body.client_assertion.split('.')[1]));
+        const payload = JSON.parse(base64url.decode(this.authWithClientAssertionPayload.form.client_assertion.split('.')[1]));
         expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud']);
 
         expect(payload.iss).to.equal(payload.sub).to.equal('identifier');
@@ -1789,7 +1789,7 @@ describe('Client', () => {
       });
 
       it('has the right header properties', function () {
-        const header = JSON.parse(base64url.decode(this.auth.body.client_assertion.split('.')[0]));
+        const header = JSON.parse(base64url.decode(this.auth.form.client_assertion.split('.')[0]));
         expect(header).to.have.keys([
           'alg', 'typ',
         ]);
@@ -1842,16 +1842,16 @@ describe('Client', () => {
         });
 
         it('promises a body', function () {
-          expect(this.auth).to.have.property('body').and.is.an('object');
-          expect(this.auth.body).to.have.property(
+          expect(this.auth).to.have.property('form').and.is.an('object');
+          expect(this.auth.form).to.have.property(
             'client_assertion_type',
             'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
           );
-          expect(this.auth.body).to.have.property('client_assertion');
+          expect(this.auth.form).to.have.property('client_assertion');
         });
 
         it('has a predefined payload properties', function () {
-          const payload = JSON.parse(base64url.decode(this.auth.body.client_assertion.split('.')[1]));
+          const payload = JSON.parse(base64url.decode(this.auth.form.client_assertion.split('.')[1]));
           expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud']);
 
           expect(payload.iss).to.equal(payload.sub).to.equal('identifier');
@@ -1862,7 +1862,7 @@ describe('Client', () => {
         });
 
         it('can use clientAssertionPayload to change the default payload properties', function () {
-          const payload = JSON.parse(base64url.decode(this.authWithClientAssertionPayload.body.client_assertion.split('.')[1]));
+          const payload = JSON.parse(base64url.decode(this.authWithClientAssertionPayload.form.client_assertion.split('.')[1]));
           expect(payload).to.have.keys(['iat', 'exp', 'jti', 'iss', 'sub', 'aud']);
 
           expect(payload.iss).to.equal(payload.sub).to.equal('identifier');
@@ -1873,7 +1873,7 @@ describe('Client', () => {
         });
 
         it('has the right header properties', function () {
-          const header = JSON.parse(base64url.decode(this.auth.body.client_assertion.split('.')[0]));
+          const header = JSON.parse(base64url.decode(this.auth.form.client_assertion.split('.')[0]));
           expect(header).to.have.keys([
             'alg', 'typ', 'kid',
           ]);

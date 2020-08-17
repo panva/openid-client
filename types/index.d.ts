@@ -5,15 +5,13 @@
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
 import * as http from 'http';
-import * as https from 'https';
 import * as http2 from 'http2';
-import * as tls from 'tls';
 
-import { GotOptions, GotPromise } from 'got';
+import { Options as GotOptions, CancelableRequest, Response } from 'got';
 import { URL } from 'url';
 import { JWKS, JSONWebKeySet } from 'jose';
 
-export type HttpOptions = GotOptions<string | null>;
+export type HttpOptions = GotOptions;
 export type RetryFunction = (retry: number, error: Error) => number;
 export type CustomHttpOptionsProvider = (options: HttpOptions) => HttpOptions;
 export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
@@ -420,10 +418,10 @@ export class Client {
    */
   requestResource(resourceUrl: string | URL, accessToken: TokenSet | string, options?: {
     headers?: object
-    body: string | Buffer
+    body?: string | Buffer
     method?: 'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE' | 'OPTIONS' | 'TRACE'
     tokenType?: string
-  }): GotPromise<Buffer>;
+  }): CancelableRequest<Response<Buffer>>;
 
   /**
    * Performs an arbitrary grant_type exchange at the token_endpoint.

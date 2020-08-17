@@ -81,7 +81,7 @@ or koa middlewares. Those can however be built using the exposed API.
 
 ## Install
 
-Node.js version **>=12.0.0** is recommended, but **^10.13.0** lts/dubnium is also supported.
+Node.js version **>=12.0.0** is recommended, but **^10.19.0** lts/dubnium is also supported.
 
 ```console
 npm install openid-client
@@ -260,7 +260,7 @@ private API and is subject to change between any versions.
 
 #### How do I use it outside of Node.js
 
-It is **only built for ^10.13.0 || >=12.0.0 Node.js** environment - including openid-client in
+It is **only built for ^10.19.0 || >=12.0.0 Node.js** environment - including openid-client in
 browser-environment targeted projects is not supported and may result in unexpected results.
 
 #### What's new in 3.x?
