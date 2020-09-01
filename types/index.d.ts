@@ -69,7 +69,7 @@ export interface ClientMetadata {
   authorization_encrypted_response_alg?: string;
   authorization_encrypted_response_enc?: string;
   authorization_signed_response_alg?: string;
-  
+
   [key: string]: unknown;
 }
 
