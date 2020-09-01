@@ -69,7 +69,6 @@ export interface ClientMetadata {
   authorization_encrypted_response_alg?: string;
   authorization_encrypted_response_enc?: string;
   authorization_signed_response_alg?: string;
-  scopes_supported?: string[];
   
   [key: string]: unknown;
 }
@@ -348,6 +347,7 @@ export class Client {
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
   issuer: Issuer<this>;
+  static issuer: Issuer<this>;
 
   /**
    * Returns the target authorization redirect URI to redirect End-Users to using the provided parameters.
