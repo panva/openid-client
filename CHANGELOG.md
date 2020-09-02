@@ -1,6 +1,13 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [3.15.10](https://github.com/panva/node-openid-client/compare/v3.15.9...v3.15.10) (2020-09-02)
+
+
+### Bug Fixes
+
+* **typescript:** add missing types ([#284](https://github.com/panva/node-openid-client/issues/284)) ([49e0ff0](https://github.com/panva/node-openid-client/commit/49e0ff0c695cabd54148bc8a83611dd4ef6ed47c))
 
 ## [3.15.9](https://github.com/panva/node-openid-client/compare/v3.15.8...v3.15.9) (2020-07-26)
 
