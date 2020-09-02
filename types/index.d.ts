@@ -347,7 +347,7 @@ export class Client {
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
   issuer: Issuer<this>;
-  static issuer: Issuer<TClient extends Client>;
+  static issuer: Issuer<Client>;
 
   /**
    * Returns the target authorization redirect URI to redirect End-Users to using the provided parameters.
