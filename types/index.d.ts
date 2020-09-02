@@ -346,6 +346,8 @@ export class Client {
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
+  issuer: Issuer<this>;
+  static issuer: Issuer<Client>;
 
   /**
    * Returns the target authorization redirect URI to redirect End-Users to using the provided parameters.
