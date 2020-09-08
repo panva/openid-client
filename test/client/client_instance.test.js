@@ -3163,7 +3163,7 @@ describe('Client', () => {
 
             return this.client.unpackAggregatedClaims(userinfo)
               .then(fail, (err) => {
-                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (TypeError: JWTs must be decrypted first)');
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (TypeError: encrypted JWTs cannot be decoded)');
               });
           });
         });
