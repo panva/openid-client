@@ -24,23 +24,43 @@
   ],
   "homepage": "https://github.com/panva/node-openid-client",
   "repository": "panva/node-openid-client",
+  "funding": {
+    "url": "https://github.com/sponsors/panva"
+  },
   "license": "MIT",
   "author": "Filip Skokan <panva.ip@gmail.com>",
+  "exports": {
+    "import": "./lib/index.mjs",
+    "require": "./lib/index.js"
+  },
+  "main": "lib/index.js",
+  "types": "types/index.d.ts",
   "files": [
     "lib",
     "types/index.d.ts"
   ],
-  "funding": {
-    "url": "https://github.com/sponsors/panva"
-  },
-  "main": "lib/index.js",
-  "types": "types/index.d.ts",
   "scripts": {
     "coverage": "nyc mocha test/**/*.test.js",
     "lint": "eslint lib test",
-    "lint-ts": "npx typescript@~3.6.0 --build types",
     "lint-fix": "eslint lib test --fix",
+    "lint-ts": "npx typescript@~3.6.0 --build types",
     "test": "mocha test/**/*.test.js"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
   },
   "dependencies": {
     "base64url": "^3.0.1",
@@ -69,27 +89,46 @@
     "timekeeper": "^2.2.0"
   },
   "engines": {
-    "node": "^10.19.0 || >=12.0.0"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ]
+    "node": "^10.19.0 || >=12.0.0 < 13 || >=13.7.0 < 14 || >= 14.2.0"
   },
   "standard-version": {
     "scripts": {
       "postchangelog": "sed -i '' -e 's/### \\[/## [/g' CHANGELOG.md"
-    }
+    },
+    "types": [
+      {
+        "type": "feat",
+        "section": "Features"
+      },
+      {
+        "type": "fix",
+        "section": "Bug Fixes"
+      },
+      {
+        "type": "chore",
+        "hidden": true
+      },
+      {
+        "type": "docs",
+        "hidden": true
+      },
+      {
+        "type": "style",
+        "hidden": true
+      },
+      {
+        "type": "refactor",
+        "section": "Refactor",
+        "hidden": true
+      },
+      {
+        "type": "perf",
+        "hidden": true
+      },
+      {
+        "type": "test",
+        "hidden": true
+      }
+    ]
   }
 }
