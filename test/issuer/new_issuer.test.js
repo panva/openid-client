@@ -65,7 +65,6 @@ describe('new Issuer()', function () {
     });
 
     expect(issuer).to.have.property('issuer', 'https://op.example.com');
-    expect(issuer).to.have.property('key').that.is.a('function'); // not a string
     expect(issuer).to.have.property('metadata').that.is.an('object'); // not a string
     expect(issuer.metadata).to.have.property('metadata', 'foobar');
     expect(issuer.metadata).to.have.property('key', 'foobar');
