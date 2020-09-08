@@ -44,6 +44,8 @@ openid-client.
     - self_signed_tls_client_auth
 - [OpenID Connect Session Management 1.0 - draft 28][feature-rp-logout]
   - RP-Initiated Logout
+- [Financial-grade API - Part 2: Read and Write API Security Profile (FAPI) - ID2][feature-fapi]
+- [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
 
 ## Certification
 [<img width="184" height="96" align="right" src="https://cdn.jsdelivr.net/gh/panva/node-openid-client@38cf016b0837e6d4116de3780b28d222d5780bc9/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
@@ -296,6 +298,8 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [feature-mtls]: https://tools.ietf.org/html/rfc8705
 [feature-device-flow]: https://tools.ietf.org/html/rfc8628
 [feature-rp-logout]: https://openid.net/specs/openid-connect-session-1_0.html#RPLogout
+[feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
+[feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-ID2.html
 [openid-certified-link]: https://openid.net/certification/
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client

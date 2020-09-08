@@ -307,7 +307,7 @@ Performs the callback for Authorization Server's authorization response.
 Tip: If you're using pure
 OAuth 2.0 then `client.oauthCallback(redirectUri, parameters[, checks[, extras]])` is the OAuth 2.0
 variant of this method, it has the same signature with the exception of checks only supporting
-`code_verifier`, `state` and `response_type`.
+`code_verifier`, `state`, `response_type` and `jarm`.
 
 ---
 
