@@ -1,4 +1,7 @@
 import { IncomingMessage } from 'http';
+import { generateKeyPairSync } from 'crypto';
+
+import { JWKECKey } from 'jose'
 
 import { custom, generators, Issuer, Client, Strategy, StrategyVerifyCallback, StrategyOptions, TokenSet, RegisterOther, IssuerMetadata } from './index.d';
 import passport from 'passport';
@@ -49,6 +52,32 @@ async (req: IncomingMessage) => {
     // Custom HTTP options on the `Client` _instance_
     client[custom.http_options] = options => ({ ...options, retry: 3 });
     client[custom.clock_tolerance] = 5;
+
+    //
+
+    const { privateKey: keyobject } = generateKeyPairSync('rsa', { modulusLength: 2048 })
+    const jwk: JWKECKey = { kty: 'EC', x: 'foo', y: 'bar', d: 'baz', crv: 'P-256' }
+
+    client.callback('https://rp.example.com/cb', {}, {}, { DPoP: keyobject })
+    client.callback('https://rp.example.com/cb', {}, {}, { DPoP: jwk })
+
+    client.oauthCallback('https://rp.example.com/cb', {}, {}, { DPoP: keyobject })
+    client.oauthCallback('https://rp.example.com/cb', {}, {}, { DPoP: jwk })
+
+    client.userinfo('token', { DPoP: keyobject })
+    client.userinfo('token', { DPoP: jwk })
+
+    client.requestResource('https://rs.example.com/resource', 'token', { DPoP: keyobject })
+    client.requestResource('https://rs.example.com/resource', 'token', { DPoP: jwk })
+
+    client.deviceAuthorization({}, { DPoP: keyobject })
+    client.deviceAuthorization({}, { DPoP: jwk })
+
+    client.grant({ grant_type: 'client_credentials' }, { DPoP: keyobject })
+    client.grant({ grant_type: 'client_credentials' }, { DPoP: jwk })
+
+    client.refresh('token', { DPoP: keyobject })
+    client.refresh('token', { DPoP: jwk })
 
     //
 

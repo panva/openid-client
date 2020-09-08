@@ -9,12 +9,14 @@ import * as http2 from 'http2';
 
 import { Options as GotOptions, CancelableRequest, Response } from 'got';
 import { URL } from 'url';
-import { JWKS, JSONWebKeySet } from 'jose';
+import jose from 'jose';
+import crypto from 'crypto';
 
 export type HttpOptions = GotOptions;
 export type RetryFunction = (retry: number, error: Error) => number;
 export type CustomHttpOptionsProvider = (options: HttpOptions) => HttpOptions;
 export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
+export type DPoPInput = crypto.KeyObject | crypto.PrivateKeyInput | jose.JWKRSAKey | jose.JWKECKey | jose.JWKOKPKey;
 
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
@@ -182,6 +184,11 @@ export interface CallbackExtras {
    * when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
    */
   clientAssertionPayload?: object;
+  /**
+   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
+   * inputs, or a JWK formatted private key.
+   */
+  DPoP?: DPoPInput;
 }
 
 export interface RefreshExtras {
@@ -194,6 +201,11 @@ export interface RefreshExtras {
    * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
    */
   clientAssertionPayload?: object;
+  /**
+   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
+   * inputs, or a JWK formatted private key.
+   */
+  DPoP?: DPoPInput;
 }
 
 export interface GrantBody {
@@ -208,6 +220,11 @@ export interface GrantExtras {
    * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
    */
   clientAssertionPayload?: object;
+  /**
+   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
+   * inputs, or a JWK formatted private key.
+   */
+  DPoP?: DPoPInput;
 }
 
 export interface IntrospectExtras {
@@ -250,7 +267,7 @@ export interface RegisterOther {
    * JWK Set formatted object with private keys used for signing client assertions or decrypting responses.
    * When neither jwks_uri or jwks is present in metadata the key's public parts will be registered as jwks.
    */
-  jwks?: JSONWebKeySet;
+  jwks?: jose.JSONWebKeySet;
   /**
    * Initial Access Token to use as a Bearer token during the registration call.
    */
@@ -274,6 +291,11 @@ export interface DeviceAuthorizationExtras {
    * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
    */
   clientAssertionPayload?: object;
+  /**
+   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
+   * inputs, or a JWK formatted private key.
+   */
+  DPoP?: DPoPInput;
 }
 
 export interface UserinfoResponse {
@@ -340,7 +362,7 @@ export interface ClientOptions {
  * consuming callbacks, triggering token endpoint grants, revoking and introspecting tokens.
  */
 export class Client {
-  constructor(metadata: ClientMetadata, jwks?: JSONWebKeySet, options?: ClientOptions);
+  constructor(metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions);
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
@@ -406,7 +428,7 @@ export class Client {
    * will be used automatically.
    * @param options Options for the UserInfo request.
    */
-  userinfo(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object }): Promise<UserinfoResponse>;
+  userinfo(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object, DPoP?: DPoPInput }): Promise<UserinfoResponse>;
 
   /**
    * Fetches an arbitrary resource with the provided Access Token in an Authorization header.
@@ -421,6 +443,7 @@ export class Client {
     body?: string | Buffer
     method?: 'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE' | 'OPTIONS' | 'TRACE'
     tokenType?: string
+    DPoP?: DPoPInput
   }): CancelableRequest<Response<Buffer>>;
 
   /**
@@ -451,7 +474,7 @@ export class Client {
    */
   deviceAuthorization(parameters?: DeviceAuthorizationParameters, extras?: DeviceAuthorizationExtras): Promise<DeviceFlowHandle<Client>>;
   static register(metadata: object, other?: RegisterOther & ClientOptions): Promise<Client>;
-  static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: JSONWebKeySet, clientOptions?: ClientOptions): Promise<Client>;
+  static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: jose.JSONWebKeySet, clientOptions?: ClientOptions): Promise<Client>;
   static [custom.http_options]: CustomHttpOptionsProvider;
 
   [key: string]: unknown;
@@ -502,7 +525,7 @@ export interface MtlsEndpointAliases {
 // https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
 // https://github.com/Microsoft/TypeScript/issues/204
 export interface TypeOfGenericClient<TClient extends Client> {
-  new (metadata: ClientMetadata, jwks?: JSONWebKeySet, options?: ClientOptions): TClient;
+  new (metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions): TClient;
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
 }
@@ -534,7 +557,7 @@ export class Issuer<TClient extends Client> { // tslint:disable-line:no-unnecess
    * Returns the issuer's jwks_uri keys as a `jose` parsed JWKS.Keystore.
    * @param forceReload forces a reload of the issuer's jwks_uri
    */
-  keystore(forceReload?: boolean): Promise<JWKS.KeyStore>;
+  keystore(forceReload?: boolean): Promise<jose.JWKS.KeyStore>;
 
   /**
    * Loads OpenID Connect 1.0 and/or OAuth 2.0 Authorization Server Metadata documents.
