@@ -47,6 +47,10 @@ openid-client.
 - [Financial-grade API - Part 2: Read and Write API Security Profile (FAPI) - ID2][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
 
+Updates to draft specifications (JARM, and FAPI) are released as MINOR library versions,
+if you utilize these specification implementations consider using the tilde `~` operator in your
+package.json since breaking changes may be introduced as part of these version updates. 
+
 ## Certification
 [<img width="184" height="96" align="right" src="https://cdn.jsdelivr.net/gh/panva/node-openid-client@38cf016b0837e6d4116de3780b28d222d5780bc9/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
 Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
