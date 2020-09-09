@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/panva/node-openid-client/compare/v3.15.10...v4.0.0) (2020-09-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* the deprecated `issuer.key()` method was removed
+* due to added ESM module support Node.js version with
+ESM implementation bugs are no longer supported, this only affects early
+v13.x versions. The resulting Node.js semver range is
+`^10.19.0 || >=12.0.0 < 13 || >=13.7.0` (also taking into account the
+`got` dependency update)
+* upgraded got http request library dependency from
+`v9.x` to `v11.x`. If you override some of the http request options
+you will most certainly have to accomodate them.
+* Signed Request Object "typ" changed from `JWT` to
+`oauth.authz.req+jwt`
+* Encrypted Request Object "cty" changed from `JWT` to
+`oauth.authz.req+jwt`
+* PKCE is now used by default in the passport strategy
+* `client.userinfo()` `verb` parameter was renamed to
+`method`
+* the deprecated `client.resource()` method was removed
+
+### Features
+
+* added support for ESM (ECMAScript modules) ([3ac37e8](https://github.com/panva/node-openid-client/commit/3ac37e80d66d47e9814972ed86d1323b9ee96b79))
+* passport strategy will now use PKCE by default where applicable ([56f9fe7](https://github.com/panva/node-openid-client/commit/56f9fe7171ccc1bec6427d4f9bc45e419150ab4d))
+
+
+### Bug Fixes
+
+* request object type changed from 'JWT' to 'oauth.authz.req+jwt' ([641a42f](https://github.com/panva/node-openid-client/commit/641a42fdd3097289085340afab652e4b8b9f571c))
+
+
+### Refactor
+
+* remove deprecated `client.resource()` ([c0ec865](https://github.com/panva/node-openid-client/commit/c0ec8652673c7b276a7c71eb2d730eb3feb22eeb))
+* remove deprecated `issuer.key()` ([5cd1ecf](https://github.com/panva/node-openid-client/commit/5cd1ecfced358c7a685d9dc29aa451a9ef13b770))
+* rename `client.userinfo()` `verb` parameter to `method` ([4cb21a4](https://github.com/panva/node-openid-client/commit/4cb21a4c2aef6421fe7a0f67d45baf209989cdd4))
+* upgrade got from v9.x to v11.x ([c72b5e8](https://github.com/panva/node-openid-client/commit/c72b5e812f6a94a92e008facefa72c366728d4a5))
+
 ## [3.15.10](https://github.com/panva/node-openid-client/compare/v3.15.9...v3.15.10) (2020-09-02)
 
 
