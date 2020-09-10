@@ -360,7 +360,7 @@ Fetches an arbitrary resource with the provided Access Token in an Authorization
   - `method`: `<string>` The HTTP verb to use for the request. **Default:** 'GET'
   - `tokenType`: `<string>` The token type as the Authorization Header scheme. **Default:** 'Bearer'
     or the `token_type` property from a passed in TokenSet.
-- Returns: `Promise<Response>` Response is a [Got Response](https://github.com/sindresorhus/got/tree/v11.5.2#response)
+- Returns: `Promise<Response>` Response is a [Got Response](https://github.com/sindresorhus/got/tree/v11.6.2#response)
   with the `body` property being a `<Buffer>`
 
 
@@ -523,7 +523,7 @@ Performs Dynamic Client Read Request to retrieve a Client instance.
 #### Customizing HTTP requests
 
 The following are default [`got`][got-library] request
-[options](https://github.com/sindresorhus/got/tree/v11.5.2#options) that openid-client sets for all
+[options](https://github.com/sindresorhus/got/tree/v11.6.2#options) that openid-client sets for all
 requests.
 
 ```js
@@ -552,7 +552,7 @@ This is meant to change global request options such as `timeout` or the default 
   <summary><em><strong>Example</strong></em> (Click to expand) debugging HTTP requests and responses</summary>
 
 You can use the [`got`][got-library] request
-[options.hooks](https://github.com/sindresorhus/got/tree/v11.5.2#options) to log outgoing requests and their responses.
+[options.hooks](https://github.com/sindresorhus/got/tree/v11.6.2#options) to log outgoing requests and their responses.
 
 ```js
 const { custom } = require('openid-client')
@@ -622,7 +622,7 @@ you need to work around, e.g. adding custom headers or body payload parameters.
 ```js
 const { custom } = require('openid-client');
 client[custom.http_options] = function (options) {
-  // see https://github.com/sindresorhus/got/tree/v11.5.2#advanced-https-api
+  // see https://github.com/sindresorhus/got/tree/v11.6.2#advanced-https-api
   options.https = options.https || {};
   options.https.cert = cert; // <string> | <string[]> | <Buffer> | <Buffer[]>
   options.https.key = key; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
@@ -630,7 +630,7 @@ client[custom.http_options] = function (options) {
   // options.https.ca = ca; // <string> | <string[]> | <Buffer> | <Buffer[]>
 
   // use HTTP(S)_PROXY
-  // https://github.com/sindresorhus/got/tree/v11.5.2#agent
+  // https://github.com/sindresorhus/got/tree/v11.6.2#agent
   // options.agent = agent;
 
   return options;
@@ -644,20 +644,20 @@ client[custom.http_options] = function (options) {
 ```js
 const { custom } = require('openid-client');
 client[custom.http_options] = function (options) {
-  // https://github.com/sindresorhus/got/tree/v11.5.2#headers
+  // https://github.com/sindresorhus/got/tree/v11.6.2#headers
   // options.headers = Object.assign(options.headers, { 'custom': 'foo' });
 
-  // https://github.com/sindresorhus/got/tree/v11.5.2#timeout
+  // https://github.com/sindresorhus/got/tree/v11.6.2#timeout
   // options.timeout = timeout;
 
-  // https://github.com/sindresorhus/got/tree/v11.5.2#retry
+  // https://github.com/sindresorhus/got/tree/v11.6.2#retry
   // options.retry = retry;
 
-  // https://github.com/sindresorhus/got/tree/v11.5.2#followredirect
+  // https://github.com/sindresorhus/got/tree/v11.6.2#followredirect
   // options.followRedirect = false;
 
   // use HTTP(S)_PROXY
-  // https://github.com/sindresorhus/got/tree/v11.5.2#agent
+  // https://github.com/sindresorhus/got/tree/v11.6.2#agent
   // options.agent = agent;
 
   return options;
@@ -987,5 +987,5 @@ request instance.
 [support-sponsor]: https://github.com/sponsors/panva
 [jose]: https://github.com/panva/jose
 [webfinger-discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html#IssuerDiscovery
-[got-library]: https://github.com/sindresorhus/got/tree/v11.5.2
+[got-library]: https://github.com/sindresorhus/got/tree/v11.6.2
 [client-authentication]: https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
