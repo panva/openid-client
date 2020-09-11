@@ -863,7 +863,7 @@ Creates a new Strategy
   - `passReqToCallback`: `<boolean>` Boolean specifying whether the verify function should get
     the request object as first argument instead. **Default:** 'false'
   - `usePKCE`: `<boolean>` &vert; `<string>` The PKCE method to use. When 'true' it will resolve based
-    on the issuer metadata, when 'false' no PKCE will be used. **Default:** 'false'
+    on the issuer metadata, when 'false' no PKCE will be used. **Default:** 'true'
 - `verify`: `<Function>` Your regular Passport
   [Verify Callback](http://www.passportjs.org/docs/configure/#verify-callback) function in which you
   verify the user from based on the data received from the AS.
