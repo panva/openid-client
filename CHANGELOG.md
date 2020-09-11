@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/panva/node-openid-client/compare/v4.0.2...v4.1.0) (2020-09-11)
+
+
+### Features
+
+* OAuth 2.0 DPoP in various relevant API interfaces ([44a0de7](https://github.com/panva/node-openid-client/commit/44a0de7ceb62cabacd62798ac136f1c394907028))
+
 ## [4.0.2](https://github.com/panva/node-openid-client/compare/v4.0.1...v4.0.2) (2020-09-11)
 
 
