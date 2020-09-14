@@ -9,8 +9,8 @@ import * as http2 from 'http2';
 
 import { Options as GotOptions, CancelableRequest, Response } from 'got';
 import { URL } from 'url';
-import jose from 'jose';
-import crypto from 'crypto';
+import * as jose from 'jose';
+import * as crypto from 'crypto';
 
 export type HttpOptions = GotOptions;
 export type RetryFunction = (retry: number, error: Error) => number;
