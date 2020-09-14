@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.1](https://github.com/panva/node-openid-client/compare/v4.1.0...v4.1.1) (2020-09-14)
+
+
+### Bug Fixes
+
+* **typescript:** ts module interop issues with default export ([6ca57d0](https://github.com/panva/node-openid-client/commit/6ca57d0ef08c188c1da7f3c980b74ba3abf33966)), closes [#291](https://github.com/panva/node-openid-client/issues/291)
+
 ## [4.1.0](https://github.com/panva/node-openid-client/compare/v4.0.2...v4.1.0) (2020-09-11)
 
 
