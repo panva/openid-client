@@ -342,7 +342,7 @@ will also be checked to match the on in the TokenSet's ID Token.
 - `accessToken`: `<string>` &vert; `<TokenSet>` Access Token value. When TokenSet instance is
   provided its `access_token` property will be used automatically.
 - `options`: `<Object>`
-  - `verb`: `<string>` The HTTP verb to use for the request 'GET' or 'POST'. **Default:** 'GET'
+  - `method`: `<string>` The HTTP method to use for the request 'GET' or 'POST'. **Default:** 'GET'
   - `via`: `<string>` The mechanism to use to attach the Access Token to the request. Valid values
     are `header`, `body`, or `query`. **Default:** 'header'.
   - `tokenType`: `<string>` The token type as the Authorization Header scheme. **Default:** 'Bearer'
@@ -366,7 +366,7 @@ Fetches an arbitrary resource with the provided Access Token in an Authorization
 - `options`: `<Object>`
   - `headers`: `<Object>` HTTP Headers to include in the request.
   - `body`: `<string>` &vert; `<Buffer>` HTTP Body to include in the request.
-  - `method`: `<string>` The HTTP verb to use for the request. **Default:** 'GET'
+  - `method`: `<string>` The HTTP method to use for the request. **Default:** 'GET'
   - `tokenType`: `<string>` The token type as the Authorization Header scheme. **Default:** 'Bearer'
     or the `token_type` property from a passed in TokenSet.
   - `DPoP`: `KeyObject` &vert; `<Object>` When provided the client will send a DPoP Proof JWT to the 
