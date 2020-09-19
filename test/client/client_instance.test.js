@@ -1062,7 +1062,7 @@ describe('Client', () => {
 
       return client.userinfo('tokenValue', { method: 'PUT' }).then(fail, (error) => {
         expect(error).to.be.instanceof(TypeError);
-        expect(error.message).to.eql('#userinfo() verb can only be POST or a GET');
+        expect(error.message).to.eql('#userinfo() method can only be POST or a GET');
       });
     });
 
