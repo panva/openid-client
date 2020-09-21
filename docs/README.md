@@ -739,7 +739,7 @@ undergo any validations.**
 Given that the instance has expires_at / expires_in this function returns true / false when the
 access token (which expires properties are for) is beyond its lifetime.
 
-- Returns: `<Object>`
+- Returns: `<boolean>`
 
 ---
 
