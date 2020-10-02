@@ -69,6 +69,40 @@ describe('OpenIDConnectStrategy', () => {
     strategy.authenticate(req);
   });
 
+  describe('authenticate', function () {
+    it('forwards options.extras to callback as extras param', async function () {
+      const extras = {
+        clientAssertionPayload: {
+          aud: 'https://oidc.corp.com/default-oidc-provider',
+        },
+      };
+
+      const params = {
+        redirect_uri: 'http://domain.inc/oauth2/callback',
+      };
+
+      const strategy = new Strategy({ client: this.client, params, extras }, () => {});
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = { 'oidc:op.example.com': sinon.match.object };
+
+      /* Fake callback params */
+      const callbackParams = { code: 'some-code' };
+      sinon.stub(this.client, 'callbackParams').callsFake(() => callbackParams);
+
+      this.client.callback = sinon.spy();
+
+      strategy.authenticate(req, {});
+      sinon.assert.calledOnce(this.client.callback);
+      sinon.assert.calledWith(
+        this.client.callback,
+        params.redirect_uri,
+        callbackParams,
+        sinon.match.object,
+        extras,
+      );
+    });
+  });
+
   describe('initate', function () {
     it('starts authentication requests for GETs', function () {
       const params = { foo: 'bar' };

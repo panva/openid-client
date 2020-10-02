@@ -675,6 +675,11 @@ export interface StrategyOptions<TClient extends Client> {
    * Authorization Request parameters. The strategy will use these.
    */
   params?: AuthorizationParameters;
+
+  /**
+   * "extras" argument value passed to the client.callback() call.
+   */
+  extras?: CallbackExtras;
   /**
    * Boolean specifying whether the verify function should get the request object as first argument instead.
    * Default: 'false'
