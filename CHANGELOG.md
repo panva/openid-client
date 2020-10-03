@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/panva/node-openid-client/compare/v4.1.1...v4.2.0) (2020-10-03)
+
+
+### Features
+
+* add callback extras to strategy options ([#295](https://github.com/panva/node-openid-client/issues/295)) ([b77466d](https://github.com/panva/node-openid-client/commit/b77466ddb597accdb783bad07566f28db0d2c827))
+
 ## [4.1.1](https://github.com/panva/node-openid-client/compare/v4.1.0...v4.1.1) (2020-09-14)
 
 
