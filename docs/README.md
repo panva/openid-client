@@ -388,10 +388,10 @@ Performs an arbitrary `grant_type` exchange at the `token_endpoint`.
 - `extras`: `<Object>`
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
   part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
+  is either `client_secret_jwt` or `private_key_jwt`.
   - `DPoP`: `KeyObject` &vert; `<Object>` When provided the client will send a DPoP Proof JWT to the 
     Token Endpoint. The value should be a private key to sign a DPoP Proof JWT with. This can be
     a crypto.KeyObject, crypto.createPrivateKey valid inputs, or a JWK formatted private key.
-  is either `client_secret_jwt` or `private_key_jwt`.
 - Returns: `Promise<TokenSet>`
 
 ---
