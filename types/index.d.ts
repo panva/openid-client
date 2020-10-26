@@ -110,6 +110,7 @@ export interface AuthorizationParameters {
   response_mode?: string;
   response_type?: string;
   scope?: string;
+  state?: string;
   ui_locales?: string;
 
   [key: string]: unknown;
