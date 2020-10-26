@@ -270,16 +270,6 @@ private API and is subject to change between any versions.
 It is **only built for ^10.19.0 || >=12.0.0 Node.js** environment - including openid-client in
 browser-environment targeted projects is not supported and may result in unexpected results.
 
-#### What's new in 3.x?
-
-- Simplified API which consumes a lot of the common configuration issues
-- New [documentation][documentation]
-- Added support for mutual-TLS client authentication
-- Added support for any additional token exchange parameters to support specifications such as
-  Resource Indicators
-- Typed [errors][documentation-errors]
-- TypeScript definitions
-
 #### How to make the client send client_id and client_secret in the body?
 
 See [Client Authentication Methods (docs)][documentation-methods].
