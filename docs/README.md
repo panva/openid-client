@@ -642,7 +642,7 @@ const { custom } = require('openid-client');
 client[custom.http_options] = function (options) {
   // see https://github.com/sindresorhus/got/tree/v11.8.0#advanced-https-api
   options.https = options.https || {};
-  options.https.cert = cert; // <string> | <string[]> | <Buffer> | <Buffer[]>
+  options.https.certificate = certificate; // <string> | <string[]> | <Buffer> | <Buffer[]>
   options.https.key = key; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
   // custom CA
   // options.https.ca = ca; // <string> | <string[]> | <Buffer> | <Buffer[]>
