@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.2](https://github.com/panva/node-openid-client/compare/v4.2.1...v4.2.2) (2020-11-30)
+
+
+### Bug Fixes
+
+* push pkce <> response type resolution to the authenticate function ([1970af4](https://github.com/panva/node-openid-client/commit/1970af41dc0cd62d44efb1f0a48bdc2a70bcd608)), closes [#312](https://github.com/panva/node-openid-client/issues/312)
+
 ## [4.2.1](https://github.com/panva/node-openid-client/compare/v4.2.0...v4.2.1) (2020-10-27)
 
 
