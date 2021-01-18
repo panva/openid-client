@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.3](https://github.com/panva/node-openid-client/compare/v4.2.2...v4.2.3) (2021-01-18)
+
+
+### Performance
+
+* use base64url encoding in node when available ([24ab5b4](https://github.com/panva/node-openid-client/commit/24ab5b46c688cd1dd3679fe61a9de668c87e656b))
+
 ## [4.2.2](https://github.com/panva/node-openid-client/compare/v4.2.1...v4.2.2) (2020-11-30)
 
 
