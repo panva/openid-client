@@ -119,12 +119,12 @@ async (req: IncomingMessage) => {
     //
 
     const userinfoAddressGeneric = await client.userinfo<{ someProp: number }, { street: string }>(callbackResponse);
-    console.log(userinfoAddressGeneric.address ? userinfoAddressGeneric.address.street : undefined);
+    console.log(userinfoAddressGeneric.address ? userinfoAddressGeneric.address.street.substring(0) : undefined);
 
     //
 
     const userinfoOverride = await client.userinfo<{ email_verified: string }>(callbackResponse);
-    console.log(userinfoOverride.email_verified);
+    console.log(userinfoOverride.email_verified.substring(0));
 
     //
 
