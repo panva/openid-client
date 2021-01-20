@@ -4,22 +4,27 @@
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
-import * as http from 'http';
-import * as http2 from 'http2';
+import * as http from "http";
+import * as http2 from "http2";
 
-import { Options as GotOptions, CancelableRequest, Response } from 'got';
-import { URL } from 'url';
-import * as jose from 'jose';
-import * as crypto from 'crypto';
+import { Options as GotOptions, CancelableRequest, Response } from "got";
+import { URL } from "url";
+import * as jose from "jose";
+import * as crypto from "crypto";
 
 export type HttpOptions = GotOptions;
 export type RetryFunction = (retry: number, error: Error) => number;
 export type CustomHttpOptionsProvider = (options: HttpOptions) => HttpOptions;
-export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
-export type DPoPInput = crypto.KeyObject | crypto.PrivateKeyInput | jose.JWKRSAKey | jose.JWKECKey | jose.JWKOKPKey;
+export type TokenTypeHint = "access_token" | "refresh_token" | string;
+export type DPoPInput =
+  | crypto.KeyObject
+  | crypto.PrivateKeyInput
+  | jose.JWKRSAKey
+  | jose.JWKECKey
+  | jose.JWKOKPKey;
 
 interface UnknownObject {
-  [key: string]: unknown
+  [key: string]: unknown;
 }
 
 /**
@@ -34,11 +39,25 @@ export const custom: {
 /**
  * @see https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
  */
-export type ResponseType = 'code' | 'id_token' | 'code id_token' | 'id_token token' | 'code token' | 'code id_token token' | 'none';
+export type ResponseType =
+  | "code"
+  | "id_token"
+  | "code id_token"
+  | "id_token token"
+  | "code token"
+  | "code id_token token"
+  | "none";
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
  */
-export type ClientAuthMethod = 'client_secret_basic' | 'client_secret_post' | 'client_secret_jwt' | 'private_key_jwt' | 'tls_client_auth' | 'self_signed_tls_client_auth' | 'none';
+export type ClientAuthMethod =
+  | "client_secret_basic"
+  | "client_secret_post"
+  | "client_secret_jwt"
+  | "private_key_jwt"
+  | "tls_client_auth"
+  | "self_signed_tls_client_auth"
+  | "none";
 
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#new-clientmetadata-jwks
@@ -88,14 +107,16 @@ export interface ClaimsParameterMember {
 export interface AuthorizationParameters {
   acr_values?: string;
   audience?: string;
-  claims?: string | {
-    id_token?: {
-      [key: string]: null | ClaimsParameterMember
-    }
-    userinfo?: {
-      [key: string]: null | ClaimsParameterMember
-    }
-  };
+  claims?:
+    | string
+    | {
+        id_token?: {
+          [key: string]: null | ClaimsParameterMember;
+        };
+        userinfo?: {
+          [key: string]: null | ClaimsParameterMember;
+        };
+      };
   claims_locales?: string;
   client_id?: string;
   code_challenge_method?: string;
@@ -303,39 +324,45 @@ export interface DeviceAuthorizationExtras {
   DPoP?: DPoPInput;
 }
 
-export type Address<ExtendedAddress extends {} = UnknownObject> = Override<{
-  formatted?: string;
-  street_address?: string;
-  locality?: string;
-  region?: string;
-  postal_code?: string;
-  country?: string;
-}, ExtendedAddress>
+export type Address<ExtendedAddress extends {} = UnknownObject> = Override<
+  {
+    formatted?: string;
+    street_address?: string;
+    locality?: string;
+    region?: string;
+    postal_code?: string;
+    country?: string;
+  },
+  ExtendedAddress
+>;
 
 export type UserinfoResponse<
   UserInfo extends {} = UnknownObject,
   ExtendedAddress extends {} = UnknownObject
-> = Override<{
-  sub: string;
-  name?: string;
-  given_name?: string;
-  family_name?: string;
-  middle_name?: string;
-  nickname?: string;
-  preferred_username?: string;
-  profile?: string;
-  picture?: string;
-  website?: string;
-  email?: string;
-  email_verified?: boolean;
-  gender?: string;
-  birthdate?: string;
-  zoneinfo?: string;
-  locale?: string;
-  phone_number?: string;
-  updated_at?: number;
-  address?: Address<ExtendedAddress>
-}, UserInfo>
+> = Override<
+  {
+    sub: string;
+    name?: string;
+    given_name?: string;
+    family_name?: string;
+    middle_name?: string;
+    nickname?: string;
+    preferred_username?: string;
+    profile?: string;
+    picture?: string;
+    website?: string;
+    email?: string;
+    email_verified?: boolean;
+    gender?: string;
+    birthdate?: string;
+    zoneinfo?: string;
+    locale?: string;
+    phone_number?: string;
+    updated_at?: number;
+    address?: Address<ExtendedAddress>;
+  },
+  UserInfo
+>;
 
 export interface IntrospectionResponse {
   active: boolean;
@@ -350,7 +377,7 @@ export interface IntrospectionResponse {
   scope: string;
   token_type?: string;
   cnf?: {
-    'x5t#S256'?: string;
+    "x5t#S256"?: string;
 
     [key: string]: unknown;
   };
@@ -368,7 +395,11 @@ export interface ClientOptions {
  * consuming callbacks, triggering token endpoint grants, revoking and introspecting tokens.
  */
 export class Client {
-  constructor(metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions);
+  constructor(
+    metadata: ClientMetadata,
+    jwks?: jose.JSONWebKeySet,
+    options?: ClientOptions
+  );
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
@@ -397,7 +428,9 @@ export class Client {
    * an object. Note: the request read stream will not be parsed, it is expected that you will have a body parser
    * prior to calling this method. This parser would set the req.body property
    */
-  callbackParams(input: string | http.IncomingMessage | http2.Http2ServerRequest): CallbackParamsType;
+  callbackParams(
+    input: string | http.IncomingMessage | http2.Http2ServerRequest
+  ): CallbackParamsType;
 
   /**
    * Performs the callback for Authorization Server's authorization response.
@@ -406,7 +439,12 @@ export class Client {
    * @param checks checks to perform on the Authorization Response
    * @param extras add extra parameters to the Token Endpoint Request and/or Client Authentication JWT Assertion
    */
-  callback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: OpenIDCallbackChecks, extras?: CallbackExtras): Promise<TokenSet>;
+  callback(
+    redirectUri: string | undefined,
+    parameters: CallbackParamsType,
+    checks?: OpenIDCallbackChecks,
+    extras?: CallbackExtras
+  ): Promise<TokenSet>;
 
   /**
    * Pure OAuth 2.0 version of callback().
@@ -415,7 +453,12 @@ export class Client {
    * @param checks checks to perform on the Authorization Response
    * @param extras add extra parameters to the Token Endpoint Request and/or Client Authentication JWT Assertion
    */
-  oauthCallback(redirectUri: string | undefined, parameters: CallbackParamsType, checks?: OAuthCallbackChecks, extras?: CallbackExtras): Promise<TokenSet>;
+  oauthCallback(
+    redirectUri: string | undefined,
+    parameters: CallbackParamsType,
+    checks?: OAuthCallbackChecks,
+    extras?: CallbackExtras
+  ): Promise<TokenSet>;
 
   /**
    * Performs refresh_token grant type exchange.
@@ -423,7 +466,10 @@ export class Client {
    * will be used automatically.
    * @param extras Add extra parameters to the Token Endpoint Request and/or Client Authentication JWT Assertion
    */
-  refresh(refreshToken: TokenSet | string, extras?: RefreshExtras): Promise<TokenSet>;
+  refresh(
+    refreshToken: TokenSet | string,
+    extras?: RefreshExtras
+  ): Promise<TokenSet>;
 
   /**
    * Fetches the OIDC userinfo response with the provided Access Token. Also handles signed and/or
@@ -434,7 +480,19 @@ export class Client {
    * will be used automatically.
    * @param options Options for the UserInfo request.
    */
-  userinfo<TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject>(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object, DPoP?: DPoPInput }): Promise<UserinfoResponse<TUserInfo, TAddress>>;
+  userinfo<
+    TUserInfo extends {} = UnknownObject,
+    TAddress extends {} = UnknownObject
+  >(
+    accessToken: TokenSet | string,
+    options?: {
+      method?: "GET" | "POST";
+      via?: "header" | "body" | "query";
+      tokenType?: string;
+      params?: object;
+      DPoP?: DPoPInput;
+    }
+  ): Promise<UserinfoResponse<TUserInfo, TAddress>>;
 
   /**
    * Fetches an arbitrary resource with the provided Access Token in an Authorization header.
@@ -444,13 +502,17 @@ export class Client {
    * will be used automatically.
    * @param options Options for the request.
    */
-  requestResource(resourceUrl: string | URL, accessToken: TokenSet | string, options?: {
-    headers?: object
-    body?: string | Buffer
-    method?: 'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE' | 'OPTIONS' | 'TRACE'
-    tokenType?: string
-    DPoP?: DPoPInput
-  }): CancelableRequest<Response<Buffer>>;
+  requestResource(
+    resourceUrl: string | URL,
+    accessToken: TokenSet | string,
+    options?: {
+      headers?: object;
+      body?: string | Buffer;
+      method?: "GET" | "POST" | "PUT" | "HEAD" | "DELETE" | "OPTIONS" | "TRACE";
+      tokenType?: string;
+      DPoP?: DPoPInput;
+    }
+  ): CancelableRequest<Response<Buffer>>;
 
   /**
    * Performs an arbitrary grant_type exchange at the token_endpoint.
@@ -460,12 +522,20 @@ export class Client {
   /**
    * Introspects a token at the Authorization Server's introspection_endpoint.
    */
-  introspect(token: string, tokenTypeHint?: TokenTypeHint, extras?: IntrospectExtras): Promise<IntrospectionResponse>;
+  introspect(
+    token: string,
+    tokenTypeHint?: TokenTypeHint,
+    extras?: IntrospectExtras
+  ): Promise<IntrospectionResponse>;
 
   /**
    * Revokes a token at the Authorization Server's revocation_endpoint.
    */
-  revoke(token: string, tokenTypeHint?: TokenTypeHint, extras?: RevokeExtras): Promise<undefined>;
+  revoke(
+    token: string,
+    tokenTypeHint?: TokenTypeHint,
+    extras?: RevokeExtras
+  ): Promise<undefined>;
 
   /**
    * Creates a signed and optionally encrypted Request Object to send to the AS. Uses the client's
@@ -478,15 +548,27 @@ export class Client {
    * Starts a Device Authorization Request at the issuer's device_authorization_endpoint and returns a handle
    * for subsequent Device Access Token Request polling.
    */
-  deviceAuthorization(parameters?: DeviceAuthorizationParameters, extras?: DeviceAuthorizationExtras): Promise<DeviceFlowHandle<Client>>;
-  static register(metadata: object, other?: RegisterOther & ClientOptions): Promise<Client>;
-  static fromUri(registrationClientUri: string, registrationAccessToken: string, jwks?: jose.JSONWebKeySet, clientOptions?: ClientOptions): Promise<Client>;
+  deviceAuthorization(
+    parameters?: DeviceAuthorizationParameters,
+    extras?: DeviceAuthorizationExtras
+  ): Promise<DeviceFlowHandle<Client>>;
+  static register(
+    metadata: object,
+    other?: RegisterOther & ClientOptions
+  ): Promise<Client>;
+  static fromUri(
+    registrationClientUri: string,
+    registrationAccessToken: string,
+    jwks?: jose.JSONWebKeySet,
+    clientOptions?: ClientOptions
+  ): Promise<Client>;
   static [custom.http_options]: CustomHttpOptionsProvider;
 
   [key: string]: unknown;
 }
 
-export class DeviceFlowHandle<TClient extends Client> { // tslint:disable-line:no-unnecessary-generics
+export class DeviceFlowHandle<TClient extends Client> {
+  // tslint:disable-line:no-unnecessary-generics
   poll(): Promise<TokenSet>;
   expired(): boolean;
   expires_at: number;
@@ -531,7 +613,11 @@ export interface MtlsEndpointAliases {
 // https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
 // https://github.com/Microsoft/TypeScript/issues/204
 export interface TypeOfGenericClient<TClient extends Client> {
-  new (metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions): TClient;
+  new (
+    metadata: ClientMetadata,
+    jwks?: jose.JSONWebKeySet,
+    options?: ClientOptions
+  ): TClient;
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
 }
@@ -540,7 +626,8 @@ export interface TypeOfGenericClient<TClient extends Client> {
  * Encapsulates a discovered or instantiated OpenID Connect Issuer (Issuer), Identity Provider (IdP),
  * Authorization Server (AS) and its metadata.
  */
-export class Issuer<TClient extends Client> { // tslint:disable-line:no-unnecessary-generics
+export class Issuer<TClient extends Client> {
+  // tslint:disable-line:no-unnecessary-generics
   constructor(metadata: IssuerMetadata);
 
   /**
@@ -670,10 +757,34 @@ export class TokenSet implements TokenSetParameters {
   [key: string]: unknown;
 }
 
-export type StrategyVerifyCallbackUserInfo<TUser, TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject> = (tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallbackReqUserInfo<TUser, TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject> = (req: http.IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallbackReq<TUser> = (req: http.IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackUserInfo<
+  TUser,
+  TUserInfo extends {} = UnknownObject,
+  TAddress extends {} = UnknownObject
+> = (
+  tokenset: TokenSet,
+  userinfo: UserinfoResponse<TUserInfo, TAddress>,
+  done: (err: any, user?: TUser) => void
+) => void;
+export type StrategyVerifyCallback<TUser> = (
+  tokenset: TokenSet,
+  done: (err: any, user?: TUser) => void
+) => void;
+export type StrategyVerifyCallbackReqUserInfo<
+  TUser,
+  TUserInfo extends {} = UnknownObject,
+  TAddress extends {} = UnknownObject
+> = (
+  req: http.IncomingMessage,
+  tokenset: TokenSet,
+  userinfo: UserinfoResponse<TUserInfo, TAddress>,
+  done: (err: any, user?: TUser) => void
+) => void;
+export type StrategyVerifyCallbackReq<TUser> = (
+  req: http.IncomingMessage,
+  tokenset: TokenSet,
+  done: (err: any, user?: TUser) => void
+) => void;
 
 export interface StrategyOptions<TClient extends Client> {
   client: TClient;
@@ -704,9 +815,16 @@ export interface StrategyOptions<TClient extends Client> {
 }
 
 // tslint:disable-next-line:no-unnecessary-class
-export class Strategy<TUser, TClient extends Client> { // tslint:disable-line:no-unnecessary-generics
-  constructor(options: StrategyOptions<TClient>, verify: StrategyVerifyCallback<TUser> | StrategyVerifyCallbackUserInfo<TUser> |
-    StrategyVerifyCallbackReq<TUser> | StrategyVerifyCallbackReqUserInfo<TUser>)
+export class Strategy<TUser, TClient extends Client> {
+  // tslint:disable-line:no-unnecessary-generics
+  constructor(
+    options: StrategyOptions<TClient>,
+    verify:
+      | StrategyVerifyCallback<TUser>
+      | StrategyVerifyCallbackUserInfo<TUser>
+      | StrategyVerifyCallbackReq<TUser>
+      | StrategyVerifyCallbackReqUserInfo<TUser>
+  );
 
   authenticate(req: any, options?: any): void;
   success(user: any, info?: any): void;
@@ -823,6 +941,10 @@ export namespace errors {
  */
 // https://github.com/Microsoft/TypeScript/issues/25987#issuecomment-441224690
 type KnownKeys<T> = {
-  [K in keyof T]: string extends K ? never : number extends K ? never : K
-} extends {[_ in keyof T]: infer U} ? ({} extends U ? never : U) : never;
+  [K in keyof T]: string extends K ? never : number extends K ? never : K;
+} extends { [_ in keyof T]: infer U }
+  ? {} extends U
+    ? never
+    : U
+  : never;
 type Override<T1, T2> = Omit<T1, keyof Omit<T2, keyof KnownKeys<T2>>> & T2;
