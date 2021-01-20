@@ -18,6 +18,10 @@ export type CustomHttpOptionsProvider = (options: HttpOptions) => HttpOptions;
 export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
 export type DPoPInput = crypto.KeyObject | crypto.PrivateKeyInput | jose.JWKRSAKey | jose.JWKECKey | jose.JWKOKPKey;
 
+interface UnknownObject {
+  [key: string]: unknown
+}
+
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
  */
@@ -299,7 +303,7 @@ export interface DeviceAuthorizationExtras {
   DPoP?: DPoPInput;
 }
 
-export type Address<ExtendedAddress extends {} = { [key: string]: unknown }> = Override<{
+export type Address<ExtendedAddress extends {} = UnknownObject> = Override<{
   formatted?: string;
   street_address?: string;
   locality?: string;
@@ -309,8 +313,8 @@ export type Address<ExtendedAddress extends {} = { [key: string]: unknown }> = O
 }, ExtendedAddress>
 
 export type UserinfoResponse<
-  UserInfo extends {} = { [key: string]: unknown },
-  ExtendedAddress extends {} = { [key: string]: unknown }
+  UserInfo extends {} = UnknownObject,
+  ExtendedAddress extends {} = UnknownObject
 > = Override<{
   sub: string;
   name?: string;
@@ -430,7 +434,7 @@ export class Client {
    * will be used automatically.
    * @param options Options for the UserInfo request.
    */
-  userinfo<TUserInfo extends {} = { [key: string]: unknown }, TAddress extends {} = { [key: string]: unknown }>(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object, DPoP?: DPoPInput }): Promise<UserinfoResponse<TUserInfo, TAddress>>;
+  userinfo<TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject>(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object, DPoP?: DPoPInput }): Promise<UserinfoResponse<TUserInfo, TAddress>>;
 
   /**
    * Fetches an arbitrary resource with the provided Access Token in an Authorization header.
@@ -666,9 +670,9 @@ export class TokenSet implements TokenSetParameters {
   [key: string]: unknown;
 }
 
-export type StrategyVerifyCallbackUserInfo<TUser, TUserInfo extends {} = { [key: string]: unknown }, TAddress extends {} = { [key: string]: unknown }> = (tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackUserInfo<TUser, TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject> = (tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallbackReqUserInfo<TUser, TUserInfo extends {} = { [key: string]: unknown }, TAddress extends {} = { [key: string]: unknown }> = (req: http.IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackReqUserInfo<TUser, TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject> = (req: http.IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallbackReq<TUser> = (req: http.IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
 
 export interface StrategyOptions<TClient extends Client> {
