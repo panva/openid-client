@@ -299,7 +299,19 @@ export interface DeviceAuthorizationExtras {
   DPoP?: DPoPInput;
 }
 
-export interface UserinfoResponse {
+export type Address<ExtendedAddress extends {} = { [key: string]: unknown }> = Override<{
+  formatted?: string;
+  street_address?: string;
+  locality?: string;
+  region?: string;
+  postal_code?: string;
+  country?: string;
+}, ExtendedAddress>
+
+export type UserinfoResponse<
+  UserInfo extends {} = { [key: string]: unknown },
+  ExtendedAddress extends {} = { [key: string]: unknown }
+> = Override<{
   sub: string;
   name?: string;
   given_name?: string;
@@ -318,19 +330,8 @@ export interface UserinfoResponse {
   locale?: string;
   phone_number?: string;
   updated_at?: number;
-  address?: {
-    formatted?: string;
-    street_address?: string;
-    locality?: string;
-    region?: string;
-    postal_code?: string;
-    country?: string;
-
-    [key: string]: unknown;
-  };
-
-  [key: string]: unknown;
-}
+  address?: Address<ExtendedAddress>
+}, UserInfo>
 
 export interface IntrospectionResponse {
   active: boolean;
@@ -429,7 +430,7 @@ export class Client {
    * will be used automatically.
    * @param options Options for the UserInfo request.
    */
-  userinfo(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object, DPoP?: DPoPInput }): Promise<UserinfoResponse>;
+  userinfo<TUserInfo extends {} = { [key: string]: unknown }, TAddress extends {} = { [key: string]: unknown }>(accessToken: TokenSet | string, options?: { method?: 'GET' | 'POST', via?: 'header' | 'body' | 'query', tokenType?: string, params?: object, DPoP?: DPoPInput }): Promise<UserinfoResponse<TUserInfo, TAddress>>;
 
   /**
    * Fetches an arbitrary resource with the provided Access Token in an Authorization header.
@@ -665,9 +666,9 @@ export class TokenSet implements TokenSetParameters {
   [key: string]: unknown;
 }
 
-export type StrategyVerifyCallbackUserInfo<TUser> = (tokenset: TokenSet, userinfo: UserinfoResponse, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackUserInfo<TUser, TUserInfo extends {} = { [key: string]: unknown }, TAddress extends {} = { [key: string]: unknown }> = (tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallback<TUser> = (tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
-export type StrategyVerifyCallbackReqUserInfo<TUser> = (req: http.IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse, done: (err: any, user?: TUser) => void) => void;
+export type StrategyVerifyCallbackReqUserInfo<TUser, TUserInfo extends {} = { [key: string]: unknown }, TAddress extends {} = { [key: string]: unknown }> = (req: http.IncomingMessage, tokenset: TokenSet, userinfo: UserinfoResponse<TUserInfo, TAddress>, done: (err: any, user?: TUser) => void) => void;
 export type StrategyVerifyCallbackReq<TUser> = (req: http.IncomingMessage, tokenset: TokenSet, done: (err: any, user?: TUser) => void) => void;
 
 export interface StrategyOptions<TClient extends Client> {
@@ -811,3 +812,13 @@ export namespace errors {
     auth_time?: number;
   }
 }
+
+/**
+ * This is very useful to allow applications to override property types
+ * without making types in this package too weird
+ */
+// https://github.com/Microsoft/TypeScript/issues/25987#issuecomment-441224690
+type KnownKeys<T> = {
+  [K in keyof T]: string extends K ? never : number extends K ? never : K
+} extends {[_ in keyof T]: infer U} ? ({} extends U ? never : U) : never;
+type Override<T1, T2> = Omit<T1, keyof Omit<T2, keyof KnownKeys<T2>>> & T2;

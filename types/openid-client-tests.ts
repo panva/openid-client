@@ -113,6 +113,21 @@ async (req: IncomingMessage) => {
 
     //
 
+    const userinfoGeneric = await client.userinfo<{ someProp: number }>(callbackResponse);
+    console.log(userinfoGeneric.someProp);
+
+    //
+
+    const userinfoAddressGeneric = await client.userinfo<{ someProp: number }, { street: string }>(callbackResponse);
+    console.log(userinfoAddressGeneric.address ? userinfoAddressGeneric.address.street.substring(0) : undefined);
+
+    //
+
+    const userinfoOverride = await client.userinfo<{ email_verified: string }>(callbackResponse);
+    console.log(userinfoOverride.email_verified.substring(0));
+
+    //
+
     await client.requestResource('https://rs.example.com/resource', 'access token', { headers: { Accept: 'application/json' } });
     const resource = await client.requestResource('https://rs.example.com/resource', callbackResponse, { headers: { Accept: 'application/json' } });
     console.log(resource.body.byteLength);
