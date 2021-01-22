@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://github.com/panva/node-openid-client/compare/v4.2.3...v4.3.0) (2021-01-22)
+
+
+### Features
+
+* **typescript:** add userinfo response generics ([b176b2f](https://github.com/panva/node-openid-client/commit/b176b2f9161be77082c520ab532c237380abda22))
+
 ## [4.2.3](https://github.com/panva/node-openid-client/compare/v4.2.2...v4.2.3) (2021-01-18)
 
 
