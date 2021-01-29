@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const { expect } = require('chai');
 const nock = require('nock');
 
@@ -78,6 +81,8 @@ Ym+FYK6KtEjrawUvE9CwzkoXiQbisQsGkp1sJxYDkDzW1jf50T3DOOCbGmW6bi7H
 2LZBr34osdcugbFGO07Y8gAiRrh+lbv1JBzALHt93QSVeN9mPNY=
 -----END RSA PRIVATE KEY-----`;
 
+const pfx = fs.readFileSync(path.join(__dirname, 'testcert.p12'));
+
 describe('mutual-TLS', () => {
   beforeEach(function () {
     this.client = new issuer.Client({
@@ -132,6 +137,24 @@ describe('mutual-TLS', () => {
 
     try {
       await this.client.revoke('foo');
+      fail();
+    } catch (err) {
+      expect(err.message).to.eql('mutual-TLS certificate and key not set');
+    }
+  });
+
+  it('works with a PKCS#12 file and a passphrase', async function () {
+    this.client[custom.http_options] = (opts) => ({ ...opts, https: { pfx } });
+
+    nock('https://mtls.op.example.com')
+      .get('/me').reply(200, { sub: 'foo' });
+
+    await this.client.userinfo('foo');
+
+    delete this.client[custom.http_options];
+
+    try {
+      await this.client.userinfo('foo');
       fail();
     } catch (err) {
       expect(err.message).to.eql('mutual-TLS certificate and key not set');

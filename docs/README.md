@@ -647,6 +647,10 @@ client[custom.http_options] = function (options) {
   // custom CA
   // options.https.ca = ca; // <string> | <string[]> | <Buffer> | <Buffer[]>
 
+  // use with .p12/.pfx files
+  // options.https.pfx = pfx; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
+  // options.https.passphrase = passphrase; // <string>
+
   // use HTTP(S)_PROXY
   // https://github.com/sindresorhus/got/tree/v11.8.0#agent
   // options.agent = agent;
