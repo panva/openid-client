@@ -549,7 +549,7 @@ const DEFAULT_HTTP_OPTIONS = {
   followRedirect: false,
   headers: { 'User-Agent': `${pkg.name}/${pkg.version} (${pkg.homepage})` },
   retry: 0,
-  timeout: 2500,
+  timeout: 3500,
   throwHttpErrors: false,
 };
 ```
