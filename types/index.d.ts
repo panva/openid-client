@@ -799,17 +799,15 @@ export interface StrategyOptions<TClient extends Client> {
   extras?: CallbackExtras;
   /**
    * Boolean specifying whether the verify function should get the request object as first argument instead.
-   * Default: 'false'
    */
   passReqToCallback?: boolean;
   /**
    * The PKCE method to use. When 'true' it will resolve based on the issuer metadata, when 'false' no PKCE will be
-   * used. Default: 'false'
+   * used.
    */
   usePKCE?: boolean | string;
   /**
-   * The PKCE method to use. When 'true' it will resolve based on the issuer metadata, when 'false' no PKCE will be
-   * used. Default: 'false'
+   * The property name to store transaction information such as nonce, state, max_age, code_verifier, and response_type.
    */
   sessionKey?: string;
 }
@@ -841,25 +839,25 @@ export class Strategy<TUser, TClient extends Client> {
 export namespace generators {
   /**
    * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate. Default: 32
+   * @param bytes Number indicating the number of bytes to generate.
    */
   function random(bytes?: number): string;
 
   /**
    * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate. Default: 32
+   * @param bytes Number indicating the number of bytes to generate.
    */
   function state(bytes?: number): string;
 
   /**
    * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate. Default: 32
+   * @param bytes Number indicating the number of bytes to generate.
    */
   function nonce(bytes?: number): string;
 
   /**
    * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate. Default: 32
+   * @param bytes Number indicating the number of bytes to generate.
    */
   function codeVerifier(bytes?: number): string;
   /**
