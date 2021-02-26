@@ -210,6 +210,8 @@ describe('Issuer#discover()', () => {
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
         expect(error.name).to.equal('AggregateError');
+        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
+        expect(error.message).not.to.contain('node_modules');
         expect([...error].some((err) => {
           try {
             expect(err.name).to.equal('OPError');
@@ -242,6 +244,8 @@ describe('Issuer#discover()', () => {
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
         expect(error.name).to.equal('AggregateError');
+        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
+        expect(error.message).not.to.contain('node_modules');
         expect([...error].some((err) => {
           try {
             expect(err.name).to.equal('OPError');
@@ -263,6 +267,8 @@ describe('Issuer#discover()', () => {
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
         expect(error.name).to.equal('AggregateError');
+        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
+        expect(error.message).not.to.contain('node_modules');
         expect([...error].some((err) => {
           try {
             expect(err.name).to.equal('OPError');
@@ -284,6 +290,8 @@ describe('Issuer#discover()', () => {
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
         expect(error.name).to.equal('AggregateError');
+        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
+        expect(error.message).not.to.contain('node_modules');
         expect([...error].some((err) => {
           try {
             expect(err.name).to.eql('ParseError');
@@ -305,6 +313,8 @@ describe('Issuer#discover()', () => {
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
         expect(error.name).to.equal('AggregateError');
+        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
+        expect(error.message).not.to.contain('node_modules');
         expect([...error].some((err) => {
           try {
             expect(err.name).to.equal('OPError');
@@ -325,6 +335,8 @@ describe('Issuer#discover()', () => {
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
         expect(error.name).to.equal('AggregateError');
+        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
+        expect(error.message).not.to.contain('node_modules');
         expect([...error].some((err) => {
           try {
             expect(err.name).to.equal('OPError');
