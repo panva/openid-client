@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.1](https://github.com/panva/node-openid-client/compare/v4.4.0...v4.4.1) (2021-02-26)
+
+
+### Bug Fixes
+
+* hide AggregateError message stack ([3011cca](https://github.com/panva/node-openid-client/commit/3011ccabc63e670adcee432b6565d10b55554865)), closes [#336](https://github.com/panva/node-openid-client/issues/336)
+
 ## [4.4.0](https://github.com/panva/node-openid-client/compare/v4.3.0...v4.4.0) (2021-01-29)
 
 
