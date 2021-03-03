@@ -286,7 +286,7 @@ describe('Issuer#webfinger()', () => {
       await Issuer.webfinger('joe@opemail.example.com');
 
       expect(nock.isDone()).to.be.true;
-      sinon.assert.callCount(httpOptions, 3);
+      sinon.assert.callCount(httpOptions, 2);
     });
   });
 });
