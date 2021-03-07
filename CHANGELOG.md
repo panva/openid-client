@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.2](https://github.com/panva/node-openid-client/compare/v4.4.1...v4.4.2) (2021-03-07)
+
+
+### Bug Fixes
+
+* resolve discovery URIs one by one to yield consistent results ([6b18218](https://github.com/panva/node-openid-client/commit/6b18218cfa098195ec8442086221a88fa6aef654)), closes [#260](https://github.com/panva/node-openid-client/issues/260) [#267](https://github.com/panva/node-openid-client/issues/267)
+
 ## [4.4.1](https://github.com/panva/node-openid-client/compare/v4.4.0...v4.4.1) (2021-02-26)
 
 
