@@ -91,10 +91,15 @@ Returns the `<Client>` class tied to this issuer.
 #### `issuer.FAPIClient`
 
 Returns the `<FAPIClient>` class tied to this issuer. `<FAPIClient>` inherits from `<Client>` and
-adds necessary FAPI related checks. `s_hash` presence in authorization endpoint response ID Tokens
-as well as authorization endpoint `iat` not being too far in the past (fixed to be 1 hour).
+adds necessary FAPI behaviours:
 
 - Returns: `<FAPIClient>`
+
+The behaviours are:
+- `s_hash` presence and value checks in authorization endpoint response ID Tokens
+- authorization endpoint response ID Tokens `iat` must not be too far in the past (fixed to be
+  1 hour)
+- Request Objects include `nbf` (with the same value as `iat`)
 
 ---
 

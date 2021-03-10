@@ -3891,6 +3891,20 @@ describe('Client', () => {
           expect(err.message).to.eql('requestObject must be a plain object');
         });
       });
+
+      describe('FAPIClient', function () {
+        it('includes nbf by default', function () {
+          const client = new this.issuer.FAPIClient({ client_id: 'identifier', request_object_signing_alg: 'PS256' }, this.keystore.toJWKS(true));
+          return client.requestObject({})
+            .then((signed) => {
+              const { iat, exp, nbf } = JSON.parse(base64url.decode(signed.split('.')[1]));
+
+              expect(iat).to.be.ok;
+              expect(exp).to.eql(iat + 300);
+              expect(nbf).to.eql(iat);
+            });
+        });
+      });
     });
 
     describe('#requestObject (encryption when multiple keys match)', function () {
