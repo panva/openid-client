@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.5.0](https://github.com/panva/node-openid-client/compare/v4.4.2...v4.5.0) (2021-03-10)
+
+
+### Features
+
+* include `nbf` in FAPIClient Request Objects ([0be56ba](https://github.com/panva/node-openid-client/commit/0be56ba5622e0062495965f55285438542da614e))
+
 ## [4.4.2](https://github.com/panva/node-openid-client/compare/v4.4.1...v4.4.2) (2021-03-07)
 
 
