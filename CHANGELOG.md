@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.5.1](https://github.com/panva/node-openid-client/compare/v4.5.0...v4.5.1) (2021-03-15)
+
+
+### Bug Fixes
+
+* use mtls token endpoint alias as audience when using jwt auth with mtls constrained tokens ([c463359](https://github.com/panva/node-openid-client/commit/c4633591ed7ebdf973b0240959078a8217beccbb))
+
 ## [4.5.0](https://github.com/panva/node-openid-client/compare/v4.4.2...v4.5.0) (2021-03-10)
 
 
