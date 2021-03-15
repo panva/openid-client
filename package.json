@@ -46,16 +46,6 @@
     "lint-ts": "npx typescript@~3.6.0 --build types",
     "test": "mocha test/**/*.test.js"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
   "nyc": {
     "reporter": [
       "lcov",
@@ -72,15 +62,12 @@
     "oidc-token-hash": "^5.0.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-conventional": "^11.0.0",
     "@types/passport": "^1.0.4",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.1",
-    "husky": "^4.3.0",
     "mocha": "^8.2.0",
     "nock": "^13.0.2",
     "nyc": "^15.1.0",
