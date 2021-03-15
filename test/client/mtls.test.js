@@ -3,8 +3,10 @@ const path = require('path');
 
 const { expect } = require('chai');
 const nock = require('nock');
+const jose = require('jose');
 
 const { Issuer, custom } = require('../../lib');
+const clientHelpers = require('../../lib/helpers/client');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 const issuer = new Issuer({
@@ -88,11 +90,28 @@ describe('mutual-TLS', () => {
     this.client = new issuer.Client({
       client_id: 'client',
       token_endpoint_auth_method: 'self_signed_tls_client_auth',
-      introspection_endpoint_auth_method: 'self_signed_tls_client_auth',
-      revocation_endpoint_auth_method: 'self_signed_tls_client_auth',
       tls_client_certificate_bound_access_tokens: true,
     });
     this.client[custom.http_options] = (opts) => ({ ...opts, https: { key, certificate: cert } });
+    this.jwtAuthClient = new issuer.Client({
+      client_id: 'client',
+      client_secret: 'secret',
+      token_endpoint_auth_method: 'client_secret_jwt',
+      token_endpoint_auth_signing_alg: 'HS256',
+      tls_client_certificate_bound_access_tokens: true,
+    });
+    this.client[custom.http_options] = (opts) => ({ ...opts, https: { key, certificate: cert } });
+  });
+
+  it('uses the mtls endpoint alias for token endpoint when using jwt auth and tls certs', async function () {
+    let { form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'token');
+    expect(jose.JWT.decode(jwt).aud).to.eql('https://mtls.op.example.com/token');
+
+    ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
+    expect(jose.JWT.decode(jwt).aud).to.eql('https://op.example.com/token/introspect');
+
+    ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
+    expect(jose.JWT.decode(jwt).aud).to.eql('https://op.example.com/token/revoke');
   });
 
   it('requires mTLS for userinfo when tls_client_certificate_bound_access_tokens is true', async function () {
