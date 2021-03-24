@@ -26,7 +26,7 @@ describe('Client', () => {
   describe('#authorizationUrl', function () {
     before(function () {
       const issuer = new Issuer({
-        issuer: 'https://rp.example.com',
+        issuer: 'https://op.example.com',
         authorization_endpoint: 'https://op.example.com/auth',
       });
       this.client = new issuer.Client({
@@ -1740,8 +1740,8 @@ describe('Client', () => {
     describe('when client_secret_jwt', function () {
       before(function () {
         const issuer = new Issuer({
-          issuer: 'https://rp.example.com',
-          token_endpoint: 'https://rp.example.com/token',
+          issuer: 'https://op.example.com',
+          token_endpoint: 'https://op.example.com/token',
           token_endpoint_auth_signing_alg_values_supported: ['HS256', 'HS384'],
         });
 
@@ -1774,7 +1774,8 @@ describe('Client', () => {
         expect(payload.jti).to.be.a('string');
         expect(payload.iat).to.be.a('number');
         expect(payload.exp).to.be.a('number');
-        expect(payload.aud).to.equal('https://rp.example.com/token');
+        expect(payload.aud).to.include('https://op.example.com/token');
+        expect(payload.aud).to.include('https://op.example.com');
       });
 
       it('can use clientAssertionPayload to change the default payload properties', function () {
@@ -1800,8 +1801,8 @@ describe('Client', () => {
 
       it('requires client_secret to be set on the client', function () {
         const issuer = new Issuer({
-          issuer: 'https://rp.example.com',
-          token_endpoint: 'https://rp.example.com/token',
+          issuer: 'https://op.example.com',
+          token_endpoint: 'https://op.example.com/token',
         });
         const client = new issuer.Client({
           client_id: 'identifier',
@@ -1821,8 +1822,8 @@ describe('Client', () => {
       describe('works as expected', () => {
         before(function () {
           const issuer = new Issuer({
-            issuer: 'https://rp.example.com',
-            token_endpoint: 'https://rp.example.com/token',
+            issuer: 'https://op.example.com',
+            token_endpoint: 'https://op.example.com/token',
             token_endpoint_auth_signing_alg_values_supported: ['ES256', 'ES384'],
           });
 
@@ -1858,7 +1859,8 @@ describe('Client', () => {
           expect(payload.jti).to.be.a('string');
           expect(payload.iat).to.be.a('number');
           expect(payload.exp).to.be.a('number');
-          expect(payload.aud).to.equal('https://rp.example.com/token');
+          expect(payload.aud).to.include('https://op.example.com/token');
+          expect(payload.aud).to.include('https://op.example.com');
         });
 
         it('can use clientAssertionPayload to change the default payload properties', function () {
@@ -1885,8 +1887,8 @@ describe('Client', () => {
 
         it('requires jwks to be provided when the client was instantiated', function () {
           const issuer = new Issuer({
-            issuer: 'https://rp.example.com',
-            token_endpoint: 'https://rp.example.com/token',
+            issuer: 'https://op.example.com',
+            token_endpoint: 'https://op.example.com/token',
           });
           const client = new issuer.Client({
             client_id: 'identifier',
@@ -1905,8 +1907,8 @@ describe('Client', () => {
       describe('alg resolution', () => {
         it('rejects when no valid key is present', () => {
           const issuer = new Issuer({
-            issuer: 'https://rp.example.com',
-            token_endpoint: 'https://rp.example.com/token',
+            issuer: 'https://op.example.com',
+            token_endpoint: 'https://op.example.com/token',
           });
 
           const keystore = new jose.JWKS.KeyStore();

@@ -105,13 +105,22 @@ describe('mutual-TLS', () => {
 
   it('uses the mtls endpoint alias for token endpoint when using jwt auth and tls certs', async function () {
     let { form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'token');
-    expect(jose.JWT.decode(jwt).aud).to.eql('https://mtls.op.example.com/token');
+    let { aud } = jose.JWT.decode(jwt);
+    expect(aud).to.include('https://mtls.op.example.com/token');
+    expect(aud).to.include('https://op.example.com/token');
+    expect(aud).to.include('https://op.example.com');
 
     ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
-    expect(jose.JWT.decode(jwt).aud).to.eql('https://op.example.com/token/introspect');
+    ({ aud } = jose.JWT.decode(jwt));
+    expect(aud).to.include('https://op.example.com/token/introspect');
+    expect(aud).to.include('https://op.example.com/token');
+    expect(aud).to.include('https://op.example.com');
 
     ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
-    expect(jose.JWT.decode(jwt).aud).to.eql('https://op.example.com/token/revoke');
+    ({ aud } = jose.JWT.decode(jwt));
+    expect(aud).to.include('https://op.example.com/token/revoke');
+    expect(aud).to.include('https://op.example.com/token');
+    expect(aud).to.include('https://op.example.com');
   });
 
   it('requires mTLS for userinfo when tls_client_certificate_bound_access_tokens is true', async function () {
