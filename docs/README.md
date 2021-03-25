@@ -160,7 +160,7 @@ Performs [OpenID Provider Issuer Discovery][webfinger-discovery] based on End-Us
   - [client.requestResource(resourceUrl, accessToken, [, options])](#clientrequestresourceresourceurl-accesstoken-options)
   - [client.revoke(token[, tokenTypeHint[, extras]])](#clientrevoketoken-tokentypehint-extras)
   - [client.userinfo(accessToken[, options])](#clientuserinfoaccesstoken-options)
-  - [client.pushedAuthorizationRequest(parameters[, extras])](#pushedauthorizationrequestparameters-extras)
+  - [client.pushedAuthorizationRequest(parameters[, extras])](#clientpushedauthorizationrequestparameters-extras)
 - [Client Authentication Methods](#client-authentication-methods)
 - [Client.fromUri(registrationClientUri, registrationAccessToken[, jwks[, clientOptions]])](#clientfromuriregistrationclienturi-registrationaccesstoken-jwks-clientoptions)
 - [Client.register(metadata[, other])](#clientregistermetadata-other)
