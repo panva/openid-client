@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.6.0](https://github.com/panva/node-openid-client/compare/v4.5.2...v4.6.0) (2021-03-25)
+
+
+### Features
+
+* added OAuth 2.0 Pushed Authorization Requests client API ([e7af9f5](https://github.com/panva/node-openid-client/commit/e7af9f5125c9c1a8877482b8fda44954e60707a1)), closes [#259](https://github.com/panva/node-openid-client/issues/259)
+
 ## [4.5.2](https://github.com/panva/node-openid-client/compare/v4.5.1...v4.5.2) (2021-03-24)
 
 
