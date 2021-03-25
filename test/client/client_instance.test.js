@@ -11,7 +11,7 @@ const jose = require('jose');
 const timekeeper = require('timekeeper');
 
 const TokenSet = require('../../lib/token_set');
-const { OPError } = require('../../lib/errors');
+const { OPError, RPError } = require('../../lib/errors');
 const now = require('../../lib/helpers/unix_timestamp');
 const { Registry, Issuer, custom } = require('../../lib');
 const clientInternal = require('../../lib/helpers/client');
@@ -3953,6 +3953,138 @@ describe('Client', () => {
             const parts = encrypted.split('.');
             expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
           });
+      });
+    });
+  });
+
+  describe('#pushedAuthorizationRequest', function () {
+    before(function () {
+      this.issuer = new Issuer({
+        issuer: 'https://op.example.com',
+        pushed_authorization_request_endpoint: 'https://op.example.com/par',
+      });
+      this.client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'secure',
+        response_type: ['code'],
+        grant_types: ['authorization_code'],
+        redirect_uris: ['https://rp.example.com/cb'],
+      });
+    });
+
+    it('requires the issuer to have pushed_authorization_request_endpoint declared', async () => {
+      const issuer = new Issuer({ issuer: 'https://op.example.com' });
+      const client = new issuer.Client({ client_id: 'identifier' });
+
+      return client.pushedAuthorizationRequest()
+        .then(fail, (error) => {
+          expect(error).to.be.instanceof(TypeError);
+          expect(error.message).to.eql('pushed_authorization_request_endpoint must be configured on the issuer');
+        });
+    });
+
+    it('performs an authenticated post and returns the response', async function () {
+      nock('https://op.example.com')
+        .filteringRequestBody(function (body) {
+          expect(querystring.parse(body)).to.eql({
+            client_id: 'identifier',
+            redirect_uri: 'https://rp.example.com/cb',
+            response_type: 'code',
+            scope: 'openid',
+          });
+        })
+        .post('/par', () => true) // to make sure filteringRequestBody works
+        .reply(201, { expires_in: 60, request_uri: 'urn:ietf:params:oauth:request_uri:random' });
+
+      return this.client.pushedAuthorizationRequest()
+        .then((response) => {
+          expect(response).to.have.property('expires_in', 60);
+          expect(response).to.have.property('request_uri', 'urn:ietf:params:oauth:request_uri:random');
+        });
+    });
+
+    it('handles incorrect status code', async function () {
+      nock('https://op.example.com')
+        .post('/par')
+        .reply(200, { expires_in: 60, request_uri: 'urn:ietf:params:oauth:request_uri:random' });
+
+      return this.client.pushedAuthorizationRequest().then(fail, (error) => {
+        expect(error).to.be.instanceof(OPError);
+        expect(error).to.have.property('message', 'expected 201 Created, got: 200 OK');
+      });
+    });
+
+    it('handles request being part of the params', async function () {
+      nock('https://op.example.com')
+        .filteringRequestBody(function (body) {
+          expect(querystring.parse(body)).to.eql({
+            client_id: 'identifier',
+            request: 'jwt',
+          });
+        })
+        .post('/par', () => true) // to make sure filteringRequestBody works
+        .reply(201, { expires_in: 60, request_uri: 'urn:ietf:params:oauth:request_uri:random' });
+
+      return this.client.pushedAuthorizationRequest({ request: 'jwt' });
+    });
+
+    it('rejects with OPError when part of the response', function () {
+      nock('https://op.example.com')
+        .post('/par')
+        .reply(400, { error: 'invalid_request', error_description: 'description' });
+
+      return this.client.pushedAuthorizationRequest({ request: 'jwt' }).then(fail, (error) => {
+        expect(error).to.be.instanceof(OPError);
+        expect(error).to.have.property('error', 'invalid_request');
+        expect(error).to.have.property('error_description', 'description');
+      });
+    });
+
+    it('rejects with RPError when request_uri is missing from the response', function () {
+      nock('https://op.example.com')
+        .post('/par')
+        .reply(201, { expires_in: 60 });
+
+      return this.client.pushedAuthorizationRequest().then(fail, (error) => {
+        expect(error).to.be.instanceof(RPError);
+        expect(error).to.have.property('response');
+        expect(error).to.have.property('message', 'expected request_uri in Pushed Authorization Successful Response');
+      });
+    });
+
+    it('rejects with RPError when request_uri is not a string', function () {
+      nock('https://op.example.com')
+        .post('/par')
+        .reply(201, { request_uri: null, expires_in: 60 });
+
+      return this.client.pushedAuthorizationRequest().then(fail, (error) => {
+        expect(error).to.be.instanceof(RPError);
+        expect(error).to.have.property('response');
+        expect(error).to.have.property('message', 'invalid request_uri value in Pushed Authorization Successful Response');
+      });
+    });
+
+    it('rejects with RPError when expires_in is missing from the response', function () {
+      nock('https://op.example.com')
+        .post('/par')
+        .reply(201, { request_uri: 'urn:ietf:params:oauth:request_uri:random' });
+
+      return this.client.pushedAuthorizationRequest().then(fail, (error) => {
+        expect(error).to.be.instanceof(RPError);
+        expect(error).to.have.property('response');
+        expect(error).to.have.property('message', 'expected expires_in in Pushed Authorization Successful Response');
+      });
+    });
+
+    it('rejects with RPError when expires_in is not a string', function () {
+      nock('https://op.example.com')
+        .post('/par')
+        .reply(201, { expires_in: null, request_uri: 'urn:ietf:params:oauth:request_uri:random' });
+
+      return this.client.pushedAuthorizationRequest().then(fail, (error) => {
+        expect(error).to.be.instanceof(RPError);
+        expect(error).to.have.property('response');
+        expect(error).to.have.property('message', 'invalid expires_in value in Pushed Authorization Successful Response');
       });
     });
   });

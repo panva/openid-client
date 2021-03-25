@@ -147,22 +147,23 @@ Performs [OpenID Provider Issuer Discovery][webfinger-discovery] based on End-Us
 <!-- TOC Client START -->
 - [Class: &lt;Client&gt;](#class-client)
   - [new Client(metadata[, jwks[, options]])](#new-clientmetadata-jwks-options)
-  - [client.metadata](#clientmetadata)
   - [client.authorizationUrl(parameters)](#clientauthorizationurlparameters)
-  - [client.endSessionUrl(parameters)](#clientendsessionurlparameters)
-  - [client.callbackParams(input)](#clientcallbackparamsinput)
   - [client.callback(redirectUri, parameters[, checks[, extras]])](#clientcallbackredirecturi-parameters-checks-extras)
-  - [client.refresh(refreshToken[, extras])](#clientrefreshrefreshtoken-extras)
-  - [client.userinfo(accessToken[, options])](#clientuserinfoaccesstoken-options)
-  - [client.requestResource(resourceUrl, accessToken, [, options])](#clientrequestresourceresourceurl-accesstoken-options)
+  - [client.callbackParams(input)](#clientcallbackparamsinput)
+  - [client.deviceAuthorization(parameters[, extras])](#clientdeviceauthorizationparameters-extras)
+  - [client.endSessionUrl(parameters)](#clientendsessionurlparameters)
   - [client.grant(body[, extras])](#clientgrantbody-extras)
   - [client.introspect(token[, tokenTypeHint[, extras]])](#clientintrospecttoken-tokentypehint-extras)
-  - [client.revoke(token[, tokenTypeHint[, extras]])](#clientrevoketoken-tokentypehint-extras)
+  - [client.metadata](#clientmetadata)
+  - [client.refresh(refreshToken[, extras])](#clientrefreshrefreshtoken-extras)
   - [client.requestObject(payload)](#clientrequestobjectpayload)
-  - [client.deviceAuthorization(parameters[, extras])](#clientdeviceauthorizationparameters-extras)
+  - [client.requestResource(resourceUrl, accessToken, [, options])](#clientrequestresourceresourceurl-accesstoken-options)
+  - [client.revoke(token[, tokenTypeHint[, extras]])](#clientrevoketoken-tokentypehint-extras)
+  - [client.userinfo(accessToken[, options])](#clientuserinfoaccesstoken-options)
+  - [client.pushedAuthorizationRequest(parameters[, extras])](#pushedauthorizationrequestparameters-extras)
 - [Client Authentication Methods](#client-authentication-methods)
-- [Client.register(metadata[, other])](#clientregistermetadata-other)
 - [Client.fromUri(registrationClientUri, registrationAccessToken[, jwks[, clientOptions]])](#clientfromuriregistrationclienturi-registrationaccesstoken-jwks-clientoptions)
+- [Client.register(metadata[, other])](#clientregistermetadata-other)
 <!-- TOC Client END -->
 
 ---
@@ -474,6 +475,32 @@ a handle for subsequent Device Access Token Request polling.
   Token Endpoint. The value should be a private key to sign a DPoP Proof JWT with. This can be
   a crypto.KeyObject, crypto.createPrivateKey valid inputs, or a JWK formatted private key.
 - Returns: `Promise<DeviceFlowHandle>`
+
+---
+
+#### `client.pushedAuthorizationRequest(parameters[, extras])`
+
+[OAuth 2.0 Pushed Authorization Requests (PAR) - draft 06](https://tools.ietf.org/html/draft-ietf-oauth-par-06)
+
+Performs a Pushed Authorization Request at the issuer's `pushed_authorization_request_endpoint`
+with the provided parameters. The resolved object contains a `request_uri` that you will
+afterwards pass to [client.authorizationUrl(parameters)](#clientauthorizationurlparameters) as the `request_uri` parameter.
+
+The parameters sent to `pushed_authorization_request_endpoint` default to the same values
+as [client.authorizationUrl(parameters)](#clientauthorizationurlparameters) unless
+`request` (a Request Object) parameter e.g. from [client.requestObject(payload)](#clientrequestobjectpayload) is present.
+
+The client will use it's `token_endpoint_auth_method` to authenticate at the `pushed_authorization_request_endpoint`.
+
+- `parameters`: `<Object>`
+  - `client_id`: `<string>` **Default:** client's client_id
+  - any other request parameters may also be included
+- `extras`: `<Object>`
+  - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
+    part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
+    is either `client_secret_jwt` or `private_key_jwt`.
+- Returns: `Promise<Object>` Parsed Pushed Authorization Request Response with `request_uri` 
+  and `expires_in` properties validated to be present and correct types.
 
 ---
 

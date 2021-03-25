@@ -47,6 +47,7 @@ openid-client.
 - [Financial-grade API - Part 2: Read and Write API Security Profile (FAPI) - ID2][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
 - [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 01][feature-dpop]
+- [OAuth 2.0 Pushed Authorization Requests (PAR) - draft 06][feature-par]
 
 Updates to draft specifications (DPoP, JARM, and FAPI) are released as MINOR library versions,
 if you utilize these specification implementations consider using the tilde `~` operator in your
@@ -296,6 +297,7 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
 [feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-ID2.html
 [feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-01
+[feature-par]: https://tools.ietf.org/html/draft-ietf-oauth-par-06
 [openid-certified-link]: https://openid.net/certification/
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
