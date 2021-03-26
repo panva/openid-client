@@ -112,12 +112,14 @@ describe('mutual-TLS', () => {
 
     ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
     ({ aud } = jose.JWT.decode(jwt));
+    expect(aud).not.to.include('https://mtls.op.example.com/token/introspect');
     expect(aud).to.include('https://op.example.com/token/introspect');
     expect(aud).to.include('https://op.example.com/token');
     expect(aud).to.include('https://op.example.com');
 
     ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
     ({ aud } = jose.JWT.decode(jwt));
+    expect(aud).not.to.include('https://mtls.op.example.com/token/revoke');
     expect(aud).to.include('https://op.example.com/token/revoke');
     expect(aud).to.include('https://op.example.com/token');
     expect(aud).to.include('https://op.example.com');
