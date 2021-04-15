@@ -139,7 +139,7 @@ jobs:
   fapi-conformance:
     runs-on: ubuntu-latest
     steps:
-      - run: git clone --depth 1 --single-branch --branch release-v4.1.6 https://gitlab.com/openid/conformance-suite.git
+      - run: git clone --depth 1 --single-branch --branch release-v4.1.10 https://gitlab.com/openid/conformance-suite.git
       - env:
           MAVEN_CACHE: ./m2
         run: |
