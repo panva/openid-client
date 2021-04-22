@@ -1,4 +1,5 @@
 /// <reference types="node" />
+/// <reference lib="dom"/>
 // TypeScript Version: 3.6
 
 /**
@@ -567,9 +568,14 @@ export class Client {
   [key: string]: unknown;
 }
 
+interface DeviceFlowPollOptions {
+  signal?: AbortSignal,
+}
+
 export class DeviceFlowHandle<TClient extends Client> {
   // tslint:disable-line:no-unnecessary-generics
-  poll(): Promise<TokenSet>;
+  poll(options?: DeviceFlowPollOptions): Promise<TokenSet>;
+  abort(): void;
   expired(): boolean;
   expires_at: number;
   client: TClient;

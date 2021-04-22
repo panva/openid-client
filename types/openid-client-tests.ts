@@ -71,7 +71,13 @@ async (req: IncomingMessage) => {
     client.requestResource('https://rs.example.com/resource', 'token', { DPoP: jwk })
 
     client.deviceAuthorization({}, { DPoP: keyobject })
-    client.deviceAuthorization({}, { DPoP: jwk })
+    const handle = await client.deviceAuthorization({}, { DPoP: jwk })
+
+    handle.abort();
+    handle.poll();
+
+    const ac = new AbortController();
+    handle.poll({ signal: ac.signal });
 
     client.grant({ grant_type: 'client_credentials' }, { DPoP: keyobject })
     client.grant({ grant_type: 'client_credentials' }, { DPoP: jwk })
