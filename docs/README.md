@@ -793,7 +793,8 @@ first place.
 
 <!-- TOC DeviceFlowHandle START -->
 - [Class: &lt;DeviceFlowHandle&gt;](#class-deviceflowhandle)
-  - [handle.poll()](#handlepoll)
+  - [handle.poll([options])](#handlepolloptions)
+  - [handle.abort()](#handleabort)
   - [handle.user_code](#handleuser_code)
   - [handle.verification_uri](#handleverification_uri)
   - [handle.verification_uri_complete](#handleverification_uri_complete)
@@ -812,13 +813,22 @@ other defined response properties. A handle is instantiated by calling
 
 ---
 
-#### `handle.poll()`
+#### `handle.poll([options])`
 
 This will continuously poll the token_endpoint and resolve with a TokenSet once one is received.
 This will handle the defined `authorization_pending` and `slow_down` "soft" errors and continue
 polling but upon any other error it will reject.
 
+- `options`: `<Object>`
+  - `signal`: `<AbortSignal>` An optional AbortSignal that can be used to abort polling. When
+  if the signal is aborted the next interval in the poll will make the returned promise reject.
 - Returns: `Promise<TokenSet>`
+
+---
+
+#### `handle.abort()`
+
+This will abort ongoing polling. The next interval in the poll will result in a rejection.
 
 ---
 

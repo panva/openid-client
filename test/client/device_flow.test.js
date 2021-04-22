@@ -314,6 +314,109 @@ describe('Device Flow features', () => {
       });
     });
 
+    it('aborts polling through DeviceFlowHandle.prototype.abort() (immediate)', () => {
+      const handle = new DeviceFlowHandle({
+        client: this.client,
+        response: {
+          verification_uri: 'https://op.example.com/device',
+          user_code: 'AAAA-AAAA',
+          device_code: 'foobar',
+          interval: 5,
+          expires_in: 300,
+        },
+      });
+
+      handle.abort();
+
+      return handle.poll().then(fail, (err) => {
+        expect(err.name).to.equal('RPError');
+        expect(err.message).to.equal('polling aborted');
+      });
+    });
+
+    it('aborts polling through DeviceFlowHandle.prototype.abort() (mid polling)', function () {
+      this.timeout(6000);
+
+      const handle = new DeviceFlowHandle({
+        client: this.client,
+        response: {
+          verification_uri: 'https://op.example.com/device',
+          user_code: 'AAAA-AAAA',
+          device_code: 'foobar',
+          interval: 5,
+          expires_in: 300,
+        },
+      });
+
+      nock('https://op.example.com')
+        .post('/token', () => {
+          handle.abort();
+          return true;
+        })
+        .reply(400, { error: 'authorization_pending' });
+
+      return handle.poll().then(fail, (err) => {
+        expect(err.name).to.equal('RPError');
+        expect(err.message).to.equal('polling aborted');
+        expect(nock.isDone()).to.be.true;
+      });
+    });
+
+    if (typeof AbortController !== 'undefined') {
+      it('aborts polling through AbortController (immediate)', () => {
+        const handle = new DeviceFlowHandle({
+          client: this.client,
+          response: {
+            verification_uri: 'https://op.example.com/device',
+            user_code: 'AAAA-AAAA',
+            device_code: 'foobar',
+            interval: 5,
+            expires_in: 300,
+          },
+        });
+
+        // eslint-disable-next-line no-undef
+        const ac = new AbortController();
+        ac.abort();
+
+        return handle.poll({ signal: ac.signal }).then(fail, (err) => {
+          expect(err.name).to.equal('RPError');
+          expect(err.message).to.equal('polling aborted');
+        });
+      });
+
+      it('aborts polling through AbortController (mid polling)', function () {
+        this.timeout(6000);
+
+        const handle = new DeviceFlowHandle({
+          client: this.client,
+          response: {
+            verification_uri: 'https://op.example.com/device',
+            user_code: 'AAAA-AAAA',
+            device_code: 'foobar',
+            interval: 5,
+            expires_in: 300,
+          },
+        });
+
+        // eslint-disable-next-line no-undef
+        const ac = new AbortController();
+
+        nock('https://op.example.com')
+          .post('/token', () => {
+            ac.abort();
+            return true;
+          })
+          .reply(400, { error: 'authorization_pending' });
+
+        return handle.poll({ signal: ac.signal }).then(fail, (err) => {
+          expect(err.name).to.equal('RPError');
+          expect(err.message).to.equal('polling aborted');
+          expect(nock.isDone()).to.be.true;
+        });
+      });
+    }
+
     it('the handle tracks expiration of the device code', () => {
       const handle = new DeviceFlowHandle({
         response: {
