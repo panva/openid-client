@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.1](https://github.com/panva/node-openid-client/compare/v4.7.0...v4.7.1) (2021-04-22)
+
+
+### Bug Fixes
+
+* **typescript:** add types for 4.7.0 additions ([2c1d2ab](https://github.com/panva/node-openid-client/commit/2c1d2ab71fe2daba2dad23af1f92f66c92305df5))
+
 ## [4.7.0](https://github.com/panva/node-openid-client/compare/v4.6.0...v4.7.0) (2021-04-22)
 
 
