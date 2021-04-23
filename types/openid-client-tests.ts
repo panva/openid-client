@@ -70,6 +70,18 @@ async (req: IncomingMessage) => {
     client.requestResource('https://rs.example.com/resource', 'token', { DPoP: keyobject })
     client.requestResource('https://rs.example.com/resource', 'token', { DPoP: jwk })
 
+    client.pushedAuthorizationRequest()
+    client.pushedAuthorizationRequest({})
+    client.pushedAuthorizationRequest({ foo: 'bar' })
+    client.pushedAuthorizationRequest({ foo: 'bar' }, { clientAssertionPayload: {} })
+
+    {
+        const { request_uri, expires_in } = await client.pushedAuthorizationRequest()
+        request_uri.substring(0)
+        expires_in.toFixed()
+    }
+
+
     client.deviceAuthorization({}, { DPoP: keyobject })
     const handle = await client.deviceAuthorization({}, { DPoP: jwk })
 

@@ -325,6 +325,10 @@ export interface DeviceAuthorizationExtras {
   DPoP?: DPoPInput;
 }
 
+export interface PushedAuthorizationRequestExtras {
+  clientAssertionPayload?: object;
+}
+
 export type Address<ExtendedAddress extends {} = UnknownObject> = Override<
   {
     formatted?: string;
@@ -553,6 +557,14 @@ export class Client {
     parameters?: DeviceAuthorizationParameters,
     extras?: DeviceAuthorizationExtras
   ): Promise<DeviceFlowHandle<Client>>;
+  pushedAuthorizationRequest(
+    parameters?: AuthorizationParameters,
+    extras?: PushedAuthorizationRequestExtras,
+  ): Promise<{
+    request_uri: string;
+    expires_in: number;
+    [key: string]: unknown;
+  }>;
   static register(
     metadata: object,
     other?: RegisterOther & ClientOptions
