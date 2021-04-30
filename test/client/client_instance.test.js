@@ -2644,9 +2644,11 @@ describe('Client', () => {
     it('FAPIClient checks iat is fresh', function () {
       const code = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
       const c_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
+      const s_hash = 'LCa0a2j_xo_5m0U8HTBBNA'; // eslint-disable-line camelcase
 
       return this.IdToken(this.keystore.get(), 'RS256', {
         c_hash,
+        s_hash,
         iss: this.issuer.issuer,
         sub: 'userId',
         aud: this.fapiClient.client_id,
