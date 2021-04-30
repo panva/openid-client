@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.3](https://github.com/panva/node-openid-client/compare/v4.7.2...v4.7.3) (2021-04-30)
+
+
+### Bug Fixes
+
+* **fapi:** validate ID Token's iat regardless of which channel it came from ([b68b9ab](https://github.com/panva/node-openid-client/commit/b68b9ab5af6a85a2f42adf6b782cef7e08378658))
+
 ## [4.7.2](https://github.com/panva/node-openid-client/compare/v4.7.1...v4.7.2) (2021-04-23)
 
 
