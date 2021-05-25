@@ -513,7 +513,7 @@ export class Client {
     options?: {
       headers?: object;
       body?: string | Buffer;
-      method?: "GET" | "POST" | "PUT" | "HEAD" | "DELETE" | "OPTIONS" | "TRACE";
+      method?: "GET" | "POST" | "PUT" | "HEAD" | "DELETE" | "OPTIONS" | "TRACE" | "PATCH";
       tokenType?: string;
       DPoP?: DPoPInput;
     }
