@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.4](https://github.com/panva/node-openid-client/compare/v4.7.3...v4.7.4) (2021-05-25)
+
+
+### Bug Fixes
+
+* **typescript:** add a missing PATCH method to requestResource ([6b2c3ce](https://github.com/panva/node-openid-client/commit/6b2c3ce09b45a301911fb9f8e1e52831063f7063)), closes [#368](https://github.com/panva/node-openid-client/issues/368)
+
 ## [4.7.3](https://github.com/panva/node-openid-client/compare/v4.7.2...v4.7.3) (2021-04-30)
 
 
