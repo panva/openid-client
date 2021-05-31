@@ -676,13 +676,13 @@ export class Issuer<TClient extends Client> {
    * performs both openid-configuration and oauth-authorization-server requests.
    * @param issuer Issuer Identifier or metadata URL
    */
-  static discover(issuer: string): Promise<Issuer<Client>>;
+  static discover<TClient>(issuer: string): Promise<Issuer<TClient>>;
 
   /**
    * Performs OpenID Provider Issuer Discovery based on End-User input.
    * @param input EMAIL, URL, Hostname and Port, acct or syntax input
    */
-  static webfinger(input: string): Promise<Issuer<Client>>;
+  static webfinger<TClient>(input: string): Promise<Issuer<TClient>>;
 
   static [custom.http_options]: CustomHttpOptionsProvider;
 
