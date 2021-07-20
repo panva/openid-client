@@ -242,7 +242,7 @@ parameters.
   - `response_type`: `<string>` **Default:** If only a single `client.response_types` member is
     present that one will be used automatically.
   - `scope`: `<string>` **Default:** 'openid'
-  - any other authorization parameters may be provided
+  - any other authorization parameters may be provided (`nonce`, `state`, `login_hint`, etc.)
 - Returns: `<string>`
 
 ---
