@@ -910,7 +910,7 @@ Creates a new Strategy
     the request object as first argument instead. **Default:** 'false'
   - `usePKCE`: `<boolean>` &vert; `<string>` The PKCE method to use. When 'true' it will resolve based
     on the issuer metadata, when 'false' no PKCE will be used. **Default:** 'true'
-  - `[sessionKey]`: <string> Optional argument used with PKCE, explicitly define the key in your session which is used for storing and retrieving the code_verifier. When it is not defined the sessionKey will be `oidc:` + issuer's hostname.
+  - `sessionKey`: <string> Define the property in your session which is used for storing information for the purpose of consuming the authentication response. **Default:** 'oidc:${Issuer Identifier}'
 - `verify`: `<Function>` Your regular Passport
   [Verify Callback](http://www.passportjs.org/docs/configure/#verify-callback) function in which you
   verify the user from based on the data received from the AS.
