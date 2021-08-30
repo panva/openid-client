@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.5](https://github.com/panva/node-openid-client/compare/v4.7.4...v4.7.5) (2021-08-30)
+
+
+### Bug Fixes
+
+* **typescript:** add remaining properties from RFC7662 ([#398](https://github.com/panva/node-openid-client/issues/398)) ([166e89b](https://github.com/panva/node-openid-client/commit/166e89b867bcb6923a8198740843161a57d656cb))
+
 ## [4.7.4](https://github.com/panva/node-openid-client/compare/v4.7.3...v4.7.4) (2021-05-25)
 
 
