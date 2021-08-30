@@ -380,6 +380,8 @@ export interface IntrospectionResponse {
   username?: string;
   aud?: string | string[];
   scope: string;
+  sub?: string;
+  nbf?: number;
   token_type?: string;
   cnf?: {
     "x5t#S256"?: string;
