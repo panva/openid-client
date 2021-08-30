@@ -43,7 +43,6 @@
     "coverage": "nyc mocha test/**/*.test.js",
     "lint": "eslint lib test",
     "lint-fix": "eslint lib test --fix",
-    "lint-ts": "npx typescript@~3.6.0 --build types",
     "test": "mocha test/**/*.test.js"
   },
   "nyc": {
