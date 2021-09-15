@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.8.0](https://github.com/panva/node-openid-client/compare/v4.7.5...v4.8.0) (2021-09-15)
+
+
+### Features
+
+* OAuth 2.0 Pushed Authorization Requests (PAR) is now a stable feature ([327f366](https://github.com/panva/node-openid-client/commit/327f366daf042c011f41f4e6419cba5e59f0edac))
+
 ## [4.7.5](https://github.com/panva/node-openid-client/compare/v4.7.4...v4.7.5) (2021-08-30)
 
 
