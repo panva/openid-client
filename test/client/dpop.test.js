@@ -3,11 +3,8 @@ const crypto = require('crypto');
 const { expect } = require('chai');
 const nock = require('nock');
 const jose = require('jose');
-const { createHash, randomBytes } = require('crypto');
-
 
 const { Issuer, custom } = require('../../lib');
-const base64url = require('../../lib/helpers/base64url');
 
 const issuer = new Issuer({
   issuer: 'https://op.example.com',
@@ -18,10 +15,6 @@ const issuer = new Issuer({
   device_authorization_endpoint: 'https://op.example.com/device',
   dpop_signing_alg_values_supported: ['PS512', 'PS384', 'PS256'],
 });
-
-// SHA256('foo') in hex form
-const auth_token = 'foo';
-const auth_token_hash = base64url.encode(createHash('sha256').update(auth_token).digest());
 
 const jwk = jose.JWK.generateSync('RSA');
 
@@ -55,7 +48,7 @@ describe('DPoP', () => {
       expect(() => this.client.dpopProof({}, jose.JWK.generateSync('EC').toPEM())).to.throw(msg);
     });
 
-    it('DPoP Proof JWT', function () {
+    it('DPoP Proof JWT w/o ath', function () {
       const proof = this.client.dpopProof({
         htu: 'foo',
         htm: 'bar',
@@ -87,6 +80,15 @@ describe('DPoP', () => {
       }
     });
 
+    it('DPoP Proof JWT w/ ath', function () {
+      const proof = this.client.dpopProof({
+        htu: 'foo',
+        htm: 'bar',
+      }, jose.JWK.generateSync('EC'), 'foo');
+      const decoded = jose.JWT.decode(proof, { complete: true });
+      expect(decoded).to.have.nested.property('payload.ath', 'LCa0a2j_xo_5m0U8HTBBNBNCLXBkg7-g-YpeiGJm564');
+    });
+
     it('key.alg is used if present', function () {
       const proof = this.client.dpopProof({}, jose.JWK.generateSync('RSA', 2048, { alg: 'PS384' }));
       expect(jose.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'PS384');
@@ -107,28 +109,26 @@ describe('DPoP', () => {
     nock('https://op.example.com')
       .get('/me').reply(200, { sub: 'foo' });
 
-    await this.client.userinfo(auth_token, { DPoP: jwk });
+    await this.client.userinfo('foo', { DPoP: jwk });
 
     expect(this.httpOpts).to.have.nested.property('headers.DPoP');
 
     const proof = this.httpOpts.headers.DPoP;
     const proofJWT = jose.JWT.decode(proof, { complete: true });
     expect(proofJWT).to.have.nested.property('payload.ath');
-    expect(proofJWT.payload.ath).to.equal(auth_token_hash);
   });
 
   it('is enabled for requestResource', async function () {
     nock('https://rs.example.com')
       .post('/resource').reply(200, { sub: 'foo' });
 
-    await this.client.requestResource('https://rs.example.com/resource', auth_token, { DPoP: jwk, method: 'POST' });
+    await this.client.requestResource('https://rs.example.com/resource', 'foo', { DPoP: jwk, method: 'POST' });
 
     expect(this.httpOpts).to.have.nested.property('headers.DPoP');
 
     const proof = this.httpOpts.headers.DPoP;
     const proofJWT = jose.JWT.decode(proof, { complete: true });
     expect(proofJWT).to.have.nested.property('payload.ath');
-    expect(proofJWT.payload.ath).to.equal(auth_token_hash);
   });
 
   it('is enabled for grant', async function () {
