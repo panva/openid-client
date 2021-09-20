@@ -48,7 +48,7 @@ describe('DPoP', () => {
       expect(() => this.client.dpopProof({}, jose.JWK.generateSync('EC').toPEM())).to.throw(msg);
     });
 
-    it('DPoP Proof JWT', function () {
+    it('DPoP Proof JWT w/o ath', function () {
       const proof = this.client.dpopProof({
         htu: 'foo',
         htm: 'bar',
@@ -80,6 +80,15 @@ describe('DPoP', () => {
       }
     });
 
+    it('DPoP Proof JWT w/ ath', function () {
+      const proof = this.client.dpopProof({
+        htu: 'foo',
+        htm: 'bar',
+      }, jose.JWK.generateSync('EC'), 'foo');
+      const decoded = jose.JWT.decode(proof, { complete: true });
+      expect(decoded).to.have.nested.property('payload.ath', 'LCa0a2j_xo_5m0U8HTBBNBNCLXBkg7-g-YpeiGJm564');
+    });
+
     it('key.alg is used if present', function () {
       const proof = this.client.dpopProof({}, jose.JWK.generateSync('RSA', 2048, { alg: 'PS384' }));
       expect(jose.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'PS384');
@@ -103,6 +112,10 @@ describe('DPoP', () => {
     await this.client.userinfo('foo', { DPoP: jwk });
 
     expect(this.httpOpts).to.have.nested.property('headers.DPoP');
+
+    const proof = this.httpOpts.headers.DPoP;
+    const proofJWT = jose.JWT.decode(proof, { complete: true });
+    expect(proofJWT).to.have.nested.property('payload.ath');
   });
 
   it('is enabled for requestResource', async function () {
@@ -112,6 +125,10 @@ describe('DPoP', () => {
     await this.client.requestResource('https://rs.example.com/resource', 'foo', { DPoP: jwk, method: 'POST' });
 
     expect(this.httpOpts).to.have.nested.property('headers.DPoP');
+
+    const proof = this.httpOpts.headers.DPoP;
+    const proofJWT = jose.JWT.decode(proof, { complete: true });
+    expect(proofJWT).to.have.nested.property('payload.ath');
   });
 
   it('is enabled for grant', async function () {

@@ -48,7 +48,7 @@ openid-client.
   - RP-Initiated Logout
 - [Financial-grade API - Part 2: Read and Write API Security Profile (FAPI) - ID2][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
-- [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 01][feature-dpop]
+- [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 03][feature-dpop]
 
 Updates to draft specifications (DPoP, JARM, and FAPI) are released as MINOR library versions,
 if you utilize these specification implementations consider using the tilde `~` operator in your
@@ -297,7 +297,7 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [feature-rp-logout]: https://openid.net/specs/openid-connect-session-1_0.html#RPLogout
 [feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
 [feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-ID2.html
-[feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-01
+[feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-03
 [feature-par]: https://www.rfc-editor.org/rfc/rfc9126.html
 [feature-jar]: https://www.rfc-editor.org/rfc/rfc9101.html
 [openid-certified-link]: https://openid.net/certification/
