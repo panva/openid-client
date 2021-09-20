@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.9.0](https://github.com/panva/node-openid-client/compare/v4.8.0...v4.9.0) (2021-09-20)
+
+
+### Features
+
+* update DPoP support to draft-03 ([#407](https://github.com/panva/node-openid-client/issues/407)) ([5565ee1](https://github.com/panva/node-openid-client/commit/5565ee1ea5d7c68cd7ec7c8fbcdb98a9f85d512a)), closes [#406](https://github.com/panva/node-openid-client/issues/406)
+
 ## [4.8.0](https://github.com/panva/node-openid-client/compare/v4.7.5...v4.8.0) (2021-09-15)
 
 
