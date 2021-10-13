@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.9.1](https://github.com/panva/node-openid-client/compare/v4.9.0...v4.9.1) (2021-10-13)
+
+
+### Bug Fixes
+
+* do not implicitly calculate key ids for Client instances ([46e44e7](https://github.com/panva/node-openid-client/commit/46e44e754aa299a97e4d51aa8762a3423255080f)), closes [#379](https://github.com/panva/node-openid-client/issues/379)
+
 ## [4.9.0](https://github.com/panva/node-openid-client/compare/v4.8.0...v4.9.0) (2021-09-20)
 
 
