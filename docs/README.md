@@ -616,6 +616,9 @@ custom.setHttpOptionsDefaults({
         if (options.body) {
           console.log('--> BODY %s', options.body);
         }
+        if (options.form) {
+          console.log('--> FORM %s', options.form);
+        }
       },
     ],
     afterResponse: [
