@@ -90,7 +90,9 @@ or koa middlewares. Those can however be built using the exposed API.
 
 ## Install
 
-Node.js version **>=12.0.0** is recommended, but **^10.19.0** lts/dubnium is also supported.
+Node.js LTS releases Codename Erbium (starting with ^12.19.0) and newer LTS releases are supported. 
+This means  ^12.19.0 (Erbium), ^14.15.0 (Fermium), and ^16.13.0 (Gallium). Future LTS releases will
+be added to this list as they're released.
 
 ```console
 npm install openid-client
@@ -253,11 +255,6 @@ This will poll in the defined interval and only resolve with a TokenSet once one
 will handle the defined `authorization_pending` and `slow_down` "soft" errors and continue polling
 but upon any other error it will reject. With tokenSet received you can throw away the handle.
 
-## Electron Support
-
-Electron >=v6.0.0 runtime is supported to the extent of the crypto engine BoringSSL feature parity
-with standard Node.js OpenSSL.
-
 ## FAQ
 
 #### Semver?
@@ -269,8 +266,8 @@ private API and is subject to change between any versions.
 
 #### How do I use it outside of Node.js
 
-It is **only built for ^10.19.0 || >=12.0.0 Node.js** environment - including openid-client in
-browser-environment targeted projects is not supported and may result in unexpected results.
+It is **only built for Node.js** environments - including openid-client in
+browser-environment targeted projects is not supported.
 
 #### How to make the client send client_id and client_secret in the body?
 

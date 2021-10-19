@@ -38,24 +38,21 @@ jobs:
 
   test:
     name: Node Tests + Coverage
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental || false }}
     strategy:
+      fail-fast: false
       matrix:
         node-version:
-          - 10.19.0
-          - 10
-          - 12.0.0
+          - 12.19.0
           - 12
-          - 13.7.0
-          - 13
-          - 14.2.0
+          - 14.15.0
           - 14
-          - 15.0.1
-          - 15
-          - '>=15'
-        os:
-          - ubuntu-latest
-          - windows-latest
+          - 16.13.0
+          - 16
+        include:
+          - experimental: true
+            node-version: '>=17'
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -83,16 +80,8 @@ jobs:
     strategy:
       matrix:
         electron-version:
-          - 6.0.0
-          - 6
-          - 7.0.0
-          - 7
-          - 8.0.0
-          - 8
-          - 9.0.0
-          - 9
-          - 10.0.0
-          - 10
+          - 12.0.0
+          - latest
         os:
           - ubuntu-latest
           - windows-latest
