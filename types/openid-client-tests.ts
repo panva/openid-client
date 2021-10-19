@@ -8,15 +8,7 @@ import passport from 'passport';
 
 async (req: IncomingMessage) => {
     // Custom HTTP options on the `Issuer` _c'tor_ (e.g. used for `Issuer.discover()`):
-    Issuer[custom.http_options] = options => {
-        console.log(options.followRedirect, options.timeout, options.retry);
-        return {
-            ...options,
-            followRedirect: true,
-            timeout: 10_000,
-            retry: 3,
-        };
-    };
+    Issuer[custom.http_options] = () => ({ timeout: 10000 });
 
     let issuer = await Issuer.discover('https://accounts.google.com');
     console.log('Discovered issuer %O', issuer.metadata.issuer);
@@ -35,11 +27,11 @@ async (req: IncomingMessage) => {
         token_endpoint_auth_methods_supported: ['client_secret_post', 'client_secret_basic'],
     });
 
-    issuer[custom.http_options] = options => ({ ...options, retry: 3 });
+    issuer[custom.http_options] = () => ({ timeout: 10000 });
 
     //
 
-    issuer.Client[custom.http_options] = options => ({ ...options, retry: 3 });
+    issuer.Client[custom.http_options] = () => ({ timeout: 10000 });
 
     const client = new issuer.Client({
         client_id: 'c',
@@ -50,7 +42,7 @@ async (req: IncomingMessage) => {
     console.log(client.metadata.client_id);
 
     // Custom HTTP options on the `Client` _instance_
-    client[custom.http_options] = options => ({ ...options, retry: 3 });
+    client[custom.http_options] = () => ({ timeout: 10000 });
     client[custom.clock_tolerance] = 5;
 
     //

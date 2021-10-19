@@ -659,65 +659,41 @@ This function will then be called before executing each and every request on the
 const { custom } = require('openid-client');
 
 // you can also set this on Issuer constructor, Issuer instance, or Client constructor
-client[custom.http_options] = function (options) {
+client[custom.http_options] = function (url, options) {
+  // console.log(url);
   // console.log(options);
-  options.timeout = 5000;
-  return options;
+  return { timeout: 5000 };
 }
 ```
 
-This is meant to change request options on per-request basis should there be a specific IdP quirk
-you need to work around, e.g. adding custom headers or body payload parameters.
+The following options can be provided `agent`, `ca`, `cert`, `crl`, `headers`, `key`, `lookup`, `passphrase`, 
+`pfx`, `timeout`. These are all relayed to https://nodejs.org/api/https.html#httpsrequesturl-options-callback
 
 <details>
   <summary><em><strong>Example</strong></em> (Click to expand) providing mutual-TLS client certificate and key</summary>
 
 ```js
 const { custom } = require('openid-client');
-client[custom.http_options] = function (options) {
-  // see https://github.com/sindresorhus/got/tree/v11.8.0#advanced-https-api
-  options.https = options.https || {};
-  options.https.certificate = certificate; // <string> | <string[]> | <Buffer> | <Buffer[]>
-  options.https.key = key; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
+client[custom.http_options] = function (url, options) {
+  // https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions
+  const result = {};
+
+  result.cert = cert; // <string> | <string[]> | <Buffer> | <Buffer[]>
+  result.key = key; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
+
   // custom CA
-  // options.https.ca = ca; // <string> | <string[]> | <Buffer> | <Buffer[]>
+  // result.ca = ca; // <string> | <string[]> | <Buffer> | <Buffer[]>
 
   // use with .p12/.pfx files
-  // options.https.pfx = pfx; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
-  // options.https.passphrase = passphrase; // <string>
+  // result.pfx = pfx; // <string> | <string[]> | <Buffer> | <Buffer[]> | <Object[]>
+  // result.passphrase = passphrase; // <string>
 
   // use HTTP(S)_PROXY
-  // https://github.com/sindresorhus/got/tree/v11.8.0#agent
-  // options.agent = agent;
+  // https://nodejs.org/api/http.html#httprequesturl-options-callback
+  // e.g. using https://www.npmjs.com/package/proxy-agent
+  // result.agent = agent;
 
-  return options;
-}
-```
-</details>
-
-<details>
-  <summary><em><strong>Example</strong></em> (Click to expand) Other options</summary>
-
-```js
-const { custom } = require('openid-client');
-client[custom.http_options] = function (options) {
-  // https://github.com/sindresorhus/got/tree/v11.8.0#headers
-  // options.headers = Object.assign(options.headers, { 'custom': 'foo' });
-
-  // https://github.com/sindresorhus/got/tree/v11.8.0#timeout
-  // options.timeout = timeout;
-
-  // https://github.com/sindresorhus/got/tree/v11.8.0#retry
-  // options.retry = retry;
-
-  // https://github.com/sindresorhus/got/tree/v11.8.0#followredirect
-  // options.followRedirect = false;
-
-  // use HTTP(S)_PROXY
-  // https://github.com/sindresorhus/got/tree/v11.8.0#agent
-  // options.agent = agent;
-
-  return options;
+  return result;
 }
 ```
 </details>

@@ -1352,8 +1352,7 @@ describe('Client', () => {
 
       return client.userinfo()
         .then(fail, function (error) {
-          expect(error.name).to.eql('ParseError');
-          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/me"');
+          expect(error.message).to.eql('Unexpected token } in JSON at position 12');
           expect(error).to.have.property('response');
         });
     });
@@ -1542,8 +1541,7 @@ describe('Client', () => {
 
       return client.introspect('tokenValue')
         .then(fail, function (error) {
-          expect(error.name).to.eql('ParseError');
-          expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/token/introspect"');
+          expect(error.message).to.eql('Unexpected token } in JSON at position 12');
           expect(error).to.have.property('response');
         });
     });

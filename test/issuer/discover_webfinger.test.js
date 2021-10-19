@@ -255,10 +255,7 @@ describe('Issuer#webfinger()', () => {
     });
 
     it('allows for http options to be defined for Issuer.webfinger calls', async () => {
-      const httpOptions = sinon.stub().callsFake((opts) => {
-        opts.headers.custom = 'foo';
-        return opts;
-      });
+      const httpOptions = sinon.stub().callsFake(() => ({ headers: { custom: 'foo' } }));
       Issuer[custom.http_options] = httpOptions;
 
       nock('https://opemail.example.com')

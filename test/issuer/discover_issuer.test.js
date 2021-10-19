@@ -235,8 +235,7 @@ describe('Issuer#discover()', () => {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error.name).to.eql('ParseError');
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/.well-known/openid-configuration"');
+        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
         expect(error).to.have.property('response');
       });
   });
@@ -276,10 +275,7 @@ describe('Issuer#discover()', () => {
         .get('/.well-known/openid-configuration')
         .reply(200, success);
 
-      const httpOptions = sinon.stub().callsFake((opts) => {
-        opts.headers.custom = 'foo';
-        return opts;
-      });
+      const httpOptions = sinon.stub().callsFake(() => ({ headers: { custom: 'foo' } }));
       Issuer[custom.http_options] = httpOptions;
 
       await Issuer.discover('https://op.example.com/.well-known/openid-configuration');

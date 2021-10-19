@@ -277,10 +277,6 @@ See [Client Authentication Methods (docs)][documentation-methods].
 
 See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master/docs/README.md#customizing).
 
-#### How can I debug the requests and responses?
-
-See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master/docs/README.md#customizing).
-
 
 [openid-connect]: https://openid.net/connect/
 [feature-core]: https://openid.net/specs/openid-connect-core-1_0.html

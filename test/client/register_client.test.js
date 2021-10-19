@@ -86,8 +86,7 @@ describe('Client#register', () => {
 
     return issuer.Client.register({})
       .then(fail, function (error) {
-        expect(error.name).to.eql('ParseError');
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/client/registration"');
+        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
         expect(error).to.have.property('response');
       });
   });
@@ -207,10 +206,7 @@ describe('Client#register', () => {
     });
 
     it('allows for http options to be defined for issuer.Client.register calls', async () => {
-      const httpOptions = sinon.stub().callsFake((opts) => {
-        opts.headers.custom = 'foo';
-        return opts;
-      });
+      const httpOptions = sinon.stub().callsFake(() => ({ headers: { custom: 'foo' } }));
       issuer.Client[custom.http_options] = httpOptions;
 
       nock('https://op.example.com')

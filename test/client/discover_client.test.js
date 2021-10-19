@@ -73,8 +73,7 @@ describe('Client#fromUri()', () => {
 
     return issuer.Client.fromUri('https://op.example.com/client/identifier')
       .then(fail, function (error) {
-        expect(error.name).to.eql('ParseError');
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/client/identifier"');
+        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
         expect(error).to.have.property('response');
       });
   });
@@ -85,10 +84,7 @@ describe('Client#fromUri()', () => {
     });
 
     it('allows for http options to be defined for issuer.Client.fromUri calls', async () => {
-      const httpOptions = sinon.stub().callsFake((opts) => {
-        opts.headers.custom = 'foo';
-        return opts;
-      });
+      const httpOptions = sinon.stub().callsFake(() => ({ headers: { custom: 'foo' } }));
       issuer.Client[custom.http_options] = httpOptions;
 
       nock('https://op.example.com')

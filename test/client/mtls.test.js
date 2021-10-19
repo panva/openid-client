@@ -92,7 +92,7 @@ describe('mutual-TLS', () => {
       token_endpoint_auth_method: 'self_signed_tls_client_auth',
       tls_client_certificate_bound_access_tokens: true,
     });
-    this.client[custom.http_options] = (opts) => ({ ...opts, https: { key, certificate: cert } });
+    this.client[custom.http_options] = () => ({ key, cert });
     this.jwtAuthClient = new issuer.Client({
       client_id: 'client',
       client_secret: 'secret',
@@ -100,7 +100,7 @@ describe('mutual-TLS', () => {
       token_endpoint_auth_signing_alg: 'HS256',
       tls_client_certificate_bound_access_tokens: true,
     });
-    this.client[custom.http_options] = (opts) => ({ ...opts, https: { key, certificate: cert } });
+    this.client[custom.http_options] = () => ({ key, cert });
   });
 
   it('uses the mtls endpoint alias for token endpoint when using jwt auth and tls certs', async function () {
@@ -174,7 +174,7 @@ describe('mutual-TLS', () => {
   });
 
   it('works with a PKCS#12 file and a passphrase', async function () {
-    this.client[custom.http_options] = (opts) => ({ ...opts, https: { pfx } });
+    this.client[custom.http_options] = () => ({ pfx });
 
     nock('https://mtls.op.example.com')
       .get('/me').reply(200, { sub: 'foo' });

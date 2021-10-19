@@ -24,7 +24,7 @@ describe('DPoP', () => {
       client_id: 'client',
       token_endpoint_auth_method: 'none',
     });
-    this.client[custom.http_options] = (opts) => {
+    this.client[custom.http_options] = (url, opts) => {
       this.httpOpts = opts;
       return opts;
     };

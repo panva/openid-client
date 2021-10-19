@@ -6,16 +6,16 @@
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
 import * as http from "http";
+import * as https from "https";
 import * as http2 from "http2";
 
-import { Options as GotOptions, CancelableRequest, Response } from "got";
 import { URL } from "url";
 import * as jose from "jose";
 import * as crypto from "crypto";
 
-export type HttpOptions = GotOptions;
+export type HttpOptions = Pick<https.RequestOptions, 'agent' | 'ca' | 'cert' | 'crl' | 'headers' | 'key' | 'lookup' | 'passphrase' | 'pfx' | 'timeout'>
 export type RetryFunction = (retry: number, error: Error) => number;
-export type CustomHttpOptionsProvider = (options: HttpOptions) => HttpOptions;
+export type CustomHttpOptionsProvider = (options: HttpOptions & { url: URL } & UnknownObject) => HttpOptions;
 export type TokenTypeHint = "access_token" | "refresh_token" | string;
 export type DPoPInput =
   | crypto.KeyObject
