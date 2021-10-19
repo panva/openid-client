@@ -65,7 +65,7 @@ conforms to the following profiles of the OpenID Connect™ protocol
 
 ## Sponsor
 
-[<img width="65" height="65" align="left" src="https://avatars.githubusercontent.com/u/2824157?s=75&v=4" alt="auth0-logo">][sponsor-auth0] If you want to quickly add OpenID Connect authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/developers][sponsor-auth0].<br><br>
+[<img height="65" align="left" src="https://user-images.githubusercontent.com/241506/137552951-428a370a-22eb-46d3-abfe-2b176005fd56.png" alt="auth0-logo">][sponsor-auth0] If you want to quickly add OpenID Connect authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan. [Create an Auth0 account; it's free!][sponsor-auth0]<br><br>
 
 ## Support
 
@@ -303,7 +303,7 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [openid-certified-link]: https://openid.net/certification/
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
-[sponsor-auth0]: https://auth0.com/developers?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=openid-client&utm_content=auth
+[sponsor-auth0]: https://a0.to/try-auth0
 [support-sponsor]: https://github.com/sponsors/panva
 [documentation]: https://github.com/panva/node-openid-client/blob/master/docs/README.md
 [documentation-issuer]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#issuer
