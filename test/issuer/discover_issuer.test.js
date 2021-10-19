@@ -125,30 +125,6 @@ describe('Issuer#discover()', () => {
         expect(issuer).to.have.property('issuer', 'https://op.example.com/oauth2');
       });
     });
-
-    it('can be discovered by ommiting the well-known part', function () {
-      nock('https://op.example.com', { allowUnmocked: true })
-        .get('/.well-known/oauth-authorization-server')
-        .reply(200, {
-          issuer: 'https://op.example.com',
-        });
-
-      return Issuer.discover('https://op.example.com').then(function (issuer) {
-        expect(issuer).to.have.property('issuer', 'https://op.example.com');
-      });
-    });
-
-    it('discovering issuers with path components (with trailing slash)', function () {
-      nock('https://op.example.com', { allowUnmocked: true })
-        .get('/.well-known/oauth-authorization-server/oauth2/')
-        .reply(200, {
-          issuer: 'https://op.example.com/oauth2',
-        });
-
-      return Issuer.discover('https://op.example.com/oauth2/').then(function (issuer) {
-        expect(issuer).to.have.property('issuer', 'https://op.example.com/oauth2');
-      });
-    });
   });
 
   it('assigns Discovery 1.0 defaults 1/2', function () {
@@ -209,19 +185,9 @@ describe('Issuer#discover()', () => {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error.name).to.equal('AggregateError');
-        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
-        expect(error.message).not.to.contain('node_modules');
-        expect([...error].some((err) => {
-          try {
-            expect(err.name).to.equal('OPError');
-            expect(err).to.have.property('error', 'server_error');
-            expect(err).to.have.property('error_description', 'bad things are happening');
-            return true;
-          } catch (e) {
-            return false;
-          }
-        })).to.be.true;
+        expect(error.name).to.equal('OPError');
+        expect(error).to.have.property('error', 'server_error');
+        expect(error).to.have.property('error_description', 'bad things are happening');
       });
   });
 
@@ -243,19 +209,9 @@ describe('Issuer#discover()', () => {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error.name).to.equal('AggregateError');
-        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
-        expect(error.message).not.to.contain('node_modules');
-        expect([...error].some((err) => {
-          try {
-            expect(err.name).to.equal('OPError');
-            expect(err.message).to.eql('expected 200 OK, got: 400 Bad Request');
-            expect(err).to.have.property('response');
-            return true;
-          } catch (e) {
-            return false;
-          }
-        })).to.be.true;
+        expect(error.name).to.equal('OPError');
+        expect(error.message).to.eql('expected 200 OK, got: 400 Bad Request');
+        expect(error).to.have.property('response');
       });
   });
 
@@ -266,19 +222,9 @@ describe('Issuer#discover()', () => {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error.name).to.equal('AggregateError');
-        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
-        expect(error.message).not.to.contain('node_modules');
-        expect([...error].some((err) => {
-          try {
-            expect(err.name).to.equal('OPError');
-            expect(err.message).to.eql('expected 200 OK, got: 500 Internal Server Error');
-            expect(err).to.have.property('response');
-            return true;
-          } catch (e) {
-            return false;
-          }
-        })).to.be.true;
+        expect(error.name).to.equal('OPError');
+        expect(error.message).to.eql('expected 200 OK, got: 500 Internal Server Error');
+        expect(error).to.have.property('response');
       });
   });
 
@@ -289,19 +235,9 @@ describe('Issuer#discover()', () => {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error.name).to.equal('AggregateError');
-        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
-        expect(error.message).not.to.contain('node_modules');
-        expect([...error].some((err) => {
-          try {
-            expect(err.name).to.eql('ParseError');
-            expect(err.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/.well-known/openid-configuration"');
-            expect(err).to.have.property('response');
-            return true;
-          } catch (e) {
-            return false;
-          }
-        })).to.be.true;
+        expect(error.name).to.eql('ParseError');
+        expect(error.message).to.eql('Unexpected token } in JSON at position 12 in "https://op.example.com/.well-known/openid-configuration"');
+        expect(error).to.have.property('response');
       });
   });
 
@@ -312,18 +248,8 @@ describe('Issuer#discover()', () => {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error.name).to.equal('AggregateError');
-        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
-        expect(error.message).not.to.contain('node_modules');
-        expect([...error].some((err) => {
-          try {
-            expect(err.name).to.equal('OPError');
-            expect(err).to.have.property('message', 'expected 200 OK with body but no body was returned');
-            return true;
-          } catch (e) {
-            return false;
-          }
-        })).to.be.true;
+        expect(error.name).to.equal('OPError');
+        expect(error).to.have.property('message', 'expected 200 OK with body but no body was returned');
       });
   });
 
@@ -334,18 +260,8 @@ describe('Issuer#discover()', () => {
 
     return Issuer.discover('https://op.example.com')
       .then(fail, function (error) {
-        expect(error.name).to.equal('AggregateError');
-        expect(error.message).to.match(/^Issuer\.discover\(\) failed\.\n/);
-        expect(error.message).not.to.contain('node_modules');
-        expect([...error].some((err) => {
-          try {
-            expect(err.name).to.equal('OPError');
-            expect(err).to.have.property('message', 'expected 200 OK, got: 301 Moved Permanently');
-            return true;
-          } catch (e) {
-            return false;
-          }
-        })).to.be.true;
+        expect(error.name).to.equal('OPError');
+        expect(error).to.have.property('message', 'expected 200 OK, got: 301 Moved Permanently');
       });
   });
 

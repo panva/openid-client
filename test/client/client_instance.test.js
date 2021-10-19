@@ -3295,7 +3295,7 @@ describe('Client', () => {
           return this.client.unpackAggregatedClaims(userinfo)
             .then(fail, (error) => {
               expect(discovery.isDone()).to.be.true;
-              expect(error.name).to.equal('AggregateError');
+              expect(error.name).to.equal('OPError');
               expect(error.src).to.equal('cliff');
             });
         });

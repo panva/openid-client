@@ -25,7 +25,7 @@ openid-client.
     - client_secret_jwt
     - private_key_jwt
   - Consuming Self-Issued OpenID Provider ID Token response
-- [RFC8414 - OAuth 2.0 Authorization Server Metadata][feature-oauth-discovery] and [OpenID Connect Discovery 1.0][feature-discovery]
+- [OpenID Connect Discovery 1.0][feature-discovery]
   - Discovery of OpenID Provider (Issuer) Metadata
   - Discovery of OpenID Provider (Issuer) Metadata via user provided inputs (via [webfinger][documentation-webfinger])
 - [OpenID Connect Dynamic Client Registration 1.0][feature-registration]
@@ -288,7 +288,6 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [openid-connect]: https://openid.net/connect/
 [feature-core]: https://openid.net/specs/openid-connect-core-1_0.html
 [feature-discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html
-[feature-oauth-discovery]: https://tools.ietf.org/html/rfc8414
 [feature-registration]: https://openid.net/specs/openid-connect-registration-1_0.html
 [feature-revocation]: https://tools.ietf.org/html/rfc7009
 [feature-introspection]: https://tools.ietf.org/html/rfc7662

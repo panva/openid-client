@@ -52,7 +52,6 @@
     ]
   },
   "dependencies": {
-    "aggregate-error": "^3.1.0",
     "got": "^11.8.0",
     "jose": "^2.0.5",
     "lru-cache": "^6.0.0",
