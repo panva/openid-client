@@ -1,12 +1,12 @@
 const { expect } = require('chai');
-const jose = require('jose');
+const jose2 = require('jose2');
 const nock = require('nock');
 
 const Issuer = require('../../lib/issuer');
 const clientInternal = require('../../lib/helpers/client');
 
 async function noKidJWKS() {
-  const store = new jose.JWKS.KeyStore();
+  const store = new jose2.JWKS.KeyStore();
   await store.generate('EC');
   const jwks = store.toJWKS(true);
   delete jwks.keys[0].kid;

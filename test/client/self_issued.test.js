@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const nock = require('nock');
 const timekeeper = require('timekeeper');
-const jose = require('jose');
+const jose2 = require('jose2');
 
 const { Issuer } = require('../../lib');
 
@@ -34,8 +34,8 @@ describe('Validating Self-Issued OP responses', () => {
   });
 
   const idToken = (claims = {}) => {
-    const jwk = jose.JWK.generateSync('EC');
-    return jose.JWT.sign({
+    const jwk = jose2.JWK.generateSync('EC');
+    return jose2.JWT.sign({
       sub_jwk: jwk.toJWK(),
       sub: jwk.thumbprint,
       ...claims,

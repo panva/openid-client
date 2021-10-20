@@ -3,7 +3,7 @@ const path = require('path');
 
 const { expect } = require('chai');
 const nock = require('nock');
-const jose = require('jose');
+const jose2 = require('jose2');
 
 const { Issuer, custom } = require('../../lib');
 const clientHelpers = require('../../lib/helpers/client');
@@ -105,20 +105,20 @@ describe('mutual-TLS', () => {
 
   it('uses the mtls endpoint alias for token endpoint when using jwt auth and tls certs', async function () {
     let { form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'token');
-    let { aud } = jose.JWT.decode(jwt);
+    let { aud } = jose2.JWT.decode(jwt);
     expect(aud).to.include('https://mtls.op.example.com/token');
     expect(aud).to.include('https://op.example.com/token');
     expect(aud).to.include('https://op.example.com');
 
     ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
-    ({ aud } = jose.JWT.decode(jwt));
+    ({ aud } = jose2.JWT.decode(jwt));
     expect(aud).not.to.include('https://mtls.op.example.com/token/introspect');
     expect(aud).to.include('https://op.example.com/token/introspect');
     expect(aud).to.include('https://op.example.com/token');
     expect(aud).to.include('https://op.example.com');
 
     ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
-    ({ aud } = jose.JWT.decode(jwt));
+    ({ aud } = jose2.JWT.decode(jwt));
     expect(aud).not.to.include('https://mtls.op.example.com/token/revoke');
     expect(aud).to.include('https://op.example.com/token/revoke');
     expect(aud).to.include('https://op.example.com/token');

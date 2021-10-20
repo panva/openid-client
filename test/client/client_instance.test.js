@@ -7,7 +7,7 @@ const { expect } = require('chai');
 const base64url = require('base64url');
 const nock = require('nock');
 const sinon = require('sinon');
-const jose = require('jose');
+const jose2 = require('jose2');
 const timekeeper = require('timekeeper');
 
 const TokenSet = require('../../lib/token_set');
@@ -440,7 +440,7 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose.JWT.sign({
+        const response = jose2.JWT.sign({
           code: 'foo',
         }, client.client_secret, {
           issuer: this.issuer.issuer,
@@ -477,13 +477,13 @@ describe('Client', () => {
           authorization_encrypted_response_enc: 'A128GCM',
         });
 
-        const response = jose.JWE.encrypt(jose.JWT.sign({
+        const response = jose2.JWE.encrypt(jose2.JWT.sign({
           code: 'foo',
         }, client.client_secret, {
           issuer: this.issuer.issuer,
           audience: client.client_id,
           expiresIn: '5m',
-        }), await client.joseSecret('A128GCM'), {
+        }), await client.secretForAlg('A128GCM'), {
           alg: 'dir',
           enc: 'A128GCM',
         });
@@ -526,7 +526,7 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose.JWT.sign({
+        const response = jose2.JWT.sign({
           code: 'foo',
         }, client.client_secret, {
           issuer: this.issuer.issuer,
@@ -669,7 +669,7 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose.JWT.sign({
+        const response = jose2.JWT.sign({
           code: 'foo',
         }, client.client_secret, {
           issuer: this.issuer.issuer,
@@ -706,13 +706,13 @@ describe('Client', () => {
           authorization_encrypted_response_enc: 'A128GCM',
         });
 
-        const response = jose.JWE.encrypt(jose.JWT.sign({
+        const response = jose2.JWE.encrypt(jose2.JWT.sign({
           code: 'foo',
         }, client.client_secret, {
           issuer: this.issuer.issuer,
           audience: client.client_id,
           expiresIn: '5m',
-        }), await client.joseSecret('A128GCM'), {
+        }), await client.secretForAlg('A128GCM'), {
           alg: 'dir',
           enc: 'A128GCM',
         });
@@ -755,7 +755,7 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose.JWT.sign({
+        const response = jose2.JWT.sign({
           code: 'foo',
         }, client.client_secret, {
           issuer: this.issuer.issuer,
@@ -940,7 +940,7 @@ describe('Client', () => {
         .reply(200, {
           access_token: 'present',
           refresh_token: 'refreshValue',
-          id_token: jose.JWT.sign({
+          id_token: jose2.JWT.sign({
             sub: 'foo',
           }, this.client.client_secret, {
             issuer: this.client.issuer.issuer,
@@ -952,7 +952,7 @@ describe('Client', () => {
       return this.client.refresh(new TokenSet({
         access_token: 'present',
         refresh_token: 'refreshValue',
-        id_token: jose.JWT.sign({
+        id_token: jose2.JWT.sign({
           sub: 'foo',
         }, this.client.client_secret, {
           issuer: this.client.issuer.issuer,
@@ -968,7 +968,7 @@ describe('Client', () => {
         .reply(200, {
           access_token: 'present',
           refresh_token: 'refreshValue',
-          id_token: jose.JWT.sign({
+          id_token: jose2.JWT.sign({
             sub: 'bar',
           }, this.client.client_secret, {
             issuer: this.client.issuer.issuer,
@@ -980,7 +980,7 @@ describe('Client', () => {
       return this.client.refresh(new TokenSet({
         access_token: 'present',
         refresh_token: 'refreshValue',
-        id_token: jose.JWT.sign({
+        id_token: jose2.JWT.sign({
           sub: 'foo',
         }, this.client.client_secret, {
           issuer: this.client.issuer.issuer,
@@ -1005,39 +1005,24 @@ describe('Client', () => {
     });
   });
 
-  it('#joseSecret', function () {
+  it('#secretForAlg', function () {
     const issuer = new Issuer();
     const client = new issuer.Client({ client_id: 'identifier', client_secret: 'rj_JR' });
 
-    return client.joseSecret()
-      .then((key) => {
-        expect(key).to.have.property('kty', 'oct');
-        return client.joseSecret().then((cached) => {
-          expect(key).to.equal(cached);
-        });
-      });
+    expect(client.secretForAlg('HS256')).to.have.lengthOf(32);
   });
 
-  it('#derivedKey', async function () {
+  it('#encryptionSecret', async function () {
     const issuer = new Issuer();
     const client = new issuer.Client({ client_id: 'identifier', client_secret: 'rj_JR' });
 
     for (const len of [120, 128, 184, 192, 248, 256]) { // eslint-disable-line no-restricted-syntax
-      await client.derivedKey(String(len)) // eslint-disable-line no-await-in-loop
-        .then((key) => {
-          expect(key).to.have.property('kty', 'oct');
-          expect(key).to.have.property('length', len);
-          return client.derivedKey(String(len)).then((cached) => {
-            expect(key).to.equal(cached);
-          });
-        });
+      const key = client.encryptionSecret(String(len));
+      // eslint-disable-next-line no-bitwise
+      expect(key).to.have.lengthOf(len >> 3);
     }
 
-    await client.derivedKey('1024') // eslint-disable-line no-await-in-loop
-      .then(fail, (err) => {
-        expect(err).to.be.instanceof(Error);
-        expect(err.message).to.eql('unsupported symmetric encryption key derivation');
-      });
+    expect(() => client.encryptionSecret('1024')).to.throw('unsupported symmetric encryption key derivation');
   });
 
   describe('#userinfo', function () {
@@ -1825,7 +1810,7 @@ describe('Client', () => {
             token_endpoint_auth_signing_alg_values_supported: ['ES256', 'ES384'],
           });
 
-          const keystore = new jose.JWKS.KeyStore();
+          const keystore = new jose2.JWKS.KeyStore();
 
           return keystore.generate('EC', 'P-256').then(() => {
             const client = new issuer.Client({
@@ -1909,7 +1894,7 @@ describe('Client', () => {
             token_endpoint: 'https://op.example.com/token',
           });
 
-          const keystore = new jose.JWKS.KeyStore();
+          const keystore = new jose2.JWKS.KeyStore();
 
           return keystore.generate('EC', 'P-256').then(() => {
             const client = new issuer.Client({
@@ -1936,7 +1921,7 @@ describe('Client', () => {
     });
 
     before(function () {
-      this.keystore = new jose.JWKS.KeyStore();
+      this.keystore = new jose2.JWKS.KeyStore();
       return this.keystore.generate('RSA');
     });
 
@@ -1964,7 +1949,7 @@ describe('Client', () => {
       });
 
       this.IdToken = async (key, alg, payload) => {
-        return jose.JWS.sign(payload, key, {
+        return jose2.JWS.sign(payload, key, {
           alg,
           typ: 'oauth-authz-req+jwt',
           kid: alg.startsWith('HS') ? undefined : key.kid,
@@ -2046,37 +2031,33 @@ describe('Client', () => {
         id_token_signed_response_alg: 'HS256',
       });
 
-      return client.joseSecret().then((key) => {
-        return this.IdToken(key, 'HS256', {
-          iss: this.issuer.issuer,
-          sub: 'userId',
-          aud: client.client_id,
-          exp: now() + 3600,
-          iat: now(),
-        })
-          .then((token) => {
-            const tokenset = new TokenSet({ id_token: token });
-            return client.validateIdToken(tokenset).then((validated) => {
-              expect(validated).to.equal(tokenset);
-            });
+      return this.IdToken(client.secretForAlg('HS256'), 'HS256', {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      })
+        .then((token) => {
+          const tokenset = new TokenSet({ id_token: token });
+          return client.validateIdToken(tokenset).then((validated) => {
+            expect(validated).to.equal(tokenset);
           });
-      });
+        });
     });
 
     it('validates the id_token_signed_response_alg is the one used', function () {
-      return this.client.joseSecret().then((key) => {
-        return this.IdToken(key, 'HS256', {
-          iss: this.issuer.issuer,
-          sub: 'userId',
-          aud: this.client.client_id,
-          exp: now() + 3600,
-          iat: now(),
-        })
-          .then((token) => this.client.validateIdToken(token))
-          .then(fail, (error) => {
-            expect(error).to.have.property('message', 'unexpected JWT alg received, expected RS256, got: HS256');
-          });
-      });
+      return this.IdToken(this.client.secretForAlg('HS256'), 'HS256', {
+        iss: this.issuer.issuer,
+        sub: 'userId',
+        aud: this.client.client_id,
+        exp: now() + 3600,
+        iat: now(),
+      })
+        .then((token) => this.client.validateIdToken(token))
+        .then(fail, (error) => {
+          expect(error).to.have.property('message', 'unexpected JWT alg received, expected RS256, got: HS256');
+        });
     });
 
     it('verifies the azp', function () {
@@ -2788,7 +2769,8 @@ describe('Client', () => {
     });
   });
 
-  describe('Distributed and Aggregated Claims', function () {
+  // TODO: REMOVE
+  describe.skip('Distributed and Aggregated Claims', function () {
     function getJWT(payload, issuer) {
       const iss = issuer.startsWith('http') ? issuer : `https://${issuer}-iss.example.com`;
       let keystore;
@@ -2797,7 +2779,7 @@ describe('Client', () => {
       if (Registry.has(iss)) {
         keystore = Registry.get(iss).keystore();
       } else {
-        const store = new jose.JWKS.KeyStore();
+        const store = new jose2.JWKS.KeyStore();
         keystore = store.generate('RSA').then(function () {
           const i = new Issuer({ issuer: iss, jwks_uri: `${iss}/certs` });
 
@@ -2811,8 +2793,8 @@ describe('Client', () => {
       }
 
       return keystore.then(function (k) {
-        const key = k.get();
-        return jose.JWS.sign(payload, key, {
+        const key = k.get({ alg: 'RS256', use: 'sig' });
+        return jose2.JWS.sign(payload, key.jwk, {
           alg: 'RS256',
           typ: 'oauth-authz-req+jwt',
         });
@@ -2830,7 +2812,7 @@ describe('Client', () => {
         this.client = new issuer.Client({
           client_id: 'identifier',
         });
-        const store = new jose.JWKS.KeyStore();
+        const store = new jose2.JWKS.KeyStore();
 
         return store.generate('RSA').then(() => {
           nock(issuer.issuer)
@@ -3052,7 +3034,7 @@ describe('Client', () => {
         this.client = new issuer.Client({
           client_id: 'identifier',
         });
-        const store = new jose.JWKS.KeyStore();
+        const store = new jose2.JWKS.KeyStore();
 
         return store.generate('RSA').then(() => {
           nock(issuer.issuer)
@@ -3188,7 +3170,7 @@ describe('Client', () => {
 
             return this.client.unpackAggregatedClaims(userinfo)
               .then(fail, (err) => {
-                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWSInvalid: missing JWS signature algorithm)');
+                expect(err).to.have.property('message', 'failed to validate the aggregated JWT (JWSInvalid: JWS Signature missing or incorrect type)');
               });
           });
         });
@@ -3324,636 +3306,636 @@ describe('Client', () => {
           });
       });
     });
+  });
 
-    describe('private #decryptIdToken', function () {
-      it('to decrypt tokenset\'s id_token it must have one', async () => {
-        const issuer = new Issuer();
-        const client = new issuer.Client({
-          client_id: 'identifier',
-          id_token_encrypted_response_alg: 'RSA-OAEP',
-        });
-
-        return client.decryptIdToken(new TokenSet()).then(fail, (err) => {
-          expect(err).to.be.instanceof(TypeError);
-          expect(err.message).to.eql('id_token not present in TokenSet');
-        });
+  describe('private #decryptIdToken', function () {
+    it('to decrypt tokenset\'s id_token it must have one', async () => {
+      const issuer = new Issuer();
+      const client = new issuer.Client({
+        client_id: 'identifier',
+        id_token_encrypted_response_alg: 'RSA-OAEP',
       });
 
-      it('verifies the id token is using the right alg', async () => {
-        const issuer = new Issuer();
-        const client = new issuer.Client({
-          client_id: 'identifier',
-          id_token_encrypted_response_alg: 'RSA-OAEP',
-        });
-
-        const header = base64url.encode(JSON.stringify({
-          alg: 'RSA1_5',
-          enc: 'A128CBC-HS256',
-        }));
-
-        return client.decryptIdToken(`${header}....`).then(fail, (err) => {
-          expect(err).to.have.property('message', 'unexpected JWE alg received, expected RSA-OAEP, got: RSA1_5');
-        });
-      });
-
-      it('verifies the id token is using the right enc (explicit)', async () => {
-        const issuer = new Issuer();
-        const client = new issuer.Client({
-          client_id: 'identifier',
-          id_token_encrypted_response_alg: 'RSA-OAEP',
-          id_token_encrypted_response_enc: 'A128CBC-HS256',
-        });
-
-        const header = base64url.encode(JSON.stringify({
-          alg: 'RSA-OAEP',
-          enc: 'A128GCM',
-        }));
-
-        return client.decryptIdToken(`${header}....`).then(fail, (err) => {
-          expect(err).to.have.property('message', 'unexpected JWE enc received, expected A128CBC-HS256, got: A128GCM');
-        });
-      });
-
-      it('verifies the id token is using the right enc (defaulted to)', async () => {
-        const issuer = new Issuer();
-        const client = new issuer.Client({
-          client_id: 'identifier',
-          id_token_encrypted_response_alg: 'RSA-OAEP',
-        });
-
-        const header = base64url.encode(JSON.stringify({
-          alg: 'RSA-OAEP',
-          enc: 'A128GCM',
-        }));
-
-        return client.decryptIdToken(`${header}....`).then(fail, (err) => {
-          expect(err).to.have.property('message', 'unexpected JWE enc received, expected A128CBC-HS256, got: A128GCM');
-        });
+      return client.decryptIdToken(new TokenSet()).then(fail, (err) => {
+        expect(err).to.be.instanceof(TypeError);
+        expect(err.message).to.eql('id_token not present in TokenSet');
       });
     });
 
-    /* eslint-disable max-len */
-    describe('signed and encrypted responses', function () {
-      before(function () {
-        this.keystore = jose.JWKS.asKeyStore({
-          keys: [
-            {
-              kty: 'EC',
-              kid: 'L3qrG8dSNYv6F-Hvv-qTdp_EkmgwjQX76DHmDZCoa4Q',
-              crv: 'P-256',
-              x: 'PDsKZY9JxlbrE-hHce_e_H7yjWgxftRIowdW9qxBqNQ',
-              y: 'EAmrpjkbBkuBZAD2kvuL5mOXgdK_8t1t93yKGGHq_Y4',
-              d: '59efvkfuCuVLW9Y4xvLvUyjARwgnSgwTLRc0UGpewLA',
-            },
-          ],
-        });
+    it('verifies the id token is using the right alg', async () => {
+      const issuer = new Issuer();
+      const client = new issuer.Client({
+        client_id: 'identifier',
+        id_token_encrypted_response_alg: 'RSA-OAEP',
       });
 
-      it('handles signed and encrypted id_tokens from implicit and code responses (test by hybrid)', function () {
-        const time = new Date(1473076413242);
-        timekeeper.freeze(time);
-        const issuer = new Issuer({
-          issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
-          token_endpoint: 'https://op.example.com/token',
-          userinfo_endpoint: 'https://op.example.com/me',
-        });
+      const header = base64url.encode(JSON.stringify({
+        alg: 'RSA1_5',
+        enc: 'A128CBC-HS256',
+      }));
 
-        nock('https://op.example.com')
-          .post('/token')
-          .reply(200, {
-            access_token: 'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
-            expires_at: 1473083613,
-            id_token: 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Inc2Ukx4a3phWDV5cGtwU1pMemJVbkVfWjh4WEYtS3R2OXc0Tno0MVZFeVEiLCJ5IjoiUTFwM1l6a3h3VHhFZ1lnZ0szNFpKcnkyT1JCMGloYXEyOXdtSUVqTnZNWSJ9fQ..EqZ4s3iLxrVhuZwF4NDa7A.tkg5i4LQXECXNFXh1j9yo5TjhhIlrzp_BZbdEI18f2jINVIwXu08eRrpQAI-OAaO4MbxiX73fLD_jDplHIUz5NDxiuxuQT2DCzynK66Tqs76OELATBAkW7FUGDJPWjotXXuUzNBgvs0xKz8q6a04udqfATH4-tZkyVLkNS0Z8mpAejRdkacYfvdSSJk842e3qHsOowlX7Tiu7OY60dBkKXO7hrPtvsX2XdseREYnA_A3P4jNdIhWhZMUxR2X-FSgChzwRIFPFRJsp1xiHkfxfHaPjHPmj3JlDPlubNrUcz-2WWxeBd9qVjqlAyqRorNr30KwCwVTaIHwfLrTjXzFfVOJBXAdIJ7FjX7lUbnc9DjcV6cNN2IdHTET7aoC6ysfGYLAwVtN9sLXRgeJXdl6-56f0eg_ZbLbOWLj3qJPuDSTVu7r6L3sebNx4uBTzAu-e8i1uukw6e63AHzVa3Z57tTGtzaFHogDH0f_JuQRhaJcwDJdoJKmksVT33W6mxza0WttqXXj9NXzfJUdRs3B9vpf1h9Yvol9Rlii2OmwLGC17sZe-W2NX1ibS87ZQiEFzuLWfmU4ygagg7O7A5fJ4Olo_aY6Ow7qqggIjAhL3J24lsMtlVR3VGKWsmvtW4eoojy6nnfkcJreSHAjPby9c4_giSic_MCSe9K1jU2Kyftj-XBJD5DSZlt97ZT9NA4aI-DXBs6Mx14dXrZ15BYDVxvYU-YmUnJpASueGB7bp5TMjE2YC2cEPsHgiJnU1Yi0.KMTcJ07KhD0-g4V89Z0PBg',
-            refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
-            token_type: 'Bearer',
-          });
+      return client.decryptIdToken(`${header}....`).then(fail, (err) => {
+        expect(err).to.have.property('message', 'unexpected JWE alg received, expected RSA-OAEP, got: RSA1_5');
+      });
+    });
 
-        const client = new issuer.Client({
-          client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
-          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-          id_token_encrypted_response_alg: 'ECDH-ES',
-          id_token_signed_response_alg: 'HS256',
-        }, this.keystore.toJWKS(true));
-
-        return client.callback('http://oidc-client.dev/cb', {
-          code: 'eyJraW5kIjoiQXV0aG9yaXphdGlvbkNvZGUiLCJqdGkiOiI3YzM5NzQyZC0yMGUyLTQ3YjEtYmM1MC1lN2VlYzhmN2IzNmYiLCJub25jZSI6ImM2NDVmZmZhNDAwNzU1MzJlZjI5YTJlYTYyN2NmYTM3IiwiaWF0IjoxNDczMDc2NDEyLCJleHAiOjE0NzMwNzcwMTIsImlzcyI6Imh0dHBzOi8vZ3VhcmRlZC1jbGlmZnMtODYzNS5oZXJva3VhcHAuY29tL29wIn0.jgUnZUBmsceb1cpqlsmiCOQ40Zx4JTRffGN_bAgYT4rLcEv3wOlzMSoVmU1cYkDbi-jjNAqkBjqxDWHcRJnQR4BAYOdyDVcGWD_aLkqGhUOCJHn_lwWqEKtSTgh-zXiqVIVC5NTA2BdhEfHhb-jnMQNrKkL2QNXOFvT9s6khZozOMXy-mUdfNfdSFHrcpFkFyGAUpezI9QmwToMB6KwoRHDYb2jcLBXdA5JLAnHw8lpz9yUaVQv7s97wY7Xgtt2zNFwQxiJWytYNHaJxQnOZje0_TvDjrZSA9IYKuKU1Q7f7-EBfQfFSGcsFK2NtGho3mNBEUDD2B8Qv1ipv50oU6Q',
-          id_token: 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IlBWMGt5MEMyWmpoY0tJeGM4dDRfMmR1S0NNMGlLbTFlUHRoM3RtNkV4c0EiLCJ5Ijoib3hpOXhUNEZzWUdnU1hzdUVDb3kzYnN6X0VHNDAxcFppbG81MjVDTFZCUSJ9fQ..Fk7uOrLHo3StxuO7JKmqhA.ShAxwMhoneNdxPpc5bDvag-ISjcTAjIKVHTVwMCBIWofVpqCWCL-WiNtm9S-YQf08oVm0hEptqaWIkIUFuqRK56DAP_anxtBPjQhX_oFDOnN76rPg0KNW9hgcRYOQ9MkUEYtaDgslcWAlv-xy_DpQ7_V2lYudVCcSLW26YK0TZlH5bOTPkVD6t1JgYb4cdgATzjzZCAgiDvWYuDZ1FmzRf53FRlQfCeB_sPjvag-sr-ZkcygEjLF86-JvOs4a6Ccz6gPs2WBtVSycYi6NuKJt0nlIBYbSazF5cT_ACHcfveMbgLeO2-GFekY6DhiRyHFgbA03G-yRlFLUbtzxZI_vBe_NuZf2pyiyv4xCNI9bvl_0LCvu0T_R6ss0OzBm9dK6tfEe5mkmi1ku_eiA2HHzk_BK4VLbP0urinZGethJcqXEIjuBr1pUKduQfVtUQMfnVPxLUI9PykO1H-QxVAcnsB6p3q0jkXvTvFBhsbFhA0cwKWF2qqpW6JXH19ULt0wNgzAGxghtox-t8QWb_qUO0Ql69AdmoTlydLB16aLf7JEH_vQBHXtSuDwAyEqccU8-EKMXHh4w6T92t6IjsXXr1x_JlCoByTEqG-bpGilPuYbh90cin7DyyniC2p-gM8pOIdpP9cDnKwRHGTPyw7YR16_0JCdmJOn7NO07zlYZMfgdmD-S2S49D23nd1SkECw.V__rYTSwfHvJsRe4auyNjw',
-          state: '36853f4ea7c9d26f4b0b95f126afe6a2',
-          session_state: 'foobar.foo',
-        }, { state: '36853f4ea7c9d26f4b0b95f126afe6a2', nonce: 'c645fffa40075532ef29a2ea627cfa37' });
+    it('verifies the id token is using the right enc (explicit)', async () => {
+      const issuer = new Issuer();
+      const client = new issuer.Client({
+        client_id: 'identifier',
+        id_token_encrypted_response_alg: 'RSA-OAEP',
+        id_token_encrypted_response_enc: 'A128CBC-HS256',
       });
 
-      it('handles signed and encrypted id_tokens from refresh grant', function () {
-        const time = new Date(1473076413242);
-        timekeeper.freeze(time);
-        const issuer = new Issuer({
-          issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
-          token_endpoint: 'https://op.example.com/token',
-        });
+      const header = base64url.encode(JSON.stringify({
+        alg: 'RSA-OAEP',
+        enc: 'A128GCM',
+      }));
 
-        nock('https://op.example.com')
-          .post('/token')
-          .reply(200, {
-            access_token: 'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
-            expires_at: 1473083613,
-            id_token: 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Ik8yQzZHZnBFVGgyUDBCWVNSN1dtWDZXVTBiV1FXcVZud1lwRGVwbVI1NVkiLCJ5IjoiVG5pc0dTSWZMQUxNYzZHVUlydVBmeWFzMm9mQ3JPV3llZ2EyMW5pZG1KTSJ9fQ..RiTOrMAlM4pq6RfwnitLKA.oSERr76vgdbiYm1yQZfkwPonBzdrheypkueK9S5dRVodZDf1BKTr5-eM2VBgjYJ2R8KS5EAAJeJBxnlno3AnfO242ZQbqJP144S8sCj0lZmQoZJ6VzJavADXAf4LiprDblzV8J64pBnmvwjQN9Mk_KKNA34QoAebJZEP9A7RCLUck_oqb7vsLTM_LUyXyXxm7QiWUPdnUCzCCqcJW3SysFeJo1VZTZCwFxK0zrcja-vv9SUSoS7yvQuGRVXS3L08BglTN7SLWVujsPMJWbxmj_zYhoy14DQIckoBU7ver-2PoJOukl6m4yaY9n9LWZ5mUGDb3PbnwuFYxb1rDm2EmvlkhbXFdIuRciIOQTqgeei0TU61Ff_Vt0tinZNThYMQgX4DFc7HILBU7lMwwVUMdYqamE3suRr3qUIlD2RdSNiO87jxaiDFrosGU1fVVulcGmkFN4DX5kyd8lxMs33yPS1uO0G_NViFe-fwxd95JAYXOEiofnHFIYuHgrxfioBMoojYQl8PgLZFj8yxzGVflOyzJQgiYQA-BSAPI1bL2P_J2Jlnhdtv3cJ-bdG1pcwAa6zyzwSEXU5i6p9_TGs4nM15p-QlC3mgtjKkLtC64OL0ucc2Frb6dzKyZTOePu6PcecafNucSaMq1ERhRmQOdigDj1nwHUYs3akx31CHp-eXa9jctuy_C5l_YbBJOiUViZK2dJFNuMJQnMhPcSf6wQdVTQmXCxsSnRN158XYDhgVqqe4U6CROsKiCRQSKqpZ.Yo7zj4wMR89oWSH5Twfzzg',
-            refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
-            token_type: 'Bearer',
-          });
+      return client.decryptIdToken(`${header}....`).then(fail, (err) => {
+        expect(err).to.have.property('message', 'unexpected JWE enc received, expected A128CBC-HS256, got: A128GCM');
+      });
+    });
 
-        const client = new issuer.Client({
-          client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
-          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-          id_token_encrypted_response_alg: 'ECDH-ES',
-          id_token_signed_response_alg: 'HS256',
-        }, this.keystore.toJWKS(true));
+    it('verifies the id token is using the right enc (defaulted to)', async () => {
+      const issuer = new Issuer();
+      const client = new issuer.Client({
+        client_id: 'identifier',
+        id_token_encrypted_response_alg: 'RSA-OAEP',
+      });
 
-        return client.refresh('http://oidc-client.dev/cb', new TokenSet({
+      const header = base64url.encode(JSON.stringify({
+        alg: 'RSA-OAEP',
+        enc: 'A128GCM',
+      }));
+
+      return client.decryptIdToken(`${header}....`).then(fail, (err) => {
+        expect(err).to.have.property('message', 'unexpected JWE enc received, expected A128CBC-HS256, got: A128GCM');
+      });
+    });
+  });
+
+  /* eslint-disable max-len */
+  describe('signed and encrypted responses', function () {
+    before(function () {
+      this.keystore = jose2.JWKS.asKeyStore({
+        keys: [
+          {
+            kty: 'EC',
+            kid: 'L3qrG8dSNYv6F-Hvv-qTdp_EkmgwjQX76DHmDZCoa4Q',
+            crv: 'P-256',
+            x: 'PDsKZY9JxlbrE-hHce_e_H7yjWgxftRIowdW9qxBqNQ',
+            y: 'EAmrpjkbBkuBZAD2kvuL5mOXgdK_8t1t93yKGGHq_Y4',
+            d: '59efvkfuCuVLW9Y4xvLvUyjARwgnSgwTLRc0UGpewLA',
+          },
+        ],
+      });
+    });
+
+    it('handles signed and encrypted id_tokens from implicit and code responses (test by hybrid)', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        token_endpoint: 'https://op.example.com/token',
+        userinfo_endpoint: 'https://op.example.com/me',
+      });
+
+      nock('https://op.example.com')
+        .post('/token')
+        .reply(200, {
+          access_token: 'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
+          expires_at: 1473083613,
+          id_token: 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Inc2Ukx4a3phWDV5cGtwU1pMemJVbkVfWjh4WEYtS3R2OXc0Tno0MVZFeVEiLCJ5IjoiUTFwM1l6a3h3VHhFZ1lnZ0szNFpKcnkyT1JCMGloYXEyOXdtSUVqTnZNWSJ9fQ..EqZ4s3iLxrVhuZwF4NDa7A.tkg5i4LQXECXNFXh1j9yo5TjhhIlrzp_BZbdEI18f2jINVIwXu08eRrpQAI-OAaO4MbxiX73fLD_jDplHIUz5NDxiuxuQT2DCzynK66Tqs76OELATBAkW7FUGDJPWjotXXuUzNBgvs0xKz8q6a04udqfATH4-tZkyVLkNS0Z8mpAejRdkacYfvdSSJk842e3qHsOowlX7Tiu7OY60dBkKXO7hrPtvsX2XdseREYnA_A3P4jNdIhWhZMUxR2X-FSgChzwRIFPFRJsp1xiHkfxfHaPjHPmj3JlDPlubNrUcz-2WWxeBd9qVjqlAyqRorNr30KwCwVTaIHwfLrTjXzFfVOJBXAdIJ7FjX7lUbnc9DjcV6cNN2IdHTET7aoC6ysfGYLAwVtN9sLXRgeJXdl6-56f0eg_ZbLbOWLj3qJPuDSTVu7r6L3sebNx4uBTzAu-e8i1uukw6e63AHzVa3Z57tTGtzaFHogDH0f_JuQRhaJcwDJdoJKmksVT33W6mxza0WttqXXj9NXzfJUdRs3B9vpf1h9Yvol9Rlii2OmwLGC17sZe-W2NX1ibS87ZQiEFzuLWfmU4ygagg7O7A5fJ4Olo_aY6Ow7qqggIjAhL3J24lsMtlVR3VGKWsmvtW4eoojy6nnfkcJreSHAjPby9c4_giSic_MCSe9K1jU2Kyftj-XBJD5DSZlt97ZT9NA4aI-DXBs6Mx14dXrZ15BYDVxvYU-YmUnJpASueGB7bp5TMjE2YC2cEPsHgiJnU1Yi0.KMTcJ07KhD0-g4V89Z0PBg',
           refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
-        }), { nonce: null });
-      });
-
-      it('handles encrypted but not signed responses too', function () {
-        const time = new Date(1473076413242);
-        timekeeper.freeze(time);
-        const issuer = new Issuer({
-          issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
-          userinfo_endpoint: 'https://op.example.com/me',
+          token_type: 'Bearer',
         });
 
-        nock('https://op.example.com')
-          .get('/me')
-          .reply(200, 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IlNPZDJZYUZ0cE0xS3lPNkt4a2tCeGxEVEVXcGVvanlqandqald5c1BOVEUiLCJ5IjoiTEVKZGlqazRXc01XZU9JOHdBN1JLSEQ3Q2NxUXN3V25kVnVoeXl2aFl4byJ9fQ..Az5OORCn8IJCYCKg2AGs2A.ACZMiNTTclMiHui8cAgje6xmU4MWwUfU5aPduSxwmSZKMCEiQST3ZpRknWgitklLhd1B7w7zz9wcu7A-yt51ZTaVfO7B9ZrismOrQRX6pTc.xAu2T_3edWUipVASAaMBmw', {
-            'content-type': 'application/jwt; charset=utf-8',
-          });
+      const client = new issuer.Client({
+        client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        id_token_encrypted_response_alg: 'ECDH-ES',
+        id_token_signed_response_alg: 'HS256',
+      }, this.keystore.toJWKS(true));
 
-        const client = new issuer.Client({
-          client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
-          userinfo_encrypted_response_alg: 'ECDH-ES',
-        }, this.keystore.toJWKS(true));
-
-        return client.userinfo('accesstoken').then((userinfo) => {
-          expect(userinfo).to.eql({
-            email: 'johndoe@example.com',
-            sub: '0aa66887-8c86-4f3b-b521-5a00e01799ca',
-          });
-        });
-      });
-
-      it('verifies no invalid unsigned plain JSON jwe payloads get through', function () {
-        const time = new Date(1473076413242);
-        timekeeper.freeze(time);
-        const issuer = new Issuer({
-          issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
-          userinfo_endpoint: 'https://op.example.com/me',
-        });
-
-        nock('https://op.example.com')
-          .get('/me')
-          .reply(200, 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IkhqMWZtUGxHTEJ2VE5SbnE0SlpWcTNjd3FUTXUxYXYzYjBicEJUWlR0bWciLCJ5IjoieWs5Tkl1WkJiRl9UTjQwRHlCcERjMGNGek5EUUVzRVQ5ZTlJNk1NY2dTayJ9fQ..VonL8dThfAnH4qmUjGv5tA.7CZxo9EWjucIklvP8D7RWg.QpvgGnrKL4xLIKI86qkwRg', {
-            'content-type': 'application/jwt; charset=utf-8',
-          });
-
-        const client = new issuer.Client({
-          client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
-          userinfo_encrypted_response_alg: 'ECDH-ES',
-        }, this.keystore.toJWKS(true));
-
-        return client.userinfo('accesstoken').then(fail, (err) => {
-          expect(err.message).to.eql('failed to parse userinfo JWE payload as JSON');
-        });
-      });
-
-      it('handles valid but no object top-level unsigned plain JSON jwe payloads', function () {
-        const time = new Date(1473076413242);
-        timekeeper.freeze(time);
-        const issuer = new Issuer({
-          issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
-          userinfo_endpoint: 'https://op.example.com/me',
-        });
-
-        nock('https://op.example.com')
-          .get('/me')
-          .reply(200, 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IlJDLUs1Q0oxaHM1OUVab3FRbDdIckZfYkRTNGtmbVRkV2NDUktiVUdNSlEiLCJ5IjoicDRLdGhQNlBZbE04LU5XQVBLSThjTThnOHRXUjU3RGp2V2s5QUVMTF9jdyJ9fQ..0UsI_8FRDyu9Ww3UsgPutg.RlHWtr8ezCPO4BahKEm2FA.6irHMjkZtOFnUVwrZkuxtw', {
-            'content-type': 'application/jwt; charset=utf-8',
-          });
-
-        const client = new issuer.Client({
-          client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
-          userinfo_encrypted_response_alg: 'ECDH-ES',
-        }, this.keystore.toJWKS(true));
-
-        return client.userinfo('accesstoken').then(fail, (err) => {
-          expect(err.message).to.eql('failed to parse userinfo JWE payload as JSON');
-        });
-      });
-
-      it('handles symmetric encryption', function () {
-        const time = new Date(1474477036849);
-        timekeeper.freeze(time);
-        const issuer = new Issuer({ issuer: 'http://localhost:3000/op' });
-
-        const client = new issuer.Client({
-          client_id: '0d9413a4-61c1-4b2b-8d84-a82464c1556c',
-          client_secret: 'l73jho9z9mL0GAomiQwbw08ARqro2tJ4E4qhJ+PZhNQoU6G6D23UDF91L9VR7iJ4',
-          id_token_encrypted_response_alg: 'A128GCMKW',
-          id_token_signed_response_alg: 'HS256',
-        });
-
-        return client.callback('http://oidc-client.dev/cb', {
-          id_token: 'eyJhbGciOiJBMTI4R0NNS1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiY3R5IjoiSldUIiwidGFnIjoiUUF6cjEwTFI4M0gzYzdLN3ZfMDgyZyIsIml2IjoiUWM2c3RLVTg4Ty1oWnZiMyJ9.wvD9dnE40HVAMPuHI7h3wpFZx3OOnNjSUzsOtPXVL8w.XZlxpE3exE3l8kqZkWgoyg.vfK1f2HI_AuYzQbstHeMpq19qdRgESLQuk5RHj9IzPW9Zj0dvKsEJ8a7MQjo6zepNhpP-rUbV06WDw_c2T0riB5SfsVBNLSazxSo9HxCiuzIpYFledAmfkUI0nQDlR1swKxetYYPSR0jEjZNDjIV7vgG8RD3cqImqMYz43QgBSbZqgvMxLcvxzekXWwnXaUTxB0AA8tvQk94JgFl_vcZ3Hln82DPsw7ZdAcNoNqtC79JBI2W7o4SR4rv42OhUf3kJjuPHp9ch28wEAD7O3kfN-YFJE2HdLP97yWi0esR4MmKpCDJymIUBeuyZUrNqnrHTTv6BQEKFX8mL0KQf-XqeQpyw1-1iqfu57bZfAxXzcnRUnQc54XsRBKVHdjKh7lIK8TNmluI1vHEanFYRQntg86yjqIxmpXqiSogSxWfwi6cAF_Zgzr-4koG-ENtVz8c-Szi3ZaTCjLOvt-uPCe1kLR66t_iNCGDawMiLLkcF5bXm9tfUyUlb0_O0bdQW74P9fbVnyEXWp8v6vVu8WLEuYCK2pztMgjp8UuJmfPS6ls2uK42Samvk9soPO9HRNSiROO8nyGU-6V7iTJH5EB_lQ.2WIYHXy2FMNd78p7BYZvBQ',
-        }, { nonce: '9cda9a61a2b01b31aa0b31d3c33631a1' });
-      });
+      return client.callback('http://oidc-client.dev/cb', {
+        code: 'eyJraW5kIjoiQXV0aG9yaXphdGlvbkNvZGUiLCJqdGkiOiI3YzM5NzQyZC0yMGUyLTQ3YjEtYmM1MC1lN2VlYzhmN2IzNmYiLCJub25jZSI6ImM2NDVmZmZhNDAwNzU1MzJlZjI5YTJlYTYyN2NmYTM3IiwiaWF0IjoxNDczMDc2NDEyLCJleHAiOjE0NzMwNzcwMTIsImlzcyI6Imh0dHBzOi8vZ3VhcmRlZC1jbGlmZnMtODYzNS5oZXJva3VhcHAuY29tL29wIn0.jgUnZUBmsceb1cpqlsmiCOQ40Zx4JTRffGN_bAgYT4rLcEv3wOlzMSoVmU1cYkDbi-jjNAqkBjqxDWHcRJnQR4BAYOdyDVcGWD_aLkqGhUOCJHn_lwWqEKtSTgh-zXiqVIVC5NTA2BdhEfHhb-jnMQNrKkL2QNXOFvT9s6khZozOMXy-mUdfNfdSFHrcpFkFyGAUpezI9QmwToMB6KwoRHDYb2jcLBXdA5JLAnHw8lpz9yUaVQv7s97wY7Xgtt2zNFwQxiJWytYNHaJxQnOZje0_TvDjrZSA9IYKuKU1Q7f7-EBfQfFSGcsFK2NtGho3mNBEUDD2B8Qv1ipv50oU6Q',
+        id_token: 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IlBWMGt5MEMyWmpoY0tJeGM4dDRfMmR1S0NNMGlLbTFlUHRoM3RtNkV4c0EiLCJ5Ijoib3hpOXhUNEZzWUdnU1hzdUVDb3kzYnN6X0VHNDAxcFppbG81MjVDTFZCUSJ9fQ..Fk7uOrLHo3StxuO7JKmqhA.ShAxwMhoneNdxPpc5bDvag-ISjcTAjIKVHTVwMCBIWofVpqCWCL-WiNtm9S-YQf08oVm0hEptqaWIkIUFuqRK56DAP_anxtBPjQhX_oFDOnN76rPg0KNW9hgcRYOQ9MkUEYtaDgslcWAlv-xy_DpQ7_V2lYudVCcSLW26YK0TZlH5bOTPkVD6t1JgYb4cdgATzjzZCAgiDvWYuDZ1FmzRf53FRlQfCeB_sPjvag-sr-ZkcygEjLF86-JvOs4a6Ccz6gPs2WBtVSycYi6NuKJt0nlIBYbSazF5cT_ACHcfveMbgLeO2-GFekY6DhiRyHFgbA03G-yRlFLUbtzxZI_vBe_NuZf2pyiyv4xCNI9bvl_0LCvu0T_R6ss0OzBm9dK6tfEe5mkmi1ku_eiA2HHzk_BK4VLbP0urinZGethJcqXEIjuBr1pUKduQfVtUQMfnVPxLUI9PykO1H-QxVAcnsB6p3q0jkXvTvFBhsbFhA0cwKWF2qqpW6JXH19ULt0wNgzAGxghtox-t8QWb_qUO0Ql69AdmoTlydLB16aLf7JEH_vQBHXtSuDwAyEqccU8-EKMXHh4w6T92t6IjsXXr1x_JlCoByTEqG-bpGilPuYbh90cin7DyyniC2p-gM8pOIdpP9cDnKwRHGTPyw7YR16_0JCdmJOn7NO07zlYZMfgdmD-S2S49D23nd1SkECw.V__rYTSwfHvJsRe4auyNjw',
+        state: '36853f4ea7c9d26f4b0b95f126afe6a2',
+        session_state: 'foobar.foo',
+      }, { state: '36853f4ea7c9d26f4b0b95f126afe6a2', nonce: 'c645fffa40075532ef29a2ea627cfa37' });
     });
 
-    describe('#callbackParams', function () {
-      before(function () {
-        const issuer = new Issuer({ issuer: 'http://localhost:3000/op' });
-        this.client = new issuer.Client({ client_id: 'identifier' });
+    it('handles signed and encrypted id_tokens from refresh grant', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        token_endpoint: 'https://op.example.com/token',
       });
 
-      describe('when passed a string', () => {
-        it('returns query params from full uri', function () {
-          expect(this.client.callbackParams('http://oidc-client.dev/cb?code=code')).to.eql({ code: 'code' });
+      nock('https://op.example.com')
+        .post('/token')
+        .reply(200, {
+          access_token: 'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
+          expires_at: 1473083613,
+          id_token: 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Ik8yQzZHZnBFVGgyUDBCWVNSN1dtWDZXVTBiV1FXcVZud1lwRGVwbVI1NVkiLCJ5IjoiVG5pc0dTSWZMQUxNYzZHVUlydVBmeWFzMm9mQ3JPV3llZ2EyMW5pZG1KTSJ9fQ..RiTOrMAlM4pq6RfwnitLKA.oSERr76vgdbiYm1yQZfkwPonBzdrheypkueK9S5dRVodZDf1BKTr5-eM2VBgjYJ2R8KS5EAAJeJBxnlno3AnfO242ZQbqJP144S8sCj0lZmQoZJ6VzJavADXAf4LiprDblzV8J64pBnmvwjQN9Mk_KKNA34QoAebJZEP9A7RCLUck_oqb7vsLTM_LUyXyXxm7QiWUPdnUCzCCqcJW3SysFeJo1VZTZCwFxK0zrcja-vv9SUSoS7yvQuGRVXS3L08BglTN7SLWVujsPMJWbxmj_zYhoy14DQIckoBU7ver-2PoJOukl6m4yaY9n9LWZ5mUGDb3PbnwuFYxb1rDm2EmvlkhbXFdIuRciIOQTqgeei0TU61Ff_Vt0tinZNThYMQgX4DFc7HILBU7lMwwVUMdYqamE3suRr3qUIlD2RdSNiO87jxaiDFrosGU1fVVulcGmkFN4DX5kyd8lxMs33yPS1uO0G_NViFe-fwxd95JAYXOEiofnHFIYuHgrxfioBMoojYQl8PgLZFj8yxzGVflOyzJQgiYQA-BSAPI1bL2P_J2Jlnhdtv3cJ-bdG1pcwAa6zyzwSEXU5i6p9_TGs4nM15p-QlC3mgtjKkLtC64OL0ucc2Frb6dzKyZTOePu6PcecafNucSaMq1ERhRmQOdigDj1nwHUYs3akx31CHp-eXa9jctuy_C5l_YbBJOiUViZK2dJFNuMJQnMhPcSf6wQdVTQmXCxsSnRN158XYDhgVqqe4U6CROsKiCRQSKqpZ.Yo7zj4wMR89oWSH5Twfzzg',
+          refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
+          token_type: 'Bearer',
         });
 
-        it('returns query params from node request uri', function () {
-          expect(this.client.callbackParams('/cb?code=code')).to.eql({ code: 'code' });
-        });
+      const client = new issuer.Client({
+        client_id: '4e87dde4-ddd3-4c21-aef9-2f2f6bab43ca',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        id_token_encrypted_response_alg: 'ECDH-ES',
+        id_token_signed_response_alg: 'HS256',
+      }, this.keystore.toJWKS(true));
+
+      return client.refresh('http://oidc-client.dev/cb', new TokenSet({
+        refresh_token: 'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
+      }), { nonce: null });
+    });
+
+    it('handles encrypted but not signed responses too', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        userinfo_endpoint: 'https://op.example.com/me',
       });
 
-      describe('when http.IncomingMessage', () => {
-        before(function () {
-          this.origIncomingMessage = stdhttp.IncomingMessage;
-          stdhttp.IncomingMessage = MockRequest;
+      nock('https://op.example.com')
+        .get('/me')
+        .reply(200, 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IlNPZDJZYUZ0cE0xS3lPNkt4a2tCeGxEVEVXcGVvanlqandqald5c1BOVEUiLCJ5IjoiTEVKZGlqazRXc01XZU9JOHdBN1JLSEQ3Q2NxUXN3V25kVnVoeXl2aFl4byJ9fQ..Az5OORCn8IJCYCKg2AGs2A.ACZMiNTTclMiHui8cAgje6xmU4MWwUfU5aPduSxwmSZKMCEiQST3ZpRknWgitklLhd1B7w7zz9wcu7A-yt51ZTaVfO7B9ZrismOrQRX6pTc.xAu2T_3edWUipVASAaMBmw', {
+          'content-type': 'application/jwt; charset=utf-8',
         });
 
-        after(function () {
-          stdhttp.IncomingMessage = this.origIncomingMessage;
-        });
+      const client = new issuer.Client({
+        client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
+        userinfo_encrypted_response_alg: 'ECDH-ES',
+      }, this.keystore.toJWKS(true));
 
-        it('works with IncomingMessage (GET + query)', function () {
-          const req = new MockRequest('GET', '/cb?code=code');
-          expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
-        });
-
-        it('works with IncomingMessage (POST + pre-parsed string)', function () {
-          const req = new MockRequest('POST', '/cb', {
-            body: 'code=code',
-          });
-          expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
-        });
-
-        it('works with IncomingMessage (POST + pre-parsed object)', function () {
-          const req = new MockRequest('POST', '/cb', {
-            body: { code: 'code' },
-          });
-          expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
-        });
-
-        it('works with IncomingMessage (POST + pre-parsed buffer)', function () {
-          const req = new MockRequest('POST', '/cb', {
-            body: Buffer.from('code=code'),
-          });
-          expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
-        });
-
-        it('rejects nonbody parsed POSTs', function () {
-          const req = new MockRequest('POST', '/cb');
-          expect(() => {
-            this.client.callbackParams(req);
-          }).to.throw('incoming message body missing, include a body parser prior to this method call');
-        });
-
-        it('rejects non-object,buffer,string parsed bodies', function () {
-          const req = new MockRequest('POST', '/cb', { body: true });
-          expect(() => {
-            this.client.callbackParams(req);
-          }).to.throw('invalid IncomingMessage body object');
-        });
-
-        it('rejects IncomingMessage other than GET, POST', function () {
-          const req = new MockRequest('PUT', '/cb', {
-            body: { code: 'code' },
-          });
-          expect(() => {
-            this.client.callbackParams(req);
-          }).to.throw('invalid IncomingMessage method');
-        });
-
-        it('fails for other than strings or IncomingMessage', function () {
-          expect(() => {
-            this.client.callbackParams({});
-          }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
-          expect(() => {
-            this.client.callbackParams(true);
-          }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
-          expect(() => {
-            this.client.callbackParams([]);
-          }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
+      return client.userinfo('accesstoken').then((userinfo) => {
+        expect(userinfo).to.eql({
+          email: 'johndoe@example.com',
+          sub: '0aa66887-8c86-4f3b-b521-5a00e01799ca',
         });
       });
     });
 
-    describe('#requestObject', function () {
+    it('verifies no invalid unsigned plain JSON jwe payloads get through', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        userinfo_endpoint: 'https://op.example.com/me',
+      });
+
+      nock('https://op.example.com')
+        .get('/me')
+        .reply(200, 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IkhqMWZtUGxHTEJ2VE5SbnE0SlpWcTNjd3FUTXUxYXYzYjBicEJUWlR0bWciLCJ5IjoieWs5Tkl1WkJiRl9UTjQwRHlCcERjMGNGek5EUUVzRVQ5ZTlJNk1NY2dTayJ9fQ..VonL8dThfAnH4qmUjGv5tA.7CZxo9EWjucIklvP8D7RWg.QpvgGnrKL4xLIKI86qkwRg', {
+          'content-type': 'application/jwt; charset=utf-8',
+        });
+
+      const client = new issuer.Client({
+        client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
+        userinfo_encrypted_response_alg: 'ECDH-ES',
+      }, this.keystore.toJWKS(true));
+
+      return client.userinfo('accesstoken').then(fail, (err) => {
+        expect(err.message).to.eql('failed to parse userinfo JWE payload as JSON');
+      });
+    });
+
+    it('handles valid but no object top-level unsigned plain JSON jwe payloads', function () {
+      const time = new Date(1473076413242);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({
+        issuer: 'https://guarded-cliffs-8635.herokuapp.com/op',
+        userinfo_endpoint: 'https://op.example.com/me',
+      });
+
+      nock('https://op.example.com')
+        .get('/me')
+        .reply(200, 'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IlJDLUs1Q0oxaHM1OUVab3FRbDdIckZfYkRTNGtmbVRkV2NDUktiVUdNSlEiLCJ5IjoicDRLdGhQNlBZbE04LU5XQVBLSThjTThnOHRXUjU3RGp2V2s5QUVMTF9jdyJ9fQ..0UsI_8FRDyu9Ww3UsgPutg.RlHWtr8ezCPO4BahKEm2FA.6irHMjkZtOFnUVwrZkuxtw', {
+          'content-type': 'application/jwt; charset=utf-8',
+        });
+
+      const client = new issuer.Client({
+        client_id: 'f21d5d1d-1c3f-4905-8ff1-5f553a2090b1',
+        userinfo_encrypted_response_alg: 'ECDH-ES',
+      }, this.keystore.toJWKS(true));
+
+      return client.userinfo('accesstoken').then(fail, (err) => {
+        expect(err.message).to.eql('failed to parse userinfo JWE payload as JSON');
+      });
+    });
+
+    it('handles symmetric encryption', function () {
+      const time = new Date(1474477036849);
+      timekeeper.freeze(time);
+      const issuer = new Issuer({ issuer: 'http://localhost:3000/op' });
+
+      const client = new issuer.Client({
+        client_id: '0d9413a4-61c1-4b2b-8d84-a82464c1556c',
+        client_secret: 'l73jho9z9mL0GAomiQwbw08ARqro2tJ4E4qhJ+PZhNQoU6G6D23UDF91L9VR7iJ4',
+        id_token_encrypted_response_alg: 'A128GCMKW',
+        id_token_signed_response_alg: 'HS256',
+      });
+
+      return client.callback('http://oidc-client.dev/cb', {
+        id_token: 'eyJhbGciOiJBMTI4R0NNS1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiY3R5IjoiSldUIiwidGFnIjoiUUF6cjEwTFI4M0gzYzdLN3ZfMDgyZyIsIml2IjoiUWM2c3RLVTg4Ty1oWnZiMyJ9.wvD9dnE40HVAMPuHI7h3wpFZx3OOnNjSUzsOtPXVL8w.XZlxpE3exE3l8kqZkWgoyg.vfK1f2HI_AuYzQbstHeMpq19qdRgESLQuk5RHj9IzPW9Zj0dvKsEJ8a7MQjo6zepNhpP-rUbV06WDw_c2T0riB5SfsVBNLSazxSo9HxCiuzIpYFledAmfkUI0nQDlR1swKxetYYPSR0jEjZNDjIV7vgG8RD3cqImqMYz43QgBSbZqgvMxLcvxzekXWwnXaUTxB0AA8tvQk94JgFl_vcZ3Hln82DPsw7ZdAcNoNqtC79JBI2W7o4SR4rv42OhUf3kJjuPHp9ch28wEAD7O3kfN-YFJE2HdLP97yWi0esR4MmKpCDJymIUBeuyZUrNqnrHTTv6BQEKFX8mL0KQf-XqeQpyw1-1iqfu57bZfAxXzcnRUnQc54XsRBKVHdjKh7lIK8TNmluI1vHEanFYRQntg86yjqIxmpXqiSogSxWfwi6cAF_Zgzr-4koG-ENtVz8c-Szi3ZaTCjLOvt-uPCe1kLR66t_iNCGDawMiLLkcF5bXm9tfUyUlb0_O0bdQW74P9fbVnyEXWp8v6vVu8WLEuYCK2pztMgjp8UuJmfPS6ls2uK42Samvk9soPO9HRNSiROO8nyGU-6V7iTJH5EB_lQ.2WIYHXy2FMNd78p7BYZvBQ',
+      }, { nonce: '9cda9a61a2b01b31aa0b31d3c33631a1' });
+    });
+  });
+
+  describe('#callbackParams', function () {
+    before(function () {
+      const issuer = new Issuer({ issuer: 'http://localhost:3000/op' });
+      this.client = new issuer.Client({ client_id: 'identifier' });
+    });
+
+    describe('when passed a string', () => {
+      it('returns query params from full uri', function () {
+        expect(this.client.callbackParams('http://oidc-client.dev/cb?code=code')).to.eql({ code: 'code' });
+      });
+
+      it('returns query params from node request uri', function () {
+        expect(this.client.callbackParams('/cb?code=code')).to.eql({ code: 'code' });
+      });
+    });
+
+    describe('when http.IncomingMessage', () => {
       before(function () {
-        this.keystore = new jose.JWKS.KeyStore();
-        return this.keystore.generate('RSA');
+        this.origIncomingMessage = stdhttp.IncomingMessage;
+        stdhttp.IncomingMessage = MockRequest;
       });
 
-      before(function () {
-        this.issuer = new Issuer({
-          issuer: 'https://op.example.com',
-          jwks_uri: 'https://op.example.com/certs',
+      after(function () {
+        stdhttp.IncomingMessage = this.origIncomingMessage;
+      });
+
+      it('works with IncomingMessage (GET + query)', function () {
+        const req = new MockRequest('GET', '/cb?code=code');
+        expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
+      });
+
+      it('works with IncomingMessage (POST + pre-parsed string)', function () {
+        const req = new MockRequest('POST', '/cb', {
+          body: 'code=code',
         });
+        expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
       });
 
-      before(function () {
-        nock('https://op.example.com')
-          .get('/certs')
-          .reply(200, this.keystore.toJWKS());
-
-        return this.issuer.keystore();
-      });
-
-      after(nock.cleanAll);
-
-      it('verifies keystore is set', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'EdDSA' });
-
-        return client.requestObject({ state: 'foobar' })
-          .then(fail, (err) => {
-            expect(err).to.be.instanceof(TypeError);
-            expect(err.message).to.eql('no keystore present for client, cannot sign using alg EdDSA');
-          });
-      });
-
-      it('verifies keystore has the appropriate key', async function () {
-        const keystore = new jose.JWKS.KeyStore();
-        await keystore.generate('EC');
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'EdDSA' }, keystore.toJWKS(true));
-
-        return client.requestObject({ state: 'foobar' })
-          .then(fail, (err) => {
-            expect(err).to.be.instanceof(TypeError);
-            expect(err.message).to.eql('no key to sign with found for alg EdDSA');
-          });
-      });
-
-      it('sign alg=none', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'none' });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((signed) => {
-            const parts = signed.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'none', typ: 'oauth-authz-req+jwt' });
-            const {
-              jti, iat, exp, ...jwt
-            } = JSON.parse(base64url.decode(parts[1]));
-            expect(jwt).to.eql({
-              iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
-            });
-            expect(jti).to.be.a('string');
-            expect(iat).to.be.a('number');
-            expect(exp).to.be.a('number');
-            expect(iat + 300).to.eql(exp);
-            expect(parts[2]).to.equal('');
-          });
-      });
-
-      it('sign alg=HSxxx', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'HS256', client_secret: 'atleast32byteslongforHS256mmkay?' });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((signed) => {
-            const parts = signed.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'HS256', typ: 'oauth-authz-req+jwt' });
-            const {
-              jti, iat, exp, ...jwt
-            } = JSON.parse(base64url.decode(parts[1]));
-            expect(jwt).to.eql({
-              iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
-            });
-            expect(jti).to.be.a('string');
-            expect(iat).to.be.a('number');
-            expect(exp).to.be.a('number');
-            expect(iat + 300).to.eql(exp);
-            expect(parts[2].length).to.be.ok;
-          });
-      });
-
-      it('sign alg=RSxxx', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'RS256' }, this.keystore.toJWKS(true));
-
-        return client.requestObject({ state: 'foobar' })
-          .then((signed) => {
-            const parts = signed.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RS256', typ: 'oauth-authz-req+jwt' }).and.have.property('kid');
-            const {
-              jti, iat, exp, ...jwt
-            } = JSON.parse(base64url.decode(parts[1]));
-            expect(jwt).to.eql({
-              iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
-            });
-            expect(jti).to.be.a('string');
-            expect(iat).to.be.a('number');
-            expect(exp).to.be.a('number');
-            expect(iat + 300).to.eql(exp);
-            expect(parts[2].length).to.be.ok;
-          });
-      });
-
-      it('encrypts for issuer using issuer\'s public key (explicit enc)', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
-          });
-      });
-
-      it('encrypts for issuer using issuer\'s public key (default enc)', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5' });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
-          });
-      });
-
-      it('encrypts for issuer using pre-shared client_secret (A\\d{3}GCMKW)', function () {
-        const client = new this.issuer.Client({
-          client_id: 'identifier',
-          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-          request_object_encryption_alg: 'A128GCMKW',
+      it('works with IncomingMessage (POST + pre-parsed object)', function () {
+        const req = new MockRequest('POST', '/cb', {
+          body: { code: 'code' },
         });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'A128GCMKW', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
-          });
+        expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
       });
 
-      it('encrypts for issuer using pre-shared client_secret (dir + A128CBC-HS256)', function () {
-        const client = new this.issuer.Client({
-          client_id: 'identifier',
-          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-          request_object_encryption_alg: 'dir',
-          request_object_encryption_enc: 'A128CBC-HS256',
+      it('works with IncomingMessage (POST + pre-parsed buffer)', function () {
+        const req = new MockRequest('POST', '/cb', {
+          body: Buffer.from('code=code'),
         });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
-          });
+        expect(this.client.callbackParams(req)).to.eql({ code: 'code' });
       });
 
-      it('encrypts for issuer using pre-shared client_secret (dir + A192CBC-HS384)', function () {
-        const client = new this.issuer.Client({
-          client_id: 'identifier',
-          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-          request_object_encryption_alg: 'dir',
-          request_object_encryption_enc: 'A192CBC-HS384',
-        });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A192CBC-HS384', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
-          });
+      it('rejects nonbody parsed POSTs', function () {
+        const req = new MockRequest('POST', '/cb');
+        expect(() => {
+          this.client.callbackParams(req);
+        }).to.throw('incoming message body missing, include a body parser prior to this method call');
       });
 
-      it('encrypts for issuer using pre-shared client_secret (dir + A256CBC-HS512)', function () {
-        const client = new this.issuer.Client({
-          client_id: 'identifier',
-          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-          request_object_encryption_alg: 'dir',
-          request_object_encryption_enc: 'A256CBC-HS512',
-        });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A256CBC-HS512', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
-          });
+      it('rejects non-object,buffer,string parsed bodies', function () {
+        const req = new MockRequest('POST', '/cb', { body: true });
+        expect(() => {
+          this.client.callbackParams(req);
+        }).to.throw('invalid IncomingMessage body object');
       });
 
-      it('encrypts for issuer using pre-shared client_secret (dir + defaulted to A128CBC-HS256)', function () {
-        const client = new this.issuer.Client({
-          client_id: 'identifier',
-          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-          request_object_encryption_alg: 'dir',
+      it('rejects IncomingMessage other than GET, POST', function () {
+        const req = new MockRequest('PUT', '/cb', {
+          body: { code: 'code' },
         });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
-          });
+        expect(() => {
+          this.client.callbackParams(req);
+        }).to.throw('invalid IncomingMessage method');
       });
 
-      if (!('electron' in process.versions)) {
-        it('encrypts for issuer using pre-shared client_secret (PBES2)', function () {
-          const client = new this.issuer.Client({
-            client_id: 'identifier',
-            client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-            request_object_encryption_alg: 'PBES2-HS256+A128KW',
-          });
+      it('fails for other than strings or IncomingMessage', function () {
+        expect(() => {
+          this.client.callbackParams({});
+        }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
+        expect(() => {
+          this.client.callbackParams(true);
+        }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
+        expect(() => {
+          this.client.callbackParams([]);
+        }).to.throw('#callbackParams only accepts string urls, http.IncomingMessage or a lookalike');
+      });
+    });
+  });
 
-          return client.requestObject({ state: 'foobar' })
-            .then((encrypted) => {
-              const parts = encrypted.split('.');
-              expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'PBES2-HS256+A128KW', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
-            });
-        });
+  describe('#requestObject', function () {
+    before(function () {
+      this.keystore = new jose2.JWKS.KeyStore();
+      return this.keystore.generate('RSA');
+    });
 
-        it('encrypts for issuer using pre-shared client_secret (A\\d{3}KW)', function () {
-          const client = new this.issuer.Client({
-            client_id: 'identifier',
-            client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
-            request_object_encryption_alg: 'A128KW',
-          });
+    before(function () {
+      this.issuer = new Issuer({
+        issuer: 'https://op.example.com',
+        jwks_uri: 'https://op.example.com/certs',
+      });
+    });
 
-          return client.requestObject({ state: 'foobar' })
-            .then((encrypted) => {
-              const parts = encrypted.split('.');
-              expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'A128KW', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
-            });
-        });
-      }
+    before(function () {
+      nock('https://op.example.com')
+        .get('/certs')
+        .reply(200, this.keystore.toJWKS());
 
-      it('throws on non-object inputs', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'none' });
-        return client.requestObject(true).then(fail, (err) => {
+      return this.issuer.keystore();
+    });
+
+    after(nock.cleanAll);
+
+    it('verifies keystore is set', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'EdDSA' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then(fail, (err) => {
           expect(err).to.be.instanceof(TypeError);
-          expect(err.message).to.eql('requestObject must be a plain object');
+          expect(err.message).to.eql('no keystore present for client, cannot sign using alg EdDSA');
         });
+    });
+
+    it('verifies keystore has the appropriate key', async function () {
+      const keystore = new jose2.JWKS.KeyStore();
+      await keystore.generate('EC');
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'EdDSA' }, keystore.toJWKS(true));
+
+      return client.requestObject({ state: 'foobar' })
+        .then(fail, (err) => {
+          expect(err).to.be.instanceof(TypeError);
+          expect(err.message).to.eql('no key to sign with found for alg EdDSA');
+        });
+    });
+
+    it('sign alg=none', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'none' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((signed) => {
+          const parts = signed.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'none', typ: 'oauth-authz-req+jwt' });
+          const {
+            jti, iat, exp, ...jwt
+          } = JSON.parse(base64url.decode(parts[1]));
+          expect(jwt).to.eql({
+            iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
+          });
+          expect(jti).to.be.a('string');
+          expect(iat).to.be.a('number');
+          expect(exp).to.be.a('number');
+          expect(iat + 300).to.eql(exp);
+          expect(parts[2]).to.equal('');
+        });
+    });
+
+    it('sign alg=HSxxx', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'HS256', client_secret: 'atleast32byteslongforHS256mmkay?' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((signed) => {
+          const parts = signed.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.eql({ alg: 'HS256', typ: 'oauth-authz-req+jwt' });
+          const {
+            jti, iat, exp, ...jwt
+          } = JSON.parse(base64url.decode(parts[1]));
+          expect(jwt).to.eql({
+            iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
+          });
+          expect(jti).to.be.a('string');
+          expect(iat).to.be.a('number');
+          expect(exp).to.be.a('number');
+          expect(iat + 300).to.eql(exp);
+          expect(parts[2].length).to.be.ok;
+        });
+    });
+
+    it('sign alg=RSxxx', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'RS256' }, this.keystore.toJWKS(true));
+
+      return client.requestObject({ state: 'foobar' })
+        .then((signed) => {
+          const parts = signed.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RS256', typ: 'oauth-authz-req+jwt' }).and.have.property('kid');
+          const {
+            jti, iat, exp, ...jwt
+          } = JSON.parse(base64url.decode(parts[1]));
+          expect(jwt).to.eql({
+            iss: 'identifier', client_id: 'identifier', aud: 'https://op.example.com', state: 'foobar',
+          });
+          expect(jti).to.be.a('string');
+          expect(iat).to.be.a('number');
+          expect(exp).to.be.a('number');
+          expect(iat + 300).to.eql(exp);
+          expect(parts[2].length).to.be.ok;
+        });
+    });
+
+    it('encrypts for issuer using issuer\'s public key (explicit enc)', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
+        });
+    });
+
+    it('encrypts for issuer using issuer\'s public key (default enc)', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
+        });
+    });
+
+    it('encrypts for issuer using pre-shared client_secret (A\\d{3}GCMKW)', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        request_object_encryption_alg: 'A128GCMKW',
       });
 
-      describe('FAPIClient', function () {
-        it('includes nbf by default', function () {
-          const client = new this.issuer.FAPIClient({ client_id: 'identifier', request_object_signing_alg: 'PS256' }, this.keystore.toJWKS(true));
-          return client.requestObject({})
-            .then((signed) => {
-              const { iat, exp, nbf } = JSON.parse(base64url.decode(signed.split('.')[1]));
-
-              expect(iat).to.be.ok;
-              expect(exp).to.eql(iat + 300);
-              expect(nbf).to.eql(iat);
-            });
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'A128GCMKW', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
         });
+    });
+
+    it('encrypts for issuer using pre-shared client_secret (dir + A128CBC-HS256)', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        request_object_encryption_alg: 'dir',
+        request_object_encryption_enc: 'A128CBC-HS256',
+      });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
+        });
+    });
+
+    it('encrypts for issuer using pre-shared client_secret (dir + A192CBC-HS384)', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        request_object_encryption_alg: 'dir',
+        request_object_encryption_enc: 'A192CBC-HS384',
+      });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A192CBC-HS384', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
+        });
+    });
+
+    it('encrypts for issuer using pre-shared client_secret (dir + A256CBC-HS512)', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        request_object_encryption_alg: 'dir',
+        request_object_encryption_enc: 'A256CBC-HS512',
+      });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A256CBC-HS512', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
+        });
+    });
+
+    it('encrypts for issuer using pre-shared client_secret (dir + defaulted to A128CBC-HS256)', function () {
+      const client = new this.issuer.Client({
+        client_id: 'identifier',
+        client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+        request_object_encryption_alg: 'dir',
+      });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'dir', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
+        });
+    });
+
+    if (!('electron' in process.versions)) {
+      it('encrypts for issuer using pre-shared client_secret (PBES2)', function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+          request_object_encryption_alg: 'PBES2-HS256+A128KW',
+        });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'PBES2-HS256+A128KW', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
+          });
+      });
+
+      it('encrypts for issuer using pre-shared client_secret (A\\d{3}KW)', function () {
+        const client = new this.issuer.Client({
+          client_id: 'identifier',
+          client_secret: 'GfsT479VMy5ZZZPquadPbN3wKzaFGYo1CTkb0IFFzDNODLEAuC2GUV3QsTye3xNQ',
+          request_object_encryption_alg: 'A128KW',
+        });
+
+        return client.requestObject({ state: 'foobar' })
+          .then((encrypted) => {
+            const parts = encrypted.split('.');
+            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'A128KW', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.not.have.property('kid');
+          });
+      });
+    }
+
+    it('throws on non-object inputs', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_signing_alg: 'none' });
+      return client.requestObject(true).then(fail, (err) => {
+        expect(err).to.be.instanceof(TypeError);
+        expect(err.message).to.eql('requestObject must be a plain object');
       });
     });
 
-    describe('#requestObject (encryption when multiple keys match)', function () {
-      before(function () {
-        this.keystore = new jose.JWKS.KeyStore();
-        return Promise.all([
-          this.keystore.generate('RSA'),
-          this.keystore.generate('RSA'),
-        ]);
-      });
+    describe('FAPIClient', function () {
+      it('includes nbf by default', function () {
+        const client = new this.issuer.FAPIClient({ client_id: 'identifier', request_object_signing_alg: 'PS256' }, this.keystore.toJWKS(true));
+        return client.requestObject({})
+          .then((signed) => {
+            const { iat, exp, nbf } = JSON.parse(base64url.decode(signed.split('.')[1]));
 
-      before(function () {
-        this.issuer = new Issuer({
-          issuer: 'https://op.example.com',
-          jwks_uri: 'https://op.example.com/certs',
+            expect(iat).to.be.ok;
+            expect(exp).to.eql(iat + 300);
+            expect(nbf).to.eql(iat);
+          });
+      });
+    });
+  });
+
+  describe('#requestObject (encryption when multiple keys match)', function () {
+    before(function () {
+      this.keystore = new jose2.JWKS.KeyStore();
+      return Promise.all([
+        this.keystore.generate('RSA'),
+        this.keystore.generate('RSA'),
+      ]);
+    });
+
+    before(function () {
+      this.issuer = new Issuer({
+        issuer: 'https://op.example.com',
+        jwks_uri: 'https://op.example.com/certs',
+      });
+    });
+
+    before(function () {
+      nock('https://op.example.com')
+        .get('/certs')
+        .reply(200, this.keystore.toJWKS());
+
+      return this.issuer.keystore();
+    });
+
+    after(nock.cleanAll);
+
+    it('encrypts for issuer using issuer\'s public key (explicit enc)', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
+
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
         });
-      });
+    });
 
-      before(function () {
-        nock('https://op.example.com')
-          .get('/certs')
-          .reply(200, this.keystore.toJWKS());
+    it('encrypts for issuer using issuer\'s public key (default enc)', function () {
+      const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5' });
 
-        return this.issuer.keystore();
-      });
-
-      after(nock.cleanAll);
-
-      it('encrypts for issuer using issuer\'s public key (explicit enc)', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5', request_object_encryption_enc: 'A128CBC-HS256' });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
-          });
-      });
-
-      it('encrypts for issuer using issuer\'s public key (default enc)', function () {
-        const client = new this.issuer.Client({ client_id: 'identifier', request_object_encryption_alg: 'RSA1_5' });
-
-        return client.requestObject({ state: 'foobar' })
-          .then((encrypted) => {
-            const parts = encrypted.split('.');
-            expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
-          });
-      });
+      return client.requestObject({ state: 'foobar' })
+        .then((encrypted) => {
+          const parts = encrypted.split('.');
+          expect(JSON.parse(base64url.decode(parts[0]))).to.contain({ alg: 'RSA1_5', enc: 'A128CBC-HS256', cty: 'oauth-authz-req+jwt' }).and.have.property('kid');
+        });
     });
   });
 

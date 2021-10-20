@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const QuickLRU = require('quick-lru');
 const nock = require('nock');
 const sinon = require('sinon');
-const jose = require('jose');
+const jose2 = require('jose2');
 
 const { Issuer, custom } = require('../../lib');
 
@@ -19,7 +19,7 @@ describe('Issuer', () => {
     });
 
     before(function () {
-      this.keystore = new jose.JWKS.KeyStore();
+      this.keystore = new jose2.JWKS.KeyStore();
       return this.keystore.generate('RSA');
     });
 
@@ -45,7 +45,7 @@ describe('Issuer', () => {
 
     it('does not refetch immidiately', function () {
       nock.cleanAll();
-      return this.issuer.queryKeyStore({});
+      return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256' });
     });
 
     it('fetches if asked to', function () {
@@ -65,20 +65,20 @@ describe('Issuer', () => {
 
     it('asks to fetch if the keystore is stale and new key definition is requested', function () {
       sinon.stub(QuickLRU.prototype, 'get').returns(undefined);
-      return this.issuer.queryKeyStore({ kid: 'yeah' }).then(fail, () => {
+      return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256', kid: 'yeah' }).then(fail, () => {
         nock('https://op.example.com')
           .get('/certs')
           .reply(200, this.keystore.toJWKS());
 
-        return this.issuer.queryKeyStore({ kid: 'yeah' }).then(fail, () => {
+        return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256', kid: 'yeah' }).then(fail, () => {
           expect(nock.isDone()).to.be.true;
         });
       });
     });
 
     it('rejects when no matching key is found', function () {
-      return this.issuer.queryKeyStore({ kid: 'noway' }).then(fail, (err) => {
-        expect(err.message).to.equal('no valid key found in issuer\'s jwks_uri for key parameters {"kid":"noway"}');
+      return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256', kid: 'noway' }).then(fail, (err) => {
+        expect(err.message).to.equal('no valid key found in issuer\'s jwks_uri for key parameters {"kid":"noway","alg":"RS256"}');
       });
     });
 
@@ -89,7 +89,7 @@ describe('Issuer', () => {
           .get('/certs')
           .reply(200, this.keystore.toJWKS());
 
-        return this.issuer.queryKeyStore({ alg: 'RS256' }).then(fail, (err) => {
+        return this.issuer.queryKeyStore({ alg: 'RS256', use: 'sig' }).then(fail, (err) => {
           expect(nock.isDone()).to.be.true;
           expect(err.message).to.equal('multiple matching keys found in issuer\'s jwks_uri for key parameters {"alg":"RS256"}, kid must be provided in this case');
         });
@@ -104,7 +104,7 @@ describe('Issuer', () => {
           .get('/certs')
           .reply(200, this.keystore.toJWKS());
 
-        return this.issuer.queryKeyStore({ alg: 'RS256', kid });
+        return this.issuer.queryKeyStore({ alg: 'RS256', kid, use: 'sig' });
       });
     });
 

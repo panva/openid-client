@@ -1,5 +1,6 @@
 {
   "extends": "airbnb-base",
+  "parser": "babel-eslint",
   "rules": {
     "no-underscore-dangle": ["error", { "allow": ["_claim_names", "_claim_sources"] }],
     "no-empty": ["error", { "allowEmptyCatch": true }],

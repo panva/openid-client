@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const jose = require('jose');
+const jose2 = require('jose2');
 const sinon = require('sinon');
 const nock = require('nock');
 
@@ -93,7 +93,7 @@ describe('Client#register', () => {
 
   describe('with keystore (as option)', function () {
     it('enriches the registration with jwks if not provided (or jwks_uri)', function () {
-      const keystore = new jose.JWKS.KeyStore();
+      const keystore = new jose2.JWKS.KeyStore();
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -111,7 +111,7 @@ describe('Client#register', () => {
     });
 
     it('ignores the keystore during registration if jwks is provided', function () {
-      const keystore = new jose.JWKS.KeyStore();
+      const keystore = new jose2.JWKS.KeyStore();
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -131,7 +131,7 @@ describe('Client#register', () => {
     });
 
     it('ignores the keystore during registration if jwks_uri is provided', function () {
-      const keystore = new jose.JWKS.KeyStore();
+      const keystore = new jose2.JWKS.KeyStore();
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -160,7 +160,7 @@ describe('Client#register', () => {
     });
 
     it('does not accept oct keys', function () {
-      const keystore = new jose.JWKS.KeyStore();
+      const keystore = new jose2.JWKS.KeyStore();
 
       return keystore.generate('oct', 32).then(() => {
         return issuer.Client.register({}, { jwks: keystore.toJWKS(true) })
