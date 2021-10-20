@@ -1775,11 +1775,10 @@ describe('Client', () => {
       it('has the right header properties', function () {
         const header = JSON.parse(base64url.decode(this.auth.form.client_assertion.split('.')[0]));
         expect(header).to.have.keys([
-          'alg', 'typ',
+          'alg',
         ]);
 
         expect(header.alg).to.equal('HS256');
-        expect(header.typ).to.equal('JWT');
       });
 
       it('requires client_secret to be set on the client', function () {
@@ -1860,11 +1859,10 @@ describe('Client', () => {
         it('has the right header properties', function () {
           const header = JSON.parse(base64url.decode(this.auth.form.client_assertion.split('.')[0]));
           expect(header).to.have.keys([
-            'alg', 'typ', 'kid',
+            'alg', 'kid',
           ]);
 
           expect(header.alg).to.equal('ES256');
-          expect(header.typ).to.equal('JWT');
           expect(header.kid).to.be.ok;
         });
 
