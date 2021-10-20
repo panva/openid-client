@@ -14,8 +14,6 @@ openid-client.
     - Implicit Flow
     - Hybrid Flow
   - UserInfo Request
-  - Fetching Distributed Claims
-  - Unpacking Aggregated Claims
   - Offline Access / Refresh Token Grant
   - Client Credentials Grant
   - Client Authentication
