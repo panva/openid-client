@@ -1,8 +1,6 @@
 import { IncomingMessage } from 'http';
 import { generateKeyPairSync } from 'crypto';
 
-import { JWKECKey } from 'jose'
-
 import { custom, generators, Issuer, Client, Strategy, StrategyVerifyCallback, StrategyOptions, TokenSet, RegisterOther, IssuerMetadata } from './index.d';
 import passport from 'passport';
 
@@ -45,19 +43,19 @@ async (req: IncomingMessage) => {
     //
 
     const { privateKey: keyobject } = generateKeyPairSync('rsa', { modulusLength: 2048 })
-    const jwk: JWKECKey = { kty: 'EC', x: 'foo', y: 'bar', d: 'baz', crv: 'P-256' }
+    const jwk = { kty: 'EC', x: 'foo', y: 'bar', d: 'baz', crv: 'P-256' }
 
     client.callback('https://rp.example.com/cb', {}, {}, { DPoP: keyobject })
-    client.callback('https://rp.example.com/cb', {}, {}, { DPoP: jwk })
+    client.callback('https://rp.example.com/cb', {}, {}, { DPoP: { key: jwk, format: 'jwk' } })
 
     client.oauthCallback('https://rp.example.com/cb', {}, {}, { DPoP: keyobject })
-    client.oauthCallback('https://rp.example.com/cb', {}, {}, { DPoP: jwk })
+    client.oauthCallback('https://rp.example.com/cb', {}, {}, { DPoP: { key: jwk, format: 'jwk' } })
 
     client.userinfo('token', { DPoP: keyobject })
-    client.userinfo('token', { DPoP: jwk })
+    client.userinfo('token', { DPoP: { key: jwk, format: 'jwk' } })
 
     client.requestResource('https://rs.example.com/resource', 'token', { DPoP: keyobject })
-    client.requestResource('https://rs.example.com/resource', 'token', { DPoP: jwk })
+    client.requestResource('https://rs.example.com/resource', 'token', { DPoP: { key: jwk, format: 'jwk' } })
 
     client.pushedAuthorizationRequest()
     client.pushedAuthorizationRequest({})
@@ -72,7 +70,7 @@ async (req: IncomingMessage) => {
 
 
     client.deviceAuthorization({}, { DPoP: keyobject })
-    const handle = await client.deviceAuthorization({}, { DPoP: jwk })
+    const handle = await client.deviceAuthorization({}, { DPoP: { key: jwk, format: 'jwk' } })
 
     handle.abort();
     handle.poll();
@@ -81,10 +79,10 @@ async (req: IncomingMessage) => {
     handle.poll({ signal: ac.signal });
 
     client.grant({ grant_type: 'client_credentials' }, { DPoP: keyobject })
-    client.grant({ grant_type: 'client_credentials' }, { DPoP: jwk })
+    client.grant({ grant_type: 'client_credentials' }, { DPoP: { key: jwk, format: 'jwk' } })
 
     client.refresh('token', { DPoP: keyobject })
-    client.refresh('token', { DPoP: jwk })
+    client.refresh('token', { DPoP: { key: jwk, format: 'jwk' } })
 
     //
 

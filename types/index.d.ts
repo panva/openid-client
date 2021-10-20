@@ -1,5 +1,4 @@
 /// <reference types="node" />
-/// <reference lib="dom"/>
 // TypeScript Version: 3.6
 
 /**
@@ -17,12 +16,7 @@ export type HttpOptions = Pick<https.RequestOptions, 'agent' | 'ca' | 'cert' | '
 export type RetryFunction = (retry: number, error: Error) => number;
 export type CustomHttpOptionsProvider = (options: HttpOptions & { url: URL } & UnknownObject) => HttpOptions;
 export type TokenTypeHint = "access_token" | "refresh_token" | string;
-export type DPoPInput =
-  | crypto.KeyObject
-  | crypto.PrivateKeyInput
-  | jose.JWKRSAKey
-  | jose.JWKECKey
-  | jose.JWKOKPKey;
+export type DPoPInput = crypto.KeyObject | Parameters<typeof crypto.createPrivateKey>[0]
 
 interface UnknownObject {
   [key: string]: unknown;
