@@ -31,7 +31,6 @@ If you or your business use openid-client, please consider becoming a [sponsor][
   - [issuer.Client](#issuerclient)
   - [issuer.FAPIClient](#issuerfapiclient)
   - [issuer.metadata](#issuermetadata)
-  - [issuer.keystore([forceReload])](#issuerkeystoreforcereload)
 - [Issuer.discover(issuer)](#issuerdiscoverissuer)
 - [Issuer.webfinger(input)](#issuerwebfingerinput)
 <!-- TOC Issuer END -->
@@ -108,15 +107,6 @@ The behaviours are:
 Returns metadata from the issuer's discovery document.
 
 - Returns: `<Object>`
-
----
-
-#### `issuer.keystore([forceReload])`
-
-Returns the issuer's `jwks_uri` keys as a [`jose`][jose] parsed JWKS.Keystore.
-
-- `forceReload`: `<boolean>` forces a reload of the issuer's jwks_uri. **Default:** 'false'
-- Returns: `Promise<jose.JWKS.KeyStore>`
 
 ---
 

@@ -13,9 +13,6 @@ async (req: IncomingMessage) => {
     let issuer = await Issuer.discover('https://accounts.google.com');
     console.log('Discovered issuer %O', issuer.metadata.issuer);
 
-    issuer.keystore();
-    issuer.keystore(true);
-
     //
     issuer = new Issuer({
         issuer: 'https://accounts.google.com',

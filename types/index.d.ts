@@ -667,12 +667,6 @@ export class Issuer<TClient extends Client> {
   [custom.http_options]: CustomHttpOptionsProvider;
 
   /**
-   * Returns the issuer's jwks_uri keys as a `jose` parsed JWKS.Keystore.
-   * @param forceReload forces a reload of the issuer's jwks_uri
-   */
-  keystore(forceReload?: boolean): Promise<jose.JWKS.KeyStore>;
-
-  /**
    * Loads OpenID Connect 1.0 and/or OAuth 2.0 Authorization Server Metadata documents.
    * When the issuer argument contains '.well-known' only that document is loaded, otherwise
    * performs both openid-configuration and oauth-authorization-server requests.
