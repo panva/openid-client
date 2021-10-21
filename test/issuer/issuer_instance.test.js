@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const QuickLRU = require('quick-lru');
+const LRU = require('lru-cache');
 const nock = require('nock');
 const sinon = require('sinon');
 const jose2 = require('jose2');
@@ -40,7 +40,7 @@ describe('Issuer', () => {
 
     after(nock.cleanAll);
     afterEach(function () {
-      if (QuickLRU.prototype.get.restore) QuickLRU.prototype.get.restore();
+      if (LRU.prototype.get.restore) LRU.prototype.get.restore();
     });
 
     it('does not refetch immidiately', function () {
@@ -64,7 +64,7 @@ describe('Issuer', () => {
     });
 
     it('asks to fetch if the keystore is stale and new key definition is requested', function () {
-      sinon.stub(QuickLRU.prototype, 'get').returns(undefined);
+      sinon.stub(LRU.prototype, 'get').returns(undefined);
       return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256', kid: 'yeah' }).then(fail, () => {
         nock('https://op.example.com')
           .get('/certs')
@@ -83,7 +83,7 @@ describe('Issuer', () => {
     });
 
     it('requires a kid is provided in definition if more keys are in the storage', function () {
-      sinon.stub(QuickLRU.prototype, 'get').returns(undefined);
+      sinon.stub(LRU.prototype, 'get').returns(undefined);
       return this.keystore.generate('RSA').then(() => {
         nock('https://op.example.com')
           .get('/certs')
@@ -97,7 +97,7 @@ describe('Issuer', () => {
     });
 
     it('multiple keys can match the JWT header', function () {
-      sinon.stub(QuickLRU.prototype, 'get').returns(undefined);
+      sinon.stub(LRU.prototype, 'get').returns(undefined);
       const { kid } = this.keystore.get({ kty: 'RSA' });
       return this.keystore.generate('RSA', undefined, { kid }).then(() => {
         nock('https://op.example.com')
