@@ -44,7 +44,7 @@ openid-client.
 - [RFC9126 - OAuth 2.0 Pushed Authorization Requests (PAR)][feature-par]
 - [OpenID Connect Session Management 1.0 - draft 28][feature-rp-logout]
   - RP-Initiated Logout
-- [Financial-grade API - Part 2: Read and Write API Security Profile (FAPI) - ID2][feature-fapi]
+- [Financial-grade API Security Profile 1.0 - Part 2: Advanced (FAPI)][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
 - [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 03][feature-dpop]
 
@@ -286,7 +286,7 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [feature-device-flow]: https://tools.ietf.org/html/rfc8628
 [feature-rp-logout]: https://openid.net/specs/openid-connect-session-1_0.html#RPLogout
 [feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
-[feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-ID2.html
+[feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-1_0.html
 [feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-03
 [feature-par]: https://www.rfc-editor.org/rfc/rfc9126.html
 [feature-jar]: https://www.rfc-editor.org/rfc/rfc9101.html

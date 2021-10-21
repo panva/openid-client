@@ -29,7 +29,7 @@ If you or your business use openid-client, please consider becoming a [sponsor][
 - [Class: &lt;Issuer&gt;](#class-issuer)
   - [new Issuer(metadata)](#new-issuermetadata)
   - [issuer.Client](#issuerclient)
-  - [issuer.FAPIClient](#issuerfapiclient)
+  - [issuer.FAPI1Client](#issuerfapi1client)
   - [issuer.metadata](#issuermetadata)
 - [Issuer.discover(issuer)](#issuerdiscoverissuer)
 - [Issuer.webfinger(input)](#issuerwebfingerinput)
@@ -87,12 +87,12 @@ Returns the `<Client>` class tied to this issuer.
 
 ---
 
-#### `issuer.FAPIClient`
+#### `issuer.FAPI1Client`
 
-Returns the `<FAPIClient>` class tied to this issuer. `<FAPIClient>` inherits from `<Client>` and
-adds necessary FAPI behaviours:
+Returns the `<FAPI1Client>` class tied to this issuer. `<FAPI1Client>` inherits from `<Client>` and
+adds necessary [Financial-grade API Security Profile 1.0 - Part 2: Advanced][] behaviours:
 
-- Returns: `<FAPIClient>`
+- Returns: `<FAPI1Client>`
 
 The behaviours are:
 - `s_hash` presence and value checks in authorization endpoint response ID Tokens
@@ -292,6 +292,10 @@ Performs the callback for Authorization Server's authorization response.
   - `max_age`: `<number>` When provided the authorization response's ID Token auth_time parameter
     will be checked to be conform to the max_age value. Use of this check is required if you sent a
     max_age parameter into an authorization request. **Default:** uses client's `default_max_age`.
+  - `scope`: `<string>` (FAPI1Client only) When provided the Token Endpoint Authorization Code
+    exchange response `scope` will be checked to be either an exact match, or containing a subset of
+    the scope sent in the authorization request.
+
 - `extras`: `<Object>`
   - `exchangeBody`: `<Object>` extra request body properties to be sent to the AS during code
     exchange.
@@ -1029,6 +1033,7 @@ request instance.
 [webfinger-discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html#IssuerDiscovery
 [got-library]: https://github.com/sindresorhus/got/tree/v11.8.0
 [client-authentication]: https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
+[Financial-grade API Security Profile 1.0 - Part 2: Advanced]: https://openid.net/specs/openid-financial-api-part-2-1_0.html
 
 [^dpop-exception]: Ed25519, Ed448, and all Elliptic Curve keys have a fixed algorithm. RSA and RSA-PSS keys
 look for an algorithm supported by the issuer metadata, if none is found PS256 is used as fallback.

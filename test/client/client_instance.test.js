@@ -1941,9 +1941,9 @@ describe('Client', () => {
         client_secret: 'its gotta be a long secret and i mean at least 32 characters',
       }, undefined, { additionalAuthorizedParties: ['authorized third party', 'another third party'] });
 
-      this.fapiClient = new this.issuer.FAPIClient({
+      this.fapiClient = new this.issuer.FAPI1Client({
         client_id: 'identifier',
-        client_secret: 'secure',
+        token_endpoint_auth_method: 'tls_client_auth',
       });
 
       this.IdToken = async (key, alg, payload) => {
@@ -2601,7 +2601,7 @@ describe('Client', () => {
       const code = 'jHkWEdUXMU1BwAsC4vtUsZwnNvTIxEl0z9K3vx5KF0Y'; // eslint-disable-line camelcase, max-len
       const c_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
 
-      return this.IdToken(this.keystore.get(), 'RS256', {
+      return this.IdToken(this.keystore.get(), 'PS256', {
         c_hash,
         iss: this.issuer.issuer,
         sub: 'userId',
@@ -2623,7 +2623,7 @@ describe('Client', () => {
       const c_hash = '77QmUPtjPfzWtF2AnpK9RQ'; // eslint-disable-line camelcase
       const s_hash = 'LCa0a2j_xo_5m0U8HTBBNA'; // eslint-disable-line camelcase
 
-      return this.IdToken(this.keystore.get(), 'RS256', {
+      return this.IdToken(this.keystore.get(), 'PS256', {
         c_hash,
         s_hash,
         iss: this.issuer.issuer,
@@ -3338,7 +3338,7 @@ describe('Client', () => {
 
     describe('FAPIClient', function () {
       it('includes nbf by default', function () {
-        const client = new this.issuer.FAPIClient({ client_id: 'identifier', request_object_signing_alg: 'PS256' }, this.keystore.toJWKS(true));
+        const client = new this.issuer.FAPI1Client({ client_id: 'identifier', request_object_signing_alg: 'PS256', token_endpoint_auth_method: 'private_key_jwt' }, this.keystore.toJWKS(true));
         return client.requestObject({})
           .then((signed) => {
             const { iat, exp, nbf } = JSON.parse(base64url.decode(signed.split('.')[1]));

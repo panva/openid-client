@@ -650,9 +650,9 @@ export class Issuer<TClient extends Client> {
   Client: TypeOfGenericClient<TClient>;
 
   /**
-   * Returns the <FAPIClient> class tied to this issuer.
+   * Returns the <FAPI1Client> class tied to this issuer.
    */
-  FAPIClient: TypeOfGenericClient<TClient>;
+  FAPI1Client: TypeOfGenericClient<TClient>;
 
   /**
    * Returns metadata from the issuer's discovery document.

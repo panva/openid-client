@@ -2,7 +2,8 @@ const { expect } = require('chai');
 const nock = require('nock');
 const sinon = require('sinon');
 
-const { Issuer, Registry, custom } = require('../../lib');
+const { Issuer, custom } = require('../../lib');
+const Registry = require('../../lib/issuer_registry');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 
@@ -119,7 +120,7 @@ describe('Issuer#webfinger()', () => {
   });
 
   it('validates the discovered issuer is the same as from webfinger', function () {
-    Registry.clear();
+    Registry.reset();
     const webfinger = nock('https://op.example.com')
       .get('/.well-known/webfinger')
       .query(function (query) {
