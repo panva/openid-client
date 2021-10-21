@@ -112,7 +112,7 @@ jobs:
           docker pull panvafs/oidc-certification-rp-ci
           docker run -d -p 8080:8080 panvafs/oidc-certification-rp-ci
           while ! curl -sk https://127.0.0.1:8080 >/dev/null; do sleep 2; done
-      - run: git clone --depth 1 --single-branch --branch main https://github.com/panva/openid-client-conformance-tests.git .
+      - run: git clone --depth 1 --single-branch --branch five https://github.com/panva/openid-client-conformance-tests.git .
       - uses: actions/setup-node@v1
         with:
           node-version: 12
@@ -127,7 +127,7 @@ jobs:
   fapi-conformance:
     runs-on: ubuntu-latest
     steps:
-      - run: git clone --depth 1 --single-branch --branch release-v4.1.10 https://gitlab.com/openid/conformance-suite.git
+      - run: git clone --depth 1 --single-branch --branch release-v4.1.32 https://gitlab.com/openid/conformance-suite.git
       - env:
           MAVEN_CACHE: ./m2
         run: |
@@ -137,7 +137,7 @@ jobs:
           docker-compose -f docker-compose-dev.yml up -d
           while ! curl -skfail https://localhost.emobix.co.uk:8443/api/runner/available >/dev/null; do sleep 2; done
         working-directory: ./conformance-suite
-      - run: git clone --depth 1 --single-branch --branch main https://github.com/panva/openid-client-fapi-certification.git runner
+      - run: git clone --depth 1 --single-branch --branch five https://github.com/panva/openid-client-fapi-certification.git runner
       - uses: actions/setup-node@v1
         with:
           node-version: 12
