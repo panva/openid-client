@@ -116,7 +116,7 @@ PKCE instead of `state` parameter for CSRF protection.
 Create a Client instance for that issuer's authorization server intended for Authorization Code
 flow.
 
-**See the [documentation][documentation] for full API details.**
+**See the [documentation][] for full API details.**
 
 ```js
 const client = new googleIssuer.Client({
@@ -186,7 +186,7 @@ with no need for accessing any third party APIs with an Access Token from the Au
 
 Create a Client instance for that issuer's authorization server intended for ID Token implicit flow.
 
-**See the [documentation][documentation] for full API details.**
+**See the [documentation][] for full API details.**
 ```js
 const client = new googleIssuer.Client({
   client_id: 'zELcpfANLqY7Oqas',
