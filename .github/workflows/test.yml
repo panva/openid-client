@@ -76,15 +76,12 @@ jobs:
       - run: npm run coverage
 
   electron:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         electron-version:
           - 12.0.0
           - latest
-        os:
-          - ubuntu-latest
-          - windows-latest
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v2
