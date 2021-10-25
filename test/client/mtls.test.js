@@ -8,7 +8,9 @@ const jose2 = require('jose2');
 const { Issuer, custom } = require('../../lib');
 const clientHelpers = require('../../lib/helpers/client');
 
-const fail = () => { throw new Error('expected promise to be rejected'); };
+const fail = () => {
+  throw new Error('expected promise to be rejected');
+};
 const issuer = new Issuer({
   issuer: 'https://op.example.com',
   userinfo_endpoint: 'https://op.example.com/me',
@@ -104,20 +106,24 @@ describe('mutual-TLS', () => {
   });
 
   it('uses the mtls endpoint alias for token endpoint when using jwt auth and tls certs', async function () {
-    let { form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'token');
+    let {
+      form: { client_assertion: jwt },
+    } = await clientHelpers.authFor.call(this.jwtAuthClient, 'token');
     let { aud } = jose2.JWT.decode(jwt);
     expect(aud).to.include('https://mtls.op.example.com/token');
     expect(aud).to.include('https://op.example.com/token');
     expect(aud).to.include('https://op.example.com');
-
-    ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
+    ({
+      form: { client_assertion: jwt },
+    } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
     ({ aud } = jose2.JWT.decode(jwt));
     expect(aud).not.to.include('https://mtls.op.example.com/token/introspect');
     expect(aud).to.include('https://op.example.com/token/introspect');
     expect(aud).to.include('https://op.example.com/token');
     expect(aud).to.include('https://op.example.com');
-
-    ({ form: { client_assertion: jwt } } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
+    ({
+      form: { client_assertion: jwt },
+    } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
     ({ aud } = jose2.JWT.decode(jwt));
     expect(aud).not.to.include('https://mtls.op.example.com/token/revoke');
     expect(aud).to.include('https://op.example.com/token/revoke');
@@ -126,8 +132,7 @@ describe('mutual-TLS', () => {
   });
 
   it('requires mTLS for userinfo when tls_client_certificate_bound_access_tokens is true', async function () {
-    nock('https://mtls.op.example.com')
-      .get('/me').reply(200, { sub: 'foo' });
+    nock('https://mtls.op.example.com').get('/me').reply(200, { sub: 'foo' });
 
     await this.client.userinfo('foo');
 
@@ -142,8 +147,7 @@ describe('mutual-TLS', () => {
   });
 
   it('requires mTLS for introspection authentication when introspection_endpoint_auth_method is tls_client_auth', async function () {
-    nock('https://mtls.op.example.com')
-      .post('/token/introspect').reply(200, {});
+    nock('https://mtls.op.example.com').post('/token/introspect').reply(200, {});
 
     await this.client.introspect('foo');
 
@@ -158,8 +162,7 @@ describe('mutual-TLS', () => {
   });
 
   it('requires mTLS for revocation authentication when revocation_endpoint_auth_method is tls_client_auth', async function () {
-    nock('https://mtls.op.example.com')
-      .post('/token/revoke').reply(200, {});
+    nock('https://mtls.op.example.com').post('/token/revoke').reply(200, {});
 
     await this.client.revoke('foo');
 
@@ -176,8 +179,7 @@ describe('mutual-TLS', () => {
   it('works with a PKCS#12 file and a passphrase', async function () {
     this.client[custom.http_options] = () => ({ pfx });
 
-    nock('https://mtls.op.example.com')
-      .get('/me').reply(200, { sub: 'foo' });
+    nock('https://mtls.op.example.com').get('/me').reply(200, { sub: 'foo' });
 
     await this.client.userinfo('foo');
 

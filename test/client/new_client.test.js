@@ -6,7 +6,7 @@ describe('new Client()', function () {
   it('requires client_id', function () {
     try {
       const issuer = new Issuer();
-      new issuer.Client({}); // eslint-disable-line no-new
+      new issuer.Client({});
       throw new Error();
     } catch (err) {
       expect(err.message).to.equal('client_id is required');
@@ -44,12 +44,11 @@ describe('new Client()', function () {
       const issuer = new Issuer();
       [{}, [], 'not a keystore', 2, true, false].forEach(function (notkeystore) {
         expect(function () {
-          new issuer.Client({ client_id: 'identifier' }, notkeystore); // eslint-disable-line no-new
+          new issuer.Client({ client_id: 'identifier' }, notkeystore);
         }).to.throw('jwks must be a JSON Web Key Set formatted object');
       });
     });
   });
-
   ['introspection', 'revocation'].forEach((endpoint) => {
     it(`autofills ${endpoint}_endpoint_auth_method`, function () {
       const issuer = new Issuer({
@@ -64,7 +63,6 @@ describe('new Client()', function () {
       expect(client[`${endpoint}_endpoint_auth_signing_alg`]).to.equal('HS512');
     });
   });
-
   ['token', 'introspection', 'revocation'].forEach((endpoint) => {
     describe(`with ${endpoint}_endpoint_auth_method =~ _jwt`, function () {
       it(`validates the issuer has supported algs announced if ${endpoint}_endpoint_auth_signing_alg is not defined on a client`, function () {
@@ -72,11 +70,13 @@ describe('new Client()', function () {
           const issuer = new Issuer({
             [`${endpoint}_endpoint`]: 'https://op.example.com/token',
           });
-          new issuer.Client({ // eslint-disable-line no-new
+          new issuer.Client({
             client_id: 'identifier',
             [`${endpoint}_endpoint_auth_method`]: '_jwt',
           });
-        }).to.throw(`${endpoint}_endpoint_auth_signing_alg_values_supported must be configured on the issuer if ${endpoint}_endpoint_auth_signing_alg is not defined on a client`);
+        }).to.throw(
+          `${endpoint}_endpoint_auth_signing_alg_values_supported must be configured on the issuer if ${endpoint}_endpoint_auth_signing_alg is not defined on a client`,
+        );
       });
     });
   });
@@ -115,11 +115,14 @@ describe('new Client()', function () {
 
       expect(client).not.to.have.property('redirect_uri');
       expect(client).to.have.deep.property('redirect_uris', ['https://rp.example.com/cb']);
-      expect(() => new issuer.Client({
-        client_id: 'identifier',
-        redirect_uri: 'https://rp.example.com/cb',
-        redirect_uris: ['https://rp.example.com/cb'],
-      })).to.throw(TypeError, 'provide a redirect_uri or redirect_uris, not both');
+      expect(
+        () =>
+          new issuer.Client({
+            client_id: 'identifier',
+            redirect_uri: 'https://rp.example.com/cb',
+            redirect_uris: ['https://rp.example.com/cb'],
+          }),
+      ).to.throw(TypeError, 'provide a redirect_uri or redirect_uris, not both');
     });
 
     it('handles response_type', function () {
@@ -131,11 +134,14 @@ describe('new Client()', function () {
 
       expect(client).not.to.have.property('response_type');
       expect(client).to.have.deep.property('response_types', ['code id_token']);
-      expect(() => new issuer.Client({
-        client_id: 'identifier',
-        response_type: 'code id_token',
-        response_types: ['code id_token'],
-      })).to.throw(TypeError, 'provide a response_type or response_types, not both');
+      expect(
+        () =>
+          new issuer.Client({
+            client_id: 'identifier',
+            response_type: 'code id_token',
+            response_types: ['code id_token'],
+          }),
+      ).to.throw(TypeError, 'provide a response_type or response_types, not both');
     });
   });
 

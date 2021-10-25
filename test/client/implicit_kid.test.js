@@ -20,13 +20,18 @@ describe('no implicit Key IDs (kid)', function () {
   it('is not added to client assertions', async () => {
     const issuer = new Issuer();
     const jwks = await noKidJWKS();
-    const client = new issuer.Client({
-      client_id: 'identifier',
-      token_endpoint_auth_method: 'private_key_jwt',
-      token_endpoint_auth_signing_alg: 'ES256',
-    }, jwks);
+    const client = new issuer.Client(
+      {
+        client_id: 'identifier',
+        token_endpoint_auth_method: 'private_key_jwt',
+        token_endpoint_auth_signing_alg: 'ES256',
+      },
+      jwks,
+    );
 
-    const { form: { client_assertion: jwt } } = await clientInternal.authFor.call(client, 'token');
+    const {
+      form: { client_assertion: jwt },
+    } = await clientInternal.authFor.call(client, 'token');
 
     const header = JSON.parse(Buffer.from(jwt.split('.')[0], 'base64'));
     expect(header).to.have.property('alg', 'ES256');
@@ -36,10 +41,13 @@ describe('no implicit Key IDs (kid)', function () {
   it('is not added to request objects', async () => {
     const issuer = new Issuer();
     const jwks = await noKidJWKS();
-    const client = new issuer.Client({
-      client_id: 'identifier',
-      request_object_signing_alg: 'ES256',
-    }, jwks);
+    const client = new issuer.Client(
+      {
+        client_id: 'identifier',
+        request_object_signing_alg: 'ES256',
+      },
+      jwks,
+    );
 
     const jwt = await client.requestObject();
 
@@ -67,9 +75,12 @@ describe('no implicit Key IDs (kid)', function () {
         jwks: {}, // ignore
       });
 
-    await issuer.Client.register({
-      token_endpoint_auth_method: 'private_key_jwt',
-    }, { jwks: await noKidJWKS() });
+    await issuer.Client.register(
+      {
+        token_endpoint_auth_method: 'private_key_jwt',
+      },
+      { jwks: await noKidJWKS() },
+    );
 
     expect(nock.isDone()).to.be.true;
   });

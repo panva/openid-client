@@ -5,7 +5,9 @@ const sinon = require('sinon');
 const { Issuer, custom } = require('../../lib');
 const Registry = require('../../lib/issuer_registry');
 
-const fail = () => { throw new Error('expected promise to be rejected'); };
+const fail = () => {
+  throw new Error('expected promise to be rejected');
+};
 
 const success = {
   authorization_endpoint: 'https://opemail.example.com/o/oauth2/v2/auth',
@@ -69,10 +71,12 @@ describe('Issuer#webfinger()', () => {
       .query(() => true)
       .reply(200, {
         subject: 'https://opemail.example.com/joe',
-        links: [{
-          rel: 'http://openid.net/specs/connect/1.0/issuer',
-          href: 'http://opemail.example.com',
-        }],
+        links: [
+          {
+            rel: 'http://openid.net/specs/connect/1.0/issuer',
+            href: 'http://opemail.example.com',
+          },
+        ],
       });
 
     return Issuer.webfinger('joe@opemail.example.com').then(fail, (err) => {
@@ -86,10 +90,12 @@ describe('Issuer#webfinger()', () => {
       .query(() => true)
       .reply(200, {
         subject: 'https://opemail.example.com/joe',
-        links: [{
-          rel: 'http://openid.net/specs/connect/1.0/issuer',
-          href: 1,
-        }],
+        links: [
+          {
+            rel: 'http://openid.net/specs/connect/1.0/issuer',
+            href: 1,
+          },
+        ],
       });
 
     return Issuer.webfinger('joe@opemail.example.com').then(fail, (err) => {
@@ -149,7 +155,9 @@ describe('Issuer#webfinger()', () => {
     return Issuer.webfinger('joe@op.example.com').then(fail, function (error) {
       expect(webfinger.isDone()).to.be.true;
       expect(discovery.isDone()).to.be.true;
-      expect(error.message).to.equal('discovered issuer mismatch, expected https://op.example.com, got: https://another.op.example.com');
+      expect(error.message).to.equal(
+        'discovered issuer mismatch, expected https://op.example.com, got: https://another.op.example.com',
+      );
       expect(Registry.has('https://another.op.example.com')).to.be.false;
     });
   });
@@ -222,7 +230,10 @@ describe('Issuer#webfinger()', () => {
     const webfinger = nock('https://opacct.example.com')
       .get('/.well-known/webfinger')
       .query(function (query) {
-        expect(query).to.have.property('resource', 'acct:juliet%40capulet.example@opacct.example.com');
+        expect(query).to.have.property(
+          'resource',
+          'acct:juliet%40capulet.example@opacct.example.com',
+        );
         return true;
       })
       .reply(200, {

@@ -4,19 +4,24 @@
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
  */
-import * as http from "http";
-import * as https from "https";
-import * as http2 from "http2";
+import * as http from 'http';
+import * as https from 'https';
+import * as http2 from 'http2';
 
-import { URL } from "url";
-import * as jose from "jose";
-import * as crypto from "crypto";
+import { URL } from 'url';
+import * as jose from 'jose';
+import * as crypto from 'crypto';
 
-export type HttpOptions = Pick<https.RequestOptions, 'agent' | 'ca' | 'cert' | 'crl' | 'headers' | 'key' | 'lookup' | 'passphrase' | 'pfx' | 'timeout'>
+export type HttpOptions = Pick<
+  https.RequestOptions,
+  'agent' | 'ca' | 'cert' | 'crl' | 'headers' | 'key' | 'lookup' | 'passphrase' | 'pfx' | 'timeout'
+>;
 export type RetryFunction = (retry: number, error: Error) => number;
-export type CustomHttpOptionsProvider = (options: HttpOptions & { url: URL } & UnknownObject) => HttpOptions;
-export type TokenTypeHint = "access_token" | "refresh_token" | string;
-export type DPoPInput = crypto.KeyObject | Parameters<typeof crypto.createPrivateKey>[0]
+export type CustomHttpOptionsProvider = (
+  options: HttpOptions & { url: URL } & UnknownObject,
+) => HttpOptions;
+export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
+export type DPoPInput = crypto.KeyObject | Parameters<typeof crypto.createPrivateKey>[0];
 
 interface UnknownObject {
   [key: string]: unknown;
@@ -35,24 +40,24 @@ export const custom: {
  * @see https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
  */
 export type ResponseType =
-  | "code"
-  | "id_token"
-  | "code id_token"
-  | "id_token token"
-  | "code token"
-  | "code id_token token"
-  | "none";
+  | 'code'
+  | 'id_token'
+  | 'code id_token'
+  | 'id_token token'
+  | 'code token'
+  | 'code id_token token'
+  | 'none';
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
  */
 export type ClientAuthMethod =
-  | "client_secret_basic"
-  | "client_secret_post"
-  | "client_secret_jwt"
-  | "private_key_jwt"
-  | "tls_client_auth"
-  | "self_signed_tls_client_auth"
-  | "none";
+  | 'client_secret_basic'
+  | 'client_secret_post'
+  | 'client_secret_jwt'
+  | 'private_key_jwt'
+  | 'tls_client_auth'
+  | 'self_signed_tls_client_auth'
+  | 'none';
 
 /**
  * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#new-clientmetadata-jwks
@@ -337,7 +342,7 @@ export type Address<ExtendedAddress extends {} = UnknownObject> = Override<
 
 export type UserinfoResponse<
   UserInfo extends {} = UnknownObject,
-  ExtendedAddress extends {} = UnknownObject
+  ExtendedAddress extends {} = UnknownObject,
 > = Override<
   {
     sub: string;
@@ -378,7 +383,7 @@ export interface IntrospectionResponse {
   nbf?: number;
   token_type?: string;
   cnf?: {
-    "x5t#S256"?: string;
+    'x5t#S256'?: string;
 
     [key: string]: unknown;
   };
@@ -396,11 +401,7 @@ export interface ClientOptions {
  * consuming callbacks, triggering token endpoint grants, revoking and introspecting tokens.
  */
 export class Client {
-  constructor(
-    metadata: ClientMetadata,
-    jwks?: jose.JSONWebKeySet,
-    options?: ClientOptions
-  );
+  constructor(metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions);
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
@@ -430,7 +431,7 @@ export class Client {
    * prior to calling this method. This parser would set the req.body property
    */
   callbackParams(
-    input: string | http.IncomingMessage | http2.Http2ServerRequest
+    input: string | http.IncomingMessage | http2.Http2ServerRequest,
   ): CallbackParamsType;
 
   /**
@@ -444,7 +445,7 @@ export class Client {
     redirectUri: string | undefined,
     parameters: CallbackParamsType,
     checks?: OpenIDCallbackChecks,
-    extras?: CallbackExtras
+    extras?: CallbackExtras,
   ): Promise<TokenSet>;
 
   /**
@@ -458,7 +459,7 @@ export class Client {
     redirectUri: string | undefined,
     parameters: CallbackParamsType,
     checks?: OAuthCallbackChecks,
-    extras?: CallbackExtras
+    extras?: CallbackExtras,
   ): Promise<TokenSet>;
 
   /**
@@ -467,10 +468,7 @@ export class Client {
    * will be used automatically.
    * @param extras Add extra parameters to the Token Endpoint Request and/or Client Authentication JWT Assertion
    */
-  refresh(
-    refreshToken: TokenSet | string,
-    extras?: RefreshExtras
-  ): Promise<TokenSet>;
+  refresh(refreshToken: TokenSet | string, extras?: RefreshExtras): Promise<TokenSet>;
 
   /**
    * Fetches the OIDC userinfo response with the provided Access Token. Also handles signed and/or
@@ -481,18 +479,15 @@ export class Client {
    * will be used automatically.
    * @param options Options for the UserInfo request.
    */
-  userinfo<
-    TUserInfo extends {} = UnknownObject,
-    TAddress extends {} = UnknownObject
-  >(
+  userinfo<TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject>(
     accessToken: TokenSet | string,
     options?: {
-      method?: "GET" | "POST";
-      via?: "header" | "body" | "query";
+      method?: 'GET' | 'POST';
+      via?: 'header' | 'body' | 'query';
       tokenType?: string;
       params?: object;
       DPoP?: DPoPInput;
-    }
+    },
   ): Promise<UserinfoResponse<TUserInfo, TAddress>>;
 
   /**
@@ -509,10 +504,10 @@ export class Client {
     options?: {
       headers?: object;
       body?: string | Buffer;
-      method?: "GET" | "POST" | "PUT" | "HEAD" | "DELETE" | "OPTIONS" | "TRACE" | "PATCH";
+      method?: 'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE' | 'OPTIONS' | 'TRACE' | 'PATCH';
       tokenType?: string;
       DPoP?: DPoPInput;
-    }
+    },
   ): CancelableRequest<Response<Buffer>>;
 
   /**
@@ -526,17 +521,13 @@ export class Client {
   introspect(
     token: string,
     tokenTypeHint?: TokenTypeHint,
-    extras?: IntrospectExtras
+    extras?: IntrospectExtras,
   ): Promise<IntrospectionResponse>;
 
   /**
    * Revokes a token at the Authorization Server's revocation_endpoint.
    */
-  revoke(
-    token: string,
-    tokenTypeHint?: TokenTypeHint,
-    extras?: RevokeExtras
-  ): Promise<undefined>;
+  revoke(token: string, tokenTypeHint?: TokenTypeHint, extras?: RevokeExtras): Promise<undefined>;
 
   /**
    * Creates a signed and optionally encrypted Request Object to send to the AS. Uses the client's
@@ -551,7 +542,7 @@ export class Client {
    */
   deviceAuthorization(
     parameters?: DeviceAuthorizationParameters,
-    extras?: DeviceAuthorizationExtras
+    extras?: DeviceAuthorizationExtras,
   ): Promise<DeviceFlowHandle<Client>>;
   pushedAuthorizationRequest(
     parameters?: AuthorizationParameters,
@@ -561,15 +552,12 @@ export class Client {
     expires_in: number;
     [key: string]: unknown;
   }>;
-  static register(
-    metadata: object,
-    other?: RegisterOther & ClientOptions
-  ): Promise<Client>;
+  static register(metadata: object, other?: RegisterOther & ClientOptions): Promise<Client>;
   static fromUri(
     registrationClientUri: string,
     registrationAccessToken: string,
     jwks?: jose.JSONWebKeySet,
-    clientOptions?: ClientOptions
+    clientOptions?: ClientOptions,
   ): Promise<Client>;
   static [custom.http_options]: CustomHttpOptionsProvider;
 
@@ -577,7 +565,7 @@ export class Client {
 }
 
 interface DeviceFlowPollOptions {
-  signal?: AbortSignal,
+  signal?: AbortSignal;
 }
 
 export class DeviceFlowHandle<TClient extends Client> {
@@ -627,11 +615,7 @@ export interface MtlsEndpointAliases {
 // https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
 // https://github.com/Microsoft/TypeScript/issues/204
 export interface TypeOfGenericClient<TClient extends Client> {
-  new (
-    metadata: ClientMetadata,
-    jwks?: jose.JSONWebKeySet,
-    options?: ClientOptions
-  ): TClient;
+  new (metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions): TClient;
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
 }
@@ -768,30 +752,30 @@ export class TokenSet implements TokenSetParameters {
 export type StrategyVerifyCallbackUserInfo<
   TUser,
   TUserInfo extends {} = UnknownObject,
-  TAddress extends {} = UnknownObject
+  TAddress extends {} = UnknownObject,
 > = (
   tokenset: TokenSet,
   userinfo: UserinfoResponse<TUserInfo, TAddress>,
-  done: (err: any, user?: TUser) => void
+  done: (err: any, user?: TUser) => void,
 ) => void;
 export type StrategyVerifyCallback<TUser> = (
   tokenset: TokenSet,
-  done: (err: any, user?: TUser) => void
+  done: (err: any, user?: TUser) => void,
 ) => void;
 export type StrategyVerifyCallbackReqUserInfo<
   TUser,
   TUserInfo extends {} = UnknownObject,
-  TAddress extends {} = UnknownObject
+  TAddress extends {} = UnknownObject,
 > = (
   req: http.IncomingMessage,
   tokenset: TokenSet,
   userinfo: UserinfoResponse<TUserInfo, TAddress>,
-  done: (err: any, user?: TUser) => void
+  done: (err: any, user?: TUser) => void,
 ) => void;
 export type StrategyVerifyCallbackReq<TUser> = (
   req: http.IncomingMessage,
   tokenset: TokenSet,
-  done: (err: any, user?: TUser) => void
+  done: (err: any, user?: TUser) => void,
 ) => void;
 
 export interface StrategyOptions<TClient extends Client> {
@@ -829,7 +813,7 @@ export class Strategy<TUser, TClient extends Client> {
       | StrategyVerifyCallback<TUser>
       | StrategyVerifyCallbackUserInfo<TUser>
       | StrategyVerifyCallbackReq<TUser>
-      | StrategyVerifyCallbackReqUserInfo<TUser>
+      | StrategyVerifyCallbackReqUserInfo<TUser>,
   );
 
   authenticate(req: any, options?: any): void;

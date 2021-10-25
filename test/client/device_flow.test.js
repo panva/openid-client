@@ -9,7 +9,9 @@ const DeviceFlowHandle = require('../../lib/device_flow_handle');
 const TokenSet = require('../../lib/token_set');
 const instance = require('../../lib/helpers/weak_cache');
 
-const fail = () => { throw new Error('expected promise to be rejected'); };
+const fail = () => {
+  throw new Error('expected promise to be rejected');
+};
 
 describe('Device Flow features', () => {
   afterEach(timekeeper.reset);
@@ -61,16 +63,14 @@ describe('Device Flow features', () => {
     });
 
     it('returns a handle (with optional response parameters)', async function () {
-      nock('https://op.example.com')
-        .post('/auth/device')
-        .reply(200, {
-          verification_uri: 'https://op.example.com/device',
-          verification_uri_complete: 'https://op.example.com/device/AAAA-AAAA',
-          user_code: 'AAAA-AAAA',
-          device_code: 'foobar',
-          expires_in: 300,
-          interval: 6,
-        });
+      nock('https://op.example.com').post('/auth/device').reply(200, {
+        verification_uri: 'https://op.example.com/device',
+        verification_uri_complete: 'https://op.example.com/device/AAAA-AAAA',
+        user_code: 'AAAA-AAAA',
+        device_code: 'foobar',
+        expires_in: 300,
+        interval: 6,
+      });
 
       const handle = await this.client.deviceAuthorization();
 
@@ -78,7 +78,10 @@ describe('Device Flow features', () => {
 
       expect(handle).to.have.property('user_code', 'AAAA-AAAA');
       expect(handle).to.have.property('verification_uri', 'https://op.example.com/device');
-      expect(handle).to.have.property('verification_uri_complete', 'https://op.example.com/device/AAAA-AAAA');
+      expect(handle).to.have.property(
+        'verification_uri_complete',
+        'https://op.example.com/device/AAAA-AAAA',
+      );
       expect(handle).to.have.property('device_code', 'foobar');
       expect(handle).to.have.property('expires_in').that.is.a('number').most(300);
       expect(handle.expired()).to.be.false;
@@ -239,13 +242,11 @@ describe('Device Flow features', () => {
           },
         });
 
-        nock('https://op.example.com')
-          .post('/token')
-          .reply(200, {
-            id_token: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
-            refresh_token: 'bar',
-            access_token: 'tokenValue',
-          });
+        nock('https://op.example.com').post('/token').reply(200, {
+          id_token: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
+          refresh_token: 'bar',
+          access_token: 'tokenValue',
+        });
 
         instance(handle).interval = 5;
 
@@ -309,7 +310,9 @@ describe('Device Flow features', () => {
 
         return handle.poll().then(fail, (err) => {
           expect(err.name).to.equal('RPError');
-          expect(err.message).to.equal('the device code "foobar" has expired and the device authorization session has concluded');
+          expect(err.message).to.equal(
+            'the device code "foobar" has expired and the device authorization session has concluded',
+          );
         });
       });
     });
@@ -375,7 +378,6 @@ describe('Device Flow features', () => {
           },
         });
 
-        // eslint-disable-next-line no-undef
         const ac = new AbortController();
         ac.abort();
 
@@ -399,7 +401,6 @@ describe('Device Flow features', () => {
           },
         });
 
-        // eslint-disable-next-line no-undef
         const ac = new AbortController();
 
         nock('https://op.example.com')
@@ -433,7 +434,6 @@ describe('Device Flow features', () => {
       timekeeper.travel(new Date(Date.now() + 200 * 1000));
       expect(handle.expired()).to.be.true;
     });
-
     ['verification_uri', 'user_code', 'device_code'].forEach((prop) => {
       it(`validates ${prop}`, function () {
         nock('https://op.example.com')
@@ -447,22 +447,24 @@ describe('Device Flow features', () => {
           });
 
         return this.client.deviceAuthorization().then(fail, ({ message }) => {
-          expect(message).to.eql(`expected ${prop} string to be returned by Device Authorization Response, got ""`);
+          expect(message).to.eql(
+            `expected ${prop} string to be returned by Device Authorization Response, got ""`,
+          );
         });
       });
     });
 
     it('validates expires_in', function () {
-      nock('https://op.example.com')
-        .post('/auth/device')
-        .reply(200, {
-          verification_uri: 'https://op.example.com/device',
-          user_code: 'AAAA-AAAA',
-          device_code: 'foobar',
-        });
+      nock('https://op.example.com').post('/auth/device').reply(200, {
+        verification_uri: 'https://op.example.com/device',
+        user_code: 'AAAA-AAAA',
+        device_code: 'foobar',
+      });
 
       return this.client.deviceAuthorization().then(fail, ({ message }) => {
-        expect(message).to.eql('expected expires_in number to be returned by Device Authorization Response, got undefined');
+        expect(message).to.eql(
+          'expected expires_in number to be returned by Device Authorization Response, got undefined',
+        );
       });
     });
   });

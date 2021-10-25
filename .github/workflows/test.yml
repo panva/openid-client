@@ -11,31 +11,6 @@ on:
     - cron:  0 10 * * 1-5
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@master
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 12
-      - name: Store node version variable
-        id: node
-        run: |
-          echo "::set-output name=version::$(node -v)"
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        id: node_modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package.json') }}-${{ steps.node.outputs.version }}
-      - name: Install dependencies
-        run: npx panva/npm-install-retry
-        if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
-      - run: npm run lint
-
   test:
     name: Node Tests + Coverage
     runs-on: ubuntu-latest

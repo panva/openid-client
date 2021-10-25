@@ -5,7 +5,9 @@ const nock = require('nock');
 
 const { Issuer, custom } = require('../../lib');
 
-const fail = () => { throw new Error('expected promise to be rejected'); };
+const fail = () => {
+  throw new Error('expected promise to be rejected');
+};
 const issuer = new Issuer({
   registration_endpoint: 'https://op.example.com/client/registration',
 });
@@ -14,19 +16,17 @@ describe('Client#register', () => {
   afterEach(nock.cleanAll);
 
   it('asserts the issuer has a registration endpoint', function () {
-    const issuer = new Issuer({}); // eslint-disable-line no-shadow
+    const issuer = new Issuer({});
     return issuer.Client.register().then(fail, ({ message }) => {
       expect(message).to.eql('registration_endpoint must be configured on the issuer');
     });
   });
 
   it('accepts and assigns the registered metadata', function () {
-    nock('https://op.example.com')
-      .post('/client/registration')
-      .reply(201, {
-        client_id: 'identifier',
-        client_secret: 'secure',
-      });
+    nock('https://op.example.com').post('/client/registration').reply(201, {
+      client_id: 'identifier',
+      client_secret: 'secure',
+    });
 
     return issuer.Client.register({}).then(function (client) {
       expect(client).to.be.instanceof(issuer.Client);
@@ -36,59 +36,48 @@ describe('Client#register', () => {
   });
 
   it('is rejected with OPError upon oidc error', function () {
-    nock('https://op.example.com')
-      .post('/client/registration')
-      .reply(500, {
-        error: 'server_error',
-        error_description: 'bad things are happening',
-      });
+    nock('https://op.example.com').post('/client/registration').reply(500, {
+      error: 'server_error',
+      error_description: 'bad things are happening',
+    });
 
-    return issuer.Client.register({})
-      .then(fail, function (error) {
-        expect(error.name).to.equal('OPError');
-        expect(error).to.have.property('error', 'server_error');
-        expect(error).to.have.property('error_description', 'bad things are happening');
-      });
+    return issuer.Client.register({}).then(fail, function (error) {
+      expect(error.name).to.equal('OPError');
+      expect(error).to.have.property('error', 'server_error');
+      expect(error).to.have.property('error_description', 'bad things are happening');
+    });
   });
 
   it('is rejected with OPError upon oidc error in www-authenticate header', function () {
-    nock('https://op.example.com')
-      .post('/client/registration')
-      .reply(401, 'Unauthorized', {
-        'WWW-Authenticate': 'Bearer error="invalid_token", error_description="bad things are happening"',
-      });
+    nock('https://op.example.com').post('/client/registration').reply(401, 'Unauthorized', {
+      'WWW-Authenticate':
+        'Bearer error="invalid_token", error_description="bad things are happening"',
+    });
 
-    return issuer.Client.register({})
-      .then(fail, function (error) {
-        expect(error.name).to.equal('OPError');
-        expect(error).to.have.property('error', 'invalid_token');
-        expect(error).to.have.property('error_description', 'bad things are happening');
-      });
+    return issuer.Client.register({}).then(fail, function (error) {
+      expect(error.name).to.equal('OPError');
+      expect(error).to.have.property('error', 'invalid_token');
+      expect(error).to.have.property('error_description', 'bad things are happening');
+    });
   });
 
   it('is rejected with when non 200 is returned', function () {
-    nock('https://op.example.com')
-      .post('/client/registration')
-      .reply(500, 'Internal Server Error');
+    nock('https://op.example.com').post('/client/registration').reply(500, 'Internal Server Error');
 
-    return issuer.Client.register({})
-      .then(fail, function (error) {
-        expect(error.name).to.equal('OPError');
-        expect(error.message).to.eql('expected 201 Created, got: 500 Internal Server Error');
-        expect(error).to.have.property('response');
-      });
+    return issuer.Client.register({}).then(fail, function (error) {
+      expect(error.name).to.equal('OPError');
+      expect(error.message).to.eql('expected 201 Created, got: 500 Internal Server Error');
+      expect(error).to.have.property('response');
+    });
   });
 
   it('is rejected with JSON.parse error upon invalid response', function () {
-    nock('https://op.example.com')
-      .post('/client/registration')
-      .reply(201, '{"notavalid"}');
+    nock('https://op.example.com').post('/client/registration').reply(201, '{"notavalid"}');
 
-    return issuer.Client.register({})
-      .then(fail, function (error) {
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
-        expect(error).to.have.property('response');
-      });
+    return issuer.Client.register({}).then(fail, function (error) {
+      expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+      expect(error).to.have.property('response');
+    });
   });
 
   describe('with keystore (as option)', function () {
@@ -107,7 +96,9 @@ describe('Client#register', () => {
           client_secret: 'secure',
         });
 
-      return keystore.generate('EC', 'P-256').then(() => issuer.Client.register({}, { jwks: keystore.toJWKS(true) }));
+      return keystore
+        .generate('EC', 'P-256')
+        .then(() => issuer.Client.register({}, { jwks: keystore.toJWKS(true) }));
     });
 
     it('ignores the keystore during registration if jwks is provided', function () {
@@ -125,9 +116,14 @@ describe('Client#register', () => {
           client_secret: 'secure',
         });
 
-      return keystore.generate('EC', 'P-256').then(() => issuer.Client.register({
-        jwks: 'whatever',
-      }, { keystore }));
+      return keystore.generate('EC', 'P-256').then(() =>
+        issuer.Client.register(
+          {
+            jwks: 'whatever',
+          },
+          { keystore },
+        ),
+      );
     });
 
     it('ignores the keystore during registration if jwks_uri is provided', function () {
@@ -145,17 +141,20 @@ describe('Client#register', () => {
           client_secret: 'secure',
         });
 
-      return keystore.generate('EC', 'P-256').then(() => issuer.Client.register({
-        jwks_uri: 'https://rp.example.com/certs',
-      }, { keystore }));
+      return keystore.generate('EC', 'P-256').then(() =>
+        issuer.Client.register(
+          {
+            jwks_uri: 'https://rp.example.com/certs',
+          },
+          { keystore },
+        ),
+      );
     });
-
     [{}, [], 'not a keystore', 2, true, false].forEach(function (notkeystore) {
       it(`validates it is a keystore (${typeof notkeystore} ${JSON.stringify(notkeystore)})`, function () {
-        return issuer.Client.register({}, { jwks: notkeystore })
-          .then(fail, ({ message }) => {
-            expect(message).to.eql('jwks must be a JSON Web Key Set formatted object');
-          });
+        return issuer.Client.register({}, { jwks: notkeystore }).then(fail, ({ message }) => {
+          expect(message).to.eql('jwks must be a JSON Web Key Set formatted object');
+        });
       });
     });
 
@@ -163,10 +162,12 @@ describe('Client#register', () => {
       const keystore = new jose2.JWKS.KeyStore();
 
       return keystore.generate('oct', 32).then(() => {
-        return issuer.Client.register({}, { jwks: keystore.toJWKS(true) })
-          .then(fail, ({ message }) => {
+        return issuer.Client.register({}, { jwks: keystore.toJWKS(true) }).then(
+          fail,
+          ({ message }) => {
             expect(message).to.eql('jwks must only contain private keys');
-          });
+          },
+        );
       });
     });
 
@@ -179,10 +180,9 @@ describe('Client#register', () => {
         y: '_n8G69C-A2Xl4xUW2lF0i8ZGZnk_KPYrhv4GbTGu5G4',
       };
 
-      return issuer.Client.register({}, { jwks: { keys: [jwk] } })
-        .then(fail, ({ message }) => {
-          expect(message).to.eql('jwks must only contain private keys');
-        });
+      return issuer.Client.register({}, { jwks: { keys: [jwk] } }).then(fail, ({ message }) => {
+        expect(message).to.eql('jwks must only contain private keys');
+      });
     });
   });
 

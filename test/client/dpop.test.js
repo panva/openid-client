@@ -16,7 +16,9 @@ const issuer = new Issuer({
 
 const privateKey = jose2.JWK.generateSync('EC').keyObject;
 
-const fail = () => { throw new Error('expected promise to be rejected'); };
+const fail = () => {
+  throw new Error('expected promise to be rejected');
+};
 
 describe('DPoP', () => {
   beforeEach(function () {
@@ -54,27 +56,41 @@ describe('DPoP', () => {
       }
 
       {
-        const der = (await jose2.JWK.generate('EC')).keyObject.export({ format: 'der', type: 'pkcs8' });
+        const der = (await jose2.JWK.generate('EC')).keyObject.export({
+          format: 'der',
+          type: 'pkcs8',
+        });
         await this.client.dpopProof({}, { key: der, format: 'der', type: 'pkcs8' });
       }
 
       {
-        const der = (await jose2.JWK.generate('EC')).keyObject.export({ format: 'der', type: 'sec1' });
+        const der = (await jose2.JWK.generate('EC')).keyObject.export({
+          format: 'der',
+          type: 'sec1',
+        });
         await this.client.dpopProof({}, { key: der, format: 'der', type: 'sec1' });
       }
 
       {
-        const der = (await jose2.JWK.generate('RSA')).keyObject.export({ format: 'der', type: 'pkcs1' });
+        const der = (await jose2.JWK.generate('RSA')).keyObject.export({
+          format: 'der',
+          type: 'pkcs1',
+        });
         await this.client.dpopProof({}, { key: der, format: 'der', type: 'pkcs1' });
       }
     });
 
     it('DPoP Proof JWT w/o ath', async function () {
-      const proof = await this.client.dpopProof({
-        htu: 'foo',
-        htm: 'bar',
-        baz: true,
-      }, (await jose2.JWK.generate('RSA')).keyObject);
+      const proof = await this.client.dpopProof(
+        {
+          htu: 'foo',
+          htm: 'bar',
+          baz: true,
+        },
+        (
+          await jose2.JWK.generate('RSA')
+        ).keyObject,
+      );
       const decoded = jose2.JWT.decode(proof, { complete: true });
       expect(decoded).to.have.nested.property('header.typ', 'dpop+jwt');
       expect(decoded).to.have.nested.property('payload.iat');
@@ -89,67 +105,135 @@ describe('DPoP', () => {
           await this.client.dpopProof({}, (await jose2.JWK.generate('EC')).keyObject),
           { complete: true },
         ),
-      ).to.have.nested.property('header.jwk').that.has.keys('kty', 'crv', 'x', 'y');
+      )
+        .to.have.nested.property('header.jwk')
+        .that.has.keys('kty', 'crv', 'x', 'y');
 
       expect(
         jose2.JWT.decode(
           await this.client.dpopProof({}, (await jose2.JWK.generate('OKP')).keyObject),
           { complete: true },
         ),
-      ).to.have.nested.property('header.jwk').that.has.keys('kty', 'crv', 'x');
+      )
+        .to.have.nested.property('header.jwk')
+        .that.has.keys('kty', 'crv', 'x');
     });
 
     it('DPoP Proof JWT w/ ath', async function () {
-      const proof = await this.client.dpopProof({
-        htu: 'foo',
-        htm: 'bar',
-      }, (await jose2.JWK.generate('EC')).keyObject, 'foo');
+      const proof = await this.client.dpopProof(
+        {
+          htu: 'foo',
+          htm: 'bar',
+        },
+        (
+          await jose2.JWK.generate('EC')
+        ).keyObject,
+        'foo',
+      );
       const decoded = jose2.JWT.decode(proof, { complete: true });
-      expect(decoded).to.have.nested.property('payload.ath', 'LCa0a2j_xo_5m0U8HTBBNBNCLXBkg7-g-YpeiGJm564');
+      expect(decoded).to.have.nested.property(
+        'payload.ath',
+        'LCa0a2j_xo_5m0U8HTBBNBNCLXBkg7-g-YpeiGJm564',
+      );
     });
 
     it('else this.issuer.dpop_signing_alg_values_supported is used', async function () {
-      const proof = await this.client.dpopProof({}, (await jose2.JWK.generate('RSA', 2048)).keyObject);
+      const proof = await this.client.dpopProof(
+        {},
+        (
+          await jose2.JWK.generate('RSA', 2048)
+        ).keyObject,
+      );
       // 256 is not supported by the issuer, next one in line is PS384
-      expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'PS384');
+      expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property(
+        'header.alg',
+        'PS384',
+      );
     });
 
     it('unless the key dictates an algorithm', async function () {
       {
-        const proof = await this.client.dpopProof({}, (await jose2.JWK.generate('OKP', 'Ed25519')).keyObject);
-        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'EdDSA');
+        const proof = await this.client.dpopProof(
+          {},
+          (
+            await jose2.JWK.generate('OKP', 'Ed25519')
+          ).keyObject,
+        );
+        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property(
+          'header.alg',
+          'EdDSA',
+        );
       }
 
       if (!('electron' in process.versions)) {
-        const proof = await this.client.dpopProof({}, (await jose2.JWK.generate('OKP', 'Ed448')).keyObject);
-        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'EdDSA');
+        const proof = await this.client.dpopProof(
+          {},
+          (
+            await jose2.JWK.generate('OKP', 'Ed448')
+          ).keyObject,
+        );
+        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property(
+          'header.alg',
+          'EdDSA',
+        );
       }
 
       {
-        const proof = await this.client.dpopProof({}, (await jose2.JWK.generate('EC', 'P-256')).keyObject);
-        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'ES256');
+        const proof = await this.client.dpopProof(
+          {},
+          (
+            await jose2.JWK.generate('EC', 'P-256')
+          ).keyObject,
+        );
+        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property(
+          'header.alg',
+          'ES256',
+        );
       }
 
       if (!('electron' in process.versions)) {
-        const proof = await this.client.dpopProof({}, (await jose2.JWK.generate('EC', 'secp256k1')).keyObject);
-        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'ES256K');
+        const proof = await this.client.dpopProof(
+          {},
+          (
+            await jose2.JWK.generate('EC', 'secp256k1')
+          ).keyObject,
+        );
+        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property(
+          'header.alg',
+          'ES256K',
+        );
       }
 
       {
-        const proof = await this.client.dpopProof({}, (await jose2.JWK.generate('EC', 'P-384')).keyObject);
-        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'ES384');
+        const proof = await this.client.dpopProof(
+          {},
+          (
+            await jose2.JWK.generate('EC', 'P-384')
+          ).keyObject,
+        );
+        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property(
+          'header.alg',
+          'ES384',
+        );
       }
 
       {
-        const proof = await this.client.dpopProof({}, (await jose2.JWK.generate('EC', 'P-521')).keyObject);
-        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property('header.alg', 'ES512');
+        const proof = await this.client.dpopProof(
+          {},
+          (
+            await jose2.JWK.generate('EC', 'P-521')
+          ).keyObject,
+        );
+        expect(jose2.JWT.decode(proof, { complete: true })).to.have.nested.property(
+          'header.alg',
+          'ES512',
+        );
       }
     });
   });
 
   it('is enabled for userinfo', async function () {
-    nock('https://op.example.com')
-      .get('/me').reply(200, { sub: 'foo' });
+    nock('https://op.example.com').get('/me').reply(200, { sub: 'foo' });
 
     await this.client.userinfo('foo', { DPoP: privateKey });
 
@@ -161,10 +245,12 @@ describe('DPoP', () => {
   });
 
   it('is enabled for requestResource', async function () {
-    nock('https://rs.example.com')
-      .post('/resource').reply(200, { sub: 'foo' });
+    nock('https://rs.example.com').post('/resource').reply(200, { sub: 'foo' });
 
-    await this.client.requestResource('https://rs.example.com/resource', 'foo', { DPoP: privateKey, method: 'POST' });
+    await this.client.requestResource('https://rs.example.com/resource', 'foo', {
+      DPoP: privateKey,
+      method: 'POST',
+    });
 
     expect(this.httpOpts).to.have.nested.property('headers.DPoP');
 
@@ -174,8 +260,7 @@ describe('DPoP', () => {
   });
 
   it('is enabled for grant', async function () {
-    nock('https://op.example.com')
-      .post('/token').reply(200, { access_token: 'foo' });
+    nock('https://op.example.com').post('/token').reply(200, { access_token: 'foo' });
 
     await this.client.grant({ grant_type: 'foo' }, { DPoP: privateKey });
 
@@ -183,8 +268,7 @@ describe('DPoP', () => {
   });
 
   it('is enabled for refresh', async function () {
-    nock('https://op.example.com')
-      .post('/token').reply(200, { access_token: 'foo' });
+    nock('https://op.example.com').post('/token').reply(200, { access_token: 'foo' });
 
     await this.client.refresh('foo', { DPoP: privateKey });
 
@@ -192,8 +276,7 @@ describe('DPoP', () => {
   });
 
   it('is enabled for oauthCallback', async function () {
-    nock('https://op.example.com')
-      .post('/token').reply(200, { access_token: 'foo' });
+    nock('https://op.example.com').post('/token').reply(200, { access_token: 'foo' });
 
     await this.client.oauthCallback('foo', { code: 'foo' }, {}, { DPoP: privateKey });
 
@@ -201,8 +284,7 @@ describe('DPoP', () => {
   });
 
   it('is enabled for callback', async function () {
-    nock('https://op.example.com')
-      .post('/token').reply(200, { access_token: 'foo' });
+    nock('https://op.example.com').post('/token').reply(200, { access_token: 'foo' });
 
     try {
       await this.client.callback('foo', { code: 'foo' }, {}, { DPoP: privateKey });
@@ -212,21 +294,19 @@ describe('DPoP', () => {
   });
 
   it('is enabled for deviceAuthorization', async function () {
-    nock('https://op.example.com')
-      .post('/device').reply(200, {
-        expires_in: 60,
-        device_code: 'foo',
-        user_code: 'foo',
-        verification_uri: 'foo',
-        interval: 1,
-      });
+    nock('https://op.example.com').post('/device').reply(200, {
+      expires_in: 60,
+      device_code: 'foo',
+      user_code: 'foo',
+      verification_uri: 'foo',
+      interval: 1,
+    });
 
     const handle = await this.client.deviceAuthorization({}, { DPoP: privateKey });
 
     expect(this.httpOpts).not.to.have.nested.property('headers.DPoP');
 
-    nock('https://op.example.com')
-      .post('/token').reply(200, { access_token: 'foo' });
+    nock('https://op.example.com').post('/token').reply(200, { access_token: 'foo' });
 
     await handle.poll();
 

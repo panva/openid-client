@@ -36,20 +36,22 @@ describe('OpenIDConnectStrategy', () => {
   });
 
   it('checks that client is a Client instance', () => {
-    expect(() => Strategy({ client: 'foo' })).to.throw('client must be an instance of openid-client Client');
+    expect(() => Strategy({ client: 'foo' })).to.throw(
+      'client must be an instance of openid-client Client',
+    );
   });
 
   it('checks that verify callback is a function', function () {
-    expect(() => Strategy({ client: this.client }))
-      .to.throw('verify callback must be a function');
+    expect(() => Strategy({ client: this.client })).to.throw('verify callback must be a function');
   });
 
   it('checks that issuer has an issuer identifier', () => {
     const issuer = new Issuer({});
     const client = new issuer.Client({ client_id: 'identifier' });
 
-    expect(() => Strategy({ client }, () => {}))
-      .to.throw('client must have an issuer with an identifier');
+    expect(() => Strategy({ client }, () => {})).to.throw(
+      'client must have an issuer with an identifier',
+    );
   });
 
   it('checks for session presence', function (next) {
@@ -120,7 +122,11 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('redirect_uri=');
       expect(target).to.include('scope=');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type', 'code_verifier');
+      expect(req.session['oidc:op.example.com']).to.have.keys(
+        'state',
+        'response_type',
+        'code_verifier',
+      );
     });
 
     it('starts authentication requests for POSTs', function () {
@@ -138,17 +144,24 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('redirect_uri=');
       expect(target).to.include('scope=');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'response_type', 'code_verifier');
+      expect(req.session['oidc:op.example.com']).to.have.keys(
+        'state',
+        'response_type',
+        'code_verifier',
+      );
     });
 
     it('can have redirect_uri and scope specified', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        params: {
-          redirect_uri: 'https://example.com/cb',
-          scope: 'openid profile',
+      const strategy = new Strategy(
+        {
+          client: this.client,
+          params: {
+            redirect_uri: 'https://example.com/cb',
+            scope: 'openid profile',
+          },
         },
-      }, () => {});
+        () => {},
+      );
 
       const req = new MockRequest('GET', '/login/oidc');
       req.session = {};
@@ -163,13 +176,16 @@ describe('OpenIDConnectStrategy', () => {
     });
 
     it('can have authorization parameters specified at runtime', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        params: {
-          redirect_uri: 'https://example.com/cb',
-          scope: 'openid profile',
+      const strategy = new Strategy(
+        {
+          client: this.client,
+          params: {
+            redirect_uri: 'https://example.com/cb',
+            scope: 'openid profile',
+          },
         },
-      }, () => {});
+        () => {},
+      );
 
       const req = new MockRequest('GET', '/login/oidc');
       req.session = {};
@@ -183,13 +199,16 @@ describe('OpenIDConnectStrategy', () => {
     });
 
     it('automatically includes nonce for where it applies', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        params: {
-          response_type: 'code id_token token',
-          response_mode: 'form_post',
+      const strategy = new Strategy(
+        {
+          client: this.client,
+          params: {
+            response_type: 'code id_token token',
+            response_mode: 'form_post',
+          },
         },
-      }, () => {});
+        () => {},
+      );
 
       const req = new MockRequest('GET', '/login/oidc');
       req.session = {};
@@ -204,65 +223,100 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('nonce=');
       expect(target).to.include('response_mode=form_post');
       expect(req.session).to.have.property('oidc:op.example.com');
-      expect(req.session['oidc:op.example.com']).to.have.keys('state', 'nonce', 'response_type', 'code_verifier');
+      expect(req.session['oidc:op.example.com']).to.have.keys(
+        'state',
+        'nonce',
+        'response_type',
+        'code_verifier',
+      );
     });
 
     describe('use pkce', () => {
       it('can be set to use PKCE with boolean', function () {
-        instance(this.issuer).get('metadata').set('code_challenge_methods_supported', ['S256', 'plain']);
-        const s256 = new Strategy({
-          client: this.client,
-          usePKCE: true,
-        }, () => {});
+        instance(this.issuer)
+          .get('metadata')
+          .set('code_challenge_methods_supported', ['S256', 'plain']);
+        const s256 = new Strategy(
+          {
+            client: this.client,
+            usePKCE: true,
+          },
+          () => {},
+        );
         expect(s256).to.have.property('_usePKCE', 'S256');
 
         instance(this.issuer).get('metadata').set('code_challenge_methods_supported', ['plain']);
-        const plain = new Strategy({
-          client: this.client,
-          usePKCE: true,
-        }, () => {});
-        expect(plain).to.have.property('_usePKCE', 'plain');
-
-        ['foobar', undefined, false].forEach((invalidDiscoveryValue) => {
-          instance(this.issuer).get('metadata').set('code_challenge_methods_supported', invalidDiscoveryValue);
-          const defaultS256 = new Strategy({
+        const plain = new Strategy(
+          {
             client: this.client,
             usePKCE: true,
-          }, () => {});
+          },
+          () => {},
+        );
+        expect(plain).to.have.property('_usePKCE', 'plain');
+        ['foobar', undefined, false].forEach((invalidDiscoveryValue) => {
+          instance(this.issuer)
+            .get('metadata')
+            .set('code_challenge_methods_supported', invalidDiscoveryValue);
+          const defaultS256 = new Strategy(
+            {
+              client: this.client,
+              usePKCE: true,
+            },
+            () => {},
+          );
           expect(defaultS256).to.have.property('_usePKCE', 'S256');
         });
 
         instance(this.issuer).get('metadata').set('code_challenge_methods_supported', []);
         expect(() => {
-          new Strategy({ // eslint-disable-line no-new
-            client: this.client,
-            usePKCE: true,
-          }, () => {});
-        }).to.throw('neither code_challenge_method supported by the client is supported by the issuer');
+          new Strategy(
+            {
+              client: this.client,
+              usePKCE: true,
+            },
+            () => {},
+          );
+        }).to.throw(
+          'neither code_challenge_method supported by the client is supported by the issuer',
+        );
 
-        instance(this.issuer).get('metadata').set('code_challenge_methods_supported', ['not supported']);
+        instance(this.issuer)
+          .get('metadata')
+          .set('code_challenge_methods_supported', ['not supported']);
         expect(() => {
-          new Strategy({ // eslint-disable-line no-new
-            client: this.client,
-            usePKCE: true,
-          }, () => {});
-        }).to.throw('neither code_challenge_method supported by the client is supported by the issuer');
+          new Strategy(
+            {
+              client: this.client,
+              usePKCE: true,
+            },
+            () => {},
+          );
+        }).to.throw(
+          'neither code_challenge_method supported by the client is supported by the issuer',
+        );
       });
 
       it('will throw when explictly provided value is not supported', function () {
         expect(() => {
-          new Strategy({ // eslint-disable-line no-new
-            client: this.client,
-            usePKCE: 'foobar',
-          }, () => {});
+          new Strategy(
+            {
+              client: this.client,
+              usePKCE: 'foobar',
+            },
+            () => {},
+          );
         }).to.throw('foobar is not valid/implemented PKCE code_challenge_method');
       });
 
       it('can be set to use PKCE (S256)', function () {
-        const strategy = new Strategy({
-          client: this.client,
-          usePKCE: 'S256',
-        }, () => {});
+        const strategy = new Strategy(
+          {
+            client: this.client,
+            usePKCE: 'S256',
+          },
+          () => {},
+        );
 
         const req = new MockRequest('GET', '/login/oidc');
         req.session = {};
@@ -279,10 +333,13 @@ describe('OpenIDConnectStrategy', () => {
       });
 
       it('can be set to use PKCE (plain)', function () {
-        const strategy = new Strategy({
-          client: this.client,
-          usePKCE: 'plain',
-        }, () => {});
+        const strategy = new Strategy(
+          {
+            client: this.client,
+            usePKCE: 'plain',
+          },
+          () => {},
+        );
 
         const req = new MockRequest('GET', '/login/oidc');
         req.session = {};
@@ -300,10 +357,13 @@ describe('OpenIDConnectStrategy', () => {
     });
 
     it('can have session key specifed', function () {
-      const strategy = new Strategy({
-        client: this.client,
-        sessionKey: 'oidc:op.example.com:foo',
-      }, () => {});
+      const strategy = new Strategy(
+        {
+          client: this.client,
+          sessionKey: 'oidc:op.example.com:foo',
+        },
+        () => {},
+      );
 
       const req = new MockRequest('GET', '/login/oidc');
       req.session = {};
@@ -312,7 +372,11 @@ describe('OpenIDConnectStrategy', () => {
       strategy.authenticate(req);
 
       expect(req.session).to.have.property('oidc:op.example.com:foo');
-      expect(req.session['oidc:op.example.com:foo']).to.have.keys('state', 'response_type', 'code_verifier');
+      expect(req.session['oidc:op.example.com:foo']).to.have.keys(
+        'state',
+        'response_type',
+        'code_verifier',
+      );
     });
   });
 
@@ -326,7 +390,9 @@ describe('OpenIDConnectStrategy', () => {
         done(null, tokenset);
       });
 
-      strategy.success = () => { next(); };
+      strategy.success = () => {
+        next();
+      };
 
       const req = new MockRequest('GET', '/login/oidc/callback?code=foobar&state=state');
       req.session = {
@@ -372,7 +438,9 @@ describe('OpenIDConnectStrategy', () => {
 
       strategy.error = (error) => {
         try {
-          expect(error.message).to.eql('did not find expected authorization request details in session, req.session["oidc:op.example.com"] is undefined');
+          expect(error.message).to.eql(
+            'did not find expected authorization request details in session, req.session["oidc:op.example.com"] is undefined',
+          );
           next();
         } catch (err) {
           next(err);
@@ -520,7 +588,7 @@ describe('OpenIDConnectStrategy', () => {
     });
 
     it('throws when userinfo is requested but no access_token was returned', function (next) {
-      const strategy = new Strategy({ client: this.client }, (tokenset, userinfo, done) => {}); // eslint-disable-line
+      const strategy = new Strategy({ client: this.client }, (tokenset, userinfo, done) => {});
 
       const ts = { id_token: 'foo' };
       sinon.stub(this.client, 'callback').callsFake(async () => ts);
@@ -537,7 +605,9 @@ describe('OpenIDConnectStrategy', () => {
       strategy.fail = (err) => {
         try {
           expect(err.name).to.equal('RPError');
-          expect(err.message).to.equal('expected access_token to be returned when asking for userinfo in verify callback');
+          expect(err.message).to.equal(
+            'expected access_token to be returned when asking for userinfo in verify callback',
+          );
           expect(err).to.have.property('tokenset');
           next();
         } catch (e) {
@@ -549,18 +619,21 @@ describe('OpenIDConnectStrategy', () => {
     });
 
     it('receives a request as the first parameter if passReqToCallback is set', function (next) {
-      const strategy = new Strategy({
-        client: this.client,
-        passReqToCallback: true,
-      }, (req, tokenset, done) => {
-        try {
-          expect(req).to.be.an.instanceof(MockRequest);
-          expect(tokenset).to.be.ok;
-          done(null, { sub: 'foobar' });
-        } catch (err) {
-          next(err);
-        }
-      });
+      const strategy = new Strategy(
+        {
+          client: this.client,
+          passReqToCallback: true,
+        },
+        (req, tokenset, done) => {
+          try {
+            expect(req).to.be.an.instanceof(MockRequest);
+            expect(tokenset).to.be.ok;
+            done(null, { sub: 'foobar' });
+          } catch (err) {
+            next(err);
+          }
+        },
+      );
 
       const ts = { id_token: 'foo' };
       sinon.stub(this.client, 'callback').callsFake(async () => ts);
@@ -582,19 +655,22 @@ describe('OpenIDConnectStrategy', () => {
     });
 
     it('receives a request and userinfo with passReqToCallback: true and userinfo', function (next) {
-      const strategy = new Strategy({
-        client: this.client,
-        passReqToCallback: true,
-      }, (req, tokenset, userinfo, done) => {
-        try {
-          expect(req).to.be.an.instanceof(MockRequest);
-          expect(tokenset).to.be.ok;
-          expect(userinfo).to.be.ok;
-          done(null, { sub: 'foobar' });
-        } catch (err) {
-          next(err);
-        }
-      });
+      const strategy = new Strategy(
+        {
+          client: this.client,
+          passReqToCallback: true,
+        },
+        (req, tokenset, userinfo, done) => {
+          try {
+            expect(req).to.be.an.instanceof(MockRequest);
+            expect(tokenset).to.be.ok;
+            expect(userinfo).to.be.ok;
+            done(null, { sub: 'foobar' });
+          } catch (err) {
+            next(err);
+          }
+        },
+      );
 
       const ts = { access_token: 'foo' };
       const ui = { sub: 'bar' };

@@ -18,8 +18,11 @@ const INPUTS = {
   ],
 };
 
-const idToken = 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmb28iLCJhdWQiOiJmb28iLCJpYXQiOjEyMzQ1LCJleHAiOjEyMzQ1LCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZm9vL3YyLjAiLCJ0aWQiOiJmb28ifQ.';
-const fail = () => { throw new Error('expected promise to be rejected'); };
+const idToken =
+  'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmb28iLCJhdWQiOiJmb28iLCJpYXQiOjEyMzQ1LCJleHAiOjEyMzQ1LCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZm9vL3YyLjAiLCJ0aWQiOiJmb28ifQ.';
+const fail = () => {
+  throw new Error('expected promise to be rejected');
+};
 
 describe('Azure AD multi-tenant applications', () => {
   Object.entries(INPUTS).forEach(([bucket, inputs]) => {
@@ -33,23 +36,31 @@ describe('Azure AD multi-tenant applications', () => {
 
         const aad = await Issuer.discover(input);
         const client = new aad.Client({ client_id: 'foo' });
-        return client.validateIdToken(idToken).then(fail).catch((err) => {
-          expect(err.message).to.match(/^JWT expired, now \d+, exp 12345$/);
-        });
+        return client
+          .validateIdToken(idToken)
+          .then(fail)
+          .catch((err) => {
+            expect(err.message).to.match(/^JWT expired, now \d+, exp 12345$/);
+          });
       });
 
       it(`changes the "iss" validation when Issuer is discovered with an appid query string (${input})`, async () => {
         nock('https://login.microsoftonline.com')
-          .get(`/${bucket}/v2.0/.well-known/openid-configuration?appid=6731de76-14a6-49ae-97bc-6eba6914391e`)
+          .get(
+            `/${bucket}/v2.0/.well-known/openid-configuration?appid=6731de76-14a6-49ae-97bc-6eba6914391e`,
+          )
           .reply(200, {
             issuer: 'https://login.microsoftonline.com/{tenantid}/v2.0',
           });
 
         const aad = await Issuer.discover(`${input}?appid=6731de76-14a6-49ae-97bc-6eba6914391e`);
         const client = new aad.Client({ client_id: 'foo' });
-        return client.validateIdToken(idToken).then(fail).catch((err) => {
-          expect(err.message).to.match(/^JWT expired, now \d+, exp 12345$/);
-        });
+        return client
+          .validateIdToken(idToken)
+          .then(fail)
+          .catch((err) => {
+            expect(err.message).to.match(/^JWT expired, now \d+, exp 12345$/);
+          });
       });
     });
 
@@ -58,9 +69,14 @@ describe('Azure AD multi-tenant applications', () => {
         issuer: 'https://login.microsoftonline.com/{tenantid}/v2.0',
       });
       const client = new aad.Client({ client_id: 'foo' });
-      return client.validateIdToken(idToken).then(fail).catch((err) => {
-        expect(err.message).to.eql('unexpected iss value, expected https://login.microsoftonline.com/{tenantid}/v2.0, got: https://login.microsoftonline.com/foo/v2.0');
-      });
+      return client
+        .validateIdToken(idToken)
+        .then(fail)
+        .catch((err) => {
+          expect(err.message).to.eql(
+            'unexpected iss value, expected https://login.microsoftonline.com/{tenantid}/v2.0, got: https://login.microsoftonline.com/foo/v2.0',
+          );
+        });
     });
   });
 });

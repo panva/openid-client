@@ -41,8 +41,7 @@
   ],
   "scripts": {
     "coverage": "nyc mocha test/**/*.test.js",
-    "lint": "eslint lib test",
-    "lint-fix": "eslint lib test --fix",
+    "prettier": "npx prettier --loglevel silent --write ./lib ./test ./certification ./types",
     "test": "mocha test/**/*.test.js"
   },
   "nyc": {
@@ -58,18 +57,15 @@
     "oidc-token-hash": "^5.0.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.1",
-    "@types/passport": "^1.0.4",
-    "babel-eslint": "^10.1.0",
+    "@types/node": "^16.11.4",
+    "@types/passport": "^1.0.7",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
-    "eslint": "^7.12.1",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.1",
     "jose2": "npm:jose@^2.0.5",
     "mocha": "^8.2.0",
     "nock": "^13.0.2",
     "nyc": "^15.1.0",
+    "prettier": "^2.4.1",
     "readable-mock-req": "^0.2.2",
     "sinon": "^9.2.0",
     "timekeeper": "^2.2.0"

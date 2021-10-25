@@ -5,7 +5,9 @@ const jose2 = require('jose2');
 
 const { Issuer } = require('../../lib');
 
-const fail = () => { throw new Error('expected promise to be rejected'); };
+const fail = () => {
+  throw new Error('expected promise to be rejected');
+};
 
 describe('Validating Self-Issued OP responses', () => {
   afterEach(timekeeper.reset);
@@ -35,11 +37,15 @@ describe('Validating Self-Issued OP responses', () => {
 
   const idToken = (claims = {}) => {
     const jwk = jose2.JWK.generateSync('EC');
-    return jose2.JWT.sign({
-      sub_jwk: jwk.toJWK(),
-      sub: jwk.thumbprint,
-      ...claims,
-    }, jwk, { expiresIn: '2h', issuer: 'https://self-issued.me', audience: 'https://rp.example.com/cb' });
+    return jose2.JWT.sign(
+      {
+        sub_jwk: jwk.toJWK(),
+        sub: jwk.thumbprint,
+        ...claims,
+      },
+      jwk,
+      { expiresIn: '2h', issuer: 'https://self-issued.me', audience: 'https://rp.example.com/cb' },
+    );
   };
 
   describe('consuming an ID Token response', () => {
@@ -50,7 +56,8 @@ describe('Validating Self-Issued OP responses', () => {
 
     it('expects sub_jwk to be in the ID Token claims', function () {
       const { client } = this;
-      return client.callback(undefined, { id_token: idToken({ sub_jwk: undefined }) })
+      return client
+        .callback(undefined, { id_token: idToken({ sub_jwk: undefined }) })
         .then(fail, (err) => {
           expect(err.name).to.equal('RPError');
           expect(err.message).to.equal('missing required JWT property sub_jwk');
@@ -60,7 +67,8 @@ describe('Validating Self-Issued OP responses', () => {
 
     it('expects sub_jwk to be a public JWK', function () {
       const { client } = this;
-      return client.callback(undefined, { id_token: idToken({ sub_jwk: 'foobar' }) })
+      return client
+        .callback(undefined, { id_token: idToken({ sub_jwk: 'foobar' }) })
         .then(fail, (err) => {
           expect(err.name).to.equal('RPError');
           expect(err.message).to.equal('failed to use sub_jwk claim as an asymmetric JSON Web Key');
@@ -70,12 +78,11 @@ describe('Validating Self-Issued OP responses', () => {
 
     it('expects sub to be the thumbprint of the sub_jwk', function () {
       const { client } = this;
-      return client.callback(undefined, { id_token: idToken({ sub: 'foo' }) })
-        .then(fail, (err) => {
-          expect(err.name).to.equal('RPError');
-          expect(err.message).to.equal('failed to match the subject with sub_jwk');
-          expect(err).to.have.property('jwt');
-        });
+      return client.callback(undefined, { id_token: idToken({ sub: 'foo' }) }).then(fail, (err) => {
+        expect(err.name).to.equal('RPError');
+        expect(err.message).to.equal('failed to match the subject with sub_jwk');
+        expect(err).to.have.property('jwt');
+      });
     });
   });
 });
