@@ -1604,39 +1604,6 @@ describe('Client', () => {
         });
     });
 
-    it('can submit access token in a query when get', function () {
-      const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client({
-        client_id: 'identifier',
-        token_endpoint_auth_method: 'none',
-      });
-
-      nock('https://op.example.com')
-        .matchHeader('Authorization', '')
-        .get('/me?access_token=tokenValue')
-        .reply(200, {});
-
-      return client.userinfo('tokenValue', { via: 'query' }).then(() => {
-        expect(nock.isDone()).to.be.true;
-      });
-    });
-
-    it('can only submit access token in a query when get', function () {
-      const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
-      const client = new issuer.Client({
-        client_id: 'identifier',
-        token_endpoint_auth_method: 'none',
-      });
-
-      return client
-        .userinfo('tokenValue', { via: 'query', method: 'post' })
-        .then(fail, ({ message }) => {
-          expect(message).to.eql(
-            'userinfo endpoints will only parse query strings for GET requests',
-          );
-        });
-    });
-
     it('is rejected with OPError upon oidc error', function () {
       const issuer = new Issuer({ userinfo_endpoint: 'https://op.example.com/me' });
       const client = new issuer.Client({
@@ -1649,7 +1616,7 @@ describe('Client', () => {
         error_description: 'bad things are happening',
       });
 
-      return client.userinfo().then(fail, function (error) {
+      return client.userinfo('foo').then(fail, function (error) {
         expect(error.name).to.equal('OPError');
         expect(error).to.have.property('error', 'invalid_token');
         expect(error).to.have.property('error_description', 'bad things are happening');
@@ -1668,7 +1635,7 @@ describe('Client', () => {
           'Bearer error="invalid_token", error_description="bad things are happening"',
       });
 
-      return client.userinfo().then(fail, function (error) {
+      return client.userinfo('foo').then(fail, function (error) {
         expect(error.name).to.equal('OPError');
         expect(error).to.have.property('error', 'invalid_token');
         expect(error).to.have.property('error_description', 'bad things are happening');
@@ -1684,7 +1651,7 @@ describe('Client', () => {
 
       nock('https://op.example.com').get('/me').reply(500, 'Internal Server Error');
 
-      return client.userinfo().then(fail, function (error) {
+      return client.userinfo('foo').then(fail, function (error) {
         expect(error.name).to.equal('OPError');
         expect(error.message).to.eql('expected 200 OK, got: 500 Internal Server Error');
         expect(error).to.have.property('response');
@@ -1700,7 +1667,7 @@ describe('Client', () => {
 
       nock('https://op.example.com').get('/me').reply(200, '{"notavalid"}');
 
-      return client.userinfo().then(fail, function (error) {
+      return client.userinfo('foo').then(fail, function (error) {
         expect(error.message).to.eql('Unexpected token } in JSON at position 12');
         expect(error).to.have.property('response');
       });
@@ -1757,7 +1724,7 @@ describe('Client', () => {
             'content-type': 'application/jwt; charset=utf-8',
           });
 
-        return client.userinfo().then(fail, (err) => {
+        return client.userinfo('foo').then(fail, (err) => {
           expect(err.message).to.eql('unexpected JWT alg received, expected RS256, got: none');
         });
       });
@@ -1774,7 +1741,7 @@ describe('Client', () => {
 
         nock('https://op.example.com').get('/me').reply(200, {});
 
-        return client.userinfo().then(fail, (err) => {
+        return client.userinfo('foo').then(fail, (err) => {
           expect(err.message).to.eql(
             'expected application/jwt response from the userinfo_endpoint',
           );

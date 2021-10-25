@@ -332,7 +332,7 @@ declare class BaseClient {
     accessToken: TokenSet | string,
     options?: {
       method?: 'GET' | 'POST';
-      via?: 'header' | 'body' | 'query';
+      via?: 'header' | 'body';
       tokenType?: string;
       params?: object;
       DPoP?: DPoPInput;
