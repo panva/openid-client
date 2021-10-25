@@ -5,6 +5,7 @@ const sinon = require('sinon');
 const jose2 = require('jose2');
 
 const { Issuer, custom } = require('../../lib');
+const issuerInternal = require('../../lib/helpers/issuer');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 
@@ -13,7 +14,7 @@ describe('Issuer', () => {
     it('requires jwks_uri to be configured', function () {
       const issuer = new Issuer();
 
-      return issuer.keystore().then(fail, (err) => {
+      return issuerInternal.keystore.call(issuer).then(fail, (err) => {
         expect(err.message).to.equal('jwks_uri must be configured on the issuer');
       });
     });
@@ -35,7 +36,7 @@ describe('Issuer', () => {
         .get('/certs')
         .reply(200, this.keystore.toJWKS());
 
-      return this.issuer.keystore();
+      return issuerInternal.keystore.call(this.issuer);
     });
 
     after(nock.cleanAll);
@@ -45,19 +46,22 @@ describe('Issuer', () => {
 
     it('does not refetch immidiately', function () {
       nock.cleanAll();
-      return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256' });
+      return issuerInternal.queryKeyStore.call(this.issuer, { use: 'sig', alg: 'RS256' });
     });
 
-    it('fetches if asked to', function () {
+    it('fetches if asked to (one concurrent request at a time)', function () {
       nock.cleanAll();
 
       // force a fail to fetch to check it tries to load
-      return this.issuer.keystore(true).then(fail, () => {
+      return issuerInternal.keystore.call(this.issuer, true).then(fail, () => {
         nock('https://op.example.com')
           .get('/certs')
           .reply(200, this.keystore.toJWKS());
 
-        return this.issuer.keystore(true).then(() => {
+        return Promise.all([
+          issuerInternal.keystore.call(this.issuer, true),
+          issuerInternal.keystore.call(this.issuer, true),
+        ]).then(() => {
           expect(nock.isDone()).to.be.true;
         });
       });
@@ -65,19 +69,19 @@ describe('Issuer', () => {
 
     it('asks to fetch if the keystore is stale and new key definition is requested', function () {
       sinon.stub(LRU.prototype, 'get').returns(undefined);
-      return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256', kid: 'yeah' }).then(fail, () => {
+      return issuerInternal.queryKeyStore.call(this.issuer, { use: 'sig', alg: 'RS256', kid: 'yeah' }).then(fail, () => {
         nock('https://op.example.com')
           .get('/certs')
           .reply(200, this.keystore.toJWKS());
 
-        return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256', kid: 'yeah' }).then(fail, () => {
+        return issuerInternal.queryKeyStore.call(this.issuer, { use: 'sig', alg: 'RS256', kid: 'yeah' }).then(fail, () => {
           expect(nock.isDone()).to.be.true;
         });
       });
     });
 
     it('rejects when no matching key is found', function () {
-      return this.issuer.queryKeyStore({ use: 'sig', alg: 'RS256', kid: 'noway' }).then(fail, (err) => {
+      return issuerInternal.queryKeyStore.call(this.issuer, { use: 'sig', alg: 'RS256', kid: 'noway' }).then(fail, (err) => {
         expect(err.message).to.equal('no valid key found in issuer\'s jwks_uri for key parameters {"kid":"noway","alg":"RS256"}');
       });
     });
@@ -89,7 +93,7 @@ describe('Issuer', () => {
           .get('/certs')
           .reply(200, this.keystore.toJWKS());
 
-        return this.issuer.queryKeyStore({ alg: 'RS256', use: 'sig' }).then(fail, (err) => {
+        return issuerInternal.queryKeyStore.call(this.issuer, { alg: 'RS256', use: 'sig' }).then(fail, (err) => {
           expect(nock.isDone()).to.be.true;
           expect(err.message).to.equal('multiple matching keys found in issuer\'s jwks_uri for key parameters {"alg":"RS256"}, kid must be provided in this case');
         });
@@ -104,7 +108,7 @@ describe('Issuer', () => {
           .get('/certs')
           .reply(200, this.keystore.toJWKS());
 
-        return this.issuer.queryKeyStore({ alg: 'RS256', kid, use: 'sig' });
+        return issuerInternal.queryKeyStore.call(this.issuer, { alg: 'RS256', kid, use: 'sig' });
       });
     });
 
@@ -124,7 +128,7 @@ describe('Issuer', () => {
         const httpOptions = sinon.stub().callsFake(() => ({ headers: { custom: 'foo' } }));
         this.issuer[custom.http_options] = httpOptions;
 
-        await this.issuer.keystore(true);
+        await issuerInternal.keystore.call(this.issuer, true);
 
         expect(nock.isDone()).to.be.true;
         sinon.assert.callCount(httpOptions, 1);

@@ -15,6 +15,7 @@ const { OPError, RPError } = require('../../lib/errors');
 const now = require('../../lib/helpers/unix_timestamp');
 const { Issuer, custom } = require('../../lib');
 const clientInternal = require('../../lib/helpers/client');
+const issuerInternal = require('../../lib/helpers/issuer');
 
 const fail = () => { throw new Error('expected promise to be rejected'); };
 const encode = (object) => base64url.encode(JSON.stringify(object));
@@ -3115,7 +3116,7 @@ describe('Client', () => {
         .get('/certs')
         .reply(200, this.keystore.toJWKS());
 
-      return this.issuer.keystore();
+      return issuerInternal.keystore.call(this.issuer);
     });
 
     after(nock.cleanAll);
@@ -3372,7 +3373,7 @@ describe('Client', () => {
         .get('/certs')
         .reply(200, this.keystore.toJWKS());
 
-      return this.issuer.keystore();
+      return issuerInternal.keystore.call(this.issuer);
     });
 
     after(nock.cleanAll);
