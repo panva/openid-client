@@ -1,9 +1,6 @@
 /// <reference types="node" />
 // TypeScript Version: 3.6
 
-/**
- * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md
- */
 import * as http from 'http';
 import * as https from 'https';
 import * as http2 from 'http2';
@@ -12,13 +9,25 @@ import { URL } from 'url';
 import * as jose from 'jose';
 import * as crypto from 'crypto';
 
-export type HttpOptions = Pick<
-  https.RequestOptions,
-  'agent' | 'ca' | 'cert' | 'crl' | 'headers' | 'key' | 'lookup' | 'passphrase' | 'pfx' | 'timeout'
+export type HttpOptions = Partial<
+  Pick<
+    https.RequestOptions,
+    | 'agent'
+    | 'ca'
+    | 'cert'
+    | 'crl'
+    | 'headers'
+    | 'key'
+    | 'lookup'
+    | 'passphrase'
+    | 'pfx'
+    | 'timeout'
+  >
 >;
 export type RetryFunction = (retry: number, error: Error) => number;
 export type CustomHttpOptionsProvider = (
-  options: HttpOptions & { url: URL } & UnknownObject,
+  url: URL,
+  options: Omit<https.RequestOptions, keyof URL>,
 ) => HttpOptions;
 export type TokenTypeHint = 'access_token' | 'refresh_token' | string;
 export type DPoPInput = crypto.KeyObject | Parameters<typeof crypto.createPrivateKey>[0];
@@ -27,29 +36,13 @@ interface UnknownObject {
   [key: string]: unknown;
 }
 
-/**
- * @see https://github.com/panva/node-openid-client/blob/master/lib/index.js
- */
 export const custom: {
   setHttpOptionsDefaults(params: HttpOptions): undefined;
   readonly http_options: unique symbol;
   readonly clock_tolerance: unique symbol;
 };
 
-/**
- * @see https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
- */
-export type ResponseType =
-  | 'code'
-  | 'id_token'
-  | 'code id_token'
-  | 'id_token token'
-  | 'code token'
-  | 'code id_token token'
-  | 'none';
-/**
- * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
- */
+export type ResponseType = 'code' | 'id_token' | 'code id_token' | 'none' | string;
 export type ClientAuthMethod =
   | 'client_secret_basic'
   | 'client_secret_post'
@@ -59,9 +52,6 @@ export type ClientAuthMethod =
   | 'self_signed_tls_client_auth'
   | 'none';
 
-/**
- * @see https://github.com/panva/node-openid-client/blob/master/docs/README.md#new-clientmetadata-jwks
- */
 export interface ClientMetadata {
   // important
   client_id: string;
@@ -166,71 +156,27 @@ export interface CallbackParamsType {
 }
 
 export interface OAuthCallbackChecks {
-  /**
-   * When provided the authorization response will be checked for presence of required parameters for a
-   * given response_type. Use of this check is recommended.
-   */
   response_type?: string;
-  /**
-   * When provided the authorization response's state parameter will be checked to be the this expected one.
-   * Use of this check is required if you sent a state parameter into an authorization request.
-   */
   state?: string;
-  /**
-   * PKCE code_verifier to be sent to the token endpoint during code exchange. Use of this check is required
-   * if you sent a code_challenge parameter into an authorization request.
-   */
   code_verifier?: string;
-  /**
-   * This must be set to true when requesting JARM responses.
-   */
   jarm?: boolean;
+  scope?: string;
 }
 
 export interface OpenIDCallbackChecks extends OAuthCallbackChecks {
-  /**
-   * When provided the authorization response's ID Token auth_time parameter will be checked to be conform to the
-   * max_age value. Use of this check is required if you sent a max_age parameter into an authorization request.
-   */
   max_age?: number;
-  /**
-   * When provided the authorization response's ID Token nonce parameter will be checked to be the this expected
-   * one. Use of this check is required if you sent a nonce parameter into an authorization request.
-   */
   nonce?: string;
 }
 
 export interface CallbackExtras {
-  /**
-   * extra request body properties to be sent to the AS during code exchange.
-   */
   exchangeBody?: object;
-  /**
-   * extra client assertion payload parameters to be sent as part of a client JWT assertion. This is only used
-   * when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
-   */
   clientAssertionPayload?: object;
-  /**
-   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
-   * inputs, or a JWK formatted private key.
-   */
   DPoP?: DPoPInput;
 }
 
 export interface RefreshExtras {
-  /**
-   * extra request body properties to be sent to the AS during refresh token exchange.
-   */
   exchangeBody?: object;
-  /**
-   * extra client assertion payload parameters to be sent as part of a client JWT assertion.
-   * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
-   */
   clientAssertionPayload?: object;
-  /**
-   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
-   * inputs, or a JWK formatted private key.
-   */
   DPoP?: DPoPInput;
 }
 
@@ -241,39 +187,17 @@ export interface GrantBody {
 }
 
 export interface GrantExtras {
-  /**
-   * extra client assertion payload parameters to be sent as part of a client JWT assertion.
-   * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
-   */
   clientAssertionPayload?: object;
-  /**
-   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
-   * inputs, or a JWK formatted private key.
-   */
   DPoP?: DPoPInput;
 }
 
 export interface IntrospectExtras {
-  /**
-   * extra request body properties to be sent to the introspection endpoint.
-   */
   introspectBody?: object;
-  /**
-   * extra client assertion payload parameters to be sent as part of a client JWT assertion.
-   * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
-   */
   clientAssertionPayload?: object;
 }
 
 export interface RevokeExtras {
-  /**
-   * extra request body properties to be sent to the revocation endpoint.
-   */
   revokeBody?: object;
-  /**
-   * extra client assertion payload parameters to be sent as part of a client JWT assertion.
-   * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
-   */
   clientAssertionPayload?: object;
 }
 
@@ -289,14 +213,7 @@ export interface RequestObjectPayload extends AuthorizationParameters {
 }
 
 export interface RegisterOther {
-  /**
-   * JWK Set formatted object with private keys used for signing client assertions or decrypting responses.
-   * When neither jwks_uri or jwks is present in metadata the key's public parts will be registered as jwks.
-   */
-  jwks?: jose.JSONWebKeySet;
-  /**
-   * Initial Access Token to use as a Bearer token during the registration call.
-   */
+  jwks?: { keys: jose.JWK[] };
   initialAccessToken?: string;
 }
 
@@ -308,19 +225,8 @@ export interface DeviceAuthorizationParameters {
 }
 
 export interface DeviceAuthorizationExtras {
-  /**
-   * extra request body properties to be sent to the AS during the Device Access Token Request
-   */
   exchangeBody?: object;
-  /**
-   * extra client assertion payload parameters to be sent as part of a client JWT assertion.
-   * This is only used when the client's token_endpoint_auth_method is either client_secret_jwt or private_key_jwt.
-   */
   clientAssertionPayload?: object;
-  /**
-   * Private key to sign the DPoP Proof JWT with. This can be a crypto.KeyObject, crypto.createPrivateKey valid
-   * inputs, or a JWK formatted private key.
-   */
   DPoP?: DPoPInput;
 }
 
@@ -395,90 +301,33 @@ export interface ClientOptions {
   additionalAuthorizedParties?: string | string[];
 }
 
-/**
- * Encapsulates a dynamically registered, discovered or instantiated OpenID Connect Client (Client),
- * Relying Party (RP), and its metadata, its instances hold the methods for getting an authorization URL,
- * consuming callbacks, triggering token endpoint grants, revoking and introspecting tokens.
- */
-export class Client {
-  constructor(metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions);
+export type Client = InstanceType<Issuer['Client']>;
+declare class BaseClient {
+  constructor(metadata: ClientMetadata, jwks?: { keys: jose.JWK[] }, options?: ClientOptions);
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
   metadata: ClientMetadata;
   issuer: Issuer<this>;
-  static issuer: Issuer<Client>;
+  static issuer: Issuer<BaseClient>;
 
-  /**
-   * Returns the target authorization redirect URI to redirect End-Users to using the provided parameters.
-   * @param parameters Authorization Request parameters
-   */
   authorizationUrl(parameters?: AuthorizationParameters): string;
-
-  /**
-   * Returns the target logout redirect URI to redirect End-Users to using the provided parameters.
-   * @param parameters RP-Initiated Logout Request parameters
-   */
   endSessionUrl(parameters?: EndSessionParameters): string;
-
-  /**
-   * Returns recognized callback parameters from a provided input.
-   *
-   * - When input is of type string it will be parsed using url.parse and its query component will be returned
-   * - When input is a GET http/http2 request object its url property will be parsed using url.parse and its
-   * query component will be returned
-   * - When input is a POST http/http2 request object its body property will be parsed or returned if it is already
-   * an object. Note: the request read stream will not be parsed, it is expected that you will have a body parser
-   * prior to calling this method. This parser would set the req.body property
-   */
   callbackParams(
     input: string | http.IncomingMessage | http2.Http2ServerRequest,
   ): CallbackParamsType;
-
-  /**
-   * Performs the callback for Authorization Server's authorization response.
-   * @param redirectUri redirect_uri used for the authorization request
-   * @param parameters returned authorization response, see client.callbackParams if you need help getting them.
-   * @param checks checks to perform on the Authorization Response
-   * @param extras add extra parameters to the Token Endpoint Request and/or Client Authentication JWT Assertion
-   */
   callback(
     redirectUri: string | undefined,
     parameters: CallbackParamsType,
     checks?: OpenIDCallbackChecks,
     extras?: CallbackExtras,
   ): Promise<TokenSet>;
-
-  /**
-   * Pure OAuth 2.0 version of callback().
-   * @param redirectUri redirect_uri used for the authorization request
-   * @param parameters returned authorization response, see client.callbackParams if you need help getting them.
-   * @param checks checks to perform on the Authorization Response
-   * @param extras add extra parameters to the Token Endpoint Request and/or Client Authentication JWT Assertion
-   */
   oauthCallback(
     redirectUri: string | undefined,
     parameters: CallbackParamsType,
     checks?: OAuthCallbackChecks,
     extras?: CallbackExtras,
   ): Promise<TokenSet>;
-
-  /**
-   * Performs refresh_token grant type exchange.
-   * @param refreshToken Refresh Token value. When TokenSet instance is provided its refresh_token property
-   * will be used automatically.
-   * @param extras Add extra parameters to the Token Endpoint Request and/or Client Authentication JWT Assertion
-   */
   refresh(refreshToken: TokenSet | string, extras?: RefreshExtras): Promise<TokenSet>;
-
-  /**
-   * Fetches the OIDC userinfo response with the provided Access Token. Also handles signed and/or
-   * encrypted userinfo responses. When TokenSet is provided as an argument the userinfo sub property
-   * will also be checked to match the on in the TokenSet's ID Token.
-   *
-   * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
-   * will be used automatically.
-   * @param options Options for the UserInfo request.
-   */
   userinfo<TUserInfo extends {} = UnknownObject, TAddress extends {} = UnknownObject>(
     accessToken: TokenSet | string,
     options?: {
@@ -489,15 +338,6 @@ export class Client {
       DPoP?: DPoPInput;
     },
   ): Promise<UserinfoResponse<TUserInfo, TAddress>>;
-
-  /**
-   * Fetches an arbitrary resource with the provided Access Token in an Authorization header.
-   *
-   * @param resourceUrl Resource URL to request a response from.
-   * @param accessToken Access Token value. When TokenSet instance is provided its access_token property
-   * will be used automatically.
-   * @param options Options for the request.
-   */
   requestResource(
     resourceUrl: string | URL,
     accessToken: TokenSet | string,
@@ -508,42 +348,19 @@ export class Client {
       tokenType?: string;
       DPoP?: DPoPInput;
     },
-  ): CancelableRequest<Response<Buffer>>;
-
-  /**
-   * Performs an arbitrary grant_type exchange at the token_endpoint.
-   */
+  ): { body?: Buffer } & http.IncomingMessage;
   grant(body: GrantBody, extras?: GrantExtras): Promise<TokenSet>;
-
-  /**
-   * Introspects a token at the Authorization Server's introspection_endpoint.
-   */
   introspect(
     token: string,
     tokenTypeHint?: TokenTypeHint,
     extras?: IntrospectExtras,
   ): Promise<IntrospectionResponse>;
-
-  /**
-   * Revokes a token at the Authorization Server's revocation_endpoint.
-   */
   revoke(token: string, tokenTypeHint?: TokenTypeHint, extras?: RevokeExtras): Promise<undefined>;
-
-  /**
-   * Creates a signed and optionally encrypted Request Object to send to the AS. Uses the client's
-   * request_object_signing_alg, request_object_encryption_alg, request_object_encryption_enc metadata for
-   * determining the algorithms to use.
-   */
   requestObject(payload: RequestObjectPayload): Promise<string>;
-
-  /**
-   * Starts a Device Authorization Request at the issuer's device_authorization_endpoint and returns a handle
-   * for subsequent Device Access Token Request polling.
-   */
   deviceAuthorization(
     parameters?: DeviceAuthorizationParameters,
     extras?: DeviceAuthorizationExtras,
-  ): Promise<DeviceFlowHandle<Client>>;
+  ): Promise<DeviceFlowHandle<BaseClient>>;
   pushedAuthorizationRequest(
     parameters?: AuthorizationParameters,
     extras?: PushedAuthorizationRequestExtras,
@@ -552,13 +369,13 @@ export class Client {
     expires_in: number;
     [key: string]: unknown;
   }>;
-  static register(metadata: object, other?: RegisterOther & ClientOptions): Promise<Client>;
+  static register(metadata: object, other?: RegisterOther & ClientOptions): Promise<BaseClient>;
   static fromUri(
     registrationClientUri: string,
     registrationAccessToken: string,
-    jwks?: jose.JSONWebKeySet,
+    jwks?: { keys: jose.JWK[] },
     clientOptions?: ClientOptions,
-  ): Promise<Client>;
+  ): Promise<BaseClient>;
   static [custom.http_options]: CustomHttpOptionsProvider;
 
   [key: string]: unknown;
@@ -568,8 +385,7 @@ interface DeviceFlowPollOptions {
   signal?: AbortSignal;
 }
 
-export class DeviceFlowHandle<TClient extends Client> {
-  // tslint:disable-line:no-unnecessary-generics
+export class DeviceFlowHandle<TClient extends BaseClient = BaseClient> {
   poll(options?: DeviceFlowPollOptions): Promise<TokenSet>;
   abort(): void;
   expired(): boolean;
@@ -611,88 +427,35 @@ export interface MtlsEndpointAliases {
   device_authorization_endpoint?: string;
 }
 
-// https://stackoverflow.com/questions/40249906/using-a-generic-type-argument-with-typeof-t
-// https://stackoverflow.com/questions/39622778/what-is-new-in-typescript
-// https://github.com/Microsoft/TypeScript/issues/204
-export interface TypeOfGenericClient<TClient extends Client> {
-  new (metadata: ClientMetadata, jwks?: jose.JSONWebKeySet, options?: ClientOptions): TClient;
+export interface TypeOfGenericClient<TClient extends BaseClient = BaseClient> {
+  new (metadata: ClientMetadata, jwks?: { keys: jose.JWK[] }, options?: ClientOptions): TClient;
   [custom.http_options]: CustomHttpOptionsProvider;
   [custom.clock_tolerance]: number;
 }
 
-/**
- * Encapsulates a discovered or instantiated OpenID Connect Issuer (Issuer), Identity Provider (IdP),
- * Authorization Server (AS) and its metadata.
- */
-export class Issuer<TClient extends Client> {
-  // tslint:disable-line:no-unnecessary-generics
+export class Issuer<TClient extends BaseClient = BaseClient> {
   constructor(metadata: IssuerMetadata);
 
-  /**
-   * Returns the <Client> class tied to this issuer.
-   */
   Client: TypeOfGenericClient<TClient>;
 
-  /**
-   * Returns the <FAPI1Client> class tied to this issuer.
-   */
   FAPI1Client: TypeOfGenericClient<TClient>;
 
-  /**
-   * Returns metadata from the issuer's discovery document.
-   */
   metadata: IssuerMetadata;
   [custom.http_options]: CustomHttpOptionsProvider;
-
-  /**
-   * Loads OpenID Connect 1.0 and/or OAuth 2.0 Authorization Server Metadata documents.
-   * When the issuer argument contains '.well-known' only that document is loaded, otherwise
-   * performs both openid-configuration and oauth-authorization-server requests.
-   * @param issuer Issuer Identifier or metadata URL
-   */
-  static discover(issuer: string): Promise<Issuer<Client>>;
-
-  /**
-   * Performs OpenID Provider Issuer Discovery based on End-User input.
-   * @param input EMAIL, URL, Hostname and Port, acct or syntax input
-   */
-  static webfinger(input: string): Promise<Issuer<Client>>;
-
+  static discover(issuer: string): Promise<Issuer<BaseClient>>;
+  static webfinger(input: string): Promise<Issuer<BaseClient>>;
   static [custom.http_options]: CustomHttpOptionsProvider;
-
   [key: string]: unknown;
 }
 
 export interface TokenSetParameters {
-  /**
-   * The raw access token in JWT format
-   */
   access_token?: string;
-  /**
-   * Usually "Bearer"
-   */
   token_type?: string;
-  /**
-   * The raw id token in JWT format
-   */
   id_token?: string;
-  /**
-   * Refresh token, opaque string value
-   */
   refresh_token?: string;
-  /**
-   * space-separated scope(s) used for the authentication request
-   */
   scope?: string;
 
-  /**
-   * When the token set was received the expires_at field was calculated based on current timestamp
-   * and the expires_in. When recalling a TokenSet instance just the expires_at should be passed in.
-   */
   expires_at?: number;
-  /**
-   * State value passed in the authentication request
-   */
   session_state?: string;
 
   [key: string]: unknown;
@@ -716,11 +479,6 @@ export interface IdTokenClaims extends UserinfoResponse {
   [key: string]: unknown;
 }
 
-/**
- * Creates a new TokenSet from the provided response. E.g. parsed token endpoint response, parsed callback
- * parameters. You only need to instantiate a TokenSet yourself if you recall it from e.g. distributed cache
- * storage or a database. Note: manually constructed TokenSet instances do not undergo any validations.
- */
 export class TokenSet implements TokenSetParameters {
   access_token?: string;
   token_type?: string;
@@ -733,17 +491,7 @@ export class TokenSet implements TokenSetParameters {
 
   constructor(input?: TokenSetParameters);
 
-  /**
-   * Given that the instance has expires_at / expires_in this function returns true / false when the
-   * access token (which expires properties are for) is beyond its lifetime.
-   */
   expired(): boolean;
-
-  /**
-   * Given that the instance has an id_token this function returns its parsed payload object.
-   * Does not perform any validations as these were done prior to openid-client returning the
-   * tokenset in the first place.
-   */
   claims(): IdTokenClaims;
 
   [key: string]: unknown;
@@ -778,35 +526,16 @@ export type StrategyVerifyCallbackReq<TUser> = (
   done: (err: any, user?: TUser) => void,
 ) => void;
 
-export interface StrategyOptions<TClient extends Client> {
+export interface StrategyOptions<TClient extends BaseClient = BaseClient> {
   client: TClient;
-  /**
-   * Authorization Request parameters. The strategy will use these.
-   */
   params?: AuthorizationParameters;
-
-  /**
-   * "extras" argument value passed to the client.callback() call.
-   */
   extras?: CallbackExtras;
-  /**
-   * Boolean specifying whether the verify function should get the request object as first argument instead.
-   */
   passReqToCallback?: boolean;
-  /**
-   * The PKCE method to use. When 'true' it will resolve based on the issuer metadata, when 'false' no PKCE will be
-   * used.
-   */
   usePKCE?: boolean | string;
-  /**
-   * The property name to store transaction information such as nonce, state, max_age, code_verifier, and response_type.
-   */
   sessionKey?: string;
 }
 
-// tslint:disable-next-line:no-unnecessary-class
-export class Strategy<TUser, TClient extends Client> {
-  // tslint:disable-line:no-unnecessary-generics
+export class Strategy<TUser, TClient extends BaseClient = BaseClient> {
   constructor(
     options: StrategyOptions<TClient>,
     verify:
@@ -825,97 +554,31 @@ export class Strategy<TUser, TClient extends Client> {
   error(err: Error): void;
 }
 
-/**
- * @see https://github.com/panva/node-openid-client/blob/master/lib/helpers/generators.js
- */
 export namespace generators {
-  /**
-   * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate.
-   */
   function random(bytes?: number): string;
-
-  /**
-   * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate.
-   */
   function state(bytes?: number): string;
-
-  /**
-   * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate.
-   */
   function nonce(bytes?: number): string;
-
-  /**
-   * Generates random bytes and encodes them in url safe base64.
-   * @param bytes Number indicating the number of bytes to generate.
-   */
   function codeVerifier(bytes?: number): string;
-  /**
-   * Calculates the S256 PKCE code challenge for an arbitrary code verifier.
-   * Encodes in url safe base64.
-   * @param verifier Code verifier to calculate the S256 code challenge for
-   */
   function codeChallenge(verifier: string): string;
 }
 
-/**
- * @see https://github.com/panva/node-openid-client/blob/master/lib/errors.js
- */
 export namespace errors {
-  /**
-   * Error class thrown when a regular OAuth 2.0 / OIDC style error is returned by the AS or an
-   * unexpected response is sent by the OP.
-   */
   class OPError extends Error {
-    /**
-     * The 'error_description' parameter from the AS response.
-     */
     error_description?: string;
-    /**
-     * The 'error' parameter from the AS response.
-     */
     error?: string;
-    /**
-     * The 'error_uri' parameter from the AS response.
-     */
     error_uri?: string;
-    /**
-     * The 'state' parameter from the AS response.
-     */
     state?: string;
-    /**
-     * The 'scope' parameter from the AS response.
-     */
     scope?: string;
-    /**
-     * The 'session_state' parameter from the AS response.
-     */
     session_state?: string;
-
-    /**
-     * When the error is related to an http(s) request this propetty will hold the  response object
-     * from got.
-     */
-    response?: any;
+    response?: { body?: UnknownObject | Buffer } & http.IncomingMessage;
   }
 
-  /**
-   * Error class thrown when client-side response expectations/validations fail to pass.
-   * Depending on the context it may or may not have additional context-based properties like
-   * checks, jwt, params or body.
-   */
   class RPError extends Error {
     jwt?: string;
     checks?: object;
     params?: object;
     body?: object;
-    /**
-     * When the error is related to an http(s) request this propetty will hold the response object
-     * from got.
-     */
-    response?: any;
+    response?: { body?: UnknownObject | Buffer } & http.IncomingMessage;
     now?: number;
     tolerance?: number;
     nbf?: number;
@@ -925,11 +588,6 @@ export namespace errors {
   }
 }
 
-/**
- * This is very useful to allow applications to override property types
- * without making types in this package too weird
- */
-// https://github.com/Microsoft/TypeScript/issues/25987#issuecomment-441224690
 type KnownKeys<T> = {
   [K in keyof T]: string extends K ? never : number extends K ? never : K;
 } extends { [_ in keyof T]: infer U }

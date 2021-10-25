@@ -57,7 +57,7 @@
     "oidc-token-hash": "^5.0.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.4",
+    "@types/node": "^16.11.5",
     "@types/passport": "^1.0.7",
     "base64url": "^3.0.1",
     "chai": "^4.2.0",

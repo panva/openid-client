@@ -204,7 +204,7 @@ async (req: IncomingMessage) => {
   await client.refresh('token', { exchangeBody: {}, clientAssertionPayload: {} });
 
   // generics setup
-  class CustomClient extends Client {
+  class CustomClient extends issuer.Client {
     myCustomMethod() {}
 
     static async register(metadata: object, other?: RegisterOther): Promise<CustomClient> {
