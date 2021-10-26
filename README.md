@@ -42,13 +42,12 @@ openid-client.
     - self_signed_tls_client_auth
 - [RFC9101 - OAuth 2.0 JWT-Secured Authorization Request (JAR)][feature-jar]
 - [RFC9126 - OAuth 2.0 Pushed Authorization Requests (PAR)][feature-par]
-- [OpenID Connect Session Management 1.0 - draft 28][feature-rp-logout]
-  - RP-Initiated Logout
+- [OpenID Connect RP-Initiated Logout 1.0 - draft 01][feature-rp-logout]
 - [Financial-grade API Security Profile 1.0 - Part 2: Advanced (FAPI)][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
 - [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 03][feature-dpop]
 
-Updates to draft specifications (DPoP, JARM, and FAPI) are released as MINOR library versions,
+Updates to draft specifications (DPoP, JARM, etc) are released as MINOR library versions,
 if you utilize these specification implementations consider using the tilde `~` operator in your
 package.json since breaking changes may be introduced as part of these version updates. 
 
@@ -57,9 +56,8 @@ package.json since breaking changes may be introduced as part of these version u
 Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
 conforms to the following profiles of the OpenID Connect™ protocol
 
-- RP Basic, Implicit, Hybrid, Config, Dynamic, and Form Post
-- RP FAPI R/W MTLS and Private Key
-
+- Basic, Implicit, Hybrid, Config, Dynamic, and Form Post RP
+- FAPI 1.0 Advanced RP
 
 ## Sponsor
 
@@ -74,8 +72,8 @@ If you or your business use openid-client, please consider becoming a [sponsor][
 
 The library exposes what are essentially steps necessary to be done by a relying party consuming
 OpenID Connect Authorization Server responses or wrappers around requests to its endpoints. Aside
-from a generic OpenID Connect [passport][passport-url] strategy it does not expose neither express
-or koa middlewares. Those can however be built using the exposed API.
+from a generic OpenID Connect [passport][passport-url] strategy it does not expose any framework
+specific middlewares. Those can however be built using the exposed API, one such example is [express-openid-connect][]
 
 - [openid-client API Documentation][documentation]
   - [Issuer][documentation-issuer]
@@ -100,11 +98,10 @@ npm install openid-client
 
 Discover an Issuer configuration using its published .well-known endpoints
 ```js
-const { Issuer } = require('openid-client');
-Issuer.discover('https://accounts.google.com') // => Promise
-  .then(function (googleIssuer) {
-    console.log('Discovered issuer %s %O', googleIssuer.issuer, googleIssuer.metadata);
-  });
+import { Issuer } from 'openid-client';
+
+const googleIssuer = await Issuer.discover('https://accounts.google.com');
+console.log('Discovered issuer %s %O', googleIssuer.issuer, googleIssuer.metadata);
 ```
 
 ### Authorization Code Flow
@@ -135,7 +132,7 @@ to get the authorization endpoint's URL with parameters already encoded in the q
 to.
 
 ```js
-const { generators } = require('openid-client');
+import { generators } from 'openid-client';
 const code_verifier = generators.codeVerifier();
 // store the code_verifier in your framework's session mechanism, if it is a cookie based solution
 // it should be httpOnly (not readable by javascript) and encrypted.
@@ -154,28 +151,22 @@ When end-users are redirected back to your `redirect_uri` your application consu
 passes in the `code_verifier` to include it in the authorization code grant token exchange.
 ```js
 const params = client.callbackParams(req);
-client.callback('https://client.example.com/callback', params, { code_verifier }) // => Promise
-  .then(function (tokenSet) {
-    console.log('received and validated tokens %j', tokenSet);
-    console.log('validated ID Token claims %j', tokenSet.claims());
-  });
+const tokenSet = await client.callback('https://client.example.com/callback', params, { code_verifier });
+console.log('received and validated tokens %j', tokenSet);
+console.log('validated ID Token claims %j', tokenSet.claims());
 ```
 
 You can then call the `userinfo_endpoint`.
 ```js
-client.userinfo(access_token) // => Promise
-  .then(function (userinfo) {
-    console.log('userinfo %j', userinfo);
-  });
+const userinfo = await client.userinfo(access_token);
+console.log('userinfo %j', userinfo);
 ```
 
 And later refresh the tokenSet if it had a `refresh_token`.
 ```js
-client.refresh(refresh_token) // => Promise
-  .then(function (tokenSet) {
-    console.log('refreshed and validated tokens %j', tokenSet);
-    console.log('refreshed ID Token claims %j', tokenSet.claims());
-  });
+const tokenSet = await client.refresh(refresh_token);
+console.log('refreshed and validated tokens %j', tokenSet);
+console.log('refreshed ID Token claims %j', tokenSet.claims());
 ```
 
 ### Implicit ID Token Flow
@@ -202,7 +193,7 @@ to get the authorization endpoint's URL with parameters already encoded in the q
 to.
 
 ```js
-const { generators } = require('openid-client');
+import { generators } from 'openid-client';
 const nonce = generators.nonce();
 // store the nonce in your framework's session mechanism, if it is a cookie based solution
 // it should be httpOnly (not readable by javascript) and encrypted.
@@ -220,11 +211,9 @@ ID Token verification steps.
 ```js
 // assumes req.body is populated from your web framework's body parser
 const params = client.callbackParams(req);
-client.callback('https://client.example.com/callback', params, { nonce }) // => Promise
-  .then(function (tokenSet) {
-    console.log('received and validated tokens %j', tokenSet);
-    console.log('validated ID Token claims %j', tokenSet.claims());
-  });
+const tokenSet = await client.callback('https://client.example.com/callback', params, { nonce });
+console.log('received and validated tokens %j', tokenSet);
+console.log('validated ID Token claims %j', tokenSet.claims());
 ```
 
 ### Device Authorization Grant (Device Flow)
@@ -273,7 +262,7 @@ See [Client Authentication Methods (docs)][documentation-methods].
 
 #### Can I adjust the HTTP timeout?
 
-See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master/docs/README.md#customizing).
+See [Customizing (docs)][documentation-customizing].
 
 
 [openid-connect]: https://openid.net/connect/
@@ -284,7 +273,7 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
 [feature-mtls]: https://tools.ietf.org/html/rfc8705
 [feature-device-flow]: https://tools.ietf.org/html/rfc8628
-[feature-rp-logout]: https://openid.net/specs/openid-connect-session-1_0.html#RPLogout
+[feature-rp-logout]: https://openid.net/specs/openid-connect-rpinitiated-1_0-01.html
 [feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
 [feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-1_0.html
 [feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-03
@@ -305,3 +294,4 @@ See [Customizing (docs)](https://github.com/panva/node-openid-client/blob/master
 [documentation-generators]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#generators
 [documentation-methods]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
 [documentation-webfinger]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#issuerwebfingerinput
+[express-openid-connect]: https://www.npmjs.com/package/express-openid-connect
