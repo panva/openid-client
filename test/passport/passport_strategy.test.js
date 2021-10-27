@@ -5,7 +5,6 @@ const MockRequest = require('readable-mock-req');
 const { expect } = require('chai');
 
 const { Issuer, Strategy } = require('../../lib');
-const instance = require('../../lib/helpers/weak_cache');
 
 describe('OpenIDConnectStrategy', () => {
   before(function () {
@@ -232,71 +231,6 @@ describe('OpenIDConnectStrategy', () => {
     });
 
     describe('use pkce', () => {
-      it('can be set to use PKCE with boolean', function () {
-        instance(this.issuer)
-          .get('metadata')
-          .set('code_challenge_methods_supported', ['S256', 'plain']);
-        const s256 = new Strategy(
-          {
-            client: this.client,
-            usePKCE: true,
-          },
-          () => {},
-        );
-        expect(s256).to.have.property('_usePKCE', 'S256');
-
-        instance(this.issuer).get('metadata').set('code_challenge_methods_supported', ['plain']);
-        const plain = new Strategy(
-          {
-            client: this.client,
-            usePKCE: true,
-          },
-          () => {},
-        );
-        expect(plain).to.have.property('_usePKCE', 'plain');
-        ['foobar', undefined, false].forEach((invalidDiscoveryValue) => {
-          instance(this.issuer)
-            .get('metadata')
-            .set('code_challenge_methods_supported', invalidDiscoveryValue);
-          const defaultS256 = new Strategy(
-            {
-              client: this.client,
-              usePKCE: true,
-            },
-            () => {},
-          );
-          expect(defaultS256).to.have.property('_usePKCE', 'S256');
-        });
-
-        instance(this.issuer).get('metadata').set('code_challenge_methods_supported', []);
-        expect(() => {
-          new Strategy(
-            {
-              client: this.client,
-              usePKCE: true,
-            },
-            () => {},
-          );
-        }).to.throw(
-          'neither code_challenge_method supported by the client is supported by the issuer',
-        );
-
-        instance(this.issuer)
-          .get('metadata')
-          .set('code_challenge_methods_supported', ['not supported']);
-        expect(() => {
-          new Strategy(
-            {
-              client: this.client,
-              usePKCE: true,
-            },
-            () => {},
-          );
-        }).to.throw(
-          'neither code_challenge_method supported by the client is supported by the issuer',
-        );
-      });
-
       it('will throw when explictly provided value is not supported', function () {
         expect(() => {
           new Strategy(

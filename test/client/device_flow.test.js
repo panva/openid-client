@@ -69,7 +69,7 @@ describe('Device Flow features', () => {
         user_code: 'AAAA-AAAA',
         device_code: 'foobar',
         expires_in: 300,
-        interval: 6,
+        interval: 0.006,
       });
 
       const handle = await this.client.deviceAuthorization();
@@ -129,7 +129,7 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
+            interval: 0.005,
             expires_in: 300,
           },
         });
@@ -148,8 +148,6 @@ describe('Device Flow features', () => {
             access_token: 'at',
           });
 
-        instance(handle).interval = 5;
-
         const tokenset = await handle.poll();
 
         expect(tokenset).to.be.instanceOf(TokenSet);
@@ -163,7 +161,7 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
+            interval: 0.005,
             expires_in: 300,
           },
         });
@@ -184,11 +182,7 @@ describe('Device Flow features', () => {
             access_token: 'at',
           });
 
-        instance(handle).interval = 5;
-
         const tokenset = await handle.poll();
-
-        expect(instance(handle).interval).to.eql(5005);
 
         expect(tokenset).to.be.instanceOf(TokenSet);
       });
@@ -200,7 +194,7 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
+            interval: 0.005,
             expires_in: 300,
           },
         });
@@ -221,11 +215,7 @@ describe('Device Flow features', () => {
             access_token: 'at',
           });
 
-        instance(handle).interval = 5;
-
         const tokenset = await handle.poll();
-
-        expect(instance(handle).interval).to.eql(5);
 
         expect(tokenset).to.be.instanceOf(TokenSet);
       });
@@ -237,7 +227,7 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
+            interval: 0.005,
             expires_in: 300,
           },
         });
@@ -247,8 +237,6 @@ describe('Device Flow features', () => {
           refresh_token: 'bar',
           access_token: 'tokenValue',
         });
-
-        instance(handle).interval = 5;
 
         return handle.poll().then(fail, (err) => {
           expect(err.name).to.eql('RPError');
@@ -263,7 +251,7 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
+            interval: 0.005,
             expires_in: 300,
           },
         });
@@ -284,8 +272,6 @@ describe('Device Flow features', () => {
             error_description: 'bad things are happening',
           });
 
-        instance(handle).interval = 5;
-
         return handle.poll().then(fail, (err) => {
           expect(err.name).to.equal('OPError');
           expect(err).to.have.property('error', 'server_error');
@@ -300,13 +286,12 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
-            expires_in: 300,
+            interval: 0.005,
+            expires_in: 1,
           },
         });
 
-        instance(handle).interval = 5;
-        instance(handle).expires_at = Math.floor(Date.now() / 1000);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         return handle.poll().then(fail, (err) => {
           expect(err.name).to.equal('RPError');
@@ -324,7 +309,7 @@ describe('Device Flow features', () => {
           verification_uri: 'https://op.example.com/device',
           user_code: 'AAAA-AAAA',
           device_code: 'foobar',
-          interval: 5,
+          interval: 0.005,
           expires_in: 300,
         },
       });
@@ -346,7 +331,7 @@ describe('Device Flow features', () => {
           verification_uri: 'https://op.example.com/device',
           user_code: 'AAAA-AAAA',
           device_code: 'foobar',
-          interval: 5,
+          interval: 0.005,
           expires_in: 300,
         },
       });
@@ -373,7 +358,7 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
+            interval: 0.005,
             expires_in: 300,
           },
         });
@@ -396,7 +381,7 @@ describe('Device Flow features', () => {
             verification_uri: 'https://op.example.com/device',
             user_code: 'AAAA-AAAA',
             device_code: 'foobar',
-            interval: 5,
+            interval: 0.005,
             expires_in: 300,
           },
         });
