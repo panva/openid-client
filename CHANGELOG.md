@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/panva/node-openid-client/compare/v4.9.1...v5.0.0) (2021-10-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* The 'query' way of passing access token to userinfo
+was removed.
+* Access Token is now asserted to be present for the
+userinfo call.
+* The registry export was removed.
+* FAPIClient is renamed to FAPI1Client
+* FAPI1Client has default algorithms set to PS256 rather
+than RS256
+* FAPI1Client has default tls_client_certificate_bound_access_tokens
+set to true
+* FAPI1Client has default response_types set to
+`id_token code` and grant_types accordingly
+* FAPI1Client has no token_endpoint_auth_method set,
+one must be set explicitly
+* Client methods `unpackAggregatedClaims` and `fetchDistributedClaims`
+were removed with no replacement.
+* DPoP option inputs must be a private crypto.KeyObject
+or a valid crypto.createPrivateKey input.
+* Issuer.prototype.keystore is now private API
+* HTTP(S) request customization now only recognizes the
+following options 'agent', 'ca', 'cert', 'crl', 'headers', 'key',
+'lookup', 'passphrase', 'pfx', and 'timeout'. These are standard node
+http/https module request options, got-library specific options such
+as 'followRedirect', 'retry', or 'throwHttpErrors' are no longer
+recognized.
+* The arguments inside individual HTTP request
+customization changed, first argument is now an instance of
+[URL](https://nodejs.org/api/url.html#class-url), the http request options object is passed in as a second
+argument.
+* The `response` property attached to some RPError or
+OPError instances is now an instance of [http.IncomingMessage](https://nodejs.org/api/http.html#class-httpincomingmessage). Its
+body is available on its `body` property as either JSON if it could be
+parsed, or a Buffer if it failed to pass as JSON.
+* Drop support for Node.js v10.x
+* Only Node.js LTS releases Codename Erbium (^12.19.0)
+and newer are supported. Currently this means ^12.19.0 (Erbium),
+^14.15.0 (Fermium), and ^16.13.0 (Gallium).
+* Issuer.discover will no longer attempt to load
+`/.well-known/oauth-authorization-server`. To load such discovery
+documents pass full well-known URL to Issuer.discover.
+
+### Refactor
+
+* DPoP input must be a private KeyObject or valid crypto.createPrivateKey input ([d69af6f](https://github.com/panva/node-openid-client/commit/d69af6fe28eb93dca8babad520d5e763aff7e6ff))
+* FAPIClient is renamed to FAPI1Client ([59a4e73](https://github.com/panva/node-openid-client/commit/59a4e73b739c1430cd23e6c71dd05b16fd3970dd))
+* Issuer.prototype.keystore is now private API ([0c23248](https://github.com/panva/node-openid-client/commit/0c23248fe70a1e6940603ae8c21641ae162f3e51))
+* only use the native http(s) client ([83376ac](https://github.com/panva/node-openid-client/commit/83376ac017704c57aee7d1b7e5397bfb549cb970))
+* remove automatic lookup of /.well-known/oauth-authorization-server ([fc87d2b](https://github.com/panva/node-openid-client/commit/fc87d2bcb3de2a389f5bbe669779cb671325d69e))
+* remove client.unpackAggregatedClaims and client.fetchDistributedClaims ([b7f261f](https://github.com/panva/node-openid-client/commit/b7f261fdf815f99b190fe5b7604fb9e9653be98d))
+* remove Registry public API export ([6b91d58](https://github.com/panva/node-openid-client/commit/6b91d58baddf1ba73a737c52c3f66d7c63892f03))
+* remove the 'query' option for userinfo, assert access token ([eb9d139](https://github.com/panva/node-openid-client/commit/eb9d139ee3126b952615da303505a754cd1e2d95))
+* update Node.js semver support matrix ([8b3044e](https://github.com/panva/node-openid-client/commit/8b3044eb5582e00af14f7a19dd40e88d370ca004))
+
 ## [4.9.1](https://github.com/panva/node-openid-client/compare/v4.9.0...v4.9.1) (2021-10-13)
 
 
