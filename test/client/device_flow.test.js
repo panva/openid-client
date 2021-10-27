@@ -35,6 +35,7 @@ describe('Device Flow features', () => {
   describe('client.deviceAuthorization()', () => {
     it('returns a handle (without optional response parameters)', async function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             client_id: 'client',
@@ -135,6 +136,7 @@ describe('Device Flow features', () => {
         });
 
         nock('https://op.example.com')
+          .matchHeader('Accept', 'application/json')
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               client_id: 'client',

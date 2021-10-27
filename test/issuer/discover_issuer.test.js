@@ -49,6 +49,7 @@ describe('Issuer#discover()', () => {
   describe('/.well-known/openid-configuration', function () {
     it('accepts and assigns the discovered metadata', function () {
       nock('https://op.example.com', { allowUnmocked: true })
+        .matchHeader('Accept', 'application/json')
         .get('/.well-known/openid-configuration')
         .reply(200, success);
 

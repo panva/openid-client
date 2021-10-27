@@ -34,7 +34,10 @@ describe('Issuer', () => {
     });
 
     before(function () {
-      nock('https://op.example.com').get('/certs').reply(200, this.keystore.toJWKS());
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/certs')
+        .reply(200, this.keystore.toJWKS());
 
       return issuerInternal.keystore.call(this.issuer);
     });

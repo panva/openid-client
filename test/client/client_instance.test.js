@@ -422,6 +422,7 @@ describe('Client', () => {
 
     it('does an authorization_code grant with code and redirect_uri', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             code: 'codeValue',
@@ -448,9 +449,12 @@ describe('Client', () => {
         default_max_age: 300,
       });
 
-      nock('https://op.example.com').post('/token').reply(200, {
-        id_token: 'foobar',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/token')
+        .reply(200, {
+          id_token: 'foobar',
+        });
 
       sinon.spy(client, 'validateIdToken');
 
@@ -551,6 +555,7 @@ describe('Client', () => {
         );
 
         nock('https://op.example.com')
+          .matchHeader('Accept', 'application/json')
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -608,6 +613,7 @@ describe('Client', () => {
         );
 
         nock('https://op.example.com')
+          .matchHeader('Accept', 'application/json')
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -810,6 +816,7 @@ describe('Client', () => {
 
     it('does an authorization_code grant with code and redirect_uri', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             code: 'codeValue',
@@ -865,6 +872,7 @@ describe('Client', () => {
         );
 
         nock('https://op.example.com')
+          .matchHeader('Accept', 'application/json')
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -922,6 +930,7 @@ describe('Client', () => {
         );
 
         nock('https://op.example.com')
+          .matchHeader('Accept', 'application/json')
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -1160,6 +1169,7 @@ describe('Client', () => {
 
     it('does an refresh_token grant with refresh_token', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             refresh_token: 'refreshValue',
@@ -1175,9 +1185,12 @@ describe('Client', () => {
     });
 
     it('returns a TokenSet', function () {
-      nock('https://op.example.com').post('/token').reply(200, {
-        access_token: 'tokenValue',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/token')
+        .reply(200, {
+          access_token: 'tokenValue',
+        });
 
       return this.client.refresh('refreshValue', {}).then((set) => {
         expect(set).to.be.instanceof(TokenSet);
@@ -1187,6 +1200,7 @@ describe('Client', () => {
 
     it('can take a TokenSet', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             refresh_token: 'refreshValue',
@@ -1210,6 +1224,7 @@ describe('Client', () => {
 
     it('passes ID Token validations when ID Token is returned', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .post('/token') // to make sure filteringRequestBody works
         .reply(200, {
           access_token: 'present',
@@ -1248,6 +1263,7 @@ describe('Client', () => {
 
     it('rejects when returned ID Token sub does not match the one passed in', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .post('/token') // to make sure filteringRequestBody works
         .reply(200, {
           access_token: 'present',
@@ -1335,6 +1351,7 @@ describe('Client', () => {
 
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'Bearer tokenValue')
         .get('/me')
         .reply(200, {});
@@ -1366,6 +1383,7 @@ describe('Client', () => {
 
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'DPoP tokenValue')
         .get('/me')
         .reply(200, {});
@@ -1383,6 +1401,7 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'Bearer tokenValue')
         .get('/me')
         .reply(200, {
@@ -1410,6 +1429,7 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'DPoP tokenValue')
         .get('/me')
         .reply(200, {
@@ -1437,9 +1457,12 @@ describe('Client', () => {
         id_token_signed_response_alg: 'none',
       });
 
-      nock('https://op.example.com').get('/me').reply(200, {
-        sub: 'different-subject',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/me')
+        .reply(200, {
+          sub: 'different-subject',
+        });
 
       return client
         .userinfo(
@@ -1483,7 +1506,11 @@ describe('Client', () => {
         token_endpoint_auth_method: 'none',
       });
 
-      nock('https://op.example.com').matchHeader('Content-Type', '').post('/me').reply(200, {});
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .matchHeader('Content-Type', '')
+        .post('/me')
+        .reply(200, {});
 
       return client.userinfo('tokenValue', { method: 'POST' }).then(() => {
         expect(nock.isDone()).to.be.true;
@@ -1498,6 +1525,7 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
@@ -1520,6 +1548,7 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
@@ -1549,6 +1578,7 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'Bearer tokenValue')
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .filteringRequestBody(function (body) {
@@ -1577,6 +1607,7 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'Bearer tokenValue')
         .get('/me?foo=bar')
         .reply(200, {});
@@ -1611,10 +1642,13 @@ describe('Client', () => {
         token_endpoint_auth_method: 'none',
       });
 
-      nock('https://op.example.com').get('/me').reply(401, {
-        error: 'invalid_token',
-        error_description: 'bad things are happening',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/me')
+        .reply(401, {
+          error: 'invalid_token',
+          error_description: 'bad things are happening',
+        });
 
       return client.userinfo('foo').then(fail, function (error) {
         expect(error.name).to.equal('OPError');
@@ -1630,10 +1664,13 @@ describe('Client', () => {
         token_endpoint_auth_method: 'none',
       });
 
-      nock('https://op.example.com').get('/me').reply(401, 'Unauthorized', {
-        'WWW-Authenticate':
-          'Bearer error="invalid_token", error_description="bad things are happening"',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/me')
+        .reply(401, 'Unauthorized', {
+          'WWW-Authenticate':
+            'Bearer error="invalid_token", error_description="bad things are happening"',
+        });
 
       return client.userinfo('foo').then(fail, function (error) {
         expect(error.name).to.equal('OPError');
@@ -1649,7 +1686,10 @@ describe('Client', () => {
         token_endpoint_auth_method: 'none',
       });
 
-      nock('https://op.example.com').get('/me').reply(500, 'Internal Server Error');
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/me')
+        .reply(500, 'Internal Server Error');
 
       return client.userinfo('foo').then(fail, function (error) {
         expect(error.name).to.equal('OPError');
@@ -1665,7 +1705,10 @@ describe('Client', () => {
         token_endpoint_auth_method: 'none',
       });
 
-      nock('https://op.example.com').get('/me').reply(200, '{"notavalid"}');
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/me')
+        .reply(200, '{"notavalid"}');
 
       return client.userinfo('foo').then(fail, function (error) {
         expect(error.message).to.eql('Unexpected token } in JSON at position 12');
@@ -1753,6 +1796,7 @@ describe('Client', () => {
   describe('#introspect', function () {
     it('posts the token in a body and returns the parsed response', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             token: 'tokenValue',
@@ -1779,6 +1823,7 @@ describe('Client', () => {
 
     it('posts the token and a hint in a body', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             client_id: 'identifier',
@@ -1816,10 +1861,13 @@ describe('Client', () => {
     });
 
     it('is rejected with OPError upon oidc error', function () {
-      nock('https://op.example.com').post('/token/introspect').reply(500, {
-        error: 'server_error',
-        error_description: 'bad things are happening',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/token/introspect')
+        .reply(500, {
+          error: 'server_error',
+          error_description: 'bad things are happening',
+        });
 
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
@@ -1837,7 +1885,10 @@ describe('Client', () => {
     });
 
     it('is rejected with when non 200 is returned', function () {
-      nock('https://op.example.com').post('/token/introspect').reply(500, 'Internal Server Error');
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/token/introspect')
+        .reply(500, 'Internal Server Error');
 
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
@@ -1855,7 +1906,10 @@ describe('Client', () => {
     });
 
     it('is rejected with JSON.parse error upon invalid response', function () {
-      nock('https://op.example.com').post('/token/introspect').reply(200, '{"notavalid"}');
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/token/introspect')
+        .reply(200, '{"notavalid"}');
 
       const issuer = new Issuer({
         introspection_endpoint: 'https://op.example.com/token/introspect',
@@ -2353,7 +2407,11 @@ describe('Client', () => {
     });
 
     before(function () {
-      nock('https://op.example.com').persist().get('/certs').reply(200, this.keystore.toJWKS());
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .persist()
+        .get('/certs')
+        .reply(200, this.keystore.toJWKS());
     });
 
     after(nock.cleanAll);
@@ -3324,16 +3382,19 @@ describe('Client', () => {
         userinfo_endpoint: 'https://op.example.com/me',
       });
 
-      nock('https://op.example.com').post('/token').reply(200, {
-        access_token:
-          'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
-        expires_at: 1473083613,
-        id_token:
-          'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Inc2Ukx4a3phWDV5cGtwU1pMemJVbkVfWjh4WEYtS3R2OXc0Tno0MVZFeVEiLCJ5IjoiUTFwM1l6a3h3VHhFZ1lnZ0szNFpKcnkyT1JCMGloYXEyOXdtSUVqTnZNWSJ9fQ..EqZ4s3iLxrVhuZwF4NDa7A.tkg5i4LQXECXNFXh1j9yo5TjhhIlrzp_BZbdEI18f2jINVIwXu08eRrpQAI-OAaO4MbxiX73fLD_jDplHIUz5NDxiuxuQT2DCzynK66Tqs76OELATBAkW7FUGDJPWjotXXuUzNBgvs0xKz8q6a04udqfATH4-tZkyVLkNS0Z8mpAejRdkacYfvdSSJk842e3qHsOowlX7Tiu7OY60dBkKXO7hrPtvsX2XdseREYnA_A3P4jNdIhWhZMUxR2X-FSgChzwRIFPFRJsp1xiHkfxfHaPjHPmj3JlDPlubNrUcz-2WWxeBd9qVjqlAyqRorNr30KwCwVTaIHwfLrTjXzFfVOJBXAdIJ7FjX7lUbnc9DjcV6cNN2IdHTET7aoC6ysfGYLAwVtN9sLXRgeJXdl6-56f0eg_ZbLbOWLj3qJPuDSTVu7r6L3sebNx4uBTzAu-e8i1uukw6e63AHzVa3Z57tTGtzaFHogDH0f_JuQRhaJcwDJdoJKmksVT33W6mxza0WttqXXj9NXzfJUdRs3B9vpf1h9Yvol9Rlii2OmwLGC17sZe-W2NX1ibS87ZQiEFzuLWfmU4ygagg7O7A5fJ4Olo_aY6Ow7qqggIjAhL3J24lsMtlVR3VGKWsmvtW4eoojy6nnfkcJreSHAjPby9c4_giSic_MCSe9K1jU2Kyftj-XBJD5DSZlt97ZT9NA4aI-DXBs6Mx14dXrZ15BYDVxvYU-YmUnJpASueGB7bp5TMjE2YC2cEPsHgiJnU1Yi0.KMTcJ07KhD0-g4V89Z0PBg',
-        refresh_token:
-          'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
-        token_type: 'Bearer',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/token')
+        .reply(200, {
+          access_token:
+            'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
+          expires_at: 1473083613,
+          id_token:
+            'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Inc2Ukx4a3phWDV5cGtwU1pMemJVbkVfWjh4WEYtS3R2OXc0Tno0MVZFeVEiLCJ5IjoiUTFwM1l6a3h3VHhFZ1lnZ0szNFpKcnkyT1JCMGloYXEyOXdtSUVqTnZNWSJ9fQ..EqZ4s3iLxrVhuZwF4NDa7A.tkg5i4LQXECXNFXh1j9yo5TjhhIlrzp_BZbdEI18f2jINVIwXu08eRrpQAI-OAaO4MbxiX73fLD_jDplHIUz5NDxiuxuQT2DCzynK66Tqs76OELATBAkW7FUGDJPWjotXXuUzNBgvs0xKz8q6a04udqfATH4-tZkyVLkNS0Z8mpAejRdkacYfvdSSJk842e3qHsOowlX7Tiu7OY60dBkKXO7hrPtvsX2XdseREYnA_A3P4jNdIhWhZMUxR2X-FSgChzwRIFPFRJsp1xiHkfxfHaPjHPmj3JlDPlubNrUcz-2WWxeBd9qVjqlAyqRorNr30KwCwVTaIHwfLrTjXzFfVOJBXAdIJ7FjX7lUbnc9DjcV6cNN2IdHTET7aoC6ysfGYLAwVtN9sLXRgeJXdl6-56f0eg_ZbLbOWLj3qJPuDSTVu7r6L3sebNx4uBTzAu-e8i1uukw6e63AHzVa3Z57tTGtzaFHogDH0f_JuQRhaJcwDJdoJKmksVT33W6mxza0WttqXXj9NXzfJUdRs3B9vpf1h9Yvol9Rlii2OmwLGC17sZe-W2NX1ibS87ZQiEFzuLWfmU4ygagg7O7A5fJ4Olo_aY6Ow7qqggIjAhL3J24lsMtlVR3VGKWsmvtW4eoojy6nnfkcJreSHAjPby9c4_giSic_MCSe9K1jU2Kyftj-XBJD5DSZlt97ZT9NA4aI-DXBs6Mx14dXrZ15BYDVxvYU-YmUnJpASueGB7bp5TMjE2YC2cEPsHgiJnU1Yi0.KMTcJ07KhD0-g4V89Z0PBg',
+          refresh_token:
+            'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
+          token_type: 'Bearer',
+        });
 
       const client = new issuer.Client(
         {
@@ -3366,16 +3427,19 @@ describe('Client', () => {
         token_endpoint: 'https://op.example.com/token',
       });
 
-      nock('https://op.example.com').post('/token').reply(200, {
-        access_token:
-          'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
-        expires_at: 1473083613,
-        id_token:
-          'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Ik8yQzZHZnBFVGgyUDBCWVNSN1dtWDZXVTBiV1FXcVZud1lwRGVwbVI1NVkiLCJ5IjoiVG5pc0dTSWZMQUxNYzZHVUlydVBmeWFzMm9mQ3JPV3llZ2EyMW5pZG1KTSJ9fQ..RiTOrMAlM4pq6RfwnitLKA.oSERr76vgdbiYm1yQZfkwPonBzdrheypkueK9S5dRVodZDf1BKTr5-eM2VBgjYJ2R8KS5EAAJeJBxnlno3AnfO242ZQbqJP144S8sCj0lZmQoZJ6VzJavADXAf4LiprDblzV8J64pBnmvwjQN9Mk_KKNA34QoAebJZEP9A7RCLUck_oqb7vsLTM_LUyXyXxm7QiWUPdnUCzCCqcJW3SysFeJo1VZTZCwFxK0zrcja-vv9SUSoS7yvQuGRVXS3L08BglTN7SLWVujsPMJWbxmj_zYhoy14DQIckoBU7ver-2PoJOukl6m4yaY9n9LWZ5mUGDb3PbnwuFYxb1rDm2EmvlkhbXFdIuRciIOQTqgeei0TU61Ff_Vt0tinZNThYMQgX4DFc7HILBU7lMwwVUMdYqamE3suRr3qUIlD2RdSNiO87jxaiDFrosGU1fVVulcGmkFN4DX5kyd8lxMs33yPS1uO0G_NViFe-fwxd95JAYXOEiofnHFIYuHgrxfioBMoojYQl8PgLZFj8yxzGVflOyzJQgiYQA-BSAPI1bL2P_J2Jlnhdtv3cJ-bdG1pcwAa6zyzwSEXU5i6p9_TGs4nM15p-QlC3mgtjKkLtC64OL0ucc2Frb6dzKyZTOePu6PcecafNucSaMq1ERhRmQOdigDj1nwHUYs3akx31CHp-eXa9jctuy_C5l_YbBJOiUViZK2dJFNuMJQnMhPcSf6wQdVTQmXCxsSnRN158XYDhgVqqe4U6CROsKiCRQSKqpZ.Yo7zj4wMR89oWSH5Twfzzg',
-        refresh_token:
-          'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
-        token_type: 'Bearer',
-      });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/token')
+        .reply(200, {
+          access_token:
+            'eyJraW5kIjoiQWNjZXNzVG9rZW4iLCJqdGkiOiJlMDk5YTI1ZC02MzA0LTQwMGItOTdhYi1hOTJhMzMzOTBlODgiLCJpYXQiOjE0NzMwNzY0MTMsImV4cCI6MTQ3MzA4MzYxMywiaXNzIjoiaHR0cHM6Ly9ndWFyZGVkLWNsaWZmcy04NjM1Lmhlcm9rdWFwcC5jb20vb3AifQ.p_r4KvAu6lEY6JpGmRIGCkRRrovGeJcDfOw3O_gFkPRaY7bcJjNDUPlfY7_nyp3bWyqtveq55ozTZuddUL01KET7bKgxMq-dQ2SxGBvgN3KtHIRBud7Bw8Ax98YkiBKJJXC8xF00VZkkX-ZcUyXptPkUpBm0zeN6jmWmyFX-2QrbclLS8ZEK2Poc_y5PdNAtCCOTBfnq6roxzVQ5lM_aMQaSuPVd-Og6E_jBE6OE9oB4ikFa4S7EvZvFVDpGMLtUjxOazTURbqWY6OnuhuAiP6WZc1FxfQod462IqPERzl2qVJH9qQNr-iLuVLt_bzauHg33v1koTrdfETyoRAZH5w',
+          expires_at: 1473083613,
+          id_token:
+            'eyJhbGciOiJFQ0RILUVTIiwiZW5jIjoiQTEyOENCQy1IUzI1NiIsImVwayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6Ik8yQzZHZnBFVGgyUDBCWVNSN1dtWDZXVTBiV1FXcVZud1lwRGVwbVI1NVkiLCJ5IjoiVG5pc0dTSWZMQUxNYzZHVUlydVBmeWFzMm9mQ3JPV3llZ2EyMW5pZG1KTSJ9fQ..RiTOrMAlM4pq6RfwnitLKA.oSERr76vgdbiYm1yQZfkwPonBzdrheypkueK9S5dRVodZDf1BKTr5-eM2VBgjYJ2R8KS5EAAJeJBxnlno3AnfO242ZQbqJP144S8sCj0lZmQoZJ6VzJavADXAf4LiprDblzV8J64pBnmvwjQN9Mk_KKNA34QoAebJZEP9A7RCLUck_oqb7vsLTM_LUyXyXxm7QiWUPdnUCzCCqcJW3SysFeJo1VZTZCwFxK0zrcja-vv9SUSoS7yvQuGRVXS3L08BglTN7SLWVujsPMJWbxmj_zYhoy14DQIckoBU7ver-2PoJOukl6m4yaY9n9LWZ5mUGDb3PbnwuFYxb1rDm2EmvlkhbXFdIuRciIOQTqgeei0TU61Ff_Vt0tinZNThYMQgX4DFc7HILBU7lMwwVUMdYqamE3suRr3qUIlD2RdSNiO87jxaiDFrosGU1fVVulcGmkFN4DX5kyd8lxMs33yPS1uO0G_NViFe-fwxd95JAYXOEiofnHFIYuHgrxfioBMoojYQl8PgLZFj8yxzGVflOyzJQgiYQA-BSAPI1bL2P_J2Jlnhdtv3cJ-bdG1pcwAa6zyzwSEXU5i6p9_TGs4nM15p-QlC3mgtjKkLtC64OL0ucc2Frb6dzKyZTOePu6PcecafNucSaMq1ERhRmQOdigDj1nwHUYs3akx31CHp-eXa9jctuy_C5l_YbBJOiUViZK2dJFNuMJQnMhPcSf6wQdVTQmXCxsSnRN158XYDhgVqqe4U6CROsKiCRQSKqpZ.Yo7zj4wMR89oWSH5Twfzzg',
+          refresh_token:
+            'eyJraW5kIjoiUmVmcmVzaFRva2VuIiwianRpIjoiMzhmZTY1NmItNjYyMC00MzdiLWJmY2YtZTRjNzRhZTRiNjMzIiwibm9uY2UiOiJjNjQ1ZmZmYTQwMDc1NTMyZWYyOWEyZWE2MjdjZmEzNyIsImlhdCI6MTQ3MzA3NjQxMywiZXhwIjoxNDc1NjY4NDEzLCJpc3MiOiJodHRwczovL2d1YXJkZWQtY2xpZmZzLTg2MzUuaGVyb2t1YXBwLmNvbS9vcCJ9.hySAknc2L2ngSoTiRxUTJLOUxKmyRTUzLsRlGKip4OXNYXre9QEDH8z9c8NKBHdnRbBxg8Jo45cZbDb-5bZ6mt5noDmT42xtsCOiN25Is9SsRSzVarIDiwyqXVlTojh5XuKPulK4Ji6vp2jYUZNoVnlsA7G96cuHWVAqZd5e8GBb9YlUNZ5zSX6aggFgTGDJs46O42_g4JULB8cAb9MZAzcZOORGpmRIPpSKAZFgT2_5yW-yqh0f66JaAQUtW9TKoAsdttV4NnivzJYeyR0hlgEeKzo9zNuTkJedXbjRAIP6ybk9ITcZveuJ11CFsyHZcNd_0tZuiAlvUpJIeHK0aA',
+          token_type: 'Bearer',
+        });
 
       const client = new issuer.Client(
         {
@@ -3629,7 +3693,10 @@ describe('Client', () => {
     });
 
     before(function () {
-      nock('https://op.example.com').get('/certs').reply(200, this.keystore.toJWKS());
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/certs')
+        .reply(200, this.keystore.toJWKS());
 
       return issuerInternal.keystore.call(this.issuer);
     });
@@ -3932,7 +3999,10 @@ describe('Client', () => {
     });
 
     before(function () {
-      nock('https://op.example.com').get('/certs').reply(200, this.keystore.toJWKS());
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .get('/certs')
+        .reply(200, this.keystore.toJWKS());
 
       return issuerInternal.keystore.call(this.issuer);
     });
@@ -3998,6 +4068,7 @@ describe('Client', () => {
 
     it('performs an authenticated post and returns the response', async function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             client_id: 'identifier',
@@ -4020,6 +4091,7 @@ describe('Client', () => {
 
     it('handles incorrect status code', async function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .post('/par')
         .reply(200, { expires_in: 60, request_uri: 'urn:ietf:params:oauth:request_uri:random' });
 
@@ -4031,6 +4103,7 @@ describe('Client', () => {
 
     it('handles request being part of the params', async function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             client_id: 'identifier',
@@ -4045,6 +4118,7 @@ describe('Client', () => {
 
     it('rejects with OPError when part of the response', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .post('/par')
         .reply(400, { error: 'invalid_request', error_description: 'description' });
 
@@ -4056,7 +4130,10 @@ describe('Client', () => {
     });
 
     it('rejects with RPError when request_uri is missing from the response', function () {
-      nock('https://op.example.com').post('/par').reply(201, { expires_in: 60 });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/par')
+        .reply(201, { expires_in: 60 });
 
       return this.client.pushedAuthorizationRequest().then(fail, (error) => {
         expect(error).to.be.instanceof(RPError);
@@ -4069,7 +4146,10 @@ describe('Client', () => {
     });
 
     it('rejects with RPError when request_uri is not a string', function () {
-      nock('https://op.example.com').post('/par').reply(201, { request_uri: null, expires_in: 60 });
+      nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
+        .post('/par')
+        .reply(201, { request_uri: null, expires_in: 60 });
 
       return this.client.pushedAuthorizationRequest().then(fail, (error) => {
         expect(error).to.be.instanceof(RPError);
@@ -4083,6 +4163,7 @@ describe('Client', () => {
 
     it('rejects with RPError when expires_in is missing from the response', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .post('/par')
         .reply(201, { request_uri: 'urn:ietf:params:oauth:request_uri:random' });
 
@@ -4098,6 +4179,7 @@ describe('Client', () => {
 
     it('rejects with RPError when expires_in is not a string', function () {
       nock('https://op.example.com')
+        .matchHeader('Accept', 'application/json')
         .post('/par')
         .reply(201, { expires_in: null, request_uri: 'urn:ietf:params:oauth:request_uri:random' });
 

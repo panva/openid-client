@@ -11,10 +11,13 @@ const issuer = new Issuer();
 
 describe('Client#fromUri()', () => {
   it('accepts and assigns the discovered metadata', function () {
-    nock('https://op.example.com').get('/client/identifier').reply(200, {
-      client_id: 'identifier',
-      client_secret: 'secure',
-    });
+    nock('https://op.example.com')
+      .matchHeader('Accept', 'application/json')
+      .get('/client/identifier')
+      .reply(200, {
+        client_id: 'identifier',
+        client_secret: 'secure',
+      });
 
     return issuer.Client.fromUri('https://op.example.com/client/identifier').then(function (
       client,

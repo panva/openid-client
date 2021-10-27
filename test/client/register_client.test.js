@@ -23,10 +23,13 @@ describe('Client#register', () => {
   });
 
   it('accepts and assigns the registered metadata', function () {
-    nock('https://op.example.com').post('/client/registration').reply(201, {
-      client_id: 'identifier',
-      client_secret: 'secure',
-    });
+    nock('https://op.example.com')
+      .matchHeader('Accept', 'application/json')
+      .post('/client/registration')
+      .reply(201, {
+        client_id: 'identifier',
+        client_secret: 'secure',
+      });
 
     return issuer.Client.register({}).then(function (client) {
       expect(client).to.be.instanceof(issuer.Client);

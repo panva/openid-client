@@ -53,6 +53,7 @@ describe('Issuer#webfinger()', () => {
 
   it('verifies the webfinger responds with an issuer', function () {
     nock('https://opemail.example.com')
+      .matchHeader('Accept', 'application/json')
       .get('/.well-known/webfinger')
       .query(() => true)
       .reply(200, {
