@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.2](https://github.com/panva/node-openid-client/compare/v5.0.1...v5.0.2) (2021-10-28)
+
+
+### Bug Fixes
+
+* explicitly set content-length again ([956c34b](https://github.com/panva/node-openid-client/commit/956c34b3742bccd300c19d29db1e5e8109a3b2d7)), closes [#420](https://github.com/panva/node-openid-client/issues/420)
+
 ## [5.0.1](https://github.com/panva/node-openid-client/compare/v5.0.0...v5.0.1) (2021-10-27)
 
 
