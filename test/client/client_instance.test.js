@@ -1,4 +1,5 @@
 const url = require('url');
+const { isNumber, isUndefined } = require('util');
 const querystring = require('querystring');
 const stdhttp = require('http');
 
@@ -556,6 +557,8 @@ describe('Client', () => {
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
+          .matchHeader('Content-Length', isNumber)
+          .matchHeader('Transfer-Encoding', isUndefined)
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -614,6 +617,8 @@ describe('Client', () => {
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
+          .matchHeader('Content-Length', isNumber)
+          .matchHeader('Transfer-Encoding', isUndefined)
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -873,6 +878,8 @@ describe('Client', () => {
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
+          .matchHeader('Content-Length', isNumber)
+          .matchHeader('Transfer-Encoding', isUndefined)
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -931,6 +938,8 @@ describe('Client', () => {
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
+          .matchHeader('Content-Length', isNumber)
+          .matchHeader('Transfer-Encoding', isUndefined)
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               code: 'foo',
@@ -1351,7 +1360,6 @@ describe('Client', () => {
 
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
-        .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'Bearer tokenValue')
         .get('/me')
         .reply(200, {});
@@ -1382,7 +1390,6 @@ describe('Client', () => {
       });
 
       nock('https://op.example.com')
-        .matchHeader('Accept', 'application/json')
         .matchHeader('Accept', 'application/json')
         .matchHeader('Authorization', 'DPoP tokenValue')
         .get('/me')

@@ -1,3 +1,5 @@
+const { isUndefined } = require('util');
+
 const { expect } = require('chai');
 const nock = require('nock');
 const jose2 = require('jose2');
@@ -245,7 +247,11 @@ describe('DPoP', () => {
   });
 
   it('is enabled for requestResource', async function () {
-    nock('https://rs.example.com').post('/resource').reply(200, { sub: 'foo' });
+    nock('https://rs.example.com')
+      .matchHeader('Transfer-Encoding', isUndefined)
+      .matchHeader('Content-Length', isUndefined)
+      .post('/resource')
+      .reply(200, { sub: 'foo' });
 
     await this.client.requestResource('https://rs.example.com/resource', 'foo', {
       DPoP: privateKey,

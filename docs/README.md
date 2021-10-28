@@ -344,7 +344,7 @@ will also be checked to match the on in the TokenSet's ID Token.
 - `options`: `<Object>`
   - `method`: `<string>` The HTTP method to use for the request 'GET' or 'POST'. **Default:** 'GET'
   - `via`: `<string>` The mechanism to use to attach the Access Token to the request. Valid values
-    are `header`, `body`, or `query`. **Default:** 'header'.
+    are `header` or `body`. **Default:** 'header'.
   - `tokenType`: `<string>` The token type as the Authorization Header scheme. **Default:** 'Bearer'
     or the `token_type` property from a passed in TokenSet.
   - `params`: `<Object>` additional parameters to send with the userinfo request (as query string
