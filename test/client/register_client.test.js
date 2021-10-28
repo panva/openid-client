@@ -1,3 +1,5 @@
+const { isNumber, isUndefined } = require('util');
+
 const { expect } = require('chai');
 const jose2 = require('jose2');
 const sinon = require('sinon');
@@ -25,6 +27,8 @@ describe('Client#register', () => {
   it('accepts and assigns the registered metadata', function () {
     nock('https://op.example.com')
       .matchHeader('Accept', 'application/json')
+      .matchHeader('Content-Length', isNumber)
+      .matchHeader('Transfer-Encoding', isUndefined)
       .post('/client/registration')
       .reply(201, {
         client_id: 'identifier',

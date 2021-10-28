@@ -1,4 +1,5 @@
 const querystring = require('querystring');
+const { isNumber, isUndefined } = require('util');
 
 const { expect } = require('chai');
 const nock = require('nock');
@@ -36,6 +37,8 @@ describe('Device Flow features', () => {
     it('returns a handle (without optional response parameters)', async function () {
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
+        .matchHeader('Content-Length', isNumber)
+        .matchHeader('Transfer-Encoding', isUndefined)
         .filteringRequestBody(function (body) {
           expect(querystring.parse(body)).to.eql({
             client_id: 'client',
@@ -137,6 +140,8 @@ describe('Device Flow features', () => {
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
+          .matchHeader('Content-Length', isNumber)
+          .matchHeader('Transfer-Encoding', isUndefined)
           .filteringRequestBody(function (body) {
             expect(querystring.parse(body)).to.eql({
               client_id: 'client',
