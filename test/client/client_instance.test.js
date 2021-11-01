@@ -1332,7 +1332,7 @@ describe('Client', () => {
     const issuer = new Issuer();
     const client = new issuer.Client({ client_id: 'identifier', client_secret: 'rj_JR' });
 
-    expect(client.secretForAlg('HS256')).to.have.lengthOf(32);
+    expect(new TextDecoder().decode(client.secretForAlg('HS256'))).to.eql(client.client_secret);
   });
 
   it('#encryptionSecret', async function () {
