@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// TypeScript Version: 3.6
+// TypeScript Version: 4.4.4
 
 import * as http from 'http';
 import * as https from 'https';
@@ -18,7 +18,6 @@ export type HttpOptions = Partial<
     | 'crl'
     | 'headers'
     | 'key'
-    | 'lookup'
     | 'passphrase'
     | 'pfx'
     | 'timeout'
