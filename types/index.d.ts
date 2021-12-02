@@ -382,6 +382,7 @@ declare class BaseClient {
 }
 
 interface DeviceFlowPollOptions {
+  // @ts-ignore
   signal?: AbortSignal;
 }
 
