@@ -1084,6 +1084,44 @@ describe('Client', () => {
       });
     });
 
+    describe('cannot be used for id_token responses', function () {
+      it('rejects when id_token was issued by the authorization endpoint', function () {
+        return this.client
+          .oauthCallback('https://rp.example.com/cb', {
+            code: 'foo',
+            id_token: 'foo',
+          })
+          .then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property(
+              'message',
+              'id_token detected in the response, you must use client.callback() instead of client.oauthCallback()',
+            );
+          });
+      });
+
+      it('rejects when id_token was issued by the token endpoint', function () {
+        nock('https://op.example.com')
+          .matchHeader('Accept', 'application/json')
+          .matchHeader('Content-Length', isNumber)
+          .matchHeader('Transfer-Encoding', isUndefined)
+          .post('/token')
+          .reply(200, { id_token: 'foo' });
+
+        return this.client
+          .oauthCallback('https://rp.example.com/cb', {
+            code: 'foo',
+          })
+          .then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property(
+              'message',
+              'id_token detected in the response, you must use client.callback() instead of client.oauthCallback()',
+            );
+          });
+      });
+    });
+
     describe('response type checks', function () {
       it('rejects with an Error when code is missing', function () {
         return this.client
