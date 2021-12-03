@@ -302,7 +302,7 @@ Performs the callback for Authorization Server's authorization response.
     is either `client_secret_jwt` or `private_key_jwt`.
   - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
     Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] by the client 
+    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
     based on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>` Parsed token endpoint response as a TokenSet.
 
@@ -327,7 +327,7 @@ Performs `refresh_token` grant type exchange.
     is either `client_secret_jwt` or `private_key_jwt`.
   - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
   Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] by the client 
+  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
   based on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>` Parsed token endpoint response as a TokenSet.
 
@@ -351,7 +351,7 @@ will also be checked to match the on in the TokenSet's ID Token.
     when GET, as x-www-form-urlencoded body when POST).
   - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
     Userinfo Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] by the client 
+    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
     based on the type of key and the issuer metadata.
 - Returns: `Promise<Object>` Parsed userinfo response.
 
@@ -372,7 +372,7 @@ Fetches an arbitrary resource with the provided Access Token in an Authorization
     or the `token_type` property from a passed in TokenSet.
   - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
       Userinfo Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-      valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] by the client 
+      valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
       based on the type of key and the issuer metadata.
 - Returns: `Promise<Response>` Response is a [Got Response](https://github.com/sindresorhus/got/tree/v11.8.0#response)
   with the `body` property being a `<Buffer>`
@@ -393,7 +393,7 @@ Performs an arbitrary `grant_type` exchange at the `token_endpoint`.
   is either `client_secret_jwt` or `private_key_jwt`.
   - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
     Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] by the client 
+    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
     based on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>`
 
@@ -470,7 +470,7 @@ a handle for subsequent Device Access Token Request polling.
     is either `client_secret_jwt` or `private_key_jwt`.
   - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
   Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] by the client 
+  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
   based on the type of key and the issuer metadata.
 - Returns: `Promise<DeviceFlowHandle>`
 

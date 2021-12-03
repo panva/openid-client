@@ -4,7 +4,11 @@ const { expect } = require('chai');
 const nock = require('nock');
 const jose2 = require('jose2');
 
-const { Issuer, custom } = require('../../lib');
+const {
+  Issuer,
+  custom,
+  errors: { OPError },
+} = require('../../lib');
 
 const issuer = new Issuer({
   issuer: 'https://op.example.com',
@@ -244,6 +248,148 @@ describe('DPoP', () => {
     const proof = this.httpOpts.headers.DPoP;
     const proofJWT = jose2.JWT.decode(proof, { complete: true });
     expect(proofJWT).to.have.nested.property('payload.ath');
+  });
+
+  it('handles DPoP nonce in userinfo', async function () {
+    nock('https://op.example.com')
+      .get('/me')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.be.undefined;
+        return true;
+      })
+      .reply(401, undefined, {
+        'WWW-Authenticate': 'DPoP error="use_dpop_nonce"',
+        'DPoP-Nonce': 'eyJ7S_zG.eyJH0-Z.HX4w-7v',
+      })
+      .get('/me')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(200, { sub: 'foo' })
+      .get('/me')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(200, { sub: 'foo' })
+      .get('/me')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(400, undefined, {
+        'WWW-Authenticate': 'DPoP error="invalid_dpop_proof"',
+      });
+
+    await this.client.userinfo('foo', { DPoP: privateKey });
+    await this.client.userinfo('foo', { DPoP: privateKey });
+    return this.client.userinfo('foo', { DPoP: privateKey }).then(fail, (err) => {
+      expect(err).to.be.an.instanceOf(OPError);
+      expect(err.error).to.eql('invalid_dpop_proof');
+    });
+  });
+
+  it('handles DPoP nonce in grant', async function () {
+    nock('https://op.example.com')
+      .post('/token')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.be.undefined;
+        return true;
+      })
+      .reply(
+        400,
+        { error: 'use_dpop_nonce' },
+        {
+          'DPoP-Nonce': 'eyJ7S_zG.eyJH0-Z.HX4w-7v',
+        },
+      )
+      .post('/token')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(200, { access_token: 'foo' })
+      .post('/token')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(200, { access_token: 'foo' })
+      .post('/token')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(400, { error: 'invalid_dpop_proof' });
+
+    await this.client.grant({ grant_type: 'client_credentials' }, { DPoP: privateKey });
+    await this.client.grant({ grant_type: 'client_credentials' }, { DPoP: privateKey });
+    return this.client
+      .grant({ grant_type: 'client_credentials' }, { DPoP: privateKey })
+      .then(fail, (err) => {
+        expect(err).to.be.an.instanceOf(OPError);
+        expect(err.error).to.eql('invalid_dpop_proof');
+      });
+  });
+
+  it('handles DPoP nonce in requestResource', async function () {
+    nock('https://rs.example.com')
+      .get('/resource')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.be.undefined;
+        return true;
+      })
+      .reply(401, undefined, {
+        'WWW-Authenticate': 'DPoP error="use_dpop_nonce"',
+        'DPoP-Nonce': 'eyJ7S_zG.eyJH0-Z.HX4w-7v',
+      })
+      .get('/resource')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(200, { sub: 'foo' })
+      .get('/resource')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(200, { sub: 'foo' })
+      .get('/resource')
+      .matchHeader('DPoP', (proof) => {
+        const { nonce } = jose2.JWT.decode(proof);
+        expect(nonce).to.eq('eyJ7S_zG.eyJH0-Z.HX4w-7v');
+        return true;
+      })
+      .reply(400, undefined, {
+        'WWW-Authenticate': 'DPoP error="invalid_dpop_proof"',
+      });
+
+    await this.client.requestResource('https://rs.example.com/resource', 'foo', {
+      DPoP: privateKey,
+    });
+    await this.client.requestResource('https://rs.example.com/resource', 'foo', {
+      DPoP: privateKey,
+    });
+    return this.client
+      .requestResource('https://rs.example.com/resource', 'foo', {
+        DPoP: privateKey,
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(400);
+      });
   });
 
   it('is enabled for requestResource', async function () {

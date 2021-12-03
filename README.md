@@ -45,7 +45,7 @@ openid-client.
 - [OpenID Connect RP-Initiated Logout 1.0 - draft 01][feature-rp-logout]
 - [Financial-grade API Security Profile 1.0 - Part 2: Advanced (FAPI)][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
-- [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 03][feature-dpop]
+- [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 04][feature-dpop]
 - [OAuth 2.0 Authorization Server Issuer Identification - draft-04][feature-iss]
 
 Updates to draft specifications (DPoP, JARM, etc) are released as MINOR library versions,
@@ -277,7 +277,7 @@ See [Customizing (docs)][documentation-customizing].
 [feature-rp-logout]: https://openid.net/specs/openid-connect-rpinitiated-1_0-01.html
 [feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
 [feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-1_0.html
-[feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-03
+[feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-04
 [feature-par]: https://www.rfc-editor.org/rfc/rfc9126.html
 [feature-jar]: https://www.rfc-editor.org/rfc/rfc9101.html
 [feature-iss]: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-iss-auth-resp-04
