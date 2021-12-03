@@ -415,6 +415,11 @@ describe('Client', () => {
         issuer: 'https://op.example.com',
         token_endpoint: 'https://op.example.com/token',
       });
+      this.issuerWithIssResponse = new Issuer({
+        issuer: 'https://op.example.com',
+        token_endpoint: 'https://op.example.com/token',
+        authorization_response_iss_parameter_supported: true,
+      });
       this.client = new this.issuer.Client({
         client_id: 'identifier',
         client_secret: 'secure',
@@ -537,7 +542,7 @@ describe('Client', () => {
 
     describe('jarm response mode', function () {
       it('consumes JARM responses', async function () {
-        const client = new this.issuer.Client({
+        const client = new this.issuerWithIssResponse.Client({
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
@@ -549,7 +554,7 @@ describe('Client', () => {
           },
           client.client_secret,
           {
-            issuer: this.issuer.issuer,
+            issuer: this.issuerWithIssResponse.issuer,
             audience: client.client_id,
             expiresIn: '5m',
           },
@@ -588,7 +593,7 @@ describe('Client', () => {
       });
 
       it('consumes encrypted JARM responses', async function () {
-        const client = new this.issuer.Client({
+        const client = new this.issuerWithIssResponse.Client({
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
@@ -603,7 +608,7 @@ describe('Client', () => {
             },
             client.client_secret,
             {
-              issuer: this.issuer.issuer,
+              issuer: this.issuerWithIssResponse.issuer,
               audience: client.client_id,
               expiresIn: '5m',
             },
@@ -665,7 +670,7 @@ describe('Client', () => {
       });
 
       it('verifies the JARM alg', async function () {
-        const client = new this.issuer.Client({
+        const client = new this.issuerWithIssResponse.Client({
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
@@ -677,7 +682,7 @@ describe('Client', () => {
           },
           client.client_secret,
           {
-            issuer: this.issuer.issuer,
+            issuer: this.issuerWithIssResponse.issuer,
             audience: client.client_id,
             expiresIn: '5m',
           },
@@ -813,6 +818,11 @@ describe('Client', () => {
         issuer: 'https://op.example.com',
         token_endpoint: 'https://op.example.com/token',
       });
+      this.issuerWithIssResponse = new Issuer({
+        issuer: 'https://op.example.com',
+        token_endpoint: 'https://op.example.com/token',
+        authorization_response_iss_parameter_supported: true,
+      });
       this.client = new this.issuer.Client({
         client_id: 'identifier',
         client_secret: 'secure',
@@ -856,9 +866,59 @@ describe('Client', () => {
         });
     });
 
+    describe('OAuth 2.0 Authorization Server Issuer Identification', function () {
+      it('iss mismatch in oauthCallback()', function () {
+        return this.client
+          .oauthCallback(undefined, {
+            iss: 'https://other-op.example.com',
+          })
+          .then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property(
+              'message',
+              'iss mismatch, expected https://op.example.com, got: https://other-op.example.com',
+            );
+          });
+      });
+
+      it('iss mismatch in callback()', function () {
+        return this.client
+          .callback(undefined, {
+            iss: 'https://other-op.example.com',
+          })
+          .then(fail, (error) => {
+            expect(error).to.be.instanceof(Error);
+            expect(error).to.have.property(
+              'message',
+              'iss mismatch, expected https://op.example.com, got: https://other-op.example.com',
+            );
+          });
+      });
+
+      it('iss missing in oauthCallback()', function () {
+        const client = new this.issuerWithIssResponse.Client({
+          client_id: 'identifier',
+        });
+        return client.oauthCallback(undefined, {}).then(fail, (error) => {
+          expect(error).to.be.instanceof(Error);
+          expect(error).to.have.property('message', 'iss missing from the response');
+        });
+      });
+
+      it('iss missing in callback()', function () {
+        const client = new this.issuerWithIssResponse.Client({
+          client_id: 'identifier',
+        });
+        return client.callback(undefined, {}).then(fail, (error) => {
+          expect(error).to.be.instanceof(Error);
+          expect(error).to.have.property('message', 'iss missing from the response');
+        });
+      });
+    });
+
     describe('jarm response mode', function () {
       it('consumes JARM responses', async function () {
-        const client = new this.issuer.Client({
+        const client = new this.issuerWithIssResponse.Client({
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
@@ -870,7 +930,7 @@ describe('Client', () => {
           },
           client.client_secret,
           {
-            issuer: this.issuer.issuer,
+            issuer: this.issuerWithIssResponse.issuer,
             audience: client.client_id,
             expiresIn: '5m',
           },
@@ -909,7 +969,7 @@ describe('Client', () => {
       });
 
       it('consumes encrypted JARM responses', async function () {
-        const client = new this.issuer.Client({
+        const client = new this.issuerWithIssResponse.Client({
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
@@ -924,7 +984,7 @@ describe('Client', () => {
             },
             client.client_secret,
             {
-              issuer: this.issuer.issuer,
+              issuer: this.issuerWithIssResponse.issuer,
               audience: client.client_id,
               expiresIn: '5m',
             },
@@ -986,7 +1046,7 @@ describe('Client', () => {
       });
 
       it('verifies the JARM alg', async function () {
-        const client = new this.issuer.Client({
+        const client = new this.issuerWithIssResponse.Client({
           client_id: 'identifier',
           client_secret: 'secure',
           authorization_signed_response_alg: 'HS256',
