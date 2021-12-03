@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/panva/node-openid-client/compare/v5.0.2...v5.1.0) (2021-12-03)
+
+
+### Features
+
+* support OAuth 2.0 Authorization Server Issuer Identification ([fb6a141](https://github.com/panva/node-openid-client/commit/fb6a14113429712ea2f2c152194b5a4b7e2e5130))
+* support server-provided DPoP nonces (update DPoP to draft-04) ([a84950a](https://github.com/panva/node-openid-client/commit/a84950af45a6ac10c0b84752ca684f35c6c13eaf))
+
+
+### Bug Fixes
+
+* reject oauthCallback when id_token is detected ([92ffee5](https://github.com/panva/node-openid-client/commit/92ffee5c63dc31fb578c731572cf0f83a7b53f1d))
+* **typescript:** ts-ignore missing AbortSignal global ([d975c11](https://github.com/panva/node-openid-client/commit/d975c11d76a8fa02cc6b493db9dc7bc621f040e4)), closes [#433](https://github.com/panva/node-openid-client/issues/433)
+
 ## [5.0.2](https://github.com/panva/node-openid-client/compare/v5.0.1...v5.0.2) (2021-10-28)
 
 
