@@ -3017,7 +3017,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload).then((token) =>
-        this.client.validateIdToken(token, null, null, 300),
+        this.client.validateIdToken(token, undefined, null, 300),
       );
     });
 
@@ -3054,7 +3054,7 @@ describe('Client', () => {
       };
 
       return this.IdToken(this.keystore.get(), 'RS256', payload).then((token) =>
-        this.client.validateIdToken(token, null, null, 300),
+        this.client.validateIdToken(token, undefined, null, 300),
       );
     });
 
@@ -3078,24 +3078,27 @@ describe('Client', () => {
         });
     });
 
-    it('ignores auth_time presence check when require_auth_time is true but null is passed', function () {
-      const client = new this.issuer.Client({
-        client_id: 'with-require_auth_time',
-        require_auth_time: true,
-      });
+    // const {skipMaxAgeCheck} = require('../../lib/client')
+    // console.log(skipMaxAgeCheck)
 
-      const payload = {
-        iss: this.issuer.issuer,
-        sub: 'userId',
-        aud: client.client_id,
-        exp: now() + 3600,
-        iat: now(),
-      };
+    // it.only('ignores auth_time presence check when require_auth_time is true but the private symbol is passed', function () {
+    //   const client = new this.issuer.Client({
+    //     client_id: 'with-require_auth_time',
+    //     require_auth_time: true,
+    //   });
 
-      return this.IdToken(this.keystore.get(), 'RS256', payload).then((token) =>
-        client.validateIdToken(token, null, null, null),
-      );
-    });
+    //   const payload = {
+    //     iss: this.issuer.issuer,
+    //     sub: 'userId',
+    //     aud: client.client_id,
+    //     exp: now() + 3600,
+    //     iat: now(),
+    //   };
+
+    //   return this.IdToken(this.keystore.get(), 'RS256', payload).then((token) =>
+    //     client.validateIdToken(token, undefined, null, skipMaxAgeCheck),
+    //   );
+    // });
 
     it('verifies auth_time is present when require_auth_time is true', function () {
       const client = new this.issuer.Client({
