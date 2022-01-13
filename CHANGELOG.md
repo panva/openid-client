@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.2](https://github.com/panva/node-openid-client/compare/v5.1.1...v5.1.2) (2022-01-13)
+
+
+### Fixes
+
+* passing null as checks.nonce should not disable it ([5120a07](https://github.com/panva/node-openid-client/commit/5120a076d0b5b24b9ebd0dcdb8b40d4dfcd535a3))
+
 ## [5.1.1](https://github.com/panva/node-openid-client/compare/v5.1.0...v5.1.1) (2021-12-20)
 
 
