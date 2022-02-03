@@ -2513,7 +2513,7 @@ describe('Client', () => {
 
     before(function () {
       nock('https://op.example.com')
-        .matchHeader('Accept', 'application/json')
+        .matchHeader('Accept', 'application/json, application/jwk-set+json')
         .persist()
         .get('/certs')
         .reply(200, this.keystore.toJWKS());
@@ -3802,7 +3802,7 @@ describe('Client', () => {
 
     before(function () {
       nock('https://op.example.com')
-        .matchHeader('Accept', 'application/json')
+        .matchHeader('Accept', 'application/json, application/jwk-set+json')
         .get('/certs')
         .reply(200, this.keystore.toJWKS());
 
@@ -4108,7 +4108,7 @@ describe('Client', () => {
 
     before(function () {
       nock('https://op.example.com')
-        .matchHeader('Accept', 'application/json')
+        .matchHeader('Accept', 'application/json, application/jwk-set+json')
         .get('/certs')
         .reply(200, this.keystore.toJWKS());
 
