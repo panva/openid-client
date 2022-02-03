@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.3](https://github.com/panva/node-openid-client/compare/v5.1.2...v5.1.3) (2022-02-03)
+
+
+### Fixes
+
+* add application/jwk-set+json to accept header for JWKS calls ([#467](https://github.com/panva/node-openid-client/issues/467)) ([f94d42b](https://github.com/panva/node-openid-client/commit/f94d42b1e5ebcc5b982819871caa4a89cb087fb5)), closes [#466](https://github.com/panva/node-openid-client/issues/466)
+
 ## [5.1.2](https://github.com/panva/node-openid-client/compare/v5.1.1...v5.1.2) (2022-01-13)
 
 
