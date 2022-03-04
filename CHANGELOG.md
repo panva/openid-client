@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.4](https://github.com/panva/node-openid-client/compare/v5.1.3...v5.1.4) (2022-03-04)
+
+
+### Fixes
+
+* **dpop:** htu without querystring ([f6fa149](https://github.com/panva/node-openid-client/commit/f6fa149d11c2ea5c05b77b4fec6ee668fa7658ac))
+
 ## [5.1.3](https://github.com/panva/node-openid-client/compare/v5.1.2...v5.1.3) (2022-02-03)
 
 
