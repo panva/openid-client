@@ -8,6 +8,7 @@ import * as http2 from 'http2';
 import { URL } from 'url';
 import * as jose from 'jose';
 import * as crypto from 'crypto';
+import { format } from 'util';
 
 export type HttpOptions = Partial<
   Pick<
@@ -572,6 +573,18 @@ export namespace errors {
     scope?: string;
     session_state?: string;
     response?: { body?: UnknownObject | Buffer } & http.IncomingMessage;
+
+    constructor(
+      params: {
+        error: string;
+        error_description?: string;
+        error_uri?: string;
+        state?: string;
+        scope?: string;
+        session_state?: string;
+      },
+      response?: { body?: UnknownObject | Buffer } & http.IncomingMessage,
+    );
   }
 
   class RPError extends Error {
@@ -586,6 +599,14 @@ export namespace errors {
     exp?: number;
     iat?: number;
     auth_time?: number;
+
+    constructor(...args: Parameters<typeof format>);
+    constructor(options: {
+      message?: string;
+      printf?: Parameters<typeof format>;
+      response?: { body?: UnknownObject | Buffer } & http.IncomingMessage;
+      [key: string]: unknown;
+    });
   }
 }
 
