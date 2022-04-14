@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.5](https://github.com/panva/node-openid-client/compare/v5.1.4...v5.1.5) (2022-04-14)
+
+
+### Fixes
+
+* interoperable audience array value for JWT Client auth assertions (again) ([96b367d](https://github.com/panva/node-openid-client/commit/96b367d920f5bf8cd31d805e159625dd1899b65d))
+* **typescript:** add error constructors ([#483](https://github.com/panva/node-openid-client/issues/483)) ([9505cba](https://github.com/panva/node-openid-client/commit/9505cbab42c741a64b5a9b5d586c2c874765adb8))
+
 ## [5.1.4](https://github.com/panva/node-openid-client/compare/v5.1.3...v5.1.4) (2022-03-04)
 
 
