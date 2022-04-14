@@ -102,33 +102,32 @@ describe('mutual-TLS', () => {
       token_endpoint_auth_signing_alg: 'HS256',
       tls_client_certificate_bound_access_tokens: true,
     });
+    this.jwtAuthClientNoSenderConstraining = new issuer.Client({
+      client_id: 'client',
+      client_secret: 'secret',
+      token_endpoint_auth_method: 'client_secret_jwt',
+      token_endpoint_auth_signing_alg: 'HS256',
+      tls_client_certificate_bound_access_tokens: false,
+    });
     this.client[custom.http_options] = () => ({ key, cert });
   });
 
-  it('uses the mtls endpoint alias for token endpoint when using jwt auth and tls certs', async function () {
+  it('uses the issuer identifier and token endpoint as private_key_jwt audiences', async function () {
     let {
       form: { client_assertion: jwt },
     } = await clientHelpers.authFor.call(this.jwtAuthClient, 'token');
     let { aud } = jose2.JWT.decode(jwt);
-    expect(aud).to.include('https://mtls.op.example.com/token');
-    expect(aud).to.include('https://op.example.com/token');
-    expect(aud).to.include('https://op.example.com');
+    expect(aud).to.deep.equal(['https://op.example.com', 'https://op.example.com/token']);
     ({
       form: { client_assertion: jwt },
     } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
     ({ aud } = jose2.JWT.decode(jwt));
-    expect(aud).not.to.include('https://mtls.op.example.com/token/introspect');
-    expect(aud).to.include('https://op.example.com/token/introspect');
-    expect(aud).to.include('https://op.example.com/token');
-    expect(aud).to.include('https://op.example.com');
+    expect(aud).to.deep.equal(['https://op.example.com', 'https://op.example.com/token']);
     ({
       form: { client_assertion: jwt },
     } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
     ({ aud } = jose2.JWT.decode(jwt));
-    expect(aud).not.to.include('https://mtls.op.example.com/token/revoke');
-    expect(aud).to.include('https://op.example.com/token/revoke');
-    expect(aud).to.include('https://op.example.com/token');
-    expect(aud).to.include('https://op.example.com');
+    expect(aud).to.deep.equal(['https://op.example.com', 'https://op.example.com/token']);
   });
 
   it('requires mTLS for userinfo when tls_client_certificate_bound_access_tokens is true', async function () {
