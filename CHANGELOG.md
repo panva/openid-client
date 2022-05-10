@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.6](https://github.com/panva/node-openid-client/compare/v5.1.5...v5.1.6) (2022-05-10)
+
+
+### Fixes
+
+* **typescript:** add types export for nodenext module resolution ([92fd33d](https://github.com/panva/node-openid-client/commit/92fd33d4716260ef61fcaaa8de32119c869e70fb))
+
 ## [5.1.5](https://github.com/panva/node-openid-client/compare/v5.1.4...v5.1.5) (2022-04-14)
 
 
