@@ -161,7 +161,7 @@ export interface OAuthCallbackChecks {
   state?: string;
   code_verifier?: string;
   jarm?: boolean;
-  scope?: string;
+  scope?: string; // TODO: remove in v6.x
 }
 
 export interface OpenIDCallbackChecks extends OAuthCallbackChecks {

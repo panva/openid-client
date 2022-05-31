@@ -290,9 +290,6 @@ Performs the callback for Authorization Server's authorization response.
   - `max_age`: `<number>` When provided the authorization response's ID Token auth_time parameter
     will be checked to be conform to the max_age value. Use of this check is required if you sent a
     max_age parameter into an authorization request. **Default:** uses client's `default_max_age`.
-  - `scope`: `<string>` (FAPI1Client only) When provided the Token Endpoint Authorization Code
-    exchange response `scope` will be checked to be either an exact match, or containing a subset of
-    the scope sent in the authorization request.
 
 - `extras`: `<Object>`
   - `exchangeBody`: `<Object>` extra request body properties to be sent to the AS during code
