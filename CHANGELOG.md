@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.7](https://github.com/panva/node-openid-client/compare/v5.1.6...v5.1.7) (2022-06-25)
+
+
+### Fixes
+
+* improve support of electron BrowserWindow with nodeIntegration ([9e5ea0f](https://github.com/panva/node-openid-client/commit/9e5ea0facee3eec6b16b647c3e891cbb126fc32e))
+
 ## [5.1.6](https://github.com/panva/node-openid-client/compare/v5.1.5...v5.1.6) (2022-05-10)
 
 
