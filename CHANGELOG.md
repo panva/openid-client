@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.8](https://github.com/panva/node-openid-client/compare/v5.1.7...v5.1.8) (2022-07-04)
+
+
+### Fixes
+
+* ignore non-conform "unrecognized" id_token in oauthCallback() ([3425110](https://github.com/panva/node-openid-client/commit/34251106d142553f8614665c1cbfe94f8ca1e222)), closes [#503](https://github.com/panva/node-openid-client/issues/503)
+
 ## [5.1.7](https://github.com/panva/node-openid-client/compare/v5.1.6...v5.1.7) (2022-06-25)
 
 
