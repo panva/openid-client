@@ -1100,6 +1100,18 @@ describe('Client', () => {
           });
       });
 
+      it('ignores the id_token when falsy', function () {
+        return this.client
+          .oauthCallback('https://rp.example.com/cb', {
+            access_token: 'foo',
+            token_type: 'bearer',
+            id_token: '',
+          })
+          .then((tokenset) => {
+            expect(tokenset).not.to.have.property('id_token');
+          });
+      });
+
       it('rejects when id_token was issued by the token endpoint', function () {
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
@@ -1118,6 +1130,23 @@ describe('Client', () => {
               'message',
               'id_token detected in the response, you must use client.callback() instead of client.oauthCallback()',
             );
+          });
+      });
+
+      it('ignores the the token endpoint id_token property when falsy', function () {
+        nock('https://op.example.com')
+          .matchHeader('Accept', 'application/json')
+          .matchHeader('Content-Length', isNumber)
+          .matchHeader('Transfer-Encoding', isUndefined)
+          .post('/token')
+          .reply(200, { id_token: '' });
+
+        return this.client
+          .oauthCallback('https://rp.example.com/cb', {
+            code: 'foo',
+          })
+          .then((tokenset) => {
+            expect(tokenset).not.to.have.property('id_token');
           });
       });
     });
