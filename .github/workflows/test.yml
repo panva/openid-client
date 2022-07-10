@@ -44,6 +44,8 @@ jobs:
           - 14
           - 16.13.0
           - 16
+          - 18.5.0
+          - 18
         include:
           - experimental: true
             node-version: '>=17'
