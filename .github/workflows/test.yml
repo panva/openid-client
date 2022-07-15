@@ -236,8 +236,6 @@ jobs:
         with:
           script: |
               core.setFailed('Conformance Suite cache hit failed')
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
       - name: Run Conformance Suite
         working-directory: ./conformance-suite
         run: |
@@ -253,11 +251,6 @@ jobs:
         working-directory: ./runner
       - run: npm run test
         working-directory: ./runner
-      - name: Stop Conformance Suite
-        if: ${{ always() }}
-        continue-on-error: true
-        run: docker-compose -f docker-compose-dev.yml down
-        working-directory: ./conformance-suite
       - name: Upload test artifacts
         uses: actions/upload-artifact@v2
         with:
