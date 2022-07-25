@@ -38,6 +38,27 @@ describe('TokenSet', function () {
     expect(ts.claims()).to.eql({ sub: '1234567890', name: 'John Doe', admin: true });
   });
 
+  it('#claims does not throw when values contains claims key', function () {
+    const ts = new TokenSet({
+      claims: "foo",
+      id_token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ',
+    });
+
+    expect(ts.claims()).not.to.throw;
+  });
+
+  it('#claims is prefixed with an underscore if passed as values', function () {
+    const ts = new TokenSet({
+      claims: "foo",
+      id_token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ',
+    });
+
+    expect(ts.claims).not.to.eql('foo');
+    expect(ts._claims).to.eql('foo');
+  });
+
   it('#claims throws if no id_token is present', function () {
     const ts = new TokenSet({});
 
