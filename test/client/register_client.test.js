@@ -82,7 +82,7 @@ describe('Client#register', () => {
     nock('https://op.example.com').post('/client/registration').reply(201, '{"notavalid"}');
 
     return issuer.Client.register({}).then(fail, function (error) {
-      expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+      expect(error.message).to.match(/in JSON at position 12/);
       expect(error).to.have.property('response');
     });
   });

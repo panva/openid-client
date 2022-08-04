@@ -78,7 +78,7 @@ describe('Client#fromUri()', () => {
     return issuer.Client.fromUri('https://op.example.com/client/identifier').then(
       fail,
       function (error) {
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+        expect(error.message).to.match(/in JSON at position 12/);
         expect(error).to.have.property('response');
       },
     );

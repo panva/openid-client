@@ -1845,7 +1845,7 @@ describe('Client', () => {
         .reply(200, '{"notavalid"}');
 
       return client.userinfo('foo').then(fail, function (error) {
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+        expect(error.message).to.match(/in JSON at position 12/);
         expect(error).to.have.property('response');
       });
     });
@@ -2054,7 +2054,7 @@ describe('Client', () => {
       });
 
       return client.introspect('tokenValue').then(fail, function (error) {
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+        expect(error.message).to.match(/in JSON at position 12/);
         expect(error).to.have.property('response');
       });
     });
