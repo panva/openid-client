@@ -202,20 +202,20 @@ jobs:
             client_auth_type: mtls
             fapi_auth_request_method: pushed
             fapi_response_mode: jarm
-            fapi_jarm_type: plain_oauth
+            fapi_client_type: plain_oauth
           - plan: fapi1-advanced-final-client-test-plan
             client_auth_type: mtls
             fapi_response_mode: jarm
-            fapi_jarm_type: plain_oauth
+            fapi_client_type: plain_oauth
           - plan: fapi1-advanced-final-client-test-plan
             client_auth_type: private_key_jwt
             fapi_auth_request_method: pushed
             fapi_response_mode: jarm
-            fapi_jarm_type: plain_oauth
+            fapi_client_type: plain_oauth
           - plan: fapi1-advanced-final-client-test-plan
             client_auth_type: private_key_jwt
             fapi_response_mode: jarm
-            fapi_jarm_type: plain_oauth
+            fapi_client_type: plain_oauth
 
     steps:
       - name: Checkout
