@@ -8,7 +8,7 @@ on:
     paths-ignore:
       - '**.md'
   schedule:
-    - cron:  0 10 * * 1-5
+    - cron: 0 10 * * 1-5
   workflow_dispatch:
     inputs:
       conformance-version:
@@ -44,6 +44,8 @@ jobs:
           - 14
           - 16.13.0
           - 16
+          - 18.0.0
+          - 18
         include:
           - experimental: true
             node-version: '>=17'
@@ -235,7 +237,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-              core.setFailed('Conformance Suite cache hit failed')
+            core.setFailed('Conformance Suite cache hit failed')
       - name: Run Conformance Suite
         working-directory: ./conformance-suite
         run: |
