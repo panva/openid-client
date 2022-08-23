@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.9](https://github.com/panva/node-openid-client/compare/v5.1.8...v5.1.9) (2022-08-23)
+
+
+### Fixes
+
+* safeguard TokenSet prototype methods ([7468674](https://github.com/panva/node-openid-client/commit/74686740ffc7c518bd7564dc7c69eb19f775dab8)), closes [#511](https://github.com/panva/node-openid-client/issues/511)
+
 ## [5.1.8](https://github.com/panva/node-openid-client/compare/v5.1.7...v5.1.8) (2022-07-04)
 
 
