@@ -165,7 +165,8 @@ jobs:
           - plan: oidcc-client-config-certification-test-plan
 
           # OIDC DYNAMIC
-          - plan: oidcc-client-dynamic-certification-test-plan
+          # TODO: work around the request_uri lodging service EOL
+          # - plan: oidcc-client-dynamic-certification-test-plan
 
           # FAPI 1.0 ID-2
           - plan: fapi-rw-id2-client-test-plan
