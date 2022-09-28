@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.10](https://github.com/panva/node-openid-client/compare/v5.1.9...v5.1.10) (2022-09-28)
+
+
+### Refactor
+
+* **engines:** remove package.json engines restriction ([9aefba3](https://github.com/panva/node-openid-client/commit/9aefba30dcf0e312051e6844b35b06bc457488d5))
+
 ## [5.1.9](https://github.com/panva/node-openid-client/compare/v5.1.8...v5.1.9) (2022-08-23)
 
 
