@@ -71,9 +71,6 @@
     "sinon": "^9.2.0",
     "timekeeper": "^2.2.0"
   },
-  "engines": {
-    "node": "^12.19.0 || ^14.15.0 || ^16.13.0"
-  },
   "standard-version": {
     "scripts": {
       "postchangelog": "sed -i '' -e 's/### \\[/## [/g' CHANGELOG.md"
@@ -102,7 +99,7 @@
       {
         "type": "refactor",
         "section": "Refactor",
-        "hidden": true
+        "hidden": false
       },
       {
         "type": "perf",

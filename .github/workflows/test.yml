@@ -33,20 +33,14 @@ jobs:
   test:
     name: Node Tests + Coverage
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental || false }}
     strategy:
       fail-fast: false
       matrix:
         node-version:
-          - 12.19.0
           - 12
-          - 14.15.0
           - 14
-          - 16.13.0
           - 16
-        include:
-          - experimental: true
-            node-version: '>=17'
+          - 18
     steps:
       - name: Checkout
         uses: actions/checkout@master
