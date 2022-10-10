@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Install dependencies
@@ -43,9 +43,9 @@ jobs:
           - 18
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Store node version variable
@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "::set-output name=version::$(node -v)"
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: node_modules
         with:
           path: node_modules
@@ -71,8 +71,8 @@ jobs:
           - 12.0.0
           - latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Store node version variable
@@ -80,7 +80,7 @@ jobs:
         run: |
           echo "::set-output name=version::$(node -v)"
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: node_modules
         with:
           path: node_modules
@@ -96,7 +96,7 @@ jobs:
       cache-key: ${{ steps.cache-key.outputs.value }}
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Set Conformance Suite Version from GitLab
         if: ${{ !github.event.inputs.conformance-version }}
         run: |
@@ -214,7 +214,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Set Conformance Suite Version
         run: |
           export VERSION=($(curl --silent "https://gitlab.com/api/v4/projects/4175605/releases" | jq -r '.[0].tag_name'))
@@ -237,7 +237,7 @@ jobs:
           docker-compose -f docker-compose-dev.yml up -d
           while ! curl -skfail https://localhost.emobix.co.uk:8443/api/runner/available >/dev/null; do sleep 2; done
       - run: git clone --depth 1 --single-branch --branch main https://github.com/panva/openid-client-certification-suite.git runner
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       - run: npx panva/npm-install-retry
@@ -247,14 +247,14 @@ jobs:
       - run: npm run test
         working-directory: ./runner
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: runner/export-*.zip
           name: ${{ matrix.setup.plan }} failed html results
           if-no-files-found: ignore
         if: ${{ failure() }}
       - name: Upload test logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           if-no-files-found: warn
           name: ${{ matrix.setup.plan }} runner logs
