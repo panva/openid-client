@@ -46,18 +46,15 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup node
         uses: actions/setup-node@v3
+        id: node
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Store node version variable
-        id: node
-        run: |
-          echo "::set-output name=version::$(node -v)"
       - name: Cache node_modules
         uses: actions/cache@v3
         id: node_modules
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json') }}-${{ steps.node.outputs.version }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json') }}-${{ steps.node.outputs.node-version }}
       - name: Install dependencies
         run: npx panva/npm-install-retry
         if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
@@ -73,18 +70,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+        id: node
         with:
           node-version: 16
-      - name: Store node version variable
-        id: node
-        run: |
-          echo "::set-output name=version::$(node -v)"
       - name: Cache node_modules
         uses: actions/cache@v3
         id: node_modules
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json') }}-${{ steps.node.outputs.version }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json') }}-${{ steps.node.outputs.node-version }}
       - name: Install dependencies
         run: npx panva/npm-install-retry
         if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
@@ -107,7 +101,7 @@ jobs:
         run: |
           echo "VERSION=${{ github.event.inputs.conformance-version }}" >> $GITHUB_ENV
       - id: cache-key
-        run: echo "::set-output name=value::suite-${{ hashFiles('.github/workflows/test.yml') }}-${{ env.VERSION }}"
+        run: echo "value=suite-${{ hashFiles('.github/workflows/test.yml') }}-${{ env.VERSION }}" >> $GITHUB_OUTPUT
       - name: Load Cached Conformance Suite Build
         uses: actions/cache@v3
         id: cache
