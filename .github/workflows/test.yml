@@ -1,12 +1,8 @@
-name: Continuous Integration
+name: Test
 
 on:
   push:
-    paths-ignore:
-      - '**.md'
   pull_request:
-    paths-ignore:
-      - '**.md'
   schedule:
     - cron:  0 10 * * 1-5
   workflow_dispatch:
@@ -25,22 +21,23 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18 # lts/hydrogen
+          cache: 'npm'
       - name: Install dependencies
-        run: npx panva/npm-install-retry
+        run: npm clean-install
       - run: npm audit --production
 
   test:
-    name: Node Tests + Coverage
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node-version:
-          - 12
-          - 14
-          - 16
-          - 18
+          - lts/erbium # 12
+          - lts/fermium # 14
+          - lts/gallium # 16
+          - 18 # lts/hydrogen
+          - current
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -49,40 +46,23 @@ jobs:
         id: node
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        id: node_modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json') }}-${{ steps.node.outputs.node-version }}
+          cache: 'npm'
       - name: Install dependencies
-        run: npx panva/npm-install-retry
-        if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
-      - run: npm run coverage
+        run: npm clean-install
+      - run: npm run test
 
   electron:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        electron-version:
-          - 12.0.0
-          - latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         id: node
         with:
-          node-version: 16
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        id: node_modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json') }}-${{ steps.node.outputs.node-version }}
+          node-version: 18 # lts/hydrogen
+          cache: 'npm'
       - name: Install dependencies
-        run: npx panva/npm-install-retry
-        if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
-      - run: npx xvfb-maybe npx electron@${{ matrix.electron-version }} ./test/electron test/**/*.test.js
+        run: npm clean-install
+      - run: npx xvfb-maybe npx electron@latest ./test/electron test/**/*.test.js
 
   build-conformance-suite:
     runs-on: ubuntu-latest
@@ -233,8 +213,9 @@ jobs:
       - run: git clone --depth 1 --single-branch --branch main https://github.com/panva/openid-client-certification-suite.git runner
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - run: npx panva/npm-install-retry
+          node-version: 18 # lts/hydrogen
+          cache: 'npm'
+      - run: npm clean-install
         working-directory: ./runner
       - run: npm install ${{ github.repository }}#${{ github.sha }}
         working-directory: ./runner

@@ -41,15 +41,8 @@
     "types/index.d.ts"
   ],
   "scripts": {
-    "coverage": "nyc mocha test/**/*.test.js",
-    "prettier": "npx prettier --loglevel silent --write ./lib ./test ./certification ./types",
+    "format": "npx prettier --loglevel silent --write ./lib ./test ./certification ./types",
     "test": "mocha test/**/*.test.js"
-  },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ]
   },
   "dependencies": {
     "jose": "^4.10.0",
@@ -65,7 +58,6 @@
     "jose2": "npm:jose@^2.0.5",
     "mocha": "^8.2.0",
     "nock": "^13.0.2",
-    "nyc": "^15.1.0",
     "prettier": "^2.4.1",
     "readable-mock-req": "^0.2.2",
     "sinon": "^9.2.0",
