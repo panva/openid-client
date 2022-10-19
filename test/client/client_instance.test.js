@@ -241,15 +241,18 @@ describe('Client', () => {
       }).to.throw('end_session_endpoint must be configured on the issuer');
     });
 
-    it('returns the end_session_endpoint only if nothing is passed', function () {
-      expect(this.client.endSessionUrl()).to.eql('https://op.example.com/session/end');
+    it('returns the end_session_endpoint with client_id if nothing is passed', function () {
+      expect(this.client.endSessionUrl()).to.eql(
+        'https://op.example.com/session/end?client_id=identifier',
+      );
       expect(this.clientWithQuery.endSessionUrl()).to.eql(
-        'https://op.example.com/session/end?foo=bar',
+        'https://op.example.com/session/end?foo=bar&client_id=identifier',
       );
     });
 
     it('defaults the post_logout_redirect_uri if client has some', function () {
       expect(url.parse(this.clientWithUris.endSessionUrl(), true).query).to.eql({
+        client_id: 'identifier',
         post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
       });
     });
@@ -268,6 +271,7 @@ describe('Client', () => {
           true,
         ).query,
       ).to.eql({
+        client_id: 'identifier',
         id_token_hint: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
       });
     });
@@ -298,6 +302,7 @@ describe('Client', () => {
         post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
         state: 'foo',
         id_token_hint: 'idtoken',
+        client_id: 'identifier',
       });
       expect(
         url.parse(
@@ -314,6 +319,7 @@ describe('Client', () => {
         state: 'foo',
         foo: 'bar',
         id_token_hint: 'idtoken',
+        client_id: 'identifier',
       });
     });
   });
