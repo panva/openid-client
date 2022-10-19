@@ -246,6 +246,7 @@ parameters.
   - `post_logout_redirect_uri`: `<string>` **Default:** If only a single
     `client.post_logout_redirect_uris` member is present that one will be used automatically.
   - `state`: `<string>`
+  - `logout_hint`: `<string>`
   - any other end session parameters may be provided
 - Returns: `<string>`
 
