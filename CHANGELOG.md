@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.0](https://github.com/panva/node-openid-client/compare/v5.1.10...v5.2.0) (2022-10-19)
+
+
+### Features
+
+* add client_id to endSessionUrl query strings ([6fd9350](https://github.com/panva/node-openid-client/commit/6fd93509b73a67693fb073d31308a0bfcae0ce3f))
+
+
+### Fixes
+
+* allow endSessionUrl defaults to be overriden ([7cc2402](https://github.com/panva/node-openid-client/commit/7cc240277c30badc7aa7431c31d72feec1237e23))
+
 ## [5.1.10](https://github.com/panva/node-openid-client/compare/v5.1.9...v5.1.10) (2022-09-28)
 
 
