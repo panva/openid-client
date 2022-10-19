@@ -242,6 +242,7 @@ parameters.
 
 - `parameters`: `<Object>`
   - `id_token_hint`: `<string>` &vert; `<TokenSet>`
+  - `client_id`: `<string>` **Default:** client's client_id
   - `post_logout_redirect_uri`: `<string>` **Default:** If only a single
     `client.post_logout_redirect_uris` member is present that one will be used automatically.
   - `state`: `<string>`

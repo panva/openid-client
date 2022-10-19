@@ -42,7 +42,7 @@ openid-client.
     - self_signed_tls_client_auth
 - [RFC9101 - OAuth 2.0 JWT-Secured Authorization Request (JAR)][feature-jar]
 - [RFC9126 - OAuth 2.0 Pushed Authorization Requests (PAR)][feature-par]
-- [OpenID Connect RP-Initiated Logout 1.0 - draft 01][feature-rp-logout]
+- [OpenID Connect RP-Initiated Logout 1.0][feature-rp-logout]
 - [Financial-grade API Security Profile 1.0 - Part 2: Advanced (FAPI)][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
 - [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 04][feature-dpop]
@@ -272,7 +272,7 @@ See [Customizing (docs)][documentation-customizing].
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
 [feature-mtls]: https://tools.ietf.org/html/rfc8705
 [feature-device-flow]: https://tools.ietf.org/html/rfc8628
-[feature-rp-logout]: https://openid.net/specs/openid-connect-rpinitiated-1_0-01.html
+[feature-rp-logout]: https://openid.net/specs/openid-connect-rpinitiated-1_0.html
 [feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
 [feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-1_0.html
 [feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-04

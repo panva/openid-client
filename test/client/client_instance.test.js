@@ -288,6 +288,21 @@ describe('Client', () => {
       ).to.throw(TypeError, 'id_token not present in TokenSet');
     });
 
+    it('allows to override default applied values', function () {
+      expect(
+        url.parse(
+          this.client.endSessionUrl({
+            post_logout_redirect_uri: 'override',
+            client_id: 'override',
+          }),
+          true,
+        ).query,
+      ).to.eql({
+        post_logout_redirect_uri: 'override',
+        client_id: 'override',
+      });
+    });
+
     it('allows for recommended and optional query params to be passed in', function () {
       expect(
         url.parse(
