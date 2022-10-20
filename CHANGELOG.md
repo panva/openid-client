@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.1](https://github.com/panva/node-openid-client/compare/v5.2.0...v5.2.1) (2022-10-20)
+
+
+### Fixes
+
+* **typescript:** add client_id and logout_hint to EndSessionParameters ([b7b5438](https://github.com/panva/node-openid-client/commit/b7b54384421f9f0fe0d9c42cf731d0877d95c256))
+
 ## [5.2.0](https://github.com/panva/node-openid-client/compare/v5.1.10...v5.2.0) (2022-10-19)
 
 
