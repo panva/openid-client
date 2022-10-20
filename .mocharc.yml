@@ -1,0 +1,3 @@
+retries: 1
+forbid-only: true
+forbid-pending: true
