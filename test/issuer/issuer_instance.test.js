@@ -53,6 +53,9 @@ describe('Issuer', () => {
     });
 
     it('fetches if asked to (one concurrent request at a time)', function () {
+      if ('CITGM' in process.env) {
+        this.skip();
+      }
       nock.cleanAll();
 
       // force a fail to fetch to check it tries to load
