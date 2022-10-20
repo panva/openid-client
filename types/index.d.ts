@@ -136,6 +136,8 @@ export interface EndSessionParameters {
   id_token_hint?: TokenSet | string;
   post_logout_redirect_uri?: string;
   state?: string;
+  client_id?: string;
+  logout_hint?: string;
 
   [key: string]: unknown;
 }
