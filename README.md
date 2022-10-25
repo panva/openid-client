@@ -87,7 +87,7 @@ specific middlewares. Those can however be built using the exposed API, one such
 
 ## Install
 
-Node.js LTS releases Codename Erbium (starting with ^12.19.0) and newer LTS releases are supported.
+Node.js LTS releases Codename Erbium and newer LTS releases are supported.
 
 ```console
 npm install openid-client
