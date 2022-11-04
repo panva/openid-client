@@ -56,7 +56,7 @@
     "base64url": "^3.0.1",
     "chai": "^4.2.0",
     "jose2": "npm:jose@^2.0.5",
-    "mocha": "^8.2.0",
+    "mocha": "^10.1.0",
     "nock": "^13.0.2",
     "prettier": "^2.4.1",
     "readable-mock-req": "^0.2.2",
