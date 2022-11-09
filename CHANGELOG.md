@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.0](https://github.com/panva/node-openid-client/compare/v5.2.1...v5.3.0) (2022-11-09)
+
+
+### Features
+
+* JARM is now a stable feature ([10e3a37](https://github.com/panva/node-openid-client/commit/10e3a37efe2635c4b21fba30f5646ef7cf2f4b95))
+
 ## [5.2.1](https://github.com/panva/node-openid-client/compare/v5.2.0...v5.2.1) (2022-10-20)
 
 
