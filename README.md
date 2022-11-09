@@ -48,7 +48,7 @@ openid-client.
 - [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 04][feature-dpop]
 - [OAuth 2.0 Authorization Server Issuer Identification][feature-iss]
 
-Updates to draft specifications (DPoP, JARM, etc) are released as MINOR library versions,
+Updates to draft specifications are released as MINOR library versions,
 if you utilize these specification implementations consider using the tilde `~` operator in your
 package.json since breaking changes may be introduced as part of these version updates. 
 
