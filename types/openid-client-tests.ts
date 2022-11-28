@@ -167,8 +167,8 @@ async (req: IncomingMessage) => {
     callbackResponse,
     { headers: { Accept: 'application/json' } },
   );
-  console.log(resource.body.byteLength);
-  console.log(resource.body.toString('utf-8'));
+  console.log(resource.body!.byteLength);
+  console.log(resource.body!.toString('utf-8'));
 
   //
 
