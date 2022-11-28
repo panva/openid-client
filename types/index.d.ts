@@ -351,7 +351,7 @@ declare class BaseClient {
       tokenType?: string;
       DPoP?: DPoPInput;
     },
-  ): { body?: Buffer } & http.IncomingMessage;
+  ): Promise<{ body?: Buffer } & http.IncomingMessage>;
   grant(body: GrantBody, extras?: GrantExtras): Promise<TokenSet>;
   introspect(
     token: string,
