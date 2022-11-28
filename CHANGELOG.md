@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.1](https://github.com/panva/node-openid-client/compare/v5.3.0...v5.3.1) (2022-11-28)
+
+
+### Fixes
+
+* **typescript:** requestResource returns a Promise ([#546](https://github.com/panva/node-openid-client/issues/546)) ([8bc9519](https://github.com/panva/node-openid-client/commit/8bc9519d56a9759fedbad2418420f0c5b75f2455)), closes [#488](https://github.com/panva/node-openid-client/issues/488)
+
 ## [5.3.0](https://github.com/panva/node-openid-client/compare/v5.2.1...v5.3.0) (2022-11-09)
 
 
