@@ -658,7 +658,7 @@ client[custom.http_options] = function (url, options) {
 
 #### Customizing clock skew tolerance
 
-It is possible the RP or OP environment has a system clock skew, to set a clock tolerance (in seconds)
+It is possible the RP or OP environment has a system clock skew, which can result in the error "JWT not active yet". To set a clock tolerance (in seconds)
 
 ```js
 import { custom } from 'openid-client';
