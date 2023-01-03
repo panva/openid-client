@@ -517,7 +517,7 @@ the following are valid values for `token_endpoint_auth_method`.
   in the request body
 - `tls_client_auth` and `self_signed_tls_client_auth` - sends client_id in the request body combined
   with client certificate and key configured via setting `cert` and `key` on a per-request basis
-  using [`docs#customizing-http-requests`](https://github.com/panva/node-openid-client/tree/master/docs#customizing-http-requests)
+  using [`docs#customizing-http-requests`](https://github.com/panva/node-openid-client/tree/main/docs#customizing-http-requests)
 
 Note: `*_jwt` methods resolve their signature algorithm either via the client's configured alg
 (`token_endpoint_auth_signing_alg`) or any of the issuer's supported algs
