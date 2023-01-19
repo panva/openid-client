@@ -840,7 +840,7 @@ Creates a new Strategy
 
 - `options`: `<Object>`
   - `client`: `<Client>` Client instance. The strategy will use it.
-  - `params`: `<Object>` Authorization Request parameters. The strategy will use these.
+  - `params`: `<Object>` Authorization Request parameters. The strategy will use these for every authorization request.
   - `passReqToCallback`: `<boolean>` Boolean specifying whether the verify function should get
     the request object as first argument instead. **Default:** 'false'
   - `usePKCE`: `<boolean>` &vert; `<string>` The PKCE method to use. When 'true' it will resolve based
