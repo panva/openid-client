@@ -860,7 +860,7 @@ Creates a new Strategy
 The strategy automatically generates `state` and `nonce` parameters when required. To provide one for a flow where it is optional (for example the `nonce` for the Authorization Code Flow), it can be passed in the optional `options` argument to `passport.authenticate()`:
 
 ```js
-app.post('/auth/openid', function(req, res, next) {
+app.post('/auth/oidc', function(req, res, next) {
   passport.authenticate('oidc', { nonce: crypto.randomBytes(16).toString('base64url') })(req, res, next);
 });
 ```
