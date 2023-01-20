@@ -855,13 +855,13 @@ Creates a new Strategy
   - `done`: `<Function>`
 - Returns: `<Strategy>`
 
----
-
-The strategy automatically generates `state` and `nonce` parameters when required. To provide one for a flow where it is optional (for example the `nonce` for the Authorization Code Flow), it can be passed in the optional `options` argument to `passport.authenticate()`:
+Note: You can also set authorization request parameters dynamically using the `options` argument in `passport.authenticate([options])`:
 
 ```js
-app.post('/auth/oidc', function(req, res, next) {
-  passport.authenticate('oidc', { nonce: crypto.randomBytes(16).toString('base64url') })(req, res, next);
+app.get('/protected-route', function(req, res, next) {
+  if (shouldReConsent(req)) {
+    passport.authenticate('oidc', { prompt: 'consent' })(req, res, next);
+  }
 });
 ```
 
