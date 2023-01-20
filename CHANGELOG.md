@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.2](https://github.com/panva/node-openid-client/compare/v5.3.1...v5.3.2) (2023-01-20)
+
+
+### Fixes
+
+* **passport:** ignore static state and nonce passed to Strategy() ([#556](https://github.com/panva/node-openid-client/issues/556)) ([43daff3](https://github.com/panva/node-openid-client/commit/43daff3d780d10d29e8ac8cd56b94d99aaa37986))
+
 ## [5.3.1](https://github.com/panva/node-openid-client/compare/v5.3.0...v5.3.1) (2022-11-28)
 
 
