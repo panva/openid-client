@@ -840,7 +840,7 @@ Creates a new Strategy
 
 - `options`: `<Object>`
   - `client`: `<Client>` Client instance. The strategy will use it.
-  - `params`: `<Object>` Authorization Request parameters. The strategy will use these.
+  - `params`: `<Object>` Authorization Request parameters. The strategy will use these for every authorization request.
   - `passReqToCallback`: `<boolean>` Boolean specifying whether the verify function should get
     the request object as first argument instead. **Default:** 'false'
   - `usePKCE`: `<boolean>` &vert; `<string>` The PKCE method to use. When 'true' it will resolve based
@@ -854,6 +854,16 @@ Creates a new Strategy
     are fine using 'tokenset.claims()' alone.
   - `done`: `<Function>`
 - Returns: `<Strategy>`
+
+---
+
+The strategy automatically generates `state` and `nonce` parameters when required. To provide one for a flow where it is optional (for example the `nonce` for the Authorization Code Flow), it can be passed in the optional `options` argument to `passport.authenticate()`:
+
+```js
+app.post('/auth/oidc', function(req, res, next) {
+  passport.authenticate('oidc', { nonce: crypto.randomBytes(16).toString('base64url') })(req, res, next);
+});
+```
 
 ---
 
