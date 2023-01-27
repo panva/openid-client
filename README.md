@@ -93,6 +93,11 @@ Node.js LTS releases Codename Erbium and newer LTS releases are supported.
 npm install openid-client
 ```
 
+Note: Other javascript runtimes are not supported.
+I recommend [panva/oauth4webapi][oauth4webapi], or a derivate thereof, if you're 
+looking for a similarly compliant and certified client software that's not dependent 
+on the Node.js runtime builtins.
+
 ## Quick start
 
 Discover an Issuer configuration using its published .well-known endpoints
@@ -252,8 +257,10 @@ private API and is subject to change between any versions.
 
 #### How do I use it outside of Node.js
 
-It is **only built for Node.js** environments - including openid-client in
-browser-environment targeted projects is not supported.
+It is **only built for Node.js**. Other javascript runtimes are not supported.
+I recommend [panva/oauth4webapi][oauth4webapi], or a derivate thereof, if you're 
+looking for a similarly compliant and certified client software that's not dependent 
+on the Node.js runtime builtins.
 
 #### How to make the client send client_id and client_secret in the body?
 
@@ -295,3 +302,4 @@ See [Customizing (docs)][documentation-customizing].
 [documentation-methods]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#client-authentication-methods
 [documentation-webfinger]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#issuerwebfingerinput
 [express-openid-connect]: https://www.npmjs.com/package/express-openid-connect
+[oauth4webapi]: https://github.com/panva/oauth4webapi#readme
