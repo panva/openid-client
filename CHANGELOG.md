@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.3](https://github.com/panva/node-openid-client/compare/v5.3.2...v5.3.3) (2023-02-02)
+
+
+### Refactor
+
+* remove use of Node.js v8 builtin ([f1881bc](https://github.com/panva/node-openid-client/commit/f1881bc61d424df4576864d610d4840101b45631)), closes [#442](https://github.com/panva/node-openid-client/issues/442) [#475](https://github.com/panva/node-openid-client/issues/475) [#555](https://github.com/panva/node-openid-client/issues/555)
+
 ## [5.3.2](https://github.com/panva/node-openid-client/compare/v5.3.1...v5.3.2) (2023-01-20)
 
 
