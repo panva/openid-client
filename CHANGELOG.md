@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.4](https://github.com/panva/node-openid-client/compare/v5.3.3...v5.3.4) (2023-02-02)
+
+
+### Fixes
+
+* regression introduced in v5.3.3 ([4f6e847](https://github.com/panva/node-openid-client/commit/4f6e847f126ca531c73d37e1a756ab62f361f86a))
+
 ## [5.3.3](https://github.com/panva/node-openid-client/compare/v5.3.2...v5.3.3) (2023-02-02)
 
 
