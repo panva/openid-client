@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.4.0](https://github.com/panva/node-openid-client/compare/v5.3.4...v5.4.0) (2023-02-05)
+
+
+### Features
+
+* allow third party initiated login requests to trigger strategy ([568709a](https://github.com/panva/node-openid-client/commit/568709abc786cc8e2d9c8de1543b0c488c284098)), closes [#510](https://github.com/panva/node-openid-client/issues/510) [#564](https://github.com/panva/node-openid-client/issues/564)
+
 ## [5.3.4](https://github.com/panva/node-openid-client/compare/v5.3.3...v5.3.4) (2023-02-02)
 
 
