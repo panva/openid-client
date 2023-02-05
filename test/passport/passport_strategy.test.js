@@ -128,6 +128,28 @@ describe('OpenIDConnectStrategy', () => {
       );
     });
 
+    it('starts authentication requests for TPIL GETs', function () {
+      const params = { iss: 'https://op.example.com' };
+      const strategy = new Strategy({ client: this.client, params }, () => {});
+
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req);
+
+      expect(strategy.redirect.calledOnce).to.be.true;
+      const target = strategy.redirect.firstCall.args[0];
+      expect(target).to.include('redirect_uri=');
+      expect(target).to.include('scope=');
+      expect(req.session).to.have.property('oidc:op.example.com');
+      expect(req.session['oidc:op.example.com']).to.have.keys(
+        'state',
+        'response_type',
+        'code_verifier',
+      );
+    });
+
     it('starts authentication requests for POSTs', function () {
       const strategy = new Strategy({ client: this.client }, () => {});
 
