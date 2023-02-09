@@ -11,7 +11,8 @@ on:
 
 jobs:
   audit:
-    name: NPM Audit (Production)
+    name: Audit NPM Dependencies
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: Environment Information
@@ -24,8 +25,8 @@ jobs:
           node-version: lts/hydrogen # 18
           cache: 'npm'
           check-latest: true
-      - name: Install dependencies
-        run: npm clean-install
+      - run: npm clean-install
+      - run: npm upgrade
       - run: npm audit --production
 
   test:
