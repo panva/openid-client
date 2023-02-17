@@ -36,7 +36,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          check-latest: true
       - run: npm install --global npm@8
         if: ${{ startsWith(steps.node.outputs.node-version, 'v12') || startsWith(steps.node.outputs.node-version, 'v14') }}
       - name: Install dependencies
@@ -54,7 +53,6 @@ jobs:
         with:
           node-version: lts/hydrogen # 18
           cache: 'npm'
-          check-latest: true
       - name: Install dependencies
         run: npm clean-install
       - run: npx xvfb-maybe npx electron@latest ./test/electron test/**/*.test.js

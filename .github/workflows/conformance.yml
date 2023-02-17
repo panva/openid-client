@@ -117,7 +117,6 @@ jobs:
         with:
           node-version: lts/hydrogen # 18
           cache: 'npm'
-          check-latest: true
       - run: npm clean-install
         working-directory: ./runner
       - run: npm install ${{ github.repository }}#${{ github.sha }}
