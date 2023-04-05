@@ -338,6 +338,7 @@ declare class BaseClient {
       via?: 'header' | 'body';
       tokenType?: string;
       params?: object;
+      headers?: object;
       DPoP?: DPoPInput;
     },
   ): Promise<UserinfoResponse<TUserInfo, TAddress>>;
