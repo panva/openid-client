@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.4.1](https://github.com/panva/node-openid-client/compare/v5.4.0...v5.4.1) (2023-04-21)
+
 ## [5.4.0](https://github.com/panva/node-openid-client/compare/v5.3.4...v5.4.0) (2023-02-05)
 
 
