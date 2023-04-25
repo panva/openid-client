@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.4.2](https://github.com/panva/node-openid-client/compare/v5.4.1...v5.4.2) (2023-04-25)
+
+
+### Fixes
+
+* bump oidc-token-hash ([20607e9](https://github.com/panva/node-openid-client/commit/20607e9eb72ea1dee0cfd714d66cd00285686f5f))
+
 ## [5.4.1](https://github.com/panva/node-openid-client/compare/v5.4.0...v5.4.1) (2023-04-21)
 
 ## [5.4.0](https://github.com/panva/node-openid-client/compare/v5.3.4...v5.4.0) (2023-02-05)
