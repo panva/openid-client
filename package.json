@@ -45,7 +45,7 @@
     "test": "mocha test/**/*.test.js"
   },
   "dependencies": {
-    "jose": "^4.14.3",
+    "jose": "^4.14.4",
     "lru-cache": "^6.0.0",
     "object-hash": "^2.2.0",
     "oidc-token-hash": "^5.0.3"
