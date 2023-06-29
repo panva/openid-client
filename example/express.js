@@ -2,6 +2,7 @@
   const express = require('express')
   const { Issuer, Strategy: OpenIDConnectStrategy } = await import('openid-client')
   const passport = require('passport')
+  const session = require('express-session')
   const app = express()
   const port = 3001
 
@@ -22,6 +23,13 @@
       return done(null, tokenset.claims())
     }
   ))
+
+  app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }
+  }))
 
   app.get('/', (req, res) => {
     res.send('Hello World!')
