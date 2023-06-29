@@ -3,10 +3,12 @@
   const { Issuer, Strategy: OpenIDConnectStrategy } = await import('openid-client')
   const passport = require('passport')
   const session = require('express-session')
+  const https = require('node:https')
+  const fs = require('node:fs')
   const app = express()
   const port = 3001
 
-  const oidcIssuer = await Issuer.discover('http://localhost:3000')
+  const oidcIssuer = await Issuer.discover('https://localhost:3000')
   console.log('Discovered issuer %s %O', oidcIssuer.issuer, oidcIssuer.metadata)
 
   const client = new oidcIssuer.Client({
@@ -43,7 +45,13 @@
       res.redirect('/')
     })
 
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-  })
+  // app.listen(port, () => {
+  //   console.log(`Example app listening on port ${port}`)
+  // })
+  const options = {
+    key: fs.readFileSync('localhost-key.pem'),
+    cert: fs.readFileSync('localhost.pem'),
+  }
+  server = https.createServer(options, app)
+  server.listen(port)
 })()
