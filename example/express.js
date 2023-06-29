@@ -13,19 +13,21 @@
 
   const client = new oidcIssuer.Client({
     client_id: 'oidcCLIENT',
-    redirect_uris: ['http://localhost:3001/cb'],
+    redirect_uris: ['https://localhost:3001/cb'],
     response_types: ['id_token'],
     // id_token_signed_response_alg (default "RS256")
   }) // => Client
 
   passport.use(new OpenIDConnectStrategy({
-      client
+      client,
+      params: { response_mode: 'form_post' }
     },
     function(tokenset, done) {
       return done(null, tokenset.claims())
     }
   ))
 
+  app.use(express.urlencoded({ extended: false }))
   app.use(session({
     secret: 'keyboard cat',
     resave: false,
@@ -33,13 +35,27 @@
     cookie: { secure: true }
   }))
 
+  passport.serializeUser(function(user, cb) {
+    process.nextTick(function() {
+      return cb(null, {
+        email: user.sub
+      })
+    })
+  })
+  
+  passport.deserializeUser(function(user, cb) {
+    process.nextTick(function() {
+      return cb(null, user)
+    })
+  })
+
   app.get('/', (req, res) => {
     res.send('Hello World!')
   })
 
   app.get('/login', passport.authenticate('localhost'))
 
-  app.get('/cb',
+  app.post('/cb',
     passport.authenticate('localhost', { failureRedirect: '/login', failureMessage: true }),
     function(req, res) {
       res.redirect('/')
