@@ -34,6 +34,8 @@
     saveUninitialized: false,
     cookie: { secure: true }
   }))
+  app.use(passport.initialize())
+  app.use(passport.session())
 
   passport.serializeUser(function(user, cb) {
     process.nextTick(function() {
