@@ -2253,6 +2253,18 @@ describe('Client', () => {
           );
         });
       });
+
+      it('allows client_secret to be empty string', async function () {
+        const issuer = new Issuer();
+        const client = new issuer.Client({
+          client_id: 'an:identifier',
+          client_secret: '',
+          token_endpoint_auth_method: 'client_secret_post',
+        });
+        expect(await clientInternal.authFor.call(client, 'token')).to.eql({
+          form: { client_id: 'an:identifier', client_secret: '' },
+        });
+      });
     });
 
     describe('when client_secret_basic', function () {
@@ -2286,6 +2298,14 @@ describe('Client', () => {
           expect(error.message).to.eql(
             'client_secret_basic client authentication method requires a client_secret',
           );
+        });
+      });
+
+      it('allows client_secret to be empty string', async function () {
+        const issuer = new Issuer();
+        const client = new issuer.Client({ client_id: 'an:identifier', client_secret: '' });
+        expect(await clientInternal.authFor.call(client, 'token')).to.eql({
+          headers: { Authorization: 'Basic YW4lM0FpZGVudGlmaWVyOg==' },
         });
       });
     });
