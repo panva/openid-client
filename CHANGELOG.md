@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.4.3](https://github.com/panva/node-openid-client/compare/v5.4.2...v5.4.3) (2023-07-06)
+
+
+### Fixes
+
+* handle empty client_secret with basic and post client auth ([#610](https://github.com/panva/node-openid-client/issues/610)) ([402c711](https://github.com/panva/node-openid-client/commit/402c711fde93d5644c3b70861c462213bc87ab34)), closes [#609](https://github.com/panva/node-openid-client/issues/609)
+
 ## [5.4.2](https://github.com/panva/node-openid-client/compare/v5.4.1...v5.4.2) (2023-04-25)
 
 
