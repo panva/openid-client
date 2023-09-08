@@ -42,10 +42,10 @@ openid-client.
     - self_signed_tls_client_auth
 - [RFC9101 - OAuth 2.0 JWT-Secured Authorization Request (JAR)][feature-jar]
 - [RFC9126 - OAuth 2.0 Pushed Authorization Requests (PAR)][feature-par]
+- [RFC9449 - OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP)][feature-dpop]
 - [OpenID Connect RP-Initiated Logout 1.0][feature-rp-logout]
 - [Financial-grade API Security Profile 1.0 - Part 2: Advanced (FAPI)][feature-fapi]
 - [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM)][feature-jarm]
-- [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 04][feature-dpop]
 - [OAuth 2.0 Authorization Server Issuer Identification][feature-iss]
 
 Updates to draft specifications are released as MINOR library versions,
@@ -282,7 +282,7 @@ See [Customizing (docs)][documentation-customizing].
 [feature-rp-logout]: https://openid.net/specs/openid-connect-rpinitiated-1_0.html
 [feature-jarm]: https://openid.net/specs/oauth-v2-jarm.html
 [feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-1_0.html
-[feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-04
+[feature-dpop]: https://www.rfc-editor.org/rfc/rfc9449.html
 [feature-par]: https://www.rfc-editor.org/rfc/rfc9126.html
 [feature-jar]: https://www.rfc-editor.org/rfc/rfc9101.html
 [feature-iss]: https://www.rfc-editor.org/rfc/rfc9207.html
