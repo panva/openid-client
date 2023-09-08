@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.5.0](https://github.com/panva/node-openid-client/compare/v5.4.3...v5.5.0) (2023-09-08)
+
+
+### Features
+
+* **DPoP:** remove experimental warning, DPoP is now RFC9449 ([133a022](https://github.com/panva/node-openid-client/commit/133a022cce8e0d7a386b59163c18c100c80df2ab))
+
 ## [5.4.3](https://github.com/panva/node-openid-client/compare/v5.4.2...v5.4.3) (2023-07-06)
 
 
