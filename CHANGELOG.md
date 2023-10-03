@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.0](https://github.com/panva/node-openid-client/compare/v5.5.0...v5.6.0) (2023-10-03)
+
+
+### Features
+
+* experimental Bun support ([a9d3a87](https://github.com/panva/node-openid-client/commit/a9d3a87d2727bb37a535aeac9da9851ffdef8613)), closes [#622](https://github.com/panva/node-openid-client/issues/622) [#623](https://github.com/panva/node-openid-client/issues/623)
+
 ## [5.5.0](https://github.com/panva/node-openid-client/compare/v5.4.3...v5.5.0) (2023-09-08)
 
 
