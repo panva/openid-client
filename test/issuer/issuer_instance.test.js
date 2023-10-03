@@ -2,10 +2,10 @@ const { expect } = require('chai');
 const LRU = require('lru-cache');
 const nock = require('nock');
 const sinon = require('sinon');
-const jose2 = require('jose2');
 
 const { Issuer, custom } = require('../../lib');
 const issuerInternal = require('../../lib/helpers/issuer');
+const KeyStore = require('../keystore');
 
 const fail = () => {
   throw new Error('expected promise to be rejected');
@@ -22,7 +22,7 @@ describe('Issuer', () => {
     });
 
     before(function () {
-      this.keystore = new jose2.JWKS.KeyStore();
+      this.keystore = new KeyStore();
       return this.keystore.generate('RSA');
     });
 
@@ -115,7 +115,11 @@ describe('Issuer', () => {
       return this.keystore.generate('RSA', undefined, { kid }).then(() => {
         nock('https://op.example.com').get('/certs').reply(200, this.keystore.toJWKS());
 
-        return issuerInternal.queryKeyStore.call(this.issuer, { alg: 'RS256', kid, use: 'sig' });
+        return issuerInternal.queryKeyStore
+          .call(this.issuer, { alg: 'RS256', kid, use: 'sig' })
+          .then((result) => {
+            expect(result).to.have.lengthOf(2);
+          });
       });
     });
 

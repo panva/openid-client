@@ -3,7 +3,7 @@ const path = require('path');
 
 const { expect } = require('chai');
 const nock = require('nock');
-const jose2 = require('jose2');
+const jose = require('jose');
 
 const { Issuer, custom } = require('../../lib');
 const clientHelpers = require('../../lib/helpers/client');
@@ -116,17 +116,17 @@ describe('mutual-TLS', () => {
     let {
       form: { client_assertion: jwt },
     } = await clientHelpers.authFor.call(this.jwtAuthClient, 'token');
-    let { aud } = jose2.JWT.decode(jwt);
+    let { aud } = jose.decodeJwt(jwt);
     expect(aud).to.deep.equal(['https://op.example.com', 'https://op.example.com/token']);
     ({
       form: { client_assertion: jwt },
     } = await clientHelpers.authFor.call(this.jwtAuthClient, 'introspection'));
-    ({ aud } = jose2.JWT.decode(jwt));
+    ({ aud } = jose.decodeJwt(jwt));
     expect(aud).to.deep.equal(['https://op.example.com', 'https://op.example.com/token']);
     ({
       form: { client_assertion: jwt },
     } = await clientHelpers.authFor.call(this.jwtAuthClient, 'revocation'));
-    ({ aud } = jose2.JWT.decode(jwt));
+    ({ aud } = jose.decodeJwt(jwt));
     expect(aud).to.deep.equal(['https://op.example.com', 'https://op.example.com/token']);
   });
 

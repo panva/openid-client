@@ -45,23 +45,22 @@
     "test": "mocha test/**/*.test.js"
   },
   "dependencies": {
-    "jose": "^4.14.4",
+    "jose": "^4.15.1",
     "lru-cache": "^6.0.0",
     "object-hash": "^2.2.0",
     "oidc-token-hash": "^5.0.3"
   },
   "devDependencies": {
-    "@types/node": "^16.18.31",
-    "@types/passport": "^1.0.12",
+    "@types/node": "^16.18.55",
+    "@types/passport": "^1.0.13",
     "base64url": "^3.0.1",
-    "chai": "^4.3.7",
-    "jose2": "npm:jose@^2.0.6",
+    "chai": "^4.3.10",
     "mocha": "^10.2.0",
-    "nock": "^13.3.1",
+    "nock": "^13.3.3",
     "prettier": "^2.8.8",
     "readable-mock-req": "^0.2.2",
     "sinon": "^9.2.4",
-    "timekeeper": "^2.2.0"
+    "timekeeper": "^2.3.1"
   },
   "standard-version": {
     "scripts": {

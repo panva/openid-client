@@ -299,10 +299,9 @@ Performs the callback for Authorization Server's authorization response.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
     part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
     is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-    Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-    based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+    Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>` Parsed token endpoint response as a TokenSet.
 
 Tip: If you're using pure
@@ -324,10 +323,9 @@ Performs `refresh_token` grant type exchange.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
     part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
     is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-  Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-  based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+  Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>` Parsed token endpoint response as a TokenSet.
 
 ---
@@ -348,10 +346,9 @@ will also be checked to match the on in the TokenSet's ID Token.
     or the `token_type` property from a passed in TokenSet.
   - `params`: `<Object>` additional parameters to send with the userinfo request (as query string
     when GET, as x-www-form-urlencoded body when POST).
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-    Userinfo Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-    based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+    Userinfo Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<Object>` Parsed userinfo response.
 
 ---
@@ -369,10 +366,9 @@ Fetches an arbitrary resource with the provided Access Token in an Authorization
   - `method`: `<string>` The HTTP method to use for the request. **Default:** 'GET'
   - `tokenType`: `<string>` The token type as the Authorization Header scheme. **Default:** 'Bearer'
     or the `token_type` property from a passed in TokenSet.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-      Userinfo Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-      valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-      based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+      Userinfo Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<Response>` Response is a [Got Response](https://github.com/sindresorhus/got/tree/v11.8.0#response)
   with the `body` property being a `<Buffer>`
 
@@ -390,10 +386,9 @@ Performs an arbitrary `grant_type` exchange at the `token_endpoint`.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
   part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
   is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-    Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-    based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+    Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>`
 
 ---
@@ -467,10 +462,9 @@ a handle for subsequent Device Access Token Request polling.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
     part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
     is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-  Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-  based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+  Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<DeviceFlowHandle>`
 
 ---

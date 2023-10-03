@@ -104,7 +104,7 @@ describe('OpenIDConnectStrategy', () => {
     });
   });
 
-  describe('initate', function () {
+  describe('initiate', function () {
     it('starts authentication requests for GETs', function () {
       const params = { foo: 'bar' };
       const strategy = new Strategy({ client: this.client, params }, () => {});
