@@ -41,6 +41,24 @@ jobs:
         run: npm clean-install
       - run: npm run test
 
+  bun:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        id: node
+        with:
+          node-version: lts/hydrogen # 18
+          cache: 'npm'
+          check-latest: true
+      - name: Install dependencies
+        run: npm clean-install
+      - run: curl https://bun.sh/install | bash
+      - run: ~/.bun/bin/bun ./node_modules/.bin/mocha test/**/*.test.js
+
   electron:
     runs-on: ubuntu-latest
     steps:
