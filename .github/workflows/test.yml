@@ -56,8 +56,10 @@ jobs:
           check-latest: true
       - name: Install dependencies
         run: npm clean-install
-      - run: curl https://bun.sh/install | bash
-      - run: ~/.bun/bin/bun ./node_modules/.bin/mocha test/**/*.test.js
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun ./node_modules/.bin/mocha test/**/*.test.js
 
   electron:
     runs-on: ubuntu-latest
