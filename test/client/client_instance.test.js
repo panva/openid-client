@@ -203,6 +203,16 @@ describe('Client', () => {
         this.client.authorizationUrl(true);
       }).to.throw(TypeError, 'params must be a plain object');
     });
+
+    it('returns a space-delimited scope parameter', function () {
+      expect(
+        this.client.authorizationUrl({
+          state: 'state',
+          scope: 'openid profile email',
+        }),
+      ).to.eql('https://op.example.com/auth?client_id=identifier&scope=openid%20profile%20email&response_type=code&state=state');
+    });
+
   });
 
   describe('#endSessionUrl', function () {
