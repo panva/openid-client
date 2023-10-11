@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.1](https://github.com/panva/node-openid-client/compare/v5.6.0...v5.6.1) (2023-10-11)
+
+
+### Fixes
+
+* consistent space encoding in authorizationUrl ([#627](https://github.com/panva/node-openid-client/issues/627)) ([ad68223](https://github.com/panva/node-openid-client/commit/ad6822333d713733655865e234290417ea59382b)), closes [#626](https://github.com/panva/node-openid-client/issues/626)
+
 ## [5.6.0](https://github.com/panva/node-openid-client/compare/v5.5.0...v5.6.0) (2023-10-03)
 
 
