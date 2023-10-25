@@ -24,6 +24,7 @@ jobs:
           - lts/fermium # 14
           - lts/gallium # 16
           - lts/hydrogen # 18
+          - lts/iron # 20
           - current
     steps:
       - name: Checkout
@@ -51,7 +52,7 @@ jobs:
         uses: actions/setup-node@v4
         id: node
         with:
-          node-version: lts/hydrogen # 18
+          node-version: lts/iron # 20
           cache: 'npm'
           check-latest: true
       - name: Install dependencies
@@ -68,7 +69,7 @@ jobs:
       - uses: actions/setup-node@v4
         id: node
         with:
-          node-version: lts/hydrogen # 18
+          node-version: lts/iron # 20
           cache: 'npm'
       - name: Install dependencies
         run: npm clean-install
