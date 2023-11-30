@@ -246,6 +246,27 @@ This will poll in the defined interval and only resolve with a TokenSet once one
 will handle the defined `authorization_pending` and `slow_down` "soft" errors and continue polling
 but upon any other error it will reject. With tokenSet received you can throw away the handle.
 
+### Client Credentials Grant Flow
+
+Exchanging the client_id and client_secret of your application for an access token, to authenticate
+at a third-party api. Not on behalf of a user. Suitable for Machine-to-Machine authentication.
+
+**See the [documentation][] for full API details.**
+
+```js
+const client = new googleIssuer.Client({
+  client_id: 'zELcpfANLqY7Oqas',
+  client_secret: 'TQV5U29k1gHibH5bx1layBo0OSAvAbRT3UYW3EWrSYBB5swxjVfWUa1BS8lqzxG/0v9wruMcrGadany3',
+  redirect_uris: ['http://localhost:3000/cb'],
+  response_types: ['code']
+});
+
+const tokenSet = await client.grant({
+  audience: 'insert-your-audience',
+  grant_type: 'client_credentials'
+});
+```
+
 ## FAQ
 
 #### Semver?
