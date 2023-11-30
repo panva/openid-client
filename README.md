@@ -251,14 +251,12 @@ but upon any other error it will reject. With tokenSet received you can throw aw
 Exchanging the client_id and client_secret of your application for an access token, to authenticate
 at a third-party api. Not on behalf of a user. Suitable for Machine-to-Machine authentication.
 
-**See the [documentation][] for full API details.**
+**See the [documentation](./docs/README.md#clientgrantbody-extras) for full API details.**
 
 ```js
 const client = new googleIssuer.Client({
   client_id: 'zELcpfANLqY7Oqas',
   client_secret: 'TQV5U29k1gHibH5bx1layBo0OSAvAbRT3UYW3EWrSYBB5swxjVfWUa1BS8lqzxG/0v9wruMcrGadany3',
-  redirect_uris: ['http://localhost:3000/cb'],
-  response_types: ['code']
 });
 
 const tokenSet = await client.grant({
