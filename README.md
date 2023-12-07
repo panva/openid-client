@@ -260,7 +260,7 @@ const client = new googleIssuer.Client({
 });
 
 const tokenSet = await client.grant({
-  audience: 'insert-your-audience',
+  resource: 'urn:example:third-party-api',
   grant_type: 'client_credentials'
 });
 ```

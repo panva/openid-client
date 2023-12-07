@@ -381,7 +381,8 @@ Performs an arbitrary `grant_type` exchange at the `token_endpoint`.
 
 - `body`: `<Object>`
   - `grant_type`: `<string>`
-  - other properties may be provided depending on the grant in question, like `audience` or `resource` (RFC 8707)
+  - other standard properties like `resource` (RFC 8707), or non-standard properties like `audience` may be provided
+  depending on the OpenID Provider in question.
 - `extras`: `<Object>`
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
   part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
