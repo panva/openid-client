@@ -248,8 +248,7 @@ but upon any other error it will reject. With tokenSet received you can throw aw
 
 ### Client Credentials Grant Flow
 
-Exchanging the client_id and client_secret of your application for an access token, to authenticate
-at a third-party api. Not on behalf of a user. Suitable for Machine-to-Machine authentication.
+Client Credentials flow is for obtaining Access Tokens to use with third party APIs on behalf of your application, rather than an end-user which was the case in previous examples.
 
 **See the [documentation](./docs/README.md#clientgrantbody-extras) for full API details.**
 
