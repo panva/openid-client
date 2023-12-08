@@ -246,6 +246,24 @@ This will poll in the defined interval and only resolve with a TokenSet once one
 will handle the defined `authorization_pending` and `slow_down` "soft" errors and continue polling
 but upon any other error it will reject. With tokenSet received you can throw away the handle.
 
+### Client Credentials Grant Flow
+
+Client Credentials flow is for obtaining Access Tokens to use with third party APIs on behalf of your application, rather than an end-user which was the case in previous examples.
+
+**See the [documentation](./docs/README.md#clientgrantbody-extras) for full API details.**
+
+```js
+const client = new issuer.Client({
+  client_id: 'zELcpfANLqY7Oqas',
+  client_secret: 'TQV5U29k1gHibH5bx1layBo0OSAvAbRT3UYW3EWrSYBB5swxjVfWUa1BS8lqzxG/0v9wruMcrGadany3',
+});
+
+const tokenSet = await client.grant({
+  resource: 'urn:example:third-party-api',
+  grant_type: 'client_credentials'
+});
+```
+
 ## FAQ
 
 #### Semver?
