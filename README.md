@@ -253,7 +253,7 @@ Client Credentials flow is for obtaining Access Tokens to use with third party A
 **See the [documentation](./docs/README.md#clientgrantbody-extras) for full API details.**
 
 ```js
-const client = new googleIssuer.Client({
+const client = new issuer.Client({
   client_id: 'zELcpfANLqY7Oqas',
   client_secret: 'TQV5U29k1gHibH5bx1layBo0OSAvAbRT3UYW3EWrSYBB5swxjVfWUa1BS8lqzxG/0v9wruMcrGadany3',
 });
