@@ -381,7 +381,7 @@ Performs an arbitrary `grant_type` exchange at the `token_endpoint`.
 
 - `body`: `<Object>`
   - `grant_type`: `<string>`
-  - other standard properties like `resource` (RFC 8707), or non-standard properties like `audience` may be provided
+  - other properties may be provided depending on the grant in question
   depending on the OpenID Provider in question.
 - `extras`: `<Object>`
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
