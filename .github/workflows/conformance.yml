@@ -124,14 +124,14 @@ jobs:
       - run: npm run test
         working-directory: ./runner
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: runner/export-*.zip
           name: ${{ matrix.setup.plan }} failed html results
           if-no-files-found: ignore
         if: ${{ failure() }}
       - name: Upload test logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           if-no-files-found: warn
           name: ${{ matrix.setup.plan }} runner logs
