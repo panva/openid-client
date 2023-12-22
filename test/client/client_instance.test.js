@@ -210,9 +210,10 @@ describe('Client', () => {
           state: 'state',
           scope: 'openid profile email',
         }),
-      ).to.eql('https://op.example.com/auth?client_id=identifier&scope=openid%20profile%20email&response_type=code&state=state');
+      ).to.eql(
+        'https://op.example.com/auth?client_id=identifier&scope=openid%20profile%20email&response_type=code&state=state',
+      );
     });
-
   });
 
   describe('#endSessionUrl', function () {

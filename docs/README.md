@@ -569,7 +569,10 @@ requests.
 
 ```js
 const DEFAULT_HTTP_OPTIONS = {
-  headers: { 'User-Agent': `${pkg.name}/${pkg.version} (${pkg.homepage})` },
+  headers: {
+    'User-Agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
+    'Accept-Encoding': 'identity',
+  },
   timeout: 3500,
 };
 ```
