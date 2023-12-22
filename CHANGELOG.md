@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.2](https://github.com/panva/node-openid-client/compare/v5.6.1...v5.6.2) (2023-12-22)
+
+
+### Refactor
+
+* issuer discovery ([#637](https://github.com/panva/node-openid-client/issues/637)) ([c228877](https://github.com/panva/node-openid-client/commit/c228877fb3c374a5c9322f73032d088c9a9cb686))
+
+
+### Fixes
+
+* add explicit Accept-Encoding header to http requests ([abcb564](https://github.com/panva/node-openid-client/commit/abcb56414848e5f3dc3bfd192e0edc920dc4ed7b)), closes [#648](https://github.com/panva/node-openid-client/issues/648)
+
 ## [5.6.1](https://github.com/panva/node-openid-client/compare/v5.6.0...v5.6.1) (2023-10-11)
 
 
