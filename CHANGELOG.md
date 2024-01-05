@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.3](https://github.com/panva/node-openid-client/compare/v5.6.2...v5.6.3) (2024-01-05)
+
+
+### Fixes
+
+* encode client_secret_basic - _ . ! ~ * ' ( ) characters ([5a2ea80](https://github.com/panva/node-openid-client/commit/5a2ea80ef5e59ec0c03dbd97d82f551e24a9d348))
+
 ## [5.6.2](https://github.com/panva/node-openid-client/compare/v5.6.1...v5.6.2) (2023-12-22)
 
 
