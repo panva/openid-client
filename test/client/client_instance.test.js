@@ -2274,7 +2274,7 @@ describe('Client', () => {
         expect(await clientInternal.authFor.call(client, 'token')).to.eql({
           headers: {
             Authorization:
-              'Basic YW4lM0FpZGVudGlmaWVyOnNvbWUrc2VjdXJlKyUyNitub24tc3RhbmRhcmQrc2VjcmV0',
+              'Basic YW4lM0FpZGVudGlmaWVyOnNvbWUrc2VjdXJlKyUyNitub24lMkRzdGFuZGFyZCtzZWNyZXQ=',
           },
         });
       });
