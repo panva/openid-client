@@ -8,7 +8,7 @@ const { expect } = require('chai');
 const base64url = require('base64url');
 const nock = require('nock');
 const sinon = require('sinon');
-const jose2 = require('jose2');
+const jose = require('jose');
 const timekeeper = require('timekeeper');
 
 const TokenSet = require('../../lib/token_set');
@@ -17,11 +17,18 @@ const now = require('../../lib/helpers/unix_timestamp');
 const { Issuer, custom } = require('../../lib');
 const clientInternal = require('../../lib/helpers/client');
 const issuerInternal = require('../../lib/helpers/issuer');
+const KeyStore = require('../keystore');
 
 const fail = () => {
   throw new Error('expected promise to be rejected');
 };
 const encode = (object) => base64url.encode(JSON.stringify(object));
+
+function getSearchParams(input) {
+  const parsed = url.parse(input);
+  if (!parsed.search) return {};
+  return querystring.parse(parsed.search.substring(1));
+}
 
 describe('Client', () => {
   afterEach(timekeeper.reset);
@@ -57,12 +64,11 @@ describe('Client', () => {
 
     it('returns a string with the url with some basic defaults', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.authorizationUrl({
             redirect_uri: 'https://rp.example.com/cb',
           }),
-          true,
-        ).query,
+        ),
       ).to.eql({
         client_id: 'identifier',
         redirect_uri: 'https://rp.example.com/cb',
@@ -73,12 +79,11 @@ describe('Client', () => {
 
     it('returns a string with the url and client meta specific defaults', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.clientWithMeta.authorizationUrl({
             nonce: 'foo',
           }),
-          true,
-        ).query,
+        ),
       ).to.eql({
         nonce: 'foo',
         client_id: 'identifier',
@@ -89,7 +94,7 @@ describe('Client', () => {
     });
 
     it('returns a string with the url and no defaults if client has more metas', function () {
-      expect(url.parse(this.clientWithMultipleMetas.authorizationUrl(), true).query).to.eql({
+      expect(getSearchParams(this.clientWithMultipleMetas.authorizationUrl())).to.eql({
         client_id: 'identifier',
         scope: 'openid',
       });
@@ -97,12 +102,11 @@ describe('Client', () => {
 
     it('keeps original query parameters', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.clientWithQuery.authorizationUrl({
             redirect_uri: 'https://rp.example.com/cb',
           }),
-          true,
-        ).query,
+        ),
       ).to.eql({
         client_id: 'identifier',
         redirect_uri: 'https://rp.example.com/cb',
@@ -114,15 +118,14 @@ describe('Client', () => {
 
     it('allows to overwrite the defaults', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.authorizationUrl({
             scope: 'openid offline_access',
             redirect_uri: 'https://rp.example.com/cb',
             response_type: 'id_token',
             nonce: 'foobar',
           }),
-          true,
-        ).query,
+        ),
       ).to.eql({
         client_id: 'identifier',
         scope: 'openid offline_access',
@@ -134,13 +137,12 @@ describe('Client', () => {
 
     it('allows any other params to be provide too', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.authorizationUrl({
             state: 'state',
             custom: 'property',
           }),
-          true,
-        ).query,
+        ),
       ).to.contain({
         state: 'state',
         custom: 'property',
@@ -149,12 +151,11 @@ describe('Client', () => {
 
     it('allows resource to passed as an array', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.authorizationUrl({
             resource: ['urn:example:com', 'urn:example-2:com'],
           }),
-          true,
-        ).query,
+        ),
       ).to.deep.contain({
         resource: ['urn:example:com', 'urn:example-2:com'],
       });
@@ -162,12 +163,11 @@ describe('Client', () => {
 
     it('auto-stringifies claims parameter', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.authorizationUrl({
             claims: { id_token: { email: null } },
           }),
-          true,
-        ).query,
+        ),
       ).to.contain({
         claims: '{"id_token":{"email":null}}',
       });
@@ -175,25 +175,23 @@ describe('Client', () => {
 
     it('removes null and undefined values', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.authorizationUrl({
             state: null,
             prompt: undefined,
           }),
-          true,
-        ).query,
+        ),
       ).not.to.have.keys('state', 'prompt');
     });
 
     it('stringifies other values', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.authorizationUrl({
             max_age: 300,
             foo: true,
           }),
-          true,
-        ).query,
+        ),
       ).to.contain({
         max_age: '300',
         foo: 'true',
@@ -204,6 +202,17 @@ describe('Client', () => {
       expect(() => {
         this.client.authorizationUrl(true);
       }).to.throw(TypeError, 'params must be a plain object');
+    });
+
+    it('returns a space-delimited scope parameter', function () {
+      expect(
+        this.client.authorizationUrl({
+          state: 'state',
+          scope: 'openid profile email',
+        }),
+      ).to.eql(
+        'https://op.example.com/auth?client_id=identifier&scope=openid%20profile%20email&response_type=code&state=state',
+      );
     });
   });
 
@@ -241,15 +250,18 @@ describe('Client', () => {
       }).to.throw('end_session_endpoint must be configured on the issuer');
     });
 
-    it('returns the end_session_endpoint only if nothing is passed', function () {
-      expect(this.client.endSessionUrl()).to.eql('https://op.example.com/session/end');
+    it('returns the end_session_endpoint with client_id if nothing is passed', function () {
+      expect(this.client.endSessionUrl()).to.eql(
+        'https://op.example.com/session/end?client_id=identifier',
+      );
       expect(this.clientWithQuery.endSessionUrl()).to.eql(
-        'https://op.example.com/session/end?foo=bar',
+        'https://op.example.com/session/end?foo=bar&client_id=identifier',
       );
     });
 
     it('defaults the post_logout_redirect_uri if client has some', function () {
-      expect(url.parse(this.clientWithUris.endSessionUrl(), true).query).to.eql({
+      expect(getSearchParams(this.clientWithUris.endSessionUrl())).to.eql({
+        client_id: 'identifier',
         post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
       });
     });
@@ -261,13 +273,13 @@ describe('Client', () => {
         access_token: 'tokenValue',
       });
       expect(
-        url.parse(
+        getSearchParams(
           this.client.endSessionUrl({
             id_token_hint: hint,
           }),
-          true,
-        ).query,
+        ),
       ).to.eql({
+        client_id: 'identifier',
         id_token_hint: 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJzdWJqZWN0In0.',
       });
     });
@@ -284,36 +296,50 @@ describe('Client', () => {
       ).to.throw(TypeError, 'id_token not present in TokenSet');
     });
 
+    it('allows to override default applied values', function () {
+      expect(
+        getSearchParams(
+          this.client.endSessionUrl({
+            post_logout_redirect_uri: 'override',
+            client_id: 'override',
+          }),
+        ),
+      ).to.eql({
+        post_logout_redirect_uri: 'override',
+        client_id: 'override',
+      });
+    });
+
     it('allows for recommended and optional query params to be passed in', function () {
       expect(
-        url.parse(
+        getSearchParams(
           this.client.endSessionUrl({
             post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
             state: 'foo',
             id_token_hint: 'idtoken',
           }),
-          true,
-        ).query,
+        ),
       ).to.eql({
         post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
         state: 'foo',
         id_token_hint: 'idtoken',
+        client_id: 'identifier',
       });
       expect(
-        url.parse(
+        getSearchParams(
           this.clientWithQuery.endSessionUrl({
             post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
             state: 'foo',
             id_token_hint: 'idtoken',
             foo: 'this will be ignored',
           }),
-          true,
-        ).query,
+        ),
       ).to.eql({
         post_logout_redirect_uri: 'https://rp.example.com/logout/cb',
         state: 'foo',
         foo: 'bar',
         id_token_hint: 'idtoken',
+        client_id: 'identifier',
       });
     });
   });
@@ -548,17 +574,15 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose2.JWT.sign(
-          {
-            code: 'foo',
-          },
-          client.client_secret,
-          {
-            issuer: this.issuerWithIssResponse.issuer,
-            audience: client.client_id,
-            expiresIn: '5m',
-          },
-        );
+        const response = await new jose.SignJWT({
+          code: 'foo',
+          iss: this.issuerWithIssResponse.issuer,
+          aud: client.client_id,
+        })
+          .setIssuedAt()
+          .setExpirationTime('5m')
+          .setProtectedHeader({ alg: 'HS256' })
+          .sign(new TextEncoder().encode(client.client_secret));
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
@@ -601,24 +625,24 @@ describe('Client', () => {
           authorization_encrypted_response_enc: 'A128GCM',
         });
 
-        const response = jose2.JWE.encrypt(
-          jose2.JWT.sign(
-            {
-              code: 'foo',
-            },
-            client.client_secret,
-            {
-              issuer: this.issuerWithIssResponse.issuer,
-              audience: client.client_id,
-              expiresIn: '5m',
-            },
-          ),
-          await client.secretForAlg('A128GCM'),
-          {
+        const cleartext = new TextEncoder().encode(
+          await new jose.SignJWT({
+            code: 'foo',
+            iss: this.issuerWithIssResponse.issuer,
+            aud: client.client_id,
+          })
+            .setIssuedAt()
+            .setExpirationTime('5m')
+            .setProtectedHeader({ alg: 'HS256' })
+            .sign(new TextEncoder().encode(client.client_secret)),
+        );
+
+        const response = await new jose.CompactEncrypt(cleartext)
+          .setProtectedHeader({
             alg: 'dir',
             enc: 'A128GCM',
-          },
-        );
+          })
+          .encrypt(await client.secretForAlg('A128GCM'));
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
@@ -676,17 +700,15 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose2.JWT.sign(
-          {
-            code: 'foo',
-          },
-          client.client_secret,
-          {
-            issuer: this.issuerWithIssResponse.issuer,
-            audience: client.client_id,
-            expiresIn: '5m',
-          },
-        );
+        const response = await new jose.SignJWT({
+          code: 'foo',
+          iss: this.issuerWithIssResponse.issuer,
+          aud: client.client_id,
+        })
+          .setIssuedAt()
+          .setProtectedHeader({ alg: 'HS256' })
+          .setExpirationTime('5m')
+          .sign(new TextEncoder().encode(client.client_secret));
 
         return this.client
           .callback(
@@ -924,17 +946,15 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose2.JWT.sign(
-          {
-            code: 'foo',
-          },
-          client.client_secret,
-          {
-            issuer: this.issuerWithIssResponse.issuer,
-            audience: client.client_id,
-            expiresIn: '5m',
-          },
-        );
+        const response = await new jose.SignJWT({
+          code: 'foo',
+          iss: this.issuerWithIssResponse.issuer,
+          aud: client.client_id,
+        })
+          .setIssuedAt()
+          .setProtectedHeader({ alg: 'HS256' })
+          .setExpirationTime('5m')
+          .sign(new TextEncoder().encode(client.client_secret));
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
@@ -977,24 +997,24 @@ describe('Client', () => {
           authorization_encrypted_response_enc: 'A128GCM',
         });
 
-        const response = jose2.JWE.encrypt(
-          jose2.JWT.sign(
-            {
-              code: 'foo',
-            },
-            client.client_secret,
-            {
-              issuer: this.issuerWithIssResponse.issuer,
-              audience: client.client_id,
-              expiresIn: '5m',
-            },
-          ),
-          await client.secretForAlg('A128GCM'),
-          {
+        const cleartext = new TextEncoder().encode(
+          await new jose.SignJWT({
+            code: 'foo',
+            iss: this.issuerWithIssResponse.issuer,
+            aud: client.client_id,
+          })
+            .setIssuedAt()
+            .setExpirationTime('5m')
+            .setProtectedHeader({ alg: 'HS256' })
+            .sign(new TextEncoder().encode(client.client_secret)),
+        );
+
+        const response = await new jose.CompactEncrypt(cleartext)
+          .setProtectedHeader({
             alg: 'dir',
             enc: 'A128GCM',
-          },
-        );
+          })
+          .encrypt(await client.secretForAlg('A128GCM'));
 
         nock('https://op.example.com')
           .matchHeader('Accept', 'application/json')
@@ -1052,17 +1072,15 @@ describe('Client', () => {
           authorization_signed_response_alg: 'HS256',
         });
 
-        const response = jose2.JWT.sign(
-          {
-            code: 'foo',
-          },
-          client.client_secret,
-          {
-            issuer: this.issuer.issuer,
-            audience: client.client_id,
-            expiresIn: '5m',
-          },
-        );
+        const response = await new jose.SignJWT({
+          code: 'foo',
+          iss: this.issuer.issuer,
+          aud: client.client_id,
+        })
+          .setIssuedAt()
+          .setProtectedHeader({ alg: 'HS256' })
+          .setExpirationTime('5m')
+          .sign(new TextEncoder().encode(client.client_secret));
 
         return this.client
           .oauthCallback(
@@ -1358,63 +1376,57 @@ describe('Client', () => {
         });
     });
 
-    it('passes ID Token validations when ID Token is returned', function () {
+    it('passes ID Token validations when ID Token is returned', async function () {
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
         .post('/token') // to make sure filteringRequestBody works
         .reply(200, {
           access_token: 'present',
           refresh_token: 'refreshValue',
-          id_token: jose2.JWT.sign(
-            {
-              sub: 'foo',
-            },
-            this.client.client_secret,
-            {
-              issuer: this.client.issuer.issuer,
-              audience: this.client.client_id,
-              expiresIn: '5m',
-            },
-          ),
+          id_token: await new jose.SignJWT({
+            sub: 'foo',
+            iss: this.client.issuer.issuer,
+            aud: this.client.client_id,
+          })
+            .setIssuedAt()
+            .setProtectedHeader({ alg: 'HS256' })
+            .setExpirationTime('5m')
+            .sign(new TextEncoder().encode(this.client.client_secret)),
         });
 
       return this.client.refresh(
         new TokenSet({
           access_token: 'present',
           refresh_token: 'refreshValue',
-          id_token: jose2.JWT.sign(
-            {
-              sub: 'foo',
-            },
-            this.client.client_secret,
-            {
-              issuer: this.client.issuer.issuer,
-              audience: this.client.client_id,
-              expiresIn: '6m',
-            },
-          ),
+          id_token: await new jose.SignJWT({
+            sub: 'foo',
+            iss: this.client.issuer.issuer,
+            aud: this.client.client_id,
+          })
+            .setIssuedAt()
+            .setProtectedHeader({ alg: 'HS256' })
+            .setExpirationTime('6m')
+            .sign(new TextEncoder().encode(this.client.client_secret)),
         }),
       );
     });
 
-    it('rejects when returned ID Token sub does not match the one passed in', function () {
+    it('rejects when returned ID Token sub does not match the one passed in', async function () {
       nock('https://op.example.com')
         .matchHeader('Accept', 'application/json')
         .post('/token') // to make sure filteringRequestBody works
         .reply(200, {
           access_token: 'present',
           refresh_token: 'refreshValue',
-          id_token: jose2.JWT.sign(
-            {
-              sub: 'bar',
-            },
-            this.client.client_secret,
-            {
-              issuer: this.client.issuer.issuer,
-              audience: this.client.client_id,
-              expiresIn: '5m',
-            },
-          ),
+          id_token: await new jose.SignJWT({
+            sub: 'bar',
+            iss: this.client.issuer.issuer,
+            aud: this.client.client_id,
+          })
+            .setProtectedHeader({ alg: 'HS256' })
+            .setIssuedAt()
+            .setExpirationTime('5m')
+            .sign(new TextEncoder().encode(this.client.client_secret)),
         });
 
       return this.client
@@ -1422,17 +1434,15 @@ describe('Client', () => {
           new TokenSet({
             access_token: 'present',
             refresh_token: 'refreshValue',
-            id_token: jose2.JWT.sign(
-              {
-                sub: 'foo',
-              },
-              this.client.client_secret,
-              {
-                issuer: this.client.issuer.issuer,
-                audience: this.client.client_id,
-                expiresIn: '5m',
-              },
-            ),
+            id_token: await new jose.SignJWT({
+              sub: 'foo',
+              iss: this.client.issuer.issuer,
+              aud: this.client.client_id,
+            })
+              .setProtectedHeader({ alg: 'HS256' })
+              .setExpirationTime('5m')
+              .setIssuedAt()
+              .sign(new TextEncoder().encode(this.client.client_secret)),
           }),
         )
         .then(fail, (error) => {
@@ -1845,7 +1855,7 @@ describe('Client', () => {
         .reply(200, '{"notavalid"}');
 
       return client.userinfo('foo').then(fail, function (error) {
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+        expect(error.message).to.match(/in JSON at position 12/);
         expect(error).to.have.property('response');
       });
     });
@@ -2054,7 +2064,7 @@ describe('Client', () => {
       });
 
       return client.introspect('tokenValue').then(fail, function (error) {
-        expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+        expect(error.message).to.match(/in JSON at position 12/);
         expect(error).to.have.property('response');
       });
     });
@@ -2232,6 +2242,18 @@ describe('Client', () => {
           );
         });
       });
+
+      it('allows client_secret to be empty string', async function () {
+        const issuer = new Issuer();
+        const client = new issuer.Client({
+          client_id: 'an:identifier',
+          client_secret: '',
+          token_endpoint_auth_method: 'client_secret_post',
+        });
+        expect(await clientInternal.authFor.call(client, 'token')).to.eql({
+          form: { client_id: 'an:identifier', client_secret: '' },
+        });
+      });
     });
 
     describe('when client_secret_basic', function () {
@@ -2265,6 +2287,14 @@ describe('Client', () => {
           expect(error.message).to.eql(
             'client_secret_basic client authentication method requires a client_secret',
           );
+        });
+      });
+
+      it('allows client_secret to be empty string', async function () {
+        const issuer = new Issuer();
+        const client = new issuer.Client({ client_id: 'an:identifier', client_secret: '' });
+        expect(await clientInternal.authFor.call(client, 'token')).to.eql({
+          headers: { Authorization: 'Basic YW4lM0FpZGVudGlmaWVyOg==' },
         });
       });
     });
@@ -2363,7 +2393,7 @@ describe('Client', () => {
             token_endpoint_auth_signing_alg_values_supported: ['ES256', 'ES384'],
           });
 
-          const keystore = new jose2.JWKS.KeyStore();
+          const keystore = new KeyStore();
 
           return keystore.generate('EC', 'P-256').then(() => {
             const client = new issuer.Client(
@@ -2464,7 +2494,7 @@ describe('Client', () => {
             token_endpoint: 'https://op.example.com/token',
           });
 
-          const keystore = new jose2.JWKS.KeyStore();
+          const keystore = new KeyStore();
 
           return keystore.generate('EC', 'P-256').then(() => {
             const client = new issuer.Client(
@@ -2496,7 +2526,7 @@ describe('Client', () => {
     });
 
     before(function () {
-      this.keystore = new jose2.JWKS.KeyStore();
+      this.keystore = new KeyStore();
       return this.keystore.generate('RSA');
     });
 
@@ -2531,12 +2561,20 @@ describe('Client', () => {
         token_endpoint_auth_method: 'tls_client_auth',
       });
 
-      this.IdToken = async (key, alg, payload) => {
-        return jose2.JWS.sign(payload, key, {
-          alg,
-          typ: 'oauth-authz-req+jwt',
-          kid: alg.startsWith('HS') ? undefined : key.kid,
-        });
+      this.IdToken = async (jwkOrSecret, alg, payload) => {
+        let key;
+        if (jwkOrSecret instanceof Uint8Array) {
+          key = jwkOrSecret;
+        } else {
+          key = await jose.importJWK(jwkOrSecret, alg);
+        }
+        return new jose.SignJWT(payload)
+          .setProtectedHeader({
+            alg,
+            typ: 'oauth-authz-req+jwt',
+            kid: alg.startsWith('HS') ? undefined : key.kid,
+          })
+          .sign(key);
       };
     });
 
@@ -3496,7 +3534,7 @@ describe('Client', () => {
 
   describe('signed and encrypted responses', function () {
     before(function () {
-      this.keystore = jose2.JWKS.asKeyStore({
+      this.keystore = new KeyStore({
         keys: [
           {
             kty: 'EC',
@@ -3818,7 +3856,7 @@ describe('Client', () => {
 
   describe('#requestObject', function () {
     before(function () {
-      this.keystore = new jose2.JWKS.KeyStore();
+      this.keystore = new KeyStore();
       return this.keystore.generate('RSA');
     });
 
@@ -3853,7 +3891,7 @@ describe('Client', () => {
     });
 
     it('verifies keystore has the appropriate key', async function () {
-      const keystore = new jose2.JWKS.KeyStore();
+      const keystore = new KeyStore();
       await keystore.generate('EC');
       const client = new this.issuer.Client(
         { client_id: 'identifier', request_object_signing_alg: 'EdDSA' },
@@ -4124,7 +4162,7 @@ describe('Client', () => {
 
   describe('#requestObject (encryption when multiple keys match)', function () {
     before(function () {
-      this.keystore = new jose2.JWKS.KeyStore();
+      this.keystore = new KeyStore();
       return Promise.all([this.keystore.generate('RSA'), this.keystore.generate('RSA')]);
     });
 

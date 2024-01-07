@@ -54,4 +54,30 @@ describe('TokenSet', function () {
 
     expect(JSON.parse(JSON.stringify(ts))).to.eql(ts);
   });
+
+  it('cannot have its prototype methods overloaded', function () {
+    let ts = new TokenSet({
+      claims: null,
+      id_token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ',
+    });
+
+    expect(ts.claims).to.be.a('function');
+    expect(ts.claims()).to.eql({ admin: true, name: 'John Doe', sub: '1234567890' });
+
+    ts = new TokenSet({ expires_in: 'foo' });
+    ts.expires_in = 200;
+    expect(ts.expires_in).to.be.a('number');
+    expect(ts.expired()).to.eql(false);
+
+    const e = new Error();
+    class CustomTokenSet extends TokenSet {
+      expired() {
+        throw e;
+      }
+    }
+
+    ts = new CustomTokenSet({});
+    expect(() => ts.expired()).to.throw(e);
+  });
 });

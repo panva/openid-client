@@ -242,9 +242,11 @@ parameters.
 
 - `parameters`: `<Object>`
   - `id_token_hint`: `<string>` &vert; `<TokenSet>`
+  - `client_id`: `<string>` **Default:** client's client_id
   - `post_logout_redirect_uri`: `<string>` **Default:** If only a single
     `client.post_logout_redirect_uris` member is present that one will be used automatically.
   - `state`: `<string>`
+  - `logout_hint`: `<string>`
   - any other end session parameters may be provided
 - Returns: `<string>`
 
@@ -297,10 +299,9 @@ Performs the callback for Authorization Server's authorization response.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
     part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
     is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-    Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-    based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+    Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>` Parsed token endpoint response as a TokenSet.
 
 Tip: If you're using pure
@@ -322,10 +323,9 @@ Performs `refresh_token` grant type exchange.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
     part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
     is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-  Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-  based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+  Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>` Parsed token endpoint response as a TokenSet.
 
 ---
@@ -346,10 +346,9 @@ will also be checked to match the on in the TokenSet's ID Token.
     or the `token_type` property from a passed in TokenSet.
   - `params`: `<Object>` additional parameters to send with the userinfo request (as query string
     when GET, as x-www-form-urlencoded body when POST).
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-    Userinfo Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-    based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+    Userinfo Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<Object>` Parsed userinfo response.
 
 ---
@@ -367,10 +366,9 @@ Fetches an arbitrary resource with the provided Access Token in an Authorization
   - `method`: `<string>` The HTTP method to use for the request. **Default:** 'GET'
   - `tokenType`: `<string>` The token type as the Authorization Header scheme. **Default:** 'Bearer'
     or the `token_type` property from a passed in TokenSet.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-      Userinfo Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-      valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-      based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+      Userinfo Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<Response>` Response is a [Got Response](https://github.com/sindresorhus/got/tree/v11.8.0#response)
   with the `body` property being a `<Buffer>`
 
@@ -388,10 +386,9 @@ Performs an arbitrary `grant_type` exchange at the `token_endpoint`.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
   part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
   is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-    Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-    valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-    based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+    Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<TokenSet>`
 
 ---
@@ -465,10 +462,9 @@ a handle for subsequent Device Access Token Request polling.
   - `clientAssertionPayload`: `<Object>` extra client assertion payload parameters to be sent as
     part of a client JWT assertion. This is only used when the client's `token_endpoint_auth_method`
     is either `client_secret_jwt` or `private_key_jwt`.
-  - `DPoP`: `<KeyObject>` When provided the client will send a DPoP Proof JWT to the 
-  Token Endpoint. The value must be a private key in the form of a crypto.KeyObject, or any
-  valid crypto.createPrivateKey input. The algorithm is determined[^dpop-exception] automatically 
-  based on the type of key and the issuer metadata.
+  - `DPoP`: `<KeyObject>` or `<CryptoKey>` When provided the client will send a DPoP Proof JWT to the 
+  Token Endpoint. The DPoP Proof JWT's algorithm is determined[^dpop-exception] automatically based
+    on the type of key and the issuer metadata.
 - Returns: `Promise<DeviceFlowHandle>`
 
 ---
@@ -515,7 +511,7 @@ the following are valid values for `token_endpoint_auth_method`.
   in the request body
 - `tls_client_auth` and `self_signed_tls_client_auth` - sends client_id in the request body combined
   with client certificate and key configured via setting `cert` and `key` on a per-request basis
-  using [`docs#customizing-http-requests`](https://github.com/panva/node-openid-client/tree/master/docs#customizing-http-requests)
+  using [`docs#customizing-http-requests`](https://github.com/panva/node-openid-client/tree/main/docs#customizing-http-requests)
 
 Note: `*_jwt` methods resolve their signature algorithm either via the client's configured alg
 (`token_endpoint_auth_signing_alg`) or any of the issuer's supported algs
@@ -573,7 +569,10 @@ requests.
 
 ```js
 const DEFAULT_HTTP_OPTIONS = {
-  headers: { 'User-Agent': `${pkg.name}/${pkg.version} (${pkg.homepage})` },
+  headers: {
+    'User-Agent': `${pkg.name}/${pkg.version} (${pkg.homepage})`,
+    'Accept-Encoding': 'identity',
+  },
   timeout: 3500,
 };
 ```
@@ -656,7 +655,7 @@ client[custom.http_options] = function (url, options) {
 
 #### Customizing clock skew tolerance
 
-It is possible the RP or OP environment has a system clock skew, to set a clock tolerance (in seconds)
+It is possible the RP or OP environment has a system clock skew, which can result in the error "JWT not active yet". To set a clock tolerance (in seconds)
 
 ```js
 import { custom } from 'openid-client';
@@ -838,7 +837,7 @@ Creates a new Strategy
 
 - `options`: `<Object>`
   - `client`: `<Client>` Client instance. The strategy will use it.
-  - `params`: `<Object>` Authorization Request parameters. The strategy will use these.
+  - `params`: `<Object>` Authorization Request parameters. The strategy will use these for every authorization request.
   - `passReqToCallback`: `<boolean>` Boolean specifying whether the verify function should get
     the request object as first argument instead. **Default:** 'false'
   - `usePKCE`: `<boolean>` &vert; `<string>` The PKCE method to use. When 'true' it will resolve based
@@ -852,6 +851,16 @@ Creates a new Strategy
     are fine using 'tokenset.claims()' alone.
   - `done`: `<Function>`
 - Returns: `<Strategy>`
+
+Note: You can also set authorization request parameters dynamically using the `options` argument in `passport.authenticate([options])`:
+
+```js
+app.get('/protected-route', function(req, res, next) {
+  if (shouldReConsent(req)) {
+    passport.authenticate('oidc', { prompt: 'consent' })(req, res, next);
+  }
+});
+```
 
 ---
 

@@ -2,6 +2,139 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.4](https://github.com/panva/node-openid-client/compare/v5.6.3...v5.6.4) (2024-01-06)
+
+## [5.6.3](https://github.com/panva/node-openid-client/compare/v5.6.2...v5.6.3) (2024-01-05)
+
+
+### Fixes
+
+* encode client_secret_basic - _ . ! ~ * ' ( ) characters ([5a2ea80](https://github.com/panva/node-openid-client/commit/5a2ea80ef5e59ec0c03dbd97d82f551e24a9d348))
+
+## [5.6.2](https://github.com/panva/node-openid-client/compare/v5.6.1...v5.6.2) (2023-12-22)
+
+
+### Refactor
+
+* issuer discovery ([#637](https://github.com/panva/node-openid-client/issues/637)) ([c228877](https://github.com/panva/node-openid-client/commit/c228877fb3c374a5c9322f73032d088c9a9cb686))
+
+
+### Fixes
+
+* add explicit Accept-Encoding header to http requests ([abcb564](https://github.com/panva/node-openid-client/commit/abcb56414848e5f3dc3bfd192e0edc920dc4ed7b)), closes [#648](https://github.com/panva/node-openid-client/issues/648)
+
+## [5.6.1](https://github.com/panva/node-openid-client/compare/v5.6.0...v5.6.1) (2023-10-11)
+
+
+### Fixes
+
+* consistent space encoding in authorizationUrl ([#627](https://github.com/panva/node-openid-client/issues/627)) ([ad68223](https://github.com/panva/node-openid-client/commit/ad6822333d713733655865e234290417ea59382b)), closes [#626](https://github.com/panva/node-openid-client/issues/626)
+
+## [5.6.0](https://github.com/panva/node-openid-client/compare/v5.5.0...v5.6.0) (2023-10-03)
+
+
+### Features
+
+* experimental Bun support ([a9d3a87](https://github.com/panva/node-openid-client/commit/a9d3a87d2727bb37a535aeac9da9851ffdef8613)), closes [#622](https://github.com/panva/node-openid-client/issues/622) [#623](https://github.com/panva/node-openid-client/issues/623)
+
+## [5.5.0](https://github.com/panva/node-openid-client/compare/v5.4.3...v5.5.0) (2023-09-08)
+
+
+### Features
+
+* **DPoP:** remove experimental warning, DPoP is now RFC9449 ([133a022](https://github.com/panva/node-openid-client/commit/133a022cce8e0d7a386b59163c18c100c80df2ab))
+
+## [5.4.3](https://github.com/panva/node-openid-client/compare/v5.4.2...v5.4.3) (2023-07-06)
+
+
+### Fixes
+
+* handle empty client_secret with basic and post client auth ([#610](https://github.com/panva/node-openid-client/issues/610)) ([402c711](https://github.com/panva/node-openid-client/commit/402c711fde93d5644c3b70861c462213bc87ab34)), closes [#609](https://github.com/panva/node-openid-client/issues/609)
+
+## [5.4.2](https://github.com/panva/node-openid-client/compare/v5.4.1...v5.4.2) (2023-04-25)
+
+
+### Fixes
+
+* bump oidc-token-hash ([20607e9](https://github.com/panva/node-openid-client/commit/20607e9eb72ea1dee0cfd714d66cd00285686f5f))
+
+## [5.4.1](https://github.com/panva/node-openid-client/compare/v5.4.0...v5.4.1) (2023-04-21)
+
+## [5.4.0](https://github.com/panva/node-openid-client/compare/v5.3.4...v5.4.0) (2023-02-05)
+
+
+### Features
+
+* allow third party initiated login requests to trigger strategy ([568709a](https://github.com/panva/node-openid-client/commit/568709abc786cc8e2d9c8de1543b0c488c284098)), closes [#510](https://github.com/panva/node-openid-client/issues/510) [#564](https://github.com/panva/node-openid-client/issues/564)
+
+## [5.3.4](https://github.com/panva/node-openid-client/compare/v5.3.3...v5.3.4) (2023-02-02)
+
+
+### Fixes
+
+* regression introduced in v5.3.3 ([4f6e847](https://github.com/panva/node-openid-client/commit/4f6e847f126ca531c73d37e1a756ab62f361f86a))
+
+## [5.3.3](https://github.com/panva/node-openid-client/compare/v5.3.2...v5.3.3) (2023-02-02)
+
+
+### Refactor
+
+* remove use of Node.js v8 builtin ([f1881bc](https://github.com/panva/node-openid-client/commit/f1881bc61d424df4576864d610d4840101b45631)), closes [#442](https://github.com/panva/node-openid-client/issues/442) [#475](https://github.com/panva/node-openid-client/issues/475) [#555](https://github.com/panva/node-openid-client/issues/555)
+
+## [5.3.2](https://github.com/panva/node-openid-client/compare/v5.3.1...v5.3.2) (2023-01-20)
+
+
+### Fixes
+
+* **passport:** ignore static state and nonce passed to Strategy() ([#556](https://github.com/panva/node-openid-client/issues/556)) ([43daff3](https://github.com/panva/node-openid-client/commit/43daff3d780d10d29e8ac8cd56b94d99aaa37986))
+
+## [5.3.1](https://github.com/panva/node-openid-client/compare/v5.3.0...v5.3.1) (2022-11-28)
+
+
+### Fixes
+
+* **typescript:** requestResource returns a Promise ([#546](https://github.com/panva/node-openid-client/issues/546)) ([8bc9519](https://github.com/panva/node-openid-client/commit/8bc9519d56a9759fedbad2418420f0c5b75f2455)), closes [#488](https://github.com/panva/node-openid-client/issues/488)
+
+## [5.3.0](https://github.com/panva/node-openid-client/compare/v5.2.1...v5.3.0) (2022-11-09)
+
+
+### Features
+
+* JARM is now a stable feature ([10e3a37](https://github.com/panva/node-openid-client/commit/10e3a37efe2635c4b21fba30f5646ef7cf2f4b95))
+
+## [5.2.1](https://github.com/panva/node-openid-client/compare/v5.2.0...v5.2.1) (2022-10-20)
+
+
+### Fixes
+
+* **typescript:** add client_id and logout_hint to EndSessionParameters ([b7b5438](https://github.com/panva/node-openid-client/commit/b7b54384421f9f0fe0d9c42cf731d0877d95c256))
+
+## [5.2.0](https://github.com/panva/node-openid-client/compare/v5.1.10...v5.2.0) (2022-10-19)
+
+
+### Features
+
+* add client_id to endSessionUrl query strings ([6fd9350](https://github.com/panva/node-openid-client/commit/6fd93509b73a67693fb073d31308a0bfcae0ce3f))
+
+
+### Fixes
+
+* allow endSessionUrl defaults to be overriden ([7cc2402](https://github.com/panva/node-openid-client/commit/7cc240277c30badc7aa7431c31d72feec1237e23))
+
+## [5.1.10](https://github.com/panva/node-openid-client/compare/v5.1.9...v5.1.10) (2022-09-28)
+
+
+### Refactor
+
+* **engines:** remove package.json engines restriction ([9aefba3](https://github.com/panva/node-openid-client/commit/9aefba30dcf0e312051e6844b35b06bc457488d5))
+
+## [5.1.9](https://github.com/panva/node-openid-client/compare/v5.1.8...v5.1.9) (2022-08-23)
+
+
+### Fixes
+
+* safeguard TokenSet prototype methods ([7468674](https://github.com/panva/node-openid-client/commit/74686740ffc7c518bd7564dc7c69eb19f775dab8)), closes [#511](https://github.com/panva/node-openid-client/issues/511)
+
 ## [5.1.8](https://github.com/panva/node-openid-client/compare/v5.1.7...v5.1.8) (2022-07-04)
 
 

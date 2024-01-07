@@ -136,6 +136,8 @@ export interface EndSessionParameters {
   id_token_hint?: TokenSet | string;
   post_logout_redirect_uri?: string;
   state?: string;
+  client_id?: string;
+  logout_hint?: string;
 
   [key: string]: unknown;
 }
@@ -349,7 +351,7 @@ declare class BaseClient {
       tokenType?: string;
       DPoP?: DPoPInput;
     },
-  ): { body?: Buffer } & http.IncomingMessage;
+  ): Promise<{ body?: Buffer } & http.IncomingMessage>;
   grant(body: GrantBody, extras?: GrantExtras): Promise<TokenSet>;
   introspect(
     token: string,

@@ -1,6 +1,6 @@
 {
   "name": "openid-client",
-  "version": "5.1.8",
+  "version": "5.6.4",
   "description": "OpenID Connect Relying Party (RP, Client) implementation for Node.js runtime, supports passportjs",
   "keywords": [
     "auth",
@@ -41,38 +41,26 @@
     "types/index.d.ts"
   ],
   "scripts": {
-    "coverage": "nyc mocha test/**/*.test.js",
-    "prettier": "npx prettier --loglevel silent --write ./lib ./test ./certification ./types",
+    "format": "npx prettier --loglevel silent --write ./lib ./test ./certification ./types",
     "test": "mocha test/**/*.test.js"
   },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ]
-  },
   "dependencies": {
-    "jose": "^4.1.4",
+    "jose": "^4.15.4",
     "lru-cache": "^6.0.0",
-    "object-hash": "^2.0.1",
-    "oidc-token-hash": "^5.0.1"
+    "object-hash": "^2.2.0",
+    "oidc-token-hash": "^5.0.3"
   },
   "devDependencies": {
-    "@types/node": "^16.11.5",
-    "@types/passport": "^1.0.7",
+    "@types/node": "^16.18.59",
+    "@types/passport": "^1.0.14",
     "base64url": "^3.0.1",
-    "chai": "^4.2.0",
-    "jose2": "npm:jose@^2.0.5",
-    "mocha": "^8.2.0",
-    "nock": "^13.0.2",
-    "nyc": "^15.1.0",
-    "prettier": "^2.4.1",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "nock": "^13.3.6",
+    "prettier": "^2.8.8",
     "readable-mock-req": "^0.2.2",
-    "sinon": "^9.2.0",
-    "timekeeper": "^2.2.0"
-  },
-  "engines": {
-    "node": "^12.19.0 || ^14.15.0 || ^16.13.0"
+    "sinon": "^9.2.4",
+    "timekeeper": "^2.3.1"
   },
   "standard-version": {
     "scripts": {
@@ -102,7 +90,7 @@
       {
         "type": "refactor",
         "section": "Refactor",
-        "hidden": true
+        "hidden": false
       },
       {
         "type": "perf",

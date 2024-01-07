@@ -1,11 +1,11 @@
 const { isNumber, isUndefined } = require('util');
 
 const { expect } = require('chai');
-const jose2 = require('jose2');
 const sinon = require('sinon');
 const nock = require('nock');
 
 const { Issuer, custom } = require('../../lib');
+const KeyStore = require('../keystore');
 
 const fail = () => {
   throw new Error('expected promise to be rejected');
@@ -82,14 +82,14 @@ describe('Client#register', () => {
     nock('https://op.example.com').post('/client/registration').reply(201, '{"notavalid"}');
 
     return issuer.Client.register({}).then(fail, function (error) {
-      expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+      expect(error.message).to.match(/in JSON at position 12/);
       expect(error).to.have.property('response');
     });
   });
 
   describe('with keystore (as option)', function () {
     it('enriches the registration with jwks if not provided (or jwks_uri)', function () {
-      const keystore = new jose2.JWKS.KeyStore();
+      const keystore = new KeyStore();
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -109,7 +109,7 @@ describe('Client#register', () => {
     });
 
     it('ignores the keystore during registration if jwks is provided', function () {
-      const keystore = new jose2.JWKS.KeyStore();
+      const keystore = new KeyStore();
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -134,7 +134,7 @@ describe('Client#register', () => {
     });
 
     it('ignores the keystore during registration if jwks_uri is provided', function () {
-      const keystore = new jose2.JWKS.KeyStore();
+      const keystore = new KeyStore();
 
       nock('https://op.example.com')
         .filteringRequestBody(function (body) {
@@ -166,7 +166,7 @@ describe('Client#register', () => {
     });
 
     it('does not accept oct keys', function () {
-      const keystore = new jose2.JWKS.KeyStore();
+      const keystore = new KeyStore();
 
       return keystore.generate('oct', 32).then(() => {
         return issuer.Client.register({}, { jwks: keystore.toJWKS(true) }).then(

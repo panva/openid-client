@@ -278,7 +278,7 @@ describe('Issuer#discover()', () => {
       .reply(200, '{"notavalid"}');
 
     return Issuer.discover('https://op.example.com').then(fail, function (error) {
-      expect(error.message).to.eql('Unexpected token } in JSON at position 12');
+      expect(error.message).to.match(/in JSON at position 12/);
       expect(error).to.have.property('response');
     });
   });

@@ -42,13 +42,13 @@ openid-client.
     - self_signed_tls_client_auth
 - [RFC9101 - OAuth 2.0 JWT-Secured Authorization Request (JAR)][feature-jar]
 - [RFC9126 - OAuth 2.0 Pushed Authorization Requests (PAR)][feature-par]
-- [OpenID Connect RP-Initiated Logout 1.0 - draft 01][feature-rp-logout]
+- [RFC9449 - OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP)][feature-dpop]
+- [OpenID Connect RP-Initiated Logout 1.0][feature-rp-logout]
 - [Financial-grade API Security Profile 1.0 - Part 2: Advanced (FAPI)][feature-fapi]
-- [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM) - ID1][feature-jarm]
-- [OAuth 2.0 Demonstration of Proof-of-Possession at the Application Layer (DPoP) - draft 04][feature-dpop]
-- [OAuth 2.0 Authorization Server Issuer Identification - draft-04][feature-iss]
+- [JWT Secured Authorization Response Mode for OAuth 2.0 (JARM)][feature-jarm]
+- [OAuth 2.0 Authorization Server Issuer Identification][feature-iss]
 
-Updates to draft specifications (DPoP, JARM, etc) are released as MINOR library versions,
+Updates to draft specifications are released as MINOR library versions,
 if you utilize these specification implementations consider using the tilde `~` operator in your
 package.json since breaking changes may be introduced as part of these version updates. 
 
@@ -87,13 +87,16 @@ specific middlewares. Those can however be built using the exposed API, one such
 
 ## Install
 
-Node.js LTS releases Codename Erbium (starting with ^12.19.0) and newer LTS releases are supported. 
-This means  ^12.19.0 (Erbium), ^14.15.0 (Fermium), and ^16.13.0 (Gallium). Future LTS releases will
-be added to this list as they're released.
+Node.js LTS releases Codename Erbium and newer LTS releases are supported.
 
 ```console
 npm install openid-client
 ```
+
+Note: Other javascript runtimes are not supported.
+I recommend [panva/oauth4webapi][oauth4webapi], or a derivate thereof, if you're 
+looking for a similarly compliant and certified client software that's not dependent 
+on the Node.js runtime builtins.
 
 ## Quick start
 
@@ -243,6 +246,24 @@ This will poll in the defined interval and only resolve with a TokenSet once one
 will handle the defined `authorization_pending` and `slow_down` "soft" errors and continue polling
 but upon any other error it will reject. With tokenSet received you can throw away the handle.
 
+### Client Credentials Grant Flow
+
+Client Credentials flow is for obtaining Access Tokens to use with third party APIs on behalf of your application, rather than an end-user which was the case in previous examples.
+
+**See the [documentation](./docs/README.md#clientgrantbody-extras) for full API details.**
+
+```js
+const client = new issuer.Client({
+  client_id: 'zELcpfANLqY7Oqas',
+  client_secret: 'TQV5U29k1gHibH5bx1layBo0OSAvAbRT3UYW3EWrSYBB5swxjVfWUa1BS8lqzxG/0v9wruMcrGadany3',
+});
+
+const tokenSet = await client.grant({
+  resource: 'urn:example:third-party-api',
+  grant_type: 'client_credentials'
+});
+```
+
 ## FAQ
 
 #### Semver?
@@ -254,8 +275,10 @@ private API and is subject to change between any versions.
 
 #### How do I use it outside of Node.js
 
-It is **only built for Node.js** environments - including openid-client in
-browser-environment targeted projects is not supported.
+It is **only built for Node.js**. Other javascript runtimes are not supported.
+I recommend [panva/oauth4webapi][oauth4webapi], or a derivate thereof, if you're 
+looking for a similarly compliant and certified client software that's not dependent 
+on the Node.js runtime builtins.
 
 #### How to make the client send client_id and client_secret in the body?
 
@@ -274,26 +297,27 @@ See [Customizing (docs)][documentation-customizing].
 [feature-introspection]: https://tools.ietf.org/html/rfc7662
 [feature-mtls]: https://tools.ietf.org/html/rfc8705
 [feature-device-flow]: https://tools.ietf.org/html/rfc8628
-[feature-rp-logout]: https://openid.net/specs/openid-connect-rpinitiated-1_0-01.html
-[feature-jarm]: https://openid.net/specs/openid-financial-api-jarm-ID1.html
+[feature-rp-logout]: https://openid.net/specs/openid-connect-rpinitiated-1_0.html
+[feature-jarm]: https://openid.net/specs/oauth-v2-jarm.html
 [feature-fapi]: https://openid.net/specs/openid-financial-api-part-2-1_0.html
-[feature-dpop]: https://tools.ietf.org/html/draft-ietf-oauth-dpop-04
+[feature-dpop]: https://www.rfc-editor.org/rfc/rfc9449.html
 [feature-par]: https://www.rfc-editor.org/rfc/rfc9126.html
 [feature-jar]: https://www.rfc-editor.org/rfc/rfc9101.html
-[feature-iss]: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-iss-auth-resp-04
+[feature-iss]: https://www.rfc-editor.org/rfc/rfc9207.html
 [openid-certified-link]: https://openid.net/certification/
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
 [sponsor-auth0]: https://a0.to/try-auth0
 [support-sponsor]: https://github.com/sponsors/panva
-[documentation]: https://github.com/panva/node-openid-client/blob/master/docs/README.md
-[documentation-issuer]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#issuer
-[documentation-client]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#client
-[documentation-customizing]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#customizing
-[documentation-tokenset]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#tokenset
-[documentation-strategy]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#strategy
-[documentation-errors]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#errors
-[documentation-generators]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#generators
-[documentation-methods]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#client-authentication-methods
-[documentation-webfinger]: https://github.com/panva/node-openid-client/blob/master/docs/README.md#issuerwebfingerinput
+[documentation]: https://github.com/panva/node-openid-client/blob/main/docs/README.md
+[documentation-issuer]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#issuer
+[documentation-client]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#client
+[documentation-customizing]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#customizing
+[documentation-tokenset]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#tokenset
+[documentation-strategy]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#strategy
+[documentation-errors]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#errors
+[documentation-generators]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#generators
+[documentation-methods]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#client-authentication-methods
+[documentation-webfinger]: https://github.com/panva/node-openid-client/blob/main/docs/README.md#issuerwebfingerinput
 [express-openid-connect]: https://www.npmjs.com/package/express-openid-connect
+[oauth4webapi]: https://github.com/panva/oauth4webapi#readme

@@ -104,7 +104,7 @@ describe('OpenIDConnectStrategy', () => {
     });
   });
 
-  describe('initate', function () {
+  describe('initiate', function () {
     it('starts authentication requests for GETs', function () {
       const params = { foo: 'bar' };
       const strategy = new Strategy({ client: this.client, params }, () => {});
@@ -116,6 +116,28 @@ describe('OpenIDConnectStrategy', () => {
       strategy.authenticate(req);
 
       expect(params).to.eql({ foo: 'bar' });
+      expect(strategy.redirect.calledOnce).to.be.true;
+      const target = strategy.redirect.firstCall.args[0];
+      expect(target).to.include('redirect_uri=');
+      expect(target).to.include('scope=');
+      expect(req.session).to.have.property('oidc:op.example.com');
+      expect(req.session['oidc:op.example.com']).to.have.keys(
+        'state',
+        'response_type',
+        'code_verifier',
+      );
+    });
+
+    it('starts authentication requests for TPIL GETs', function () {
+      const params = { iss: 'https://op.example.com' };
+      const strategy = new Strategy({ client: this.client, params }, () => {});
+
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req);
+
       expect(strategy.redirect.calledOnce).to.be.true;
       const target = strategy.redirect.firstCall.args[0];
       expect(target).to.include('redirect_uri=');
@@ -197,13 +219,14 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include(`resource=${encodeURIComponent('urn:example:foo')}`);
     });
 
-    it('automatically includes nonce for where it applies', function () {
+    it('automatically includes nonce for where it applies (and ignores one from params)', function () {
       const strategy = new Strategy(
         {
           client: this.client,
           params: {
             response_type: 'code id_token token',
             response_mode: 'form_post',
+            nonce: 'foo',
           },
         },
         () => {},
@@ -220,11 +243,43 @@ describe('OpenIDConnectStrategy', () => {
       expect(target).to.include('redirect_uri=');
       expect(target).to.include('scope=');
       expect(target).to.include('nonce=');
+      expect(target).not.to.include('nonce=foo');
       expect(target).to.include('response_mode=form_post');
       expect(req.session).to.have.property('oidc:op.example.com');
       expect(req.session['oidc:op.example.com']).to.have.keys(
         'state',
         'nonce',
+        'response_type',
+        'code_verifier',
+      );
+    });
+
+    it('ignores static state coming from params', function () {
+      const strategy = new Strategy(
+        {
+          client: this.client,
+          params: {
+            state: 'foo',
+          },
+        },
+        () => {},
+      );
+
+      const req = new MockRequest('GET', '/login/oidc');
+      req.session = {};
+
+      strategy.redirect = sinon.spy();
+      strategy.authenticate(req);
+
+      expect(strategy.redirect.calledOnce).to.be.true;
+      const target = strategy.redirect.firstCall.args[0];
+      expect(target).to.include('redirect_uri=');
+      expect(target).to.include('scope=');
+      expect(target).to.include('state=');
+      expect(target).not.to.include('state=foo');
+      expect(req.session).to.have.property('oidc:op.example.com');
+      expect(req.session['oidc:op.example.com']).to.have.keys(
+        'state',
         'response_type',
         'code_verifier',
       );
