@@ -44,10 +44,11 @@ jobs:
           # - plan: oidcc-client-dynamic-certification-test-plan
 
           # FAPI 1.0 ID-2
-          - plan: fapi-rw-id2-client-test-plan
-            client_auth_type: mtls
-          - plan: fapi-rw-id2-client-test-plan
-            client_auth_type: private_key_jwt
+          # These plans are deprecated and to be removed
+          # - plan: fapi-rw-id2-client-test-plan
+          #   client_auth_type: mtls
+          # - plan: fapi-rw-id2-client-test-plan
+          #   client_auth_type: private_key_jwt
 
           # FAPI 1.0 Advanced Final
           - plan: fapi1-advanced-final-client-test-plan
