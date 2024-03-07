@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.5](https://github.com/panva/node-openid-client/compare/v5.6.4...v5.6.5) (2024-03-07)
+
+
+### Refactor
+
+* avoid use of prototype attributes in keystore queries ([#660](https://github.com/panva/node-openid-client/issues/660)) ([47a549c](https://github.com/panva/node-openid-client/commit/47a549cb4e36ffe2ebfe2dc9d6b69a02643cc0a9))
+
 ## [5.6.4](https://github.com/panva/node-openid-client/compare/v5.6.3...v5.6.4) (2024-01-06)
 
 ## [5.6.3](https://github.com/panva/node-openid-client/compare/v5.6.2...v5.6.3) (2024-01-05)
