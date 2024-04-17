@@ -37,3 +37,7 @@ npm-shrinkwrap.json
 
 # TS test
 types/*.js
+
+
+# Editors
+.idea

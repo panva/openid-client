@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "jose": "^4.15.5",
-    "lru-cache": "^6.0.0",
+    "lru-cache": "^10.2.0",
     "object-hash": "^2.2.0",
     "oidc-token-hash": "^5.0.3"
   },

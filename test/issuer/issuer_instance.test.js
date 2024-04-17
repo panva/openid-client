@@ -44,7 +44,7 @@ describe('Issuer', () => {
 
     after(nock.cleanAll);
     afterEach(function () {
-      if (LRU.prototype.get.restore) LRU.prototype.get.restore();
+      if (LRU.LRUCache.prototype.get.restore) LRU.LRUCache.prototype.get.restore();
     });
 
     it('does not refetch immidiately', function () {
@@ -69,7 +69,7 @@ describe('Issuer', () => {
     });
 
     it('asks to fetch if the keystore is stale and new key definition is requested', function () {
-      sinon.stub(LRU.prototype, 'get').returns(undefined);
+      sinon.stub(LRU.LRUCache.prototype, 'get').returns(undefined);
       return issuerInternal.queryKeyStore
         .call(this.issuer, { use: 'sig', alg: 'RS256', kid: 'yeah' })
         .then(fail, () => {
@@ -94,7 +94,7 @@ describe('Issuer', () => {
     });
 
     it('requires a kid is provided in definition if more keys are in the storage', function () {
-      sinon.stub(LRU.prototype, 'get').returns(undefined);
+      sinon.stub(LRU.LRUCache.prototype, 'get').returns(undefined);
       return this.keystore.generate('RSA').then(() => {
         nock('https://op.example.com').get('/certs').reply(200, this.keystore.toJWKS());
 
@@ -110,7 +110,7 @@ describe('Issuer', () => {
     });
 
     it('multiple keys can match the JWT header', function () {
-      sinon.stub(LRU.prototype, 'get').returns(undefined);
+      sinon.stub(LRU.LRUCache.prototype, 'get').returns(undefined);
       const { kid } = this.keystore.get({ kty: 'RSA' });
       return this.keystore.generate('RSA', undefined, { kid }).then(() => {
         nock('https://op.example.com').get('/certs').reply(200, this.keystore.toJWKS());

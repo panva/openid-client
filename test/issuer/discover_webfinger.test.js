@@ -127,7 +127,7 @@ describe('Issuer#webfinger()', () => {
   });
 
   it('validates the discovered issuer is the same as from webfinger', function () {
-    Registry.reset();
+    Registry.clear();
     const webfinger = nock('https://op.example.com')
       .get('/.well-known/webfinger')
       .query(function (query) {
