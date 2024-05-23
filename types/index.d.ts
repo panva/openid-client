@@ -39,6 +39,7 @@ interface UnknownObject {
 
 export const custom: {
   setHttpOptionsDefaults(params: HttpOptions): undefined;
+  resetHttpOptionsDefaults(): undefined;
   readonly http_options: unique symbol;
   readonly clock_tolerance: unique symbol;
 };
