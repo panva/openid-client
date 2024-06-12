@@ -124,6 +124,8 @@ jobs:
         working-directory: ./runner
       - run: npm run test
         working-directory: ./runner
+        env:
+          NODE_OPTIONS: --tls-cipher-list="ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES256-GCM-SHA384 ECDHE-ECDSA-AES128-GCM-SHA256 ECDHE-ECDSA-AES256-GCM-SHA384"
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         with:
