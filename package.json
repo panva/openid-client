@@ -45,18 +45,18 @@
     "test": "mocha test/**/*.test.js"
   },
   "dependencies": {
-    "jose": "^4.15.5",
+    "jose": "^4.15.9",
     "lru-cache": "^6.0.0",
     "object-hash": "^2.2.0",
     "oidc-token-hash": "^5.0.3"
   },
   "devDependencies": {
-    "@types/node": "^16.18.98",
+    "@types/node": "^16.18.106",
     "@types/passport": "^1.0.16",
     "base64url": "^3.0.1",
-    "chai": "^4.4.1",
-    "mocha": "^10.4.0",
-    "nock": "^13.5.4",
+    "chai": "^4.5.0",
+    "mocha": "^10.7.3",
+    "nock": "^13.5.5",
     "prettier": "^2.8.8",
     "readable-mock-req": "^0.2.2",
     "sinon": "^9.2.4",
