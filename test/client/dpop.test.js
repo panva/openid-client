@@ -418,6 +418,27 @@ describe('DPoP', () => {
     const proof = this.httpOpts.headers.DPoP;
     const proofJWT = jose.decodeJwt(proof);
     expect(proofJWT).to.have.property('ath');
+    expect(proofJWT).to.have.property('htm', 'POST');
+  });
+
+  it('includes htm when GET is defaulted to', async function () {
+    const { privateKey } = await jose.generateKeyPair('ES256', { extractable: true });
+    nock('https://rs.example.com')
+      .matchHeader('Transfer-Encoding', isUndefined)
+      .matchHeader('Content-Length', isUndefined)
+      .get('/resource')
+      .reply(200, { sub: 'foo' });
+
+    await this.client.requestResource('https://rs.example.com/resource', 'foo', {
+      DPoP: privateKey,
+    });
+
+    expect(this.httpOpts).to.have.nested.property('headers.DPoP');
+
+    const proof = this.httpOpts.headers.DPoP;
+    const proofJWT = jose.decodeJwt(proof);
+    expect(proofJWT).to.have.property('ath');
+    expect(proofJWT).to.have.property('htm', 'GET');
   });
 
   it('is enabled for grant', async function () {
