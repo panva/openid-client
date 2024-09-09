@@ -52,13 +52,11 @@ Updates to draft specifications are released as MINOR library versions,
 if you utilize these specification implementations consider using the tilde `~` operator in your
 package.json since breaking changes may be introduced as part of these version updates. 
 
-## Certification
-[<img width="184" height="96" align="right" src="https://cdn.jsdelivr.net/gh/panva/node-openid-client@38cf016b0837e6d4116de3780b28d222d5780bc9/OpenID_Certified.png" alt="OpenID Certification">][openid-certified-link]  
-Filip Skokan has [certified][openid-certified-link] that [openid-client][npm-url]
-conforms to the following profiles of the OpenID Connect™ protocol
+## [Certification](https://openid.net/certification/faq/)
 
-- Basic, Implicit, Hybrid, Config, Dynamic, and Form Post RP
-- FAPI 1.0 Advanced RP
+[<img width="96" height="50" align="right" src="https://user-images.githubusercontent.com/241506/166977513-7cd710a9-7f60-4944-aebe-a658e9f36375.png" alt="OpenID Certification">](#certification)
+
+[Filip Skokan](https://github.com/panva) has [certified](https://openid.net/certification) that [this software](https://github.com/panva/node-openid-client) conforms to the Basic, Implicit, Hybrid, Config, Dynamic, FAPI 1.0, and FAPI 2.0 Relying Party Conformance Profiles of the OpenID Connect™ protocol.
 
 ## Sponsor
 
@@ -304,7 +302,6 @@ See [Customizing (docs)][documentation-customizing].
 [feature-par]: https://www.rfc-editor.org/rfc/rfc9126.html
 [feature-jar]: https://www.rfc-editor.org/rfc/rfc9101.html
 [feature-iss]: https://www.rfc-editor.org/rfc/rfc9207.html
-[openid-certified-link]: https://openid.net/certification/
 [passport-url]: http://passportjs.org
 [npm-url]: https://www.npmjs.com/package/openid-client
 [sponsor-auth0]: https://a0.to/try-auth0

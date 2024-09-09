@@ -443,6 +443,7 @@ export class Issuer<TClient extends BaseClient = BaseClient> {
   Client: TypeOfGenericClient<TClient>;
 
   FAPI1Client: TypeOfGenericClient<TClient>;
+  FAPI2Client: TypeOfGenericClient<TClient>;
 
   metadata: IssuerMetadata;
   [custom.http_options]: CustomHttpOptionsProvider;
