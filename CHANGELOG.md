@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.7.0](https://github.com/panva/node-openid-client/compare/v5.6.5...v5.7.0) (2024-09-09)
+
+
+### Features
+
+* add FAPI 2.0 support ([55b8a33](https://github.com/panva/node-openid-client/commit/55b8a33a90aff58e1017c0265ff1440845dc40c5))
+
+
+### Fixes
+
+* include DPoP Proof "htm" in requestResource if GET is defaulted to ([23f7b49](https://github.com/panva/node-openid-client/commit/23f7b499bc5b005c3ab29aa463ce20e4e6290b91))
+
 ## [5.6.5](https://github.com/panva/node-openid-client/compare/v5.6.4...v5.6.5) (2024-03-07)
 
 
