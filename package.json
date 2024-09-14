@@ -11,6 +11,7 @@
     "connect",
     "dynamic",
     "electron",
+    "fapi",
     "hybrid",
     "identity",
     "implicit",
