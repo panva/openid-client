@@ -1,6 +1,8 @@
-# High-Level OAuth 2 / OpenID Connect Client API for JavaScript Runtimes
+# openid-client
 
-TODO
+> High-Level OAuth 2 / OpenID Connect Client API for JavaScript Runtimes
+
+openid-client simplifies integration with authorization servers by providing easy-to-use APIs for the most common authentication and authorization flows, including OAuth 2 and OpenID Connect. It is designed for JavaScript runtimes like Node.js, Browsers, Deno, Cloudflare Workers, and more.
 
 ## Features
 
@@ -15,6 +17,7 @@ The following features are currently in scope and implemented in this software:
 - UserInfo and Protected Resource Requests
 - Authorization Server Issuer Identification
 - JWT Secured Introspection, Response Mode (JARM), Authorization Request (JAR), and UserInfo
+- [Passport](https://www.passportjs.org/) Strategy
 
 ## Sponsor
 
@@ -36,14 +39,33 @@ If you want to quickly add authentication to JavaScript apps, feel free to check
 
 Support from the community to continue maintaining and improving this module is welcome. If you find the module useful, please consider supporting the project by [becoming a sponsor](https://github.com/sponsors/panva).
 
-## Quick start
+## [API Reference Documentation](docs/README.md)
+
+`openid-client` is distributed via [npmjs.com](https://www.npmjs.com/package/openid-client) and [github.com](https://github.com/panva/openid-client).
+
+## [Examples](examples/README.md)
+
+**`example`** ESM import
 
 ```ts
 import * as client from 'openid-client'
+```
 
-let server!: URL
-let clientId!: string
-let clientSecret!: string
+- Authorization Code Flow (OAuth 2.0) - [source](examples/oauth.ts)
+- Authorization Code Flow (OpenID Connect) - [source](examples/oidc.ts) | [diff](examples/oidc.diff)
+- Extensions
+  - JWT Secured Authorization Request (JAR) - [source](examples/jar.ts) | [diff](examples/jar.diff)
+  - JWT Secured Authorization Response Mode (JARM) - [source](examples/jarm.ts) | [diff](examples/jarm.diff)
+  - Pushed Authorization Request (PAR) - [source](examples/par.ts) | [diff](examples/par.diff)
+- Passport Strategy - [source](passport.ts)
+
+## Quick start
+
+```ts
+let server!: URL // Authorization Server's Issuer Identifier
+let clientId!: string // Client identifier at the Authorization Server
+let clientSecret!: string // Client Secret
+
 let config: client.Configuration = await client.discovery(
   server,
   clientId,
@@ -62,13 +84,13 @@ to.
 
 ```ts
 /**
- * Value used in the authorization request as redirect_uri pre-registered at the
- * Authorization Server.
+ * Value used in the authorization request as the redirect_uri parameter, this
+ * is typically pre-registered at the Authorization Server.
  */
 let redirect_uri!: string
-let scope!: string
+let scope!: string // Scope of the access request
 /**
- * The following MUST be generated for every redirect to the
+ * PKCE: The following MUST be generated for every redirect to the
  * authorization_endpoint. You must store the code_verifier and state in the
  * end-user session such that it can be recovered as the user gets redirected
  * from the authorization server back to your application.
@@ -92,7 +114,8 @@ if (
   /**
    * We cannot be sure the server supports PKCE so we're going to use state too.
    * Use of PKCE is backwards compatible even if the AS doesn't support it which
-   * is why we're using it regardless.
+   * is why we're using it regardless. Like PKCE, random state must be generated
+   * for every redirect to the authorization_endpoint.
    */
   state = client.randomState()
   parameters.state = state
@@ -104,8 +127,8 @@ let redirectTo: URL = client.buildAuthorizationUrl(config, parameters)
 console.log('redirecting to', redirectTo.href)
 ```
 
-When end-users are redirected back to your `redirect_uri` your application consumes the callback and
-passes in the `code_verifier` to include it in the authorization code grant token exchange.
+When end-users are redirected back to the `redirect_uri` your application consumes the callback and
+passes in PKCE `code_verifier` to include it in the authorization code grant token exchange.
 
 ```ts
 let getCurrentUrl!: (...args: any) => URL
@@ -141,7 +164,8 @@ console.log(
 ### Device Authorization Grant (Device Flow)
 
 ```ts
-let scope!: string
+let scope!: string // Scope of the access request
+
 let response = await client.initiateDeviceAuthorization(config, { scope })
 
 console.log('User Code:', response.user_code)
@@ -166,8 +190,8 @@ This will poll in a regular interval and only resolve with tokens once the end-u
 Client Credentials flow is for obtaining Access Tokens to use with third party APIs on behalf of your application, rather than an end-user which was the case in previous examples.
 
 ```ts
-let scope!: string
-let resource!: string
+let scope!: string // Scope of the access request
+let resource!: string // Resource Indicator of the Resource Server the access token is for
 
 let tokens: client.TokenEndpointResponse = await lib.clientCredentialsGrant(
   config,
@@ -176,25 +200,6 @@ let tokens: client.TokenEndpointResponse = await lib.clientCredentialsGrant(
 
 console.log('Token Endpoint Response', tokens)
 ```
-
-## [API Reference](docs/README.md)
-
-`openid-client` is distributed via [npmjs.com](https://www.npmjs.com/package/openid-client) and [github.com](https://github.com/panva/openid-client).
-
-## [Examples](examples/README.md)
-
-**`example`** ESM import
-
-```ts
-import * as client from 'openid-client'
-```
-
-- Authorization Code Flow (OAuth 2.0) - [source](examples/oauth.ts)
-- Authorization Code Flow (OpenID Connect) - [source](examples/oidc.ts) | [diff](examples/oidc.diff)
-- Extensions
-  - JWT Secured Authorization Request (JAR) - [source](examples/jar.ts) | [diff](examples/jar.diff)
-  - JWT Secured Authorization Response Mode (JARM) - [source](examples/jarm.ts) | [diff](examples/jarm.diff)
-  - Pushed Authorization Request (PAR) - [source](examples/par.ts) | [diff](examples/par.diff)
 
 ## Supported Runtimes
 

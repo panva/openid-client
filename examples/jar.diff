@@ -1,5 +1,5 @@
 diff --git a/examples/oauth.ts b/examples/jar.ts
-index 97579a5..5bc94a9 100644
+index d4666fb..9f55c2c 100644
 --- a/examples/oauth.ts
 +++ b/examples/jar.ts
 @@ -6,6 +6,7 @@ let getCurrentUrl!: (...args: any) => URL
@@ -14,8 +14,8 @@ index 97579a5..5bc94a9 100644
      parameters.state = state
    }
  
--  const redirectTo = client.buildAuthorizationUrl(config, parameters)
-+  const redirectTo = await client.buildAuthorizationUrlWithJAR(
+-  let redirectTo = client.buildAuthorizationUrl(config, parameters)
++  let redirectTo = await client.buildAuthorizationUrlWithJAR(
 +    config,
 +    parameters,
 +    clientPrivateKey,

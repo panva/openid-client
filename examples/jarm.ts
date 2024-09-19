@@ -14,24 +14,24 @@ let redirect_uri!: string
 
 // End of prerequisites
 
-const config = await client.discovery(server, clientId, clientSecret)
+let config = await client.discovery(server, clientId, clientSecret)
 
 client.useJwtResponseMode(config)
 
-const code_challenge_method = 'S256'
+let code_challenge_method = 'S256'
 /**
  * The following MUST be generated for every redirect to the
- * authorization_endpoint. You must store the code_verifier and nonce in the
+ * authorization_endpoint. You must store the code_verifier and state in the
  * end-user session such that it can be recovered as the user gets redirected
  * from the authorization server back to your application.
  */
-const code_verifier = client.randomPKCECodeVerifier()
-const code_challenge = await client.calculatePKCECodeChallenge(code_verifier)
+let code_verifier = client.randomPKCECodeVerifier()
+let code_challenge = await client.calculatePKCECodeChallenge(code_verifier)
 let state!: string
 
 {
   // redirect user to as.authorization_endpoint
-  const parameters: Record<string, string> = {
+  let parameters: Record<string, string> = {
     redirect_uri,
     scope: 'api:read',
     code_challenge,
@@ -52,7 +52,7 @@ let state!: string
     parameters.state = state
   }
 
-  const redirectTo = client.buildAuthorizationUrl(config, parameters)
+  let redirectTo = client.buildAuthorizationUrl(config, parameters)
 
   console.log('redirecting to', redirectTo.href)
   // now redirect the user to redirectTo.href
@@ -62,8 +62,8 @@ let state!: string
 // Authorization Code Grant
 let access_token: string
 {
-  const currentUrl: URL = getCurrentUrl()
-  const tokens = await client.authorizationCodeGrant(config, currentUrl, {
+  let currentUrl: URL = getCurrentUrl()
+  let tokens = await client.authorizationCodeGrant(config, currentUrl, {
     pkceCodeVerifier: code_verifier,
     expectedState: state,
   })
@@ -74,7 +74,7 @@ let access_token: string
 
 // Protected Resource Request
 {
-  const protectedResource = await client.fetchProtectedResource(
+  let protectedResource = await client.fetchProtectedResource(
     config,
     access_token,
     new URL('https://rs.example.com/api'),

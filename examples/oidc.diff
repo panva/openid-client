@@ -1,17 +1,24 @@
 diff --git a/examples/oauth.ts b/examples/oidc.ts
-index 97579a5..1a6c7c9 100644
+index d4666fb..4eb3bae 100644
 --- a/examples/oauth.ts
 +++ b/examples/oidc.ts
-@@ -25,13 +25,13 @@ const code_challenge_method = 'S256'
+@@ -19,19 +19,19 @@ let config = await client.discovery(server, clientId, clientSecret)
+ let code_challenge_method = 'S256'
+ /**
+  * The following MUST be generated for every redirect to the
+- * authorization_endpoint. You must store the code_verifier and state in the
++ * authorization_endpoint. You must store the code_verifier and nonce in the
+  * end-user session such that it can be recovered as the user gets redirected
+  * from the authorization server back to your application.
   */
- const code_verifier = client.randomPKCECodeVerifier()
- const code_challenge = await client.calculatePKCECodeChallenge(code_verifier)
+ let code_verifier = client.randomPKCECodeVerifier()
+ let code_challenge = await client.calculatePKCECodeChallenge(code_verifier)
 -let state!: string
 +let nonce!: string
  
  {
    // redirect user to as.authorization_endpoint
-   const parameters: Record<string, string> = {
+   let parameters: Record<string, string> = {
      redirect_uri,
 -    scope: 'api:read',
 +    scope: 'openid email',
@@ -28,7 +35,7 @@ index 97579a5..1a6c7c9 100644
 +    parameters.nonce = nonce
    }
  
-   const redirectTo = client.buildAuthorizationUrl(config, parameters)
+   let redirectTo = client.buildAuthorizationUrl(config, parameters)
 @@ -58,26 +58,26 @@ let state!: string
  
  // one eternity later, the user lands back on the redirect_uri
@@ -36,8 +43,8 @@ index 97579a5..1a6c7c9 100644
 +let sub: string
  let access_token: string
  {
-   const currentUrl: URL = getCurrentUrl()
-   const tokens = await client.authorizationCodeGrant(config, currentUrl, {
+   let currentUrl: URL = getCurrentUrl()
+   let tokens = await client.authorizationCodeGrant(config, currentUrl, {
      pkceCodeVerifier: code_verifier,
 -    expectedState: state,
 +    expectedNonce: nonce,
@@ -46,7 +53,7 @@ index 97579a5..1a6c7c9 100644
  
    console.log('Token Endpoint Response', tokens)
    ;({ access_token } = tokens)
-+  const claims = tokens.claims()!
++  let claims = tokens.claims()!
 +  console.log('ID Token Claims', claims)
 +  ;({ sub } = claims)
  }
@@ -54,13 +61,13 @@ index 97579a5..1a6c7c9 100644
 -// Protected Resource Request
 +// UserInfo Request
  {
--  const protectedResource = await client.fetchProtectedResource(
+-  let protectedResource = await client.fetchProtectedResource(
 -    config,
 -    access_token,
 -    new URL('https://rs.example.com/api'),
 -    'GET',
 -  )
-+  const userInfo = await client.fetchUserInfo(config, access_token, sub)
++  let userInfo = await client.fetchUserInfo(config, access_token, sub)
  
 -  console.log('Protected Resource Response', await protectedResource.json())
 +  console.log('UserInfo Response', userInfo)

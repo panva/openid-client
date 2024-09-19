@@ -22,5 +22,6 @@ A collection of examples for the most common use cases.
   - JWT Secured Authorization Request (JAR) - [source](jar.ts) | [diff](jar.diff)
   - JWT Secured Authorization Response Mode (JARM) - [source](jarm.ts) | [diff](jarm.diff)
   - Pushed Authorization Request (PAR) - [source](par.ts) | [diff](par.diff)
+- Passport Strategy - [source](passport.ts)
 
 [sponsor-auth0]: https://auth0.com/signup?utm_source=external_sites&utm_medium=panva&utm_campaign=devn_signup
