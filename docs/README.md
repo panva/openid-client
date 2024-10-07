@@ -13,7 +13,13 @@
 
 ## Sponsor
 
-[<img height="65" align="left" src="https://cdn.auth0.com/blog/github-sponsorships/brand-evolution-logo-Auth0-horizontal-Indigo.png" alt="auth0-logo">][sponsor-auth0] If you want to quickly add OpenID Connect authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan. [Create an Auth0 account; it's free!][sponsor-auth0]<br><br>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../sponsor/Auth0byOkta_dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="../sponsor/Auth0byOkta_light.png">
+  <img height="65" align="left" alt="Auth0 by Okta" src=".,/sponsor/Auth0byOkta_light.png">
+</picture> 
+
+If you want to quickly add OpenID Connect authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan. [Create an Auth0 account; it's free!][sponsor-auth0]<br><br>
 
 ## Support
 
@@ -1003,7 +1009,7 @@ request instance.
 - Returns: `<http.IncomingMessage>` &vert; `<undefined>`
 
 
-[sponsor-auth0]: https://a0.to/try-auth0
+[sponsor-auth0]: https://auth0.com/signup?utm_source=external_sites&utm_medium=panva&utm_campaign=devn_signup
 [support-sponsor]: https://github.com/sponsors/panva
 [jose]: https://github.com/panva/jose
 [webfinger-discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html#IssuerDiscovery
