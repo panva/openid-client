@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+>
+> [Help shape the next major release - v6.x beta is out](https://github.com/panva/openid-client/releases/tag/v6.0.0-beta.0) now with Deno, Bun, Cloudflare Workers, and Edge Runtime support.
+
 # openid-client
 
 openid-client is a server side [OpenID][openid-connect] Relying Party (RP, Client) implementation for
