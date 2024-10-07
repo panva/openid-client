@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0-beta.0](https://github.com/panva/openid-client/compare/v5.7.0...v6.0.0-beta.0) (2024-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* openid-client v6.x is a complete rewrite of the openid-client module, this is the first time since 0.1.0 (8 years ago) that the API has drastically changed. The new module structure and API focuses on three core principles:
+
+- runtime compatibility (adding support for Deno, Cloudflare Workers, Bun, and other Web API interoperable runtimes)
+- tree-shakeability (bundles should not contain features that don't end up being used)
+- less options (removing support for processing deprecated response types, cutting down on the number of combinations that need to handled)
+
+To that end openid-client@6 no longer supports the full cartesian matrix of response types and response modes, it no longer supports issuing encrypted assertions, decrypting assertions is limited to only a few algorithms, it no longer supports Dynamic Client Registration or Management, and Self-Issued OpenID Provider responses are also not supported.
+
+The new API makes basic setups simple while allowing some degree of complexity where needed.
+
+openid-client@6 is an ESM module using ES2022 syntax and it depends on WebCryptoAPI and Fetch API globals being available in the JS runtime.
+
+openid-client@6 is written in TypeScript and its exported types come with comment annotations.
+
+(Node.js) Versions 20.x and newer have all the necessary globals. v18.x is being tested in CI as well with the `--experimental-global-webcrypto` CLI flag.
+
+(Node.js) CJS style `let client = require('openid-client')` is possible in versions where `process.features.require_module` is `true`. This is a new Node.js feature slated to be released without a CLI flag in 23.x and 22.x
+
+### Documentation
+
+* update ([3b7e09d](https://github.com/panva/openid-client/commit/3b7e09dd7f3019b416fd88579315dc38aa054c87))
+
+
+### Refactor
+
+* openid-client@6 ([e8daf06](https://github.com/panva/openid-client/commit/e8daf06726a294e62cc366ba10dae647b88f2cf8))
+
 ## [5.7.0](https://github.com/panva/node-openid-client/compare/v5.6.5...v5.7.0) (2024-09-09)
 
 
