@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0-beta.1](https://github.com/panva/openid-client/compare/v6.0.0-beta.0...v6.0.0-beta.1) (2024-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* openid-client@6
+
+### Refactor
+
+* openid-client@6 ([bf349c2](https://github.com/panva/openid-client/commit/bf349c28e1d5b50a7f6fb71d98ea1220b0ded936))
+
 ## [6.0.0-beta.0](https://github.com/panva/openid-client/compare/v5.7.0...v6.0.0-beta.0) (2024-10-07)
 
 

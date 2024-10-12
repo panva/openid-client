@@ -492,44 +492,6 @@ export declare const customFetch: typeof oauth.customFetch;
  *
  * @example
  *
- * Changing Private Key JWT client assertion audience issued from a string to an
- * array
- *
- * ```ts
- * let key!: client.CryptoKey | client.PrivateKey
- * let aud!: string[]
- *
- * let clientAuth = client.PrivateKeyJwt(key, {
- *   [client.modifyAssertion](header, payload) {
- *     payload.aud = aud
- *   },
- * })
- * ```
- *
- * @example
- *
- * Changing Request Object issued by {@link buildAuthorizationUrlWithJAR} to have
- * an expiration of 5 minutes
- *
- * ```ts
- * let key!: client.CryptoKey | client.PrivateKey
- * let config!: client.Configuration
- * let parameters!: URLSearchParams
- *
- * let redirectTo = client.buildAuthorizationUrlWithJAR(
- *   config,
- *   parameters,
- *   key,
- *   {
- *     [client.modifyAssertion](header, payload) {
- *       payload.exp = <number>payload.iat + 300
- *     },
- *   },
- * )
- * ```
- *
- * @example
- *
  * Changing the `alg: "Ed25519"` back to `alg: "EdDSA"`
  *
  * ```ts
