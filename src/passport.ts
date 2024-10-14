@@ -34,13 +34,13 @@ interface StrategyOptionsBase {
    */
   config: client.Configuration
   /**
-   * Name of the strategy, default is the hostname component of the
-   * authorization server's issuer identifier.
+   * Name of the strategy, default is the host component of the authorization
+   * server's issuer identifier.
    */
   name?: string
   /**
    * Property in the session to use for storing the authorization request state,
-   * default is the hostname component of the authorization server's issuer
+   * default is the host component of the authorization server's issuer
    * identifier.
    */
   sessionKey?: string
@@ -152,10 +152,10 @@ export class Strategy implements passport.Strategy {
       throw new TypeError()
     }
 
-    const { hostname } = new URL(options.config.serverMetadata().issuer)
+    const { host } = new URL(options.config.serverMetadata().issuer)
 
-    this.name = options.name ?? hostname
-    this._sessionKey = options.sessionKey ?? hostname
+    this.name = options.name ?? host
+    this._sessionKey = options.sessionKey ?? host
     this._DPoP = options.DPoP
     this._config = options.config
     this._scope = options.scope
@@ -313,9 +313,27 @@ export class Strategy implements passport.Strategy {
         })
       }
 
+      let input: URL | Request = currentUrl
+      if (req.method === 'POST') {
+        input = new Request(currentUrl.href, {
+          method: 'POST',
+          headers: Object.entries(req.headersDistinct).reduce(
+            (acc, [key, values]) => {
+              for (const value of values!) {
+                acc.append(key, value)
+              }
+              return acc
+            },
+            new Headers(),
+          ),
+          body: req,
+          duplex: 'half',
+        })
+      }
+
       const tokens = await client.authorizationCodeGrant(
         this._config,
-        currentUrl,
+        input,
         {
           pkceCodeVerifier: stateData.code_verifier,
           expectedNonce: stateData.nonce,
@@ -360,14 +378,12 @@ export class Strategy implements passport.Strategy {
    *
    * - Its `searchParams` are used as the authorization response parameters when
    *   the response type used by the client is `code`
-   * - Its `hash` is used as the authorization response parameters when the
-   *   response type used by the client is `code id_token`
    * - Its value stripped of `searchParams` and `hash` is used as the
    *   `redirect_uri` authorization code grant token endpoint parameter unless
    *   callbackURL was specified in the Strategy constructor
    */
   currentUrl(req: express.Request): URL {
-    return new URL(`${req.protocol}://${req.hostname}${req.url}`)
+    return new URL(`${req.protocol}://${req.host}${req.url}`)
   }
 
   authenticate<

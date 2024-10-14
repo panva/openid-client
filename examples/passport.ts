@@ -67,10 +67,7 @@ app.get('/logout', (req, res) => {
   req.logout(() => {
     res.redirect(
       client.buildEndSessionUrl(config, {
-        post_logout_redirect_uri: new URL(
-          '/',
-          `${req.protocol}://${req.hostname}`,
-        ).href,
+        post_logout_redirect_uri: `${req.protocol}://${req.host}`,
       }).href,
     )
   })

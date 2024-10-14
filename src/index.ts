@@ -1343,11 +1343,11 @@ async function decrypt(
 const kEntraId: unique symbol = Symbol()
 
 type JARMImplementation = (
-  authorizationResponse: URLSearchParams,
+  authorizationResponse: URL,
   expectedState?: string | typeof skipStateCheck,
 ) => Promise<URLSearchParams>
 type HybridImplementation = (
-  authorizationResponse: URLSearchParams,
+  authorizationResponse: URL | Request,
   expectedNonce?: string,
   expectedState?: string | typeof skipStateCheck,
   maxAge?: number,
@@ -2270,6 +2270,14 @@ function stripParams(url: URL) {
   return url.href
 }
 
+function webInstanceOf<T>(input: unknown, toStringTag: string): input is T {
+  try {
+    return Object.getPrototypeOf(input)[Symbol.toStringTag] === toStringTag
+  } catch {
+    return false
+  }
+}
+
 /**
  * This method validates the authorization response and then executes the
  * {@link !"Authorization Code Grant"} at the Authorization Server's
@@ -2296,13 +2304,9 @@ function stripParams(url: URL) {
  * )
  * ```
  *
- * @param currentUrl Current URL the Authorization Server provided an
- *   Authorization Response to, the `redirect_uri`
- *   {@link !"Authorization Code Grant"} parameter is extracted from this URL by
- *   stripping the query string parameters and fragment components. The
- *   authorization response parameters are typically expected to be encoded in
- *   its query string, and for `code id_token` {@link !OIDC} Response Types in
- *   the URL's fragment.
+ * @param currentUrl Current {@link !URL} the Authorization Server provided an
+ *   Authorization Response to or a {@link !Request}, the
+ *   {@link !"Authorization Code Grant"} parameters are extracted from this.
  * @param checks CSRF Protection checks like PKCE, expected state, or expected
  *   nonce
  * @param parameters Additional parameters that will be sent to the token
@@ -2318,16 +2322,20 @@ function stripParams(url: URL) {
  */
 export async function authorizationCodeGrant(
   config: Configuration,
-  currentUrl: URL,
+  currentUrl: URL | Request,
   checks?: AuthorizationCodeGrantChecks,
   parameters?: URLSearchParams | Record<string, string>,
   options?: AuthorizationCodeGrantOptions,
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
-  if (options?.flag !== retry && !(currentUrl instanceof URL)) {
+  if (
+    options?.flag !== retry &&
+    !(currentUrl instanceof URL) &&
+    !webInstanceOf<Request>(currentUrl, 'Request')
+  ) {
     throw CodedTypeError(
-      '"currentUrl" must be an instance of URL',
+      '"currentUrl" must be an instance of URL, or Request',
       ERR_INVALID_ARG_TYPE,
     )
   }
@@ -2348,17 +2356,21 @@ export async function authorizationCodeGrant(
     authResponse = options.authResponse!
     redirectUri = options.redirectUri!
   } else {
+    let request: Request | undefined
+    if (!(currentUrl instanceof URL)) {
+      if (currentUrl.method === 'POST') {
+        request = currentUrl
+      }
+      currentUrl = new URL(currentUrl.url)
+    }
     redirectUri = stripParams(currentUrl)
     switch (true) {
       case !!jarm:
-        authResponse = await jarm(
-          currentUrl.searchParams,
-          checks?.expectedState,
-        )
+        authResponse = await jarm(currentUrl, checks?.expectedState)
         break
       case !!hybrid:
         authResponse = await hybrid(
-          new URLSearchParams(currentUrl.hash.slice(1)),
+          request || currentUrl,
           checks?.expectedNonce,
           checks?.expectedState,
           checks?.maxAge,
@@ -2444,7 +2456,7 @@ export async function authorizationCodeGrant(
 
 async function validateJARMResponse(
   config: Configuration,
-  authorizationResponse: URLSearchParams,
+  authorizationResponse: URL,
   expectedState: string | typeof skipStateCheck | undefined,
 ): Promise<URLSearchParams> {
   const { as, c, fetch, tlsOnly, timeout, decrypt } = int(config)
@@ -2461,7 +2473,7 @@ async function validateJARMResponse(
 
 async function validateCodeIdTokenResponse(
   config: Configuration,
-  authorizationResponse: URLSearchParams,
+  authorizationResponse: URL | Request,
   expectedNonce: string | undefined,
   expectedState: string | typeof skipStateCheck | undefined,
   maxAge: number | undefined,

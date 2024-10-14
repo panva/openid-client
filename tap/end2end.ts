@@ -173,9 +173,34 @@ export default (QUnit: QUnit) => {
         )
       }
 
+      let input: URL | Request
+      switch ([URL, Request][Math.floor(Math.random() * 2)]) {
+        case URL:
+          input = currentUrl
+          break
+        case Request:
+          if (hybrid && random()) {
+            input = new Request(
+              `${currentUrl.protocol}//${currentUrl.host}${currentUrl.pathname}`,
+              {
+                method: 'POST',
+                headers: {
+                  'content-type': 'application/x-www-form-urlencoded',
+                },
+                body: currentUrl.hash.slice(1),
+              },
+            )
+          } else {
+            input = new Request(currentUrl)
+          }
+          break
+        default:
+          throw new Error('unreachable')
+      }
+
       const response = await lib.authorizationCodeGrant(
         client,
-        currentUrl,
+        input,
         {
           expectedNonce: nonce,
           pkceCodeVerifier: code_verifier,
