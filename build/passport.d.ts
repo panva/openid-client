@@ -24,13 +24,13 @@ interface StrategyOptionsBase {
      */
     config: client.Configuration;
     /**
-     * Name of the strategy, default is the hostname component of the
-     * authorization server's issuer identifier.
+     * Name of the strategy, default is the host component of the authorization
+     * server's issuer identifier.
      */
     name?: string;
     /**
      * Property in the session to use for storing the authorization request state,
-     * default is the hostname component of the authorization server's issuer
+     * default is the host component of the authorization server's issuer
      * identifier.
      */
     sessionKey?: string;
@@ -94,8 +94,6 @@ export declare class Strategy implements passport.Strategy {
      *
      * - Its `searchParams` are used as the authorization response parameters when
      *   the response type used by the client is `code`
-     * - Its `hash` is used as the authorization response parameters when the
-     *   response type used by the client is `code id_token`
      * - Its value stripped of `searchParams` and `hash` is used as the
      *   `redirect_uri` authorization code grant token endpoint parameter unless
      *   callbackURL was specified in the Strategy constructor

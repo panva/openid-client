@@ -517,10 +517,20 @@ function stripParams(url) {
     url.hash = '';
     return url.href;
 }
+function webInstanceOf(input, toStringTag) {
+    try {
+        return Object.getPrototypeOf(input)[Symbol.toStringTag] === toStringTag;
+    }
+    catch {
+        return false;
+    }
+}
 export async function authorizationCodeGrant(config, currentUrl, checks, parameters, options) {
     checkConfig(config);
-    if (options?.flag !== retry && !(currentUrl instanceof URL)) {
-        throw CodedTypeError('"currentUrl" must be an instance of URL', ERR_INVALID_ARG_TYPE);
+    if (options?.flag !== retry &&
+        !(currentUrl instanceof URL) &&
+        !webInstanceOf(currentUrl, 'Request')) {
+        throw CodedTypeError('"currentUrl" must be an instance of URL, or Request', ERR_INVALID_ARG_TYPE);
     }
     let authResponse;
     let redirectUri;
@@ -530,13 +540,20 @@ export async function authorizationCodeGrant(config, currentUrl, checks, paramet
         redirectUri = options.redirectUri;
     }
     else {
+        let request;
+        if (!(currentUrl instanceof URL)) {
+            if (currentUrl.method === 'POST') {
+                request = currentUrl;
+            }
+            currentUrl = new URL(currentUrl.url);
+        }
         redirectUri = stripParams(currentUrl);
         switch (true) {
             case !!jarm:
-                authResponse = await jarm(currentUrl.searchParams, checks?.expectedState);
+                authResponse = await jarm(currentUrl, checks?.expectedState);
                 break;
             case !!hybrid:
-                authResponse = await hybrid(new URLSearchParams(currentUrl.hash.slice(1)), checks?.expectedNonce, checks?.expectedState, checks?.maxAge);
+                authResponse = await hybrid(request || currentUrl, checks?.expectedNonce, checks?.expectedState, checks?.maxAge);
                 break;
             default:
                 try {

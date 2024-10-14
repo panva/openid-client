@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0-beta.2](https://github.com/panva/openid-client/compare/v6.0.0-beta.1...v6.0.0-beta.2) (2024-10-14)
+
+
+### Documentation
+
+* update link to passport example ([dc09f40](https://github.com/panva/openid-client/commit/dc09f4000660a368e06c3af7b03cdc2c6e34977a))
+
 ## [6.0.0-beta.1](https://github.com/panva/openid-client/compare/v6.0.0-beta.0...v6.0.0-beta.1) (2024-10-12)
 
 

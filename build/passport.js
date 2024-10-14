@@ -18,9 +18,9 @@ export class Strategy {
         if (typeof verify !== 'function') {
             throw new TypeError();
         }
-        const { hostname } = new URL(options.config.serverMetadata().issuer);
-        this.name = options.name ?? hostname;
-        this._sessionKey = options.sessionKey ?? hostname;
+        const { host } = new URL(options.config.serverMetadata().issuer);
+        this.name = options.name ?? host;
+        this._sessionKey = options.sessionKey ?? host;
         this._DPoP = options.DPoP;
         this._config = options.config;
         this._scope = options.scope;
@@ -104,7 +104,21 @@ export class Strategy {
                     message: 'Unable to verify authorization request state',
                 });
             }
-            const tokens = await client.authorizationCodeGrant(this._config, currentUrl, {
+            let input = currentUrl;
+            if (req.method === 'POST') {
+                input = new Request(currentUrl.href, {
+                    method: 'POST',
+                    headers: Object.entries(req.headersDistinct).reduce((acc, [key, values]) => {
+                        for (const value of values) {
+                            acc.append(key, value);
+                        }
+                        return acc;
+                    }, new Headers()),
+                    body: req,
+                    duplex: 'half',
+                });
+            }
+            const tokens = await client.authorizationCodeGrant(this._config, input, {
                 pkceCodeVerifier: stateData.code_verifier,
                 expectedNonce: stateData.nonce,
                 expectedState: stateData.state,
@@ -134,7 +148,7 @@ export class Strategy {
         }
     }
     currentUrl(req) {
-        return new URL(`${req.protocol}://${req.hostname}${req.url}`);
+        return new URL(`${req.protocol}://${req.host}${req.url}`);
     }
     authenticate(req, options) {
         if (!req.session) {

@@ -1390,13 +1390,9 @@ export interface AuthorizationCodeGrantChecks {
  * )
  * ```
  *
- * @param currentUrl Current URL the Authorization Server provided an
- *   Authorization Response to, the `redirect_uri`
- *   {@link !"Authorization Code Grant"} parameter is extracted from this URL by
- *   stripping the query string parameters and fragment components. The
- *   authorization response parameters are typically expected to be encoded in
- *   its query string, and for `code id_token` {@link !OIDC} Response Types in
- *   the URL's fragment.
+ * @param currentUrl Current {@link !URL} the Authorization Server provided an
+ *   Authorization Response to or a {@link !Request}, the
+ *   {@link !"Authorization Code Grant"} parameters are extracted from this.
  * @param checks CSRF Protection checks like PKCE, expected state, or expected
  *   nonce
  * @param parameters Additional parameters that will be sent to the token
@@ -1410,7 +1406,7 @@ export interface AuthorizationCodeGrantChecks {
  * @group PKCE
  * @group You are probably looking for this
  */
-export declare function authorizationCodeGrant(config: Configuration, currentUrl: URL, checks?: AuthorizationCodeGrantChecks, parameters?: URLSearchParams | Record<string, string>, options?: AuthorizationCodeGrantOptions): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers>;
+export declare function authorizationCodeGrant(config: Configuration, currentUrl: URL | Request, checks?: AuthorizationCodeGrantChecks, parameters?: URLSearchParams | Record<string, string>, options?: AuthorizationCodeGrantOptions): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers>;
 /**
  * Performs an OAuth 2.0 {@link !"Refresh Token Grant"} at the Authorization
  * Server's {@link ServerMetadata.token_endpoint token endpoint} using parameters
