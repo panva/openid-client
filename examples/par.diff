@@ -1,0 +1,13 @@
+diff --git a/examples/oauth.ts b/examples/par.ts
+index d4666fb..3a390e4 100644
+--- a/examples/oauth.ts
++++ b/examples/par.ts
+@@ -50,7 +50,7 @@ let state!: string
+     parameters.state = state
+   }
+ 
+-  let redirectTo = client.buildAuthorizationUrl(config, parameters)
++  let redirectTo = await client.buildAuthorizationUrlWithPAR(config, parameters)
+ 
+   console.log('redirecting to', redirectTo.href)
+   // now redirect the user to redirectTo.href

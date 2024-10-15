@@ -1,0 +1,13 @@
+diff --git a/examples/oauth.ts b/examples/jarm.ts
+index d4666fb..c442a07 100644
+--- a/examples/oauth.ts
++++ b/examples/jarm.ts
+@@ -16,6 +16,8 @@ let redirect_uri!: string
+ 
+ let config = await client.discovery(server, clientId, clientSecret)
+ 
++client.useJwtResponseMode(config)
++
+ let code_challenge_method = 'S256'
+ /**
+  * The following MUST be generated for every redirect to the
