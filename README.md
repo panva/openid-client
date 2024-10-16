@@ -1,6 +1,6 @@
 # openid-client
 
-> High-Level OAuth 2 / OpenID Connect Client API for JavaScript Runtimes
+> OAuth 2 / OpenID Connect Client API for JavaScript Runtimes
 
 openid-client simplifies integration with authorization servers by providing easy-to-use APIs for the most common authentication and authorization flows, including OAuth 2 and OpenID Connect. It is designed for JavaScript runtimes like Node.js, Browsers, Deno, Cloudflare Workers, and more.
 
