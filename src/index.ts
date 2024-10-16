@@ -39,6 +39,7 @@ interface Internal {
   hybrid?: HybridImplementation
   nonRepudiation?: NonRepudiationImplementation
   decrypt?: oauth.JweDecryptFunction
+  jwksCache: oauth.JWKSCacheInput
 }
 
 const int = (config: Configuration) => {
@@ -57,6 +58,7 @@ export {
   type AuthorizationDetails,
   type ConfirmationClaims,
   type DeviceAuthorizationResponse,
+  type ExportedJWKSCache,
   type GenerateKeyPairOptions,
   type IDToken,
   type IntrospectionResponse,
@@ -64,6 +66,8 @@ export {
   type JsonObject,
   type JsonPrimitive,
   type JsonValue,
+  type JWK,
+  type JWKS,
   type JWSAlgorithm,
   type ModifyAssertionFunction,
   type ModifyAssertionOptions,
@@ -1640,6 +1644,7 @@ export class Configuration
       c,
       auth,
       tlsOnly: true,
+      jwksCache: {},
     })
   }
 
@@ -2061,6 +2066,52 @@ export function allowInsecureRequests(config: Configuration) {
 }
 
 /**
+ * DANGER ZONE - Use of this function has security implications that must be
+ * understood, assessed for applicability, and accepted before use. It is
+ * critical that the JSON Web Key Set cache only be writable by your own code.
+ *
+ * This option is intended for cloud computing runtimes that cannot keep an in
+ * memory cache between their code's invocations. Use in runtimes where an in
+ * memory cache between requests is available is not desirable.
+ *
+ * @param jwksCache JWKS Cache previously obtained from {@link getJwksCache}
+ *
+ * @group Advanced Configuration
+ */
+export function setJwksCache(
+  config: Configuration,
+  jwksCache: oauth.ExportedJWKSCache,
+) {
+  int(config).jwksCache = structuredClone(jwksCache)
+}
+
+/**
+ * This function can be used to export the JSON Web Key Set and the timestamp at
+ * which it was last fetched if the client used the
+ * {@link ServerMetadata.jwks_uri authorization server's JWK Set} to validate
+ * digital signatures.
+ *
+ * This function is intended for cloud computing runtimes that cannot keep an in
+ * memory cache between their code's invocations. Use in runtimes where an in
+ * memory cache between requests is available is not desirable.
+ *
+ * Note: the client only uses the authorization server's JWK Set when
+ * {@link enableNonRepudiationChecks}, {@link useJwtResponseMode}, or
+ * {@link useCodeIdTokenResponseType} is used.
+ *
+ * @group Advanced Configuration
+ */
+export function getJwksCache(
+  config: Configuration,
+): oauth.ExportedJWKSCache | undefined {
+  const cache = int(config).jwksCache
+  if (cache.uat) {
+    return cache as oauth.ExportedJWKSCache
+  }
+  return undefined
+}
+
+/**
  * Enables validating the JWS Signature of either a JWT {@link !Response.body} or
  * {@link TokenEndpointResponse.id_token} of a processed {@link !Response} such as
  * JWT UserInfo or JWT Introspection responses.
@@ -2116,13 +2167,14 @@ export function enableNonRepudiationChecks(config: Configuration) {
   checkConfig(config)
 
   int(config).nonRepudiation = (response) => {
-    const { as, fetch, tlsOnly, timeout } = int(config)
+    const { as, fetch, tlsOnly, timeout, jwksCache } = int(config)
     return oauth
       .validateApplicationLevelSignature(as, response, {
         [oauth.customFetch]: fetch,
         [oauth.allowInsecureRequests]: !tlsOnly,
         headers: new Headers(headers),
         signal: signal(timeout),
+        [oauth.jwksCache]: jwksCache,
       })
       .catch(errorHandler)
   }
@@ -2565,7 +2617,7 @@ async function validateJARMResponse(
   authorizationResponse: URL,
   expectedState: string | typeof skipStateCheck | undefined,
 ): Promise<URLSearchParams> {
-  const { as, c, fetch, tlsOnly, timeout, decrypt } = int(config)
+  const { as, c, fetch, tlsOnly, timeout, decrypt, jwksCache } = int(config)
   return oauth
     .validateJwtAuthResponse(as, c, authorizationResponse, expectedState, {
       [oauth.customFetch]: fetch,
@@ -2573,6 +2625,7 @@ async function validateJARMResponse(
       headers: new Headers(headers),
       signal: signal(timeout),
       [oauth.jweDecrypt]: decrypt,
+      [oauth.jwksCache]: jwksCache,
     })
     .catch(errorHandler)
 }
@@ -2599,7 +2652,7 @@ async function validateCodeIdTokenResponse(
     )
   }
 
-  const { as, c, fetch, tlsOnly, timeout, decrypt } = int(config)
+  const { as, c, fetch, tlsOnly, timeout, decrypt, jwksCache } = int(config)
 
   return (
     fapi
@@ -2611,6 +2664,7 @@ async function validateCodeIdTokenResponse(
     headers: new Headers(headers),
     signal: signal(timeout),
     [oauth.jweDecrypt]: decrypt,
+    [oauth.jwksCache]: jwksCache,
   }).catch(errorHandler)
 }
 

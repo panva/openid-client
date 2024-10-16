@@ -18,6 +18,7 @@ export default (QUnit: QUnit) => {
       | 'dpop'
       | 'jwtUserinfo'
       | 'hybrid'
+      | 'nonrepudiation'
       | 'encryption'
       | 'login'
     >
@@ -31,6 +32,7 @@ export default (QUnit: QUnit) => {
       hybrid: false,
       login: false,
       encryption: false,
+      nonrepudiation: false,
     }
     for (const flag of flags) {
       conf[flag] = true
@@ -40,6 +42,8 @@ export default (QUnit: QUnit) => {
 
   const testCases = [
     options(),
+    options('nonrepudiation'),
+    options('nonrepudiation', 'encryption'),
     options('par'),
     options('jar'),
     options('dpop'),
@@ -55,7 +59,16 @@ export default (QUnit: QUnit) => {
   ]
 
   for (const config of testCases) {
-    const { jarm, par, jar, dpop, jwtUserinfo, hybrid, encryption } = config
+    const {
+      jarm,
+      par,
+      jar,
+      dpop,
+      jwtUserinfo,
+      hybrid,
+      encryption,
+      nonrepudiation,
+    } = config
 
     function label(config: Record<string, boolean>) {
       const keys = Object.keys(
@@ -89,10 +102,12 @@ export default (QUnit: QUnit) => {
       )
 
       const execute: Array<(config: lib.Configuration) => void> = [
-        lib.enableNonRepudiationChecks,
         lib.allowInsecureRequests,
       ]
 
+      if (nonrepudiation) {
+        execute.push(lib.enableNonRepudiationChecks)
+      }
       if (jarm) {
         execute.push(lib.useJwtResponseMode)
       }
@@ -221,6 +236,14 @@ export default (QUnit: QUnit) => {
       await lib.refreshTokenGrant(client, response.refresh_token!, undefined, {
         DPoP,
       })
+
+      if (jarm || hybrid || nonrepudiation) {
+        const cache = lib.getJwksCache(client)
+        t.ok(cache?.uat)
+        t.ok(cache?.jwks)
+      } else {
+        t.notOk(lib.getJwksCache(client))
+      }
 
       t.ok(1)
     })
