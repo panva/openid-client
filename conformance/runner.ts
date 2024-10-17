@@ -491,6 +491,8 @@ export type CodeErrorAssertion = Partial<ErrorAssertion> &
   Pick<ErrorAssertion, 'code'>
 export type NameErrorAssertion = Partial<ErrorAssertion> &
   Pick<ErrorAssertion, 'name'>
+export type MessageErrorAssertion = Partial<ErrorAssertion> &
+  Pick<ErrorAssertion, 'message'>
 
 function assertError(
   t: ExecutionContext,
@@ -520,17 +522,19 @@ export const rejects = (
     async exec(
       t,
       module: ModulePrescription,
-      expected: CodeErrorAssertion | NameErrorAssertion,
-      cause?: CodeErrorAssertion | NameErrorAssertion,
+      expected: CodeErrorAssertion | MessageErrorAssertion,
+      cause?: CodeErrorAssertion | MessageErrorAssertion,
     ) {
       const err = await t.throwsAsync(
         () => macro.exec(t, { ...module, skipLogTestFinished: true }) as any,
       )
       t.log('rejected with', inspect(err, { depth: Infinity }))
 
+      expected.name ||= 'ClientError'
       assertError(t, err, expected)
 
       if (cause) {
+        cause.name ||= 'OperationProcessingError'
         if (!(err.cause instanceof Error)) {
           t.fail('expected and Error instance')
         }

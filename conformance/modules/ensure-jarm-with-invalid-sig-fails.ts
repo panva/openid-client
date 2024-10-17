@@ -6,7 +6,6 @@ rejects(
     code: 'OAUTH_INVALID_RESPONSE',
   },
   {
-    name: 'OperationProcessingError',
     message: /signature/,
   },
 )

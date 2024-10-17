@@ -14,8 +14,8 @@ export function skippable(metaUrl: string, options?: runner.MacroOptions) {
 
 export function rejects(
   metaUrl: string,
-  expected: runner.CodeErrorAssertion | runner.NameErrorAssertion,
-  cause?: runner.CodeErrorAssertion | runner.NameErrorAssertion,
+  expected: runner.CodeErrorAssertion | runner.MessageErrorAssertion,
+  cause?: runner.CodeErrorAssertion | runner.MessageErrorAssertion,
   options?: runner.MacroOptions,
 ) {
   for (const module of runner.modules(metaUrl)) {

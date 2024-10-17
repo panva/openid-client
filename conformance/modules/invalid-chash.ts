@@ -3,5 +3,5 @@ import { rejects } from './run.js'
 rejects(
   import.meta.url,
   { code: 'OAUTH_JWT_CLAIM_COMPARISON_FAILED' },
-  { name: 'OperationProcessingError', message: /"c_hash"/ },
+  { message: /"c_hash"/ },
 )

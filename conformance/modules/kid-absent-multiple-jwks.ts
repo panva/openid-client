@@ -5,12 +5,7 @@ for (const module of modules(import.meta.url)) {
     module.variant?.response_type?.includes('id_token') === true ||
     variant.response_type?.includes('id_token') === true
   ) {
-    test.serial(
-      rejects(flow()),
-      module,
-      { name: 'ClientError' },
-      { name: 'OperationProcessingError' },
-    )
+    test.serial(rejects(flow()), module, { code: 'OAUTH_KEY_SELECTION_FAILED' })
   } else {
     test.serial(flow(), module)
   }
