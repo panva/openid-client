@@ -1,5 +1,5 @@
 diff --git a/examples/oauth.ts b/examples/jar.ts
-index d4666fb..9f55c2c 100644
+index d87c63e..6219287 100644
 --- a/examples/oauth.ts
 +++ b/examples/jar.ts
 @@ -6,6 +6,7 @@ let getCurrentUrl!: (...args: any) => URL
@@ -10,7 +10,7 @@ index d4666fb..9f55c2c 100644
  /**
   * Value used in the authorization request as redirect_uri pre-registered at the
   * Authorization Server.
-@@ -50,7 +51,11 @@ let state!: string
+@@ -51,7 +52,11 @@ let state!: string
      parameters.state = state
    }
  

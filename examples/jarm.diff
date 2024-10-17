@@ -1,5 +1,5 @@
 diff --git a/examples/oauth.ts b/examples/jarm.ts
-index d4666fb..c442a07 100644
+index d87c63e..3aa8f7f 100644
 --- a/examples/oauth.ts
 +++ b/examples/jarm.ts
 @@ -16,6 +16,8 @@ let redirect_uri!: string
@@ -10,4 +10,4 @@ index d4666fb..c442a07 100644
 +
  let code_challenge_method = 'S256'
  /**
-  * The following MUST be generated for every redirect to the
+  * The following (code_verifier and potentially state) MUST be generated for

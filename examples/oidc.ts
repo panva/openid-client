@@ -18,10 +18,11 @@ let config = await client.discovery(server, clientId, clientSecret)
 
 let code_challenge_method = 'S256'
 /**
- * The following MUST be generated for every redirect to the
- * authorization_endpoint. You must store the code_verifier and nonce in the
- * end-user session such that it can be recovered as the user gets redirected
- * from the authorization server back to your application.
+ * The following (code_verifier and potentially nonce) MUST be generated for
+ * every redirect to the authorization_endpoint. You must store the
+ * code_verifier and nonce in the end-user session such that it can be recovered
+ * as the user gets redirected from the authorization server back to your
+ * application.
  */
 let code_verifier = client.randomPKCECodeVerifier()
 let code_challenge = await client.calculatePKCECodeChallenge(code_verifier)
