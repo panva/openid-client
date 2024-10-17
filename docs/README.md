@@ -115,6 +115,7 @@ Support from the community to continue maintaining and improving this module is 
 - [ModifyAssertionOptions](interfaces/ModifyAssertionOptions.md)
 - [MTLSEndpointAliases](interfaces/MTLSEndpointAliases.md)
 - [PrivateKey](interfaces/PrivateKey.md)
+- [ServerMetadataHelpers](interfaces/ServerMetadataHelpers.md)
 - [TokenEndpointResponse](interfaces/TokenEndpointResponse.md)
 - [TokenEndpointResponseHelpers](interfaces/TokenEndpointResponseHelpers.md)
 - [UserInfoAddress](interfaces/UserInfoAddress.md)

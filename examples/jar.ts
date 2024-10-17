@@ -43,11 +43,7 @@ let state!: string
    * of PKCE is backwards compatible even if the AS doesn't support it which is
    * why we're using it regardless.
    */
-  if (
-    config
-      .serverMetadata()
-      .code_challenge_methods_supported?.includes('S256') !== true
-  ) {
+  if (!config.serverMetadata().supportsPKCE()) {
     state = client.randomState()
     parameters.state = state
   }

@@ -295,14 +295,16 @@ export const flow = (options?: MacroOptions) => {
         ? lib.getDPoPHandle(client, await lib.randomDPoPKeyPair(ALG))
         : undefined
 
-      let code_challenge: string | undefined
-      let code_verifier: string | undefined
-      let code_challenge_method: string | undefined
+      const code_verifier = lib.randomPKCECodeVerifier()
+      const code_challenge = await lib.calculatePKCECodeChallenge(code_verifier)
+      const code_challenge_method = 'S256'
 
-      if (response_type.includes('code')) {
-        code_verifier = lib.randomPKCECodeVerifier()
-        code_challenge = await lib.calculatePKCECodeChallenge(code_verifier)
-        code_challenge_method = 'S256'
+      if (
+        !client.serverMetadata().supportsPKCE() &&
+        !response_type.includes('id_token')
+      ) {
+        options ||= {}
+        options.useState = true
       }
 
       const scope = getScope(variant)

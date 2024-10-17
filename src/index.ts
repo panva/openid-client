@@ -1449,6 +1449,35 @@ async function decrypt(
   )
 }
 
+export interface ServerMetadataHelpers {
+  /**
+   * Determines whether the Authorization Server supports a given Code Challenge
+   * Method
+   *
+   * @param method Code Challenge Method. Default is `S256`
+   */
+  supportsPKCE(method?: string): boolean
+}
+
+function getServerHelpers(metadata: Readonly<ServerMetadata>) {
+  return {
+    supportsPKCE: {
+      __proto__: null,
+      value(method = 'S256') {
+        return (
+          metadata.code_challenge_methods_supported?.includes(method) !== true
+        )
+      },
+    },
+  }
+}
+
+function addServerHelpers(
+  metadata: Readonly<ServerMetadata>,
+): asserts metadata is typeof metadata & ServerMetadataHelpers {
+  Object.defineProperties(metadata, getServerHelpers(metadata))
+}
+
 // private
 const kEntraId: unique symbol = Symbol()
 
@@ -1471,7 +1500,7 @@ export interface ConfigurationMethods {
   /**
    * Used to retrieve the Authorization Server Metadata
    */
-  serverMetadata(): Readonly<ServerMetadata>
+  serverMetadata(): Readonly<ServerMetadata> & ServerMetadataHelpers
 }
 
 /**
@@ -1651,8 +1680,10 @@ export class Configuration
   /**
    * @ignore
    */
-  serverMetadata(): Readonly<ServerMetadata> {
-    return structuredClone(int(this).as)
+  serverMetadata(): Readonly<ServerMetadata> & ServerMetadataHelpers {
+    const metadata = structuredClone(int(this).as)
+    addServerHelpers(metadata)
+    return metadata
   }
 
   /**

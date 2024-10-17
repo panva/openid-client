@@ -12,10 +12,10 @@ Public methods available on a [Configuration](../classes/Configuration.md) insta
 
 ### serverMetadata()
 
-▸ **serverMetadata**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`ServerMetadata`](ServerMetadata.md)\>
+▸ **serverMetadata**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`ServerMetadata`](ServerMetadata.md)\> & [`ServerMetadataHelpers`](ServerMetadataHelpers.md)
 
 Used to retrieve the Authorization Server Metadata
 
 #### Returns
 
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`ServerMetadata`](ServerMetadata.md)\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`ServerMetadata`](ServerMetadata.md)\> & [`ServerMetadataHelpers`](ServerMetadataHelpers.md)

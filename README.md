@@ -107,10 +107,7 @@ let parameters: Record<string, string> = {
   code_challenge_method: 'S256',
 }
 
-if (
-  config.serverMetadata().code_challenge_methods_supported?.includes('S256') !==
-  true
-) {
+if (!config.serverMetadata().supportsPKCE()) {
   /**
    * We cannot be sure the server supports PKCE so we're going to use state too.
    * Use of PKCE is backwards compatible even if the AS doesn't support it which
