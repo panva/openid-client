@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/panva/openid-client/compare/v6.0.0...v6.1.0) (2024-10-17)
+
+
+### Features
+
+* add a server metadata helper for checking PKCE support ([ca34a91](https://github.com/panva/openid-client/commit/ca34a9171c4ba2ff3f5887cb472d9f90a9714462))
+* add JWKS Cache management for use in non-persistent runtimes ([cda4b53](https://github.com/panva/openid-client/commit/cda4b533b6ba259f935d09270ea36f516153ed94))
+
 ## [6.0.0](https://github.com/panva/openid-client/compare/v5.7.0...v6.0.0) (2024-10-15)
 
 
