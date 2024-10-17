@@ -37,7 +37,7 @@ let nonce!: string
   }
 
   /**
-   * We cannot be sure the AS supports PKCE so we're going to use state too. Use
+   * We cannot be sure the AS supports PKCE so we're going to use nonce too. Use
    * of PKCE is backwards compatible even if the AS doesn't support it which is
    * why we're using it regardless.
    */

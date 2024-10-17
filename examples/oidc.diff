@@ -1,8 +1,8 @@
 diff --git a/examples/oauth.ts b/examples/oidc.ts
-index d4666fb..4eb3bae 100644
+index d4666fb..a6a150e 100644
 --- a/examples/oauth.ts
 +++ b/examples/oidc.ts
-@@ -19,19 +19,19 @@ let config = await client.discovery(server, clientId, clientSecret)
+@@ -19,25 +19,25 @@ let config = await client.discovery(server, clientId, clientSecret)
  let code_challenge_method = 'S256'
  /**
   * The following MUST be generated for every redirect to the
@@ -25,6 +25,13 @@ index d4666fb..4eb3bae 100644
      code_challenge,
      code_challenge_method,
    }
+ 
+   /**
+-   * We cannot be sure the AS supports PKCE so we're going to use state too. Use
++   * We cannot be sure the AS supports PKCE so we're going to use nonce too. Use
+    * of PKCE is backwards compatible even if the AS doesn't support it which is
+    * why we're using it regardless.
+    */
 @@ -46,8 +46,8 @@ let state!: string
        .serverMetadata()
        .code_challenge_methods_supported?.includes('S256') !== true
