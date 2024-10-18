@@ -1465,7 +1465,7 @@ function getServerHelpers(metadata: Readonly<ServerMetadata>) {
       __proto__: null,
       value(method = 'S256') {
         return (
-          metadata.code_challenge_methods_supported?.includes(method) !== true
+          metadata.code_challenge_methods_supported?.includes(method) === true
         )
       },
     },
