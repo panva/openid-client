@@ -1,7 +1,7 @@
 import type QUnit from 'qunit'
 
 import { setup } from './helper.js'
-import * as lib from '../src/index.js'
+import * as client from '../src/index.js'
 import * as jose from 'jose'
 
 export default (QUnit: QUnit) => {
@@ -36,7 +36,7 @@ export default (QUnit: QUnit) => {
     test(title, async (t) => {
       const kp = (await jose.generateKeyPair('ES256', {
         extractable: true,
-      })) as lib.CryptoKeyPair
+      })) as client.CryptoKeyPair
       const { metadata, issuerIdentifier, clientDecryptionKey } = await setup(
         kp,
         'client_secret_post',
@@ -47,22 +47,25 @@ export default (QUnit: QUnit) => {
         encryption,
       )
 
-      const client = await lib.discovery(
+      const config = await client.discovery(
         issuerIdentifier,
         metadata.client_id,
         metadata,
         undefined,
         {
-          execute: [lib.allowInsecureRequests, lib.enableNonRepudiationChecks],
+          execute: [
+            client.allowInsecureRequests,
+            client.enableNonRepudiationChecks,
+          ],
         },
       )
 
       if (encryption) {
-        lib.enableDecryptingResponses(client, undefined, clientDecryptionKey)
+        client.enableDecryptingResponses(config, undefined, clientDecryptionKey)
       }
 
       const DPoP = dpop
-        ? lib.getDPoPHandle(client, await lib.randomDPoPKeyPair(alg))
+        ? client.getDPoPHandle(config, await client.randomDPoPKeyPair(alg))
         : undefined
 
       const resource = 'urn:example:resource:jwt'
@@ -70,10 +73,8 @@ export default (QUnit: QUnit) => {
       params.set('resource', resource)
       params.set('scope', 'openid api:write')
 
-      const deviceAuthorizationResponse = await lib.initiateDeviceAuthorization(
-        client,
-        params,
-      )
+      const deviceAuthorizationResponse =
+        await client.initiateDeviceAuthorization(config, params)
 
       if (!abort) {
         fetch('http://localhost:3000/drive', {
@@ -91,9 +92,9 @@ export default (QUnit: QUnit) => {
           signal = controller.signal
           setTimeout(() => controller.abort(), 250)
         }
-        let result: lib.TokenEndpointResponse
-        const polling = lib.pollDeviceAuthorizationGrant(
-          client,
+        let result: client.TokenEndpointResponse
+        const polling = client.pollDeviceAuthorizationGrant(
+          config,
           deviceAuthorizationResponse,
           undefined,
           { DPoP, signal },
@@ -113,11 +114,11 @@ export default (QUnit: QUnit) => {
         t.ok(access_token)
         t.equal(token_type, dpop ? 'dpop' : 'bearer')
 
-        await lib
+        await client
           .fetchProtectedResource(
-            client,
+            config,
             access_token,
-            new URL(client.serverMetadata().userinfo_endpoint!),
+            new URL(config.serverMetadata().userinfo_endpoint!),
             'GET',
             undefined,
             undefined,
@@ -127,7 +128,7 @@ export default (QUnit: QUnit) => {
             t.ok(0)
           })
           .catch((err) => {
-            if (err instanceof lib.WWWAuthenticateChallengeError) {
+            if (err instanceof client.WWWAuthenticateChallengeError) {
               const [{ parameters }] = err.cause
               // TODO: check why the server responds with scheme bearer in dpop case
               // t.equal(scheme, dpop ? 'dpop' : 'bearer')

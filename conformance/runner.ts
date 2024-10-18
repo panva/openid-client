@@ -8,7 +8,7 @@ import { inspect } from 'node:util'
 export const test = anyTest as TestFn<{ instance: Test }>
 
 import { getScope } from './ava.config.js'
-import * as lib from '../src/index.js'
+import * as client from '../src/index.js'
 import {
   createTestFromPlan,
   waitForState,
@@ -184,7 +184,7 @@ export const flow = (options?: MacroOptions) => {
 
       const issuer = new URL(issuerIdentifier)
 
-      const metadata: lib.ClientMetadata = {
+      const metadata: client.ClientMetadata = {
         client_id: configuration.client.client_id,
         client_secret: configuration.client.client_secret,
         use_mtls_endpoint_aliases:
@@ -225,22 +225,22 @@ export const flow = (options?: MacroOptions) => {
       const mtlsConstrain =
         plan.name.startsWith('fapi1') || variant.sender_constrain === 'mtls'
 
-      const execute: Array<(config: lib.Configuration) => void> = []
+      const execute: Array<(config: client.Configuration) => void> = []
 
       const response_type = responseType(plan.name, variant)
 
       if (nonRepudiation(plan)) {
-        execute.push(lib.enableNonRepudiationChecks)
+        execute.push(client.enableNonRepudiationChecks)
       }
 
       if (usesJarm(variant)) {
-        execute.push(lib.useJwtResponseMode)
+        execute.push(client.useJwtResponseMode)
       }
 
       if (response_type === 'code id_token') {
-        execute.push(lib.useCodeIdTokenResponseType)
+        execute.push(client.useCodeIdTokenResponseType)
         if (plan.name.startsWith('fapi1')) {
-          execute.push(lib.enableDetachedSignatureResponseChecks)
+          execute.push(client.enableDetachedSignatureResponseChecks)
         }
       }
 
@@ -250,30 +250,30 @@ export const flow = (options?: MacroOptions) => {
         key: await importPrivateKey(ALG, jwk),
       }
 
-      let clientAuth: lib.ClientAuth | undefined
+      let clientAuth: client.ClientAuth | undefined
       if (metadata.token_endpoint_auth_method === 'private_key_jwt') {
-        clientAuth = lib.PrivateKeyJwt(clientPrivateKey, {
-          [lib.modifyAssertion]: (_header, payload) => {
+        clientAuth = client.PrivateKeyJwt(clientPrivateKey, {
+          [client.modifyAssertion]: (_header, payload) => {
             payload.aud = [
-              client.serverMetadata().issuer,
-              client.serverMetadata().token_endpoint!,
+              config.serverMetadata().issuer,
+              config.serverMetadata().token_endpoint!,
             ]
           },
         })
       } else if (
         metadata.token_endpoint_auth_method === 'client_secret_basic'
       ) {
-        clientAuth = lib.ClientSecretBasic(metadata.client_secret as string)
+        clientAuth = client.ClientSecretBasic(metadata.client_secret as string)
       }
 
-      const client = await lib.discovery(
+      const config = await client.discovery(
         issuer,
         configuration.client.client_id,
         metadata,
         clientAuth,
         {
           execute,
-          [lib.customFetch]:
+          [client.customFetch]:
             mtlsAuth || mtlsConstrain || metadata.use_mtls_endpoint_aliases
               ? mtlsFetch
               : undefined,
@@ -283,7 +283,7 @@ export const flow = (options?: MacroOptions) => {
       if (module.testModule.includes('encrypted')) {
         const jwk = configuration.client.jwks.keys[0]
         const key = await importPrivateKey('RSA-OAEP', jwk)
-        lib.enableDecryptingResponses(client, undefined, {
+        client.enableDecryptingResponses(config, undefined, {
           key,
           kid: `enc-${jwk.kid}`,
         })
@@ -292,15 +292,16 @@ export const flow = (options?: MacroOptions) => {
       t.log('AS Metadata discovered for', issuer.href)
 
       const DPoP = usesDpop(variant)
-        ? lib.getDPoPHandle(client, await lib.randomDPoPKeyPair(ALG))
+        ? client.getDPoPHandle(config, await client.randomDPoPKeyPair(ALG))
         : undefined
 
-      const code_verifier = lib.randomPKCECodeVerifier()
-      const code_challenge = await lib.calculatePKCECodeChallenge(code_verifier)
+      const code_verifier = client.randomPKCECodeVerifier()
+      const code_challenge =
+        await client.calculatePKCECodeChallenge(code_verifier)
       const code_challenge_method = 'S256'
 
       if (
-        !client.serverMetadata().supportsPKCE() &&
+        !config.serverMetadata().supportsPKCE() &&
         !response_type.includes('id_token')
       ) {
         options ||= {}
@@ -310,11 +311,11 @@ export const flow = (options?: MacroOptions) => {
       const scope = getScope(variant)
       let nonce =
         options?.useNonce || requiresNonce(plan.name, variant)
-          ? lib.randomNonce()
+          ? client.randomNonce()
           : undefined
       let state =
         options?.useState || requiresState(plan.name, variant)
-          ? lib.randomState()
+          ? client.randomState()
           : undefined
 
       let params: URLSearchParams = new URLSearchParams()
@@ -334,8 +335,8 @@ export const flow = (options?: MacroOptions) => {
       }
 
       if (usesRequestObject(plan.name, variant)) {
-        ;({ searchParams: params } = await lib.buildAuthorizationUrlWithJAR(
-          client,
+        ;({ searchParams: params } = await client.buildAuthorizationUrlWithJAR(
+          config,
           params,
           clientPrivateKey,
         ))
@@ -345,8 +346,8 @@ export const flow = (options?: MacroOptions) => {
 
       if (usesPar(plan)) {
         t.log('PAR request with', Object.fromEntries(params.entries()))
-        authorizationUrl = await lib.buildAuthorizationUrlWithPAR(
-          client,
+        authorizationUrl = await client.buildAuthorizationUrlWithPAR(
+          config,
           params,
           {
             DPoP,
@@ -358,14 +359,14 @@ export const flow = (options?: MacroOptions) => {
         )
       } else {
         if (params.has('request') && plan.name.startsWith('fapi1')) {
-          const plain = lib.buildAuthorizationUrl(client, {})
+          const plain = client.buildAuthorizationUrl(config, {})
           params.set('response_type', plain.searchParams.get('response_type')!)
           params.set('scope', 'openid')
         }
         if (response_type === 'id_token') {
           params.set('response_type', response_type)
         }
-        authorizationUrl = lib.buildAuthorizationUrl(client, params)
+        authorizationUrl = client.buildAuthorizationUrl(config, params)
       }
 
       await Promise.allSettled([
@@ -413,8 +414,8 @@ export const flow = (options?: MacroOptions) => {
 
       t.log('response redirect to', currentUrl.href)
 
-      const response = await lib.authorizationCodeGrant(
-        client,
+      const response = await client.authorizationCodeGrant(
+        config,
         input,
         {
           expectedNonce: nonce,
@@ -430,12 +431,12 @@ export const flow = (options?: MacroOptions) => {
       if (
         !plan.name.startsWith('fapi1') &&
         scope.includes('openid') &&
-        client.serverMetadata().userinfo_endpoint
+        config.serverMetadata().userinfo_endpoint
       ) {
         // fetch userinfo response
-        t.log('fetching', client.serverMetadata().userinfo_endpoint)
-        const userinfo = await lib.fetchUserInfo(
-          client,
+        t.log('fetching', config.serverMetadata().userinfo_endpoint)
+        const userinfo = await client.fetchUserInfo(
+          config,
           response.access_token,
           response.claims()?.sub!,
           {
@@ -446,8 +447,8 @@ export const flow = (options?: MacroOptions) => {
       }
 
       if (accounts_endpoint) {
-        const resource = await lib.fetchProtectedResource(
-          client,
+        const resource = await client.fetchProtectedResource(
+          config,
           response.access_token,
           new URL(accounts_endpoint),
           'GET',

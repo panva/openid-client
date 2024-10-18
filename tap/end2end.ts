@@ -1,8 +1,16 @@
 import type QUnit from 'qunit'
 
 import { setup, random } from './helper.js'
-import * as lib from '../src/index.js'
+import * as client from '../src/index.js'
 import * as jose from 'jose'
+
+function label(testCase: Record<string, boolean>) {
+  const keys = Object.keys(
+    Object.fromEntries(Object.entries(testCase).filter(([, v]) => v === true)),
+  )
+  let msg = `w/ response_type=${testCase.hybrid ? 'code id_token' : 'code'}`
+  return keys.length ? `${msg}, ${keys.join(', ')}` : msg
+}
 
 export default (QUnit: QUnit) => {
   const { module, test } = QUnit
@@ -58,7 +66,7 @@ export default (QUnit: QUnit) => {
     options('hybrid', 'encryption'),
   ]
 
-  for (const config of testCases) {
+  for (const testCase of testCases) {
     const {
       jarm,
       par,
@@ -68,22 +76,12 @@ export default (QUnit: QUnit) => {
       hybrid,
       encryption,
       nonrepudiation,
-    } = config
+    } = testCase
 
-    function label(config: Record<string, boolean>) {
-      const keys = Object.keys(
-        Object.fromEntries(
-          Object.entries(config).filter(([, v]) => v === true),
-        ),
-      )
-      let msg = `w/ response_type=${hybrid ? 'code id_token' : 'code'}`
-      return keys.length ? `${msg}, ${keys.join(', ')}` : msg
-    }
-
-    test(`end-to-end ${label(config)}`, async (t) => {
+    test(`end-to-end ${label(testCase)}`, async (t) => {
       const kp = (await jose.generateKeyPair('ES256', {
         extractable: true,
-      })) as lib.CryptoKeyPair
+      })) as client.CryptoKeyPair
       const {
         metadata,
         issuerIdentifier,
@@ -101,21 +99,21 @@ export default (QUnit: QUnit) => {
         encryption,
       )
 
-      const execute: Array<(config: lib.Configuration) => void> = [
-        lib.allowInsecureRequests,
+      const execute: Array<(config: client.Configuration) => void> = [
+        client.allowInsecureRequests,
       ]
 
       if (nonrepudiation) {
-        execute.push(lib.enableNonRepudiationChecks)
+        execute.push(client.enableNonRepudiationChecks)
       }
       if (jarm) {
-        execute.push(lib.useJwtResponseMode)
+        execute.push(client.useJwtResponseMode)
       }
       if (hybrid) {
-        execute.push(lib.useCodeIdTokenResponseType)
+        execute.push(client.useCodeIdTokenResponseType)
       }
 
-      const client = await lib.discovery(
+      const config = await client.discovery(
         issuerIdentifier,
         metadata.client_id,
         metadata,
@@ -124,17 +122,18 @@ export default (QUnit: QUnit) => {
       )
 
       if (encryption) {
-        lib.enableDecryptingResponses(client, undefined, clientDecryptionKey)
+        client.enableDecryptingResponses(config, undefined, clientDecryptionKey)
       }
 
       const DPoP = dpop
-        ? lib.getDPoPHandle(client, await lib.randomDPoPKeyPair(alg))
+        ? client.getDPoPHandle(config, await client.randomDPoPKeyPair(alg))
         : undefined
 
       let params = new URLSearchParams()
 
-      const code_verifier = lib.randomPKCECodeVerifier()
-      const code_challenge = await lib.calculatePKCECodeChallenge(code_verifier)
+      const code_verifier = client.randomPKCECodeVerifier()
+      const code_challenge =
+        await client.calculatePKCECodeChallenge(code_verifier)
       const code_challenge_method = 'S256'
       params.set('code_challenge', code_challenge)
       params.set('code_challenge_method', code_challenge_method)
@@ -143,7 +142,7 @@ export default (QUnit: QUnit) => {
 
       let nonce: string | undefined
       if (hybrid) {
-        nonce = lib.randomNonce()
+        nonce = client.randomNonce()
         params.set('nonce', nonce)
       }
 
@@ -157,23 +156,23 @@ export default (QUnit: QUnit) => {
 
       let authorizationUrl: URL
       if (jar && par) {
-        authorizationUrl = await lib.buildAuthorizationUrlWithJAR(
-          client,
+        authorizationUrl = await client.buildAuthorizationUrlWithJAR(
+          config,
           params,
           clientSigningKey,
         )
-        authorizationUrl = await lib.buildAuthorizationUrlWithPAR(
-          client,
+        authorizationUrl = await client.buildAuthorizationUrlWithPAR(
+          config,
           authorizationUrl.searchParams,
           { DPoP },
         )
       } else if (par) {
-        authorizationUrl = await lib.buildAuthorizationUrlWithPAR(
-          client,
+        authorizationUrl = await client.buildAuthorizationUrlWithPAR(
+          config,
           params,
         )
       } else {
-        authorizationUrl = lib.buildAuthorizationUrl(client, params)
+        authorizationUrl = client.buildAuthorizationUrl(config, params)
       }
 
       let currentUrl: URL
@@ -213,8 +212,8 @@ export default (QUnit: QUnit) => {
           throw new Error('unreachable')
       }
 
-      const response = await lib.authorizationCodeGrant(
-        client,
+      const response = await client.authorizationCodeGrant(
+        config,
         input,
         {
           expectedNonce: nonce,
@@ -224,8 +223,8 @@ export default (QUnit: QUnit) => {
         { DPoP },
       )
 
-      await lib.fetchUserInfo(
-        client,
+      await client.fetchUserInfo(
+        config,
         response.access_token,
         response.claims()?.sub!,
         {
@@ -233,16 +232,21 @@ export default (QUnit: QUnit) => {
         },
       )
 
-      await lib.refreshTokenGrant(client, response.refresh_token!, undefined, {
-        DPoP,
-      })
+      await client.refreshTokenGrant(
+        config,
+        response.refresh_token!,
+        undefined,
+        {
+          DPoP,
+        },
+      )
 
       if (jarm || hybrid || nonrepudiation) {
-        const cache = lib.getJwksCache(client)
+        const cache = client.getJwksCache(config)
         t.ok(cache?.uat)
         t.ok(cache?.jwks)
       } else {
-        t.notOk(lib.getJwksCache(client))
+        t.notOk(client.getJwksCache(config))
       }
 
       t.ok(1)

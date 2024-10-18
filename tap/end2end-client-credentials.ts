@@ -2,7 +2,16 @@ import type QUnit from 'qunit'
 import * as jose from 'jose'
 
 import { setup } from './helper.js'
-import * as lib from '../src/index.js'
+import * as client from '../src/index.js'
+
+function label(testCase: Record<string, string | boolean>) {
+  const keys = Object.keys(
+    Object.fromEntries(Object.entries(testCase).filter(([, v]) => v === true)),
+  )
+  return keys.length
+    ? `${testCase.authMethod} w/ ${keys.join(', ')}`
+    : testCase.authMethod
+}
 
 export default (QUnit: QUnit) => {
   const { module, test } = QUnit
@@ -45,26 +54,15 @@ export default (QUnit: QUnit) => {
     options(authMethodOptions[0], 'jwtIntrospection', 'encryption'),
   ]
 
-  for (const config of testCases) {
-    const { authMethod, dpop, jwtIntrospection, encryption } = config
-
-    function label(config: Record<string, string | boolean>) {
-      const keys = Object.keys(
-        Object.fromEntries(
-          Object.entries(config).filter(([, v]) => v === true),
-        ),
-      )
-      return keys.length
-        ? `${config.authMethod} w/ ${keys.join(', ')}`
-        : config.authMethod
-    }
+  for (const testCase of testCases) {
+    const { authMethod, dpop, jwtIntrospection, encryption } = testCase
 
     test(`end-to-end client auth, client credentials, introspection, revocation ${label(
-      config,
+      testCase,
     )}`, async (t) => {
       const kp = (await jose.generateKeyPair('ES256', {
         extractable: true,
-      })) as lib.CryptoKeyPair
+      })) as client.CryptoKeyPair
       const {
         metadata,
         issuerIdentifier,
@@ -80,32 +78,35 @@ export default (QUnit: QUnit) => {
         encryption,
       )
 
-      let clientAuth: lib.ClientAuth | undefined
+      let clientAuth: client.ClientAuth | undefined
 
       if (authMethod === 'private_key_jwt') {
-        clientAuth = lib.PrivateKeyJwt(clientSigningKey)
+        clientAuth = client.PrivateKeyJwt(clientSigningKey)
       } else if (authMethod === 'client_secret_jwt') {
-        clientAuth = lib.ClientSecretJwt(metadata.client_secret as string)
+        clientAuth = client.ClientSecretJwt(metadata.client_secret as string)
       } else if (authMethod === 'client_secret_basic') {
-        clientAuth = lib.ClientSecretBasic(metadata.client_secret as string)
+        clientAuth = client.ClientSecretBasic(metadata.client_secret as string)
       }
 
-      const client = await lib.discovery(
+      const config = await client.discovery(
         issuerIdentifier,
         metadata.client_id,
         metadata,
         clientAuth,
         {
-          execute: [lib.allowInsecureRequests, lib.enableNonRepudiationChecks],
+          execute: [
+            client.allowInsecureRequests,
+            client.enableNonRepudiationChecks,
+          ],
         },
       )
 
       if (encryption) {
-        lib.enableDecryptingResponses(client, undefined, clientDecryptionKey)
+        client.enableDecryptingResponses(config, undefined, clientDecryptionKey)
       }
 
       const DPoP = dpop
-        ? lib.getDPoPHandle(client, await lib.randomDPoPKeyPair(alg))
+        ? client.getDPoPHandle(config, await client.randomDPoPKeyPair(alg))
         : undefined
 
       const params = new URLSearchParams()
@@ -114,14 +115,14 @@ export default (QUnit: QUnit) => {
       params.set('scope', 'api:write')
 
       {
-        const cc = await lib.clientCredentialsGrant(client, params, { DPoP })
+        const cc = await client.clientCredentialsGrant(config, params, { DPoP })
 
         const { access_token, token_type } = cc
         t.equal(token_type, dpop ? 'dpop' : 'bearer')
 
         {
-          const introspection = await lib.tokenIntrospection(
-            client,
+          const introspection = await client.tokenIntrospection(
+            config,
             access_token,
           )
 
@@ -133,7 +134,7 @@ export default (QUnit: QUnit) => {
           })
         }
 
-        await lib.tokenRevocation(client, access_token)
+        await client.tokenRevocation(config, access_token)
       }
 
       t.ok(1)
