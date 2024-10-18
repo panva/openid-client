@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.1](https://github.com/panva/openid-client/compare/v6.1.0...v6.1.1) (2024-10-18)
+
+
+### Documentation
+
+* update link to passport example ([110575b](https://github.com/panva/openid-client/commit/110575b11e739b8acba9a241ff9db7c89505860a))
+
+
+### Fixes
+
+* correct supportsPKCE bool return ([f1aa9db](https://github.com/panva/openid-client/commit/f1aa9dbf304940061cb5efb350e68381b9887f9d)), closes [#710](https://github.com/panva/openid-client/issues/710)
+
 ## [6.1.0](https://github.com/panva/openid-client/compare/v6.0.0...v6.1.0) (2024-10-17)
 
 
