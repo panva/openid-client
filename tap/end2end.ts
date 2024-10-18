@@ -121,6 +121,23 @@ export default (QUnit: QUnit) => {
         { execute },
       )
 
+      // https://github.com/panva/openid-client/issues/710
+      {
+        t.true(
+          config
+            .serverMetadata()
+            .code_challenge_methods_supported?.includes('S256'),
+        )
+        t.false(
+          config
+            .serverMetadata()
+            .code_challenge_methods_supported?.includes('plain'),
+        )
+        t.true(config.serverMetadata().supportsPKCE())
+        t.true(config.serverMetadata().supportsPKCE('S256'))
+        t.false(config.serverMetadata().supportsPKCE('plain'))
+      }
+
       if (encryption) {
         client.enableDecryptingResponses(config, undefined, clientDecryptionKey)
       }
