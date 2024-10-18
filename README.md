@@ -57,7 +57,7 @@ import * as client from 'openid-client'
   - JWT Secured Authorization Request (JAR) - [source](examples/jar.ts) | [diff](examples/jar.diff)
   - JWT Secured Authorization Response Mode (JARM) - [source](examples/jarm.ts) | [diff](examples/jarm.diff)
   - Pushed Authorization Request (PAR) - [source](examples/par.ts) | [diff](examples/par.diff)
-- Passport Strategy - [source](passport.ts)
+- Passport Strategy - [source](examples/passport.ts)
 
 ## Quick start
 
