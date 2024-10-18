@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-    if: ${{ github.repository == 'panva/openid-client' || github.event_name == 'workflow_dispatch' }}
     uses: panva/.github/.github/workflows/build-conformance-suite.yml@main
 
   run:
@@ -88,7 +87,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/iron # 20
+          node-version: lts/*
           cache: 'npm'
       - run: npm clean-install
       - name: npm run conformance
