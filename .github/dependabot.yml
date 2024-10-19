@@ -12,6 +12,8 @@ updates:
     versioning-strategy: 'increase'
     allow:
       - dependency-name: 'edge-runtime'
+      - dependency-name: 'oauth4webapi'
+      - dependency-name: 'jose'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
