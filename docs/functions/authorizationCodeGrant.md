@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **authorizationCodeGrant**(`config`, `currentUrl`, `checks`?, `parameters`?, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
+▸ **authorizationCodeGrant**(`config`, `currentUrl`, `checks`?, `tokenEndpointParameters`?, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
 This method validates the authorization response and then executes the
 [Authorization Code Grant](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1) at the Authorization Server's
@@ -24,7 +24,7 @@ must be configured.
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `currentUrl` | [`URL`](https://developer.mozilla.org/docs/Web/API/URL) \| [`Request`](https://developer.mozilla.org/docs/Web/API/Request) | Current [URL](https://developer.mozilla.org/docs/Web/API/URL) the Authorization Server provided an Authorization Response to or a [Request](https://developer.mozilla.org/docs/Web/API/Request), the [Authorization Code Grant](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1) parameters are extracted from this. |
 | `checks`? | [`AuthorizationCodeGrantChecks`](../interfaces/AuthorizationCodeGrantChecks.md) | CSRF Protection checks like PKCE, expected state, or expected nonce |
-| `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) in cases where multiple resource indicators were requested but the authorization server only supports issuing an access token with a single audience |
+| `tokenEndpointParameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) in cases where multiple resource indicators were requested but the authorization server only supports issuing an access token with a single audience |
 | `options`? | [`AuthorizationCodeGrantOptions`](../interfaces/AuthorizationCodeGrantOptions.md) | - |
 
 ## Returns
