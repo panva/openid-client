@@ -2498,8 +2498,8 @@ function webInstanceOf<T>(input: unknown, toStringTag: string): input is T {
  *   {@link !"Authorization Code Grant"} parameters are extracted from this.
  * @param checks CSRF Protection checks like PKCE, expected state, or expected
  *   nonce
- * @param parameters Additional parameters that will be sent to the token
- *   endpoint, typically used for parameters such as `resource`
+ * @param tokenEndpointParameters Additional parameters that will be sent to the
+ *   token endpoint, typically used for parameters such as `resource`
  *   ({@link !"Resource Indicators" Resource Indicator}) in cases where multiple
  *   resource indicators were requested but the authorization server only
  *   supports issuing an access token with a single audience
@@ -2513,7 +2513,7 @@ export async function authorizationCodeGrant(
   config: Configuration,
   currentUrl: URL | Request,
   checks?: AuthorizationCodeGrantChecks,
-  parameters?: URLSearchParams | Record<string, string>,
+  tokenEndpointParameters?: URLSearchParams | Record<string, string>,
   options?: AuthorizationCodeGrantOptions,
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
@@ -2590,7 +2590,7 @@ export async function authorizationCodeGrant(
       // @ts-expect-error
       checks?.pkceCodeVerifier || oauth._nopkce,
       {
-        additionalParameters: parameters,
+        additionalParameters: tokenEndpointParameters,
         [oauth.customFetch]: fetch,
         [oauth.allowInsecureRequests]: !tlsOnly,
         DPoP: options?.DPoP,
@@ -2624,7 +2624,7 @@ export async function authorizationCodeGrant(
         // @ts-expect-error
         undefined,
         checks,
-        parameters,
+        tokenEndpointParameters,
         {
           ...options,
           flag: retry,
