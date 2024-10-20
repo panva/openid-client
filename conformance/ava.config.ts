@@ -195,7 +195,7 @@ export default async () => {
     description: `${name.split('/').reverse()[0]}/${version} (${homepage})`,
     alias: UUID,
     client: clientConfig,
-    waitTimeoutSeconds: 2,
+    waitTimeoutSeconds: 3,
     ...(PLAN_NAME.startsWith('fapi')
       ? {
           server: {
