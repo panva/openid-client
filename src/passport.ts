@@ -385,7 +385,17 @@ export class Strategy implements passport.Strategy {
    *   callbackURL was specified in the Strategy constructor
    */
   currentUrl(req: express.Request): URL {
-    return new URL(`${req.protocol}://${req.host}${req.url}`)
+    const DEFAULT_PORTS = [80, 443, 0];
+    let port = req.port || '0';
+    let portNumber = parseInt(port, 10);
+    if(portNumber === 0) {
+      const host = req.headers.host;
+      const portFromHost = host.split(':').pop();
+      portNumber = parseInt(portFromHost, 10) || 0;
+    }
+    port = DEFAULT_PORTS.includes(portNumber) ? '' : `:${portNumber}`;
+    const urlString = `${req.protocol}://${req.host}${port}${req.url}`;
+    return new URL(urlString);
   }
 
   authenticate<
