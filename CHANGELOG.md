@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.2](https://github.com/panva/openid-client/compare/v6.1.1...v6.1.2) (2024-10-23)
+
+
+### Refactor
+
+* rename the parameters positional argument in authorizationCodeGrant() ([c79ccc5](https://github.com/panva/openid-client/commit/c79ccc52c9b7e2fa880e5c518a917c63e006038a)), closes [#712](https://github.com/panva/openid-client/issues/712)
+
+
+### Documentation
+
+* document behaviour of customFetch on discovery ([072da62](https://github.com/panva/openid-client/commit/072da62d10d522bc0fd68fabe3015bfa7fe2c42b))
+* update Strategy.prototype.currentUrl JSDoc ([46ea086](https://github.com/panva/openid-client/commit/46ea086dd5462700d0e5b45a6bb55afac7e2099f)), closes [#714](https://github.com/panva/openid-client/issues/714)
+
 ## [6.1.1](https://github.com/panva/openid-client/compare/v6.1.0...v6.1.1) (2024-10-18)
 
 
