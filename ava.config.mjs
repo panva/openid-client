@@ -3,7 +3,7 @@ export default {
     ts: 'module',
     mjs: true,
   },
-  files: ['test/**/*.ts', '!test/**/_*.ts'],
+  files: ['test/**/*.ts'],
   workerThreads: false,
   nodeArguments: ['--enable-source-maps'],
 }

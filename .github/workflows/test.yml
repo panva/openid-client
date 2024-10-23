@@ -70,6 +70,9 @@ jobs:
       fail-fast: false
       matrix:
         node-version: ${{ fromJSON(needs.node-versions.outputs.matrix) }}
+        suite:
+          - tap:node
+          - test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -82,9 +85,9 @@ jobs:
           check-latest: true
       - run: npm clean-install
       - name: Run Test Suite
-        run: npm run tap:node
+        run: npm run ${{ matrix.suite }}
       - name: Upload server logs
-        if: ${{ failure() }}
+        if: ${{ failure() && matrix.suite == 'tap:node' }}
         id: artifact-upload-step
         uses: actions/upload-artifact@v4
         with:

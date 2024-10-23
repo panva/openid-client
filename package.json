@@ -67,7 +67,7 @@
   ],
   "scripts": {
     "_format": "find src test examples tap conformance -type f -name '*.ts' -o -name '*.mjs' -o -name '*.cjs' | xargs prettier --check",
-    "build": "rm -rf build && tsc && tsc --removeComments false --declaration --emitDeclarationOnly && tsc -p tsconfig.passport.json && tsc -p tsconfig.passport.json --removeComments false --declaration --emitDeclarationOnly && npm run --silent check-build",
+    "build": "rm -rf build && tsc && tsc --removeComments false --declaration --emitDeclarationOnly && tsc -p tsconfig.passport.json && tsc -p tsconfig.passport.json --removeComments false --declaration --emitDeclarationOnly && tsc -p test && npm run --silent check-build",
     "check-build": "tsc --noEmit --types node --lib ES2022.Error && tsc -p conformance && tsc -p tap && tsc -p examples",
     "conformance": "bash -c 'source .node_flags.sh && ava --config conformance/ava.config.ts'",
     "docs": "patch-package && typedoc",

@@ -1026,8 +1026,7 @@ function handleEntraId(
   options?: DiscoveryRequestOptions,
 ) {
   if (
-    (server.href === 'https://login.microsoftonline.com/common/v2.0' ||
-      server.href === 'https://login.microsoftonline.com/organizations/v2.0') &&
+    server.origin === 'https://login.microsoftonline.com' &&
     (!options?.algorithm || options.algorithm === 'oidc')
   ) {
     // @ts-expect-error
