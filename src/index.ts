@@ -1034,6 +1034,17 @@ function handleEntraId(
   return false
 }
 
+function handleB2Clogin(server: URL, options?: DiscoveryRequestOptions) {
+  if (
+    server.hostname.endsWith('.b2clogin.com') &&
+    (!options?.algorithm || options.algorithm === 'oidc')
+  ) {
+    return true
+  }
+
+  return false
+}
+
 /**
  * Performs Authorization Server Metadata discovery and returns a
  * {@link Configuration} with the discovered
@@ -1113,6 +1124,7 @@ export async function discovery(
 
   if (resolve && new URL(as.issuer).href !== server.href) {
     handleEntraId(server, as, options) ||
+      handleB2Clogin(server, options) ||
       (() => {
         throw new ClientError(
           'discovered metadata issuer does not match the expected issuer',
