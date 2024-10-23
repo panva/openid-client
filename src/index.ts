@@ -950,9 +950,6 @@ export interface DiscoveryRequestOptions {
   /**
    * The issuer transformation algorithm to use. Default is `oidc`.
    *
-   * Note: This has no effect if the first argument is a URL with a pathname
-   * containing `/.well-known/`.
-   *
    * @example
    *
    * ```txt

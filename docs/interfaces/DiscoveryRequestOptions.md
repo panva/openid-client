@@ -29,9 +29,6 @@ use with all its future individual HTTP requests.
 
 The issuer transformation algorithm to use. Default is `oidc`.
 
-Note: This has no effect if the first argument is a URL with a pathname
-containing `/.well-known/`.
-
 #### Example
 
 ```txt
