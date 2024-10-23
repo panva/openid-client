@@ -939,7 +939,7 @@ export function randomDPoPKeyPair(
 export interface DiscoveryRequestOptions {
   /**
    * Custom {@link !fetch Fetch API} implementation to use for the HTTP Requests
-   * the client will be making. If this option is used, then the same timeout
+   * the client will be making. If this option is used, then the customFetch
    * value will be assigned to the resolved {@link Configuration} instance for
    * use with all its future individual HTTP requests.
    *

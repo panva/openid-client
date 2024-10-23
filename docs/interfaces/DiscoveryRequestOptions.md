@@ -13,7 +13,7 @@ Support from the community to continue maintaining and improving this module is 
 • `optional` **\[customFetch\]**: [`CustomFetch`](../type-aliases/CustomFetch.md)
 
 Custom [Fetch API](https://developer.mozilla.org/docs/Web/API/Window/fetch) implementation to use for the HTTP Requests
-the client will be making. If this option is used, then the same timeout
+the client will be making. If this option is used, then the customFetch
 value will be assigned to the resolved [Configuration](../classes/Configuration.md) instance for
 use with all its future individual HTTP requests.
 
