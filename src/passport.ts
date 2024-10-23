@@ -381,8 +381,7 @@ export class Strategy implements passport.Strategy {
    * - Its `searchParams` are used as the authorization response parameters when
    *   the response type used by the client is `code`
    * - Its value stripped of `searchParams` and `hash` is used as the
-   *   `redirect_uri` authorization code grant token endpoint parameter unless
-   *   callbackURL was specified in the Strategy constructor
+   *   `redirect_uri` authorization code grant token endpoint parameter
    */
   currentUrl(req: express.Request): URL {
     return new URL(`${req.protocol}://${req.host}${req.url}`)
