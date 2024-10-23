@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.3](https://github.com/panva/openid-client/compare/v6.1.2...v6.1.3) (2024-10-23)
+
+
+### Documentation
+
+* remove note from issuer transformation algorithm ([5fda2cb](https://github.com/panva/openid-client/commit/5fda2cb3b83ac7162babc56a113864fb58c34f49))
+
+
+### Fixes
+
+* deal with discovery issues from b2clogin.com ([b9a4f2f](https://github.com/panva/openid-client/commit/b9a4f2fe8844efaed5eba2b175d7daa6c662f264)), closes [#718](https://github.com/panva/openid-client/issues/718)
+
 ## [6.1.2](https://github.com/panva/openid-client/compare/v6.1.1...v6.1.2) (2024-10-23)
 
 
