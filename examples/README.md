@@ -24,4 +24,4 @@ A collection of examples for the most common use cases.
   - Pushed Authorization Request (PAR) - [source](par.ts) | [diff](par.diff)
 - Passport Strategy - [source](passport.ts)
 
-[sponsor-auth0]: https://auth0.com/signup?utm_source=external_sites&utm_medium=panva&utm_campaign=devn_signup
+[sponsor-auth0]: https://a0.to/signup/panva
