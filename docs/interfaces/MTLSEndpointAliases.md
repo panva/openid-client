@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
- \[`metadata`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+ \[`metadata`: `string`\]: `string` \| `undefined`
 
 ## Properties
 

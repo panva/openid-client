@@ -85,7 +85,7 @@
   },
   "dependencies": {
     "jose": "^5.9.6",
-    "oauth4webapi": "^3.1.1"
+    "oauth4webapi": "^3.1.2"
   },
   "devDependencies": {
     "@koa/cors": "^5.0.0",
