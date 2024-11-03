@@ -363,9 +363,6 @@ export const flow = (options?: MacroOptions) => {
           params.set('response_type', plain.searchParams.get('response_type')!)
           params.set('scope', 'openid')
         }
-        if (response_type === 'id_token') {
-          params.set('response_type', response_type)
-        }
         authorizationUrl = client.buildAuthorizationUrl(config, params)
       }
 
