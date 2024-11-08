@@ -252,14 +252,7 @@ export const flow = (options?: MacroOptions) => {
 
       let clientAuth: client.ClientAuth | undefined
       if (metadata.token_endpoint_auth_method === 'private_key_jwt') {
-        clientAuth = client.PrivateKeyJwt(clientPrivateKey, {
-          [client.modifyAssertion]: (_header, payload) => {
-            payload.aud = [
-              config.serverMetadata().issuer,
-              config.serverMetadata().token_endpoint!,
-            ]
-          },
-        })
+        clientAuth = client.PrivateKeyJwt(clientPrivateKey)
       } else if (
         metadata.token_endpoint_auth_method === 'client_secret_basic'
       ) {
