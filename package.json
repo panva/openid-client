@@ -100,7 +100,7 @@
     "archiver": "^7.0.1",
     "ava": "^6.2.0",
     "chrome-launcher": "^1.1.2",
-    "edge-runtime": "^3.0.3",
+    "edge-runtime": "^3.0.5",
     "esbuild": "^0.24.0",
     "ky": "^1.7.2",
     "oidc-provider": "^8.5.2",
