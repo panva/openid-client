@@ -1,8 +1,8 @@
-name: Release
+name: Release v5.x
 
 on:
   push:
-    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+    tags: ['v5.[0-9]+.[0-9]+']
 
 jobs:
   npm:
@@ -20,23 +20,9 @@ jobs:
           node-version: lts/iron # 20
           registry-url: https://registry.npmjs.org
           always-auth: true
-      - run: npm publish --provenance
+      - run: npm publish --provenance --tag previous
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  cleanup:
-    needs:
-      - npm
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: git push origin $GITHUB_SHA:v5.x
-      - run: git push origin HEAD:main
 
   github:
     needs:
