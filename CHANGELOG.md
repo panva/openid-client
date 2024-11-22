@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.7.1](https://github.com/panva/openid-client/compare/v5.7.0...v5.7.1) (2024-11-22)
+
+
+### Refactor
+
+* jwt client authentication audience is now an issuer identifier string ([0b05217](https://github.com/panva/openid-client/commit/0b05217e7f283b75fd93c27c0f8c647f37501a33))
+
 ## [5.7.0](https://github.com/panva/node-openid-client/compare/v5.6.5...v5.7.0) (2024-09-09)
 
 
