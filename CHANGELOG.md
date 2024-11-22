@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.4](https://github.com/panva/openid-client/compare/v6.1.3...v6.1.4) (2024-11-22)
+
+
+### Documentation
+
+* resolve discovery customFetch jsdoc mentioning timeout ([5f4cd1b](https://github.com/panva/openid-client/commit/5f4cd1bc3a23a63d36da8ea59879b5f86ce12501))
+
 ## [6.1.3](https://github.com/panva/openid-client/compare/v6.1.2...v6.1.3) (2024-10-23)
 
 
