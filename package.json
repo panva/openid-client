@@ -22,8 +22,8 @@
     "relying party",
     "strategy"
   ],
-  "homepage": "https://github.com/panva/node-openid-client",
-  "repository": "panva/node-openid-client",
+  "homepage": "https://github.com/panva/openid-client",
+  "repository": "panva/openid-client",
   "funding": {
     "url": "https://github.com/sponsors/panva"
   },
