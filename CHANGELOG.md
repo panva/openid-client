@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.5](https://github.com/panva/openid-client/compare/v6.1.4...v6.1.5) (2024-11-27)
+
+
+### Fixes
+
+* **passport:** fix currentUrl when using express.Router ([3b2d570](https://github.com/panva/openid-client/commit/3b2d570eb8bc385899147cdc39e3d4b10e611f00)), closes [#733](https://github.com/panva/openid-client/issues/733)
+
 ## [6.1.4](https://github.com/panva/openid-client/compare/v6.1.3...v6.1.4) (2024-11-22)
 
 
