@@ -384,7 +384,7 @@ export class Strategy implements passport.Strategy {
    *   `redirect_uri` authorization code grant token endpoint parameter
    */
   currentUrl(req: express.Request): URL {
-    return new URL(`${req.protocol}://${req.host}${req.url}`)
+    return new URL(`${req.protocol}://${req.host}${req.originalUrl ?? req.url}`)
   }
 
   authenticate<
