@@ -60,7 +60,7 @@ app.get('/', ensureLoggedIn('/login'), (req, res) => {
 app.get(
   '/login',
   ensureLoggedOut('/logout'),
-  passport.authenticate(server.hostname),
+  passport.authenticate(server.host),
 )
 
 app.get('/logout', (req, res) => {
