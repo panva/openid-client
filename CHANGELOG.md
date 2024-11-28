@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.6](https://github.com/panva/openid-client/compare/v6.1.5...v6.1.6) (2024-11-28)
+
+
+### Fixes
+
+* handle scope, prompt, and passReqToCallback from generic passport types ([cc92a36](https://github.com/panva/openid-client/commit/cc92a36a58b68b3d60914e1d6d7cba072e8151d0)), closes [#735](https://github.com/panva/openid-client/issues/735)
+
 ## [6.1.5](https://github.com/panva/openid-client/compare/v6.1.4...v6.1.5) (2024-11-27)
 
 
