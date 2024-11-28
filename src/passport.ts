@@ -177,7 +177,21 @@ export class Strategy implements passport.Strategy {
     // @ts-ignore
     req: express.Request, options: TOptions,
   ): URLSearchParams | Record<string, string> | undefined {
-    return {}
+    let params = new URLSearchParams()
+
+    if (options?.scope) {
+      if (Array.isArray(options?.scope) && options.scope.length) {
+        params.set('scope', options.scope.join(' '))
+      } else if (typeof options?.scope === 'string' && options.scope.length) {
+        params.set('scope', options.scope)
+      }
+    }
+
+    if (options?.prompt) {
+      params.set('prompt', options.prompt)
+    }
+
+    return params
   }
 
   // prettier-ignore
@@ -352,7 +366,7 @@ export class Strategy implements passport.Strategy {
         return this.success(user)
       }
 
-      if (this._passReqToCallback) {
+      if (options.passReqToCallback ?? this._passReqToCallback) {
         return (this._verify as VerifyFunctionWithRequest)(
           req,
           tokens,
@@ -382,11 +396,17 @@ export class Strategy implements passport.Strategy {
    *   the response type used by the client is `code`
    * - Its value stripped of `searchParams` and `hash` is used as the
    *   `redirect_uri` authorization code grant token endpoint parameter
+   *
+   * This function may need to be overridden by users if its return value does
+   * not match the actual URL the authorization server redirected the user to.
    */
   currentUrl(req: express.Request): URL {
     return new URL(`${req.protocol}://${req.host}${req.originalUrl ?? req.url}`)
   }
 
+  /**
+   * Authenticate request.
+   */
   authenticate<
     TOptions extends
       passport.AuthenticateOptions = passport.AuthenticateOptions,
