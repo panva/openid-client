@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.7](https://github.com/panva/openid-client/compare/v6.1.6...v6.1.7) (2024-12-02)
+
+
+### Refactor
+
+* **types:** move customFetch options into its own interface ([57d8355](https://github.com/panva/openid-client/commit/57d8355b20f1e38a54a5d6581eb81abf8f59d3ba))
+
 ## [6.1.6](https://github.com/panva/openid-client/compare/v6.1.5...v6.1.6) (2024-11-28)
 
 
