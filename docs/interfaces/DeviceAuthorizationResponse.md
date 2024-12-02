@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
- \[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+ \[`parameter`: `string`\]: `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)
 
 ## Properties
 

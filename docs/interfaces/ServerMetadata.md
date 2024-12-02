@@ -12,6 +12,10 @@ Authorization Server Metadata
 
 [IANA OAuth Authorization Server Metadata registry](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#authorization-server-metadata)
 
+## Indexable
+
+ \[`metadata`: `string`\]: `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)
+
 ## Properties
 
 ### issuer

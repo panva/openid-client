@@ -10,6 +10,10 @@ A subset of the [IANA OAuth Client Metadata
 registry](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata)
 that has an effect on how the Client functions
 
+## Indexable
+
+ \[`metadata`: `string`\]: `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)
+
 ## Properties
 
 ### client\_id

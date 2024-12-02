@@ -59,6 +59,16 @@ Note: Presence of [allowInsecureRequests](../functions/allowInsecureRequests.md)
 the use of insecure HTTP requests for the Authorization Server Metadata
 discovery request itself.
 
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `config` | [`Configuration`](../classes/Configuration.md) |
+
+#### Returns
+
+`void`
+
 #### Example
 
 Disable the HTTPS-only restriction for the discovery call and subsequently
