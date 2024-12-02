@@ -99,6 +99,7 @@ Support from the community to continue maintaining and improving this module is 
 - [ConfigurationProperties](interfaces/ConfigurationProperties.md)
 - [ConfirmationClaims](interfaces/ConfirmationClaims.md)
 - [CryptoKeyPair](interfaces/CryptoKeyPair.md)
+- [CustomFetchOptions](interfaces/CustomFetchOptions.md)
 - [DecryptionKey](interfaces/DecryptionKey.md)
 - [DeviceAuthorizationResponse](interfaces/DeviceAuthorizationResponse.md)
 - [DeviceAutorizationGrantPollOptions](interfaces/DeviceAutorizationGrantPollOptions.md)

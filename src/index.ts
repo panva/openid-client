@@ -1513,6 +1513,31 @@ export interface ConfigurationMethods {
   serverMetadata(): Readonly<ServerMetadata> & ServerMetadataHelpers
 }
 
+export interface CustomFetchOptions {
+  /**
+   * The request body content to send to the server
+   */
+  body: FetchBody
+  /**
+   * HTTP Headers
+   */
+  headers: Record<string, string>
+  /**
+   * The
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods request method}
+   */
+  method: string
+  /**
+   * See {@link !Request.redirect}
+   */
+  redirect: 'manual'
+  /**
+   * An AbortSignal configured as per the {@link ConfigurationProperties.timeout}
+   * value
+   */
+  signal?: AbortSignal
+}
+
 /**
  * @see {@link customFetch}
  */
@@ -1525,30 +1550,7 @@ export type CustomFetch = (
   /**
    * Options otherwise sent to {@link !fetch} as the `options` argument
    */
-  options: {
-    /**
-     * The request body content to send to the server
-     */
-    body: FetchBody
-    /**
-     * HTTP Headers
-     */
-    headers: Record<string, string>
-    /**
-     * The
-     * {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods request method}
-     */
-    method: string
-    /**
-     * See {@link !Request.redirect}
-     */
-    redirect: 'manual'
-    /**
-     * An AbortSignal configured as per the
-     * {@link ConfigurationProperties.timeout} value
-     */
-    signal?: AbortSignal
-  },
+  options: CustomFetchOptions,
 ) => Promise<Response>
 
 /**
