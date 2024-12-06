@@ -1050,11 +1050,18 @@ function handleB2Clogin(server: URL, options?: DiscoveryRequestOptions) {
  * {@link Configuration} with the discovered
  * {@link ServerMetadata Authorization Server} metadata.
  *
- * This is the RECOMMENDED method of client configuration.
+ * Passing the Authorization Server's Issuer Identifier to this method is the
+ * RECOMMENDED method of client configuration.
  *
  * This has the same effect as calling the {@link Configuration} constructor
  * except that the server metadata is discovered from its own Authorization
  * Server Metadata discovery document.
+ *
+ * Note: This method also accepts a URL pointing directly to the Authorization
+ * Server's discovery document, doing so is merely a shorthand for using
+ * {@link !fetch} and passing the discovered JSON metadata (as
+ * {@link ServerMetadata}) into the {@link Configuration} constructor. Doing so is
+ * NOT RECOMMENDED as it disables the {@link ServerMetadata.issuer} validation.
  *
  * @param server URL representation of the Authorization Server's Issuer
  *   Identifier
