@@ -28,7 +28,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Advanced Configuration
 
-- [allowInsecureRequests](functions/allowInsecureRequests.md)
+- [~~allowInsecureRequests~~](functions/allowInsecureRequests.md)
 - [enableDecryptingResponses](functions/enableDecryptingResponses.md)
 - [enableDetachedSignatureResponseChecks](functions/enableDetachedSignatureResponseChecks.md)
 - [enableNonRepudiationChecks](functions/enableNonRepudiationChecks.md)
@@ -141,5 +141,5 @@ Support from the community to continue maintaining and improving this module is 
 - [clockTolerance](variables/clockTolerance.md)
 - [customFetch](variables/customFetch.md)
 - [modifyAssertion](variables/modifyAssertion.md)
-- [skipStateCheck](variables/skipStateCheck.md)
-- [skipSubjectCheck](variables/skipSubjectCheck.md)
+- [~~skipStateCheck~~](variables/skipStateCheck.md)
+- [~~skipSubjectCheck~~](variables/skipSubjectCheck.md)

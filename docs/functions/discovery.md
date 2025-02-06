@@ -31,7 +31,7 @@ NOT RECOMMENDED as it disables the [ServerMetadata.issuer](../interfaces/ServerM
 | ------ | ------ | ------ |
 | `server` | [`URL`](https://developer.mozilla.org/docs/Web/API/URL) | URL representation of the Authorization Server's Issuer Identifier |
 | `clientId` | `string` | Client Identifier at the Authorization Server |
-| `metadata`? | `string` \| [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata, when a string is passed in it is a shorthand for passing just [ClientMetadata.client_secret](../interfaces/ClientMetadata.md#client_secret) |
+| `metadata`? | `string` \| [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata, when a string is passed in it is a shorthand for passing just [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret) |
 | `clientAuthentication`? | [`ClientAuth`](../type-aliases/ClientAuth.md) | - |
 | `options`? | [`DiscoveryRequestOptions`](../interfaces/DiscoveryRequestOptions.md) |  |
 

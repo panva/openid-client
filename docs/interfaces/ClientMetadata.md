@@ -12,7 +12,7 @@ that has an effect on how the Client functions
 
 ## Indexable
 
- \[`metadata`: `string`\]: `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)
+\[`metadata`: `string`\]: `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)
 
 ## Properties
 
@@ -46,7 +46,7 @@ See [clockTolerance](../variables/clockTolerance.md).
 
 JWS `alg` algorithm required for signing authorization responses. When not configured the
 default is to allow only algorithms listed in
-[`as.authorization_signing_alg_values_supported`](ServerMetadata.md#authorization_signing_alg_values_supported)
+[\`as.authorization\_signing\_alg\_values\_supported\`](ServerMetadata.md#authorization_signing_alg_values_supported)
 and fall back to `RS256` when the authorization server metadata is not set.
 
 ***
@@ -73,7 +73,7 @@ Default Maximum Authentication Age.
 
 JWS `alg` algorithm required for signing the ID Token issued to this Client. When not
 configured the default is to allow only algorithms listed in
-[`as.id_token_signing_alg_values_supported`](ServerMetadata.md#id_token_signing_alg_values_supported)
+[\`as.id\_token\_signing\_alg\_values\_supported\`](ServerMetadata.md#id_token_signing_alg_values_supported)
 and fall back to `RS256` when the authorization server metadata is not set.
 
 ***
@@ -84,7 +84,7 @@ and fall back to `RS256` when the authorization server metadata is not set.
 
 JWS `alg` algorithm REQUIRED for signed introspection responses. When not configured the
 default is to allow only algorithms listed in
-[`as.introspection_signing_alg_values_supported`](ServerMetadata.md#introspection_signing_alg_values_supported)
+[\`as.introspection\_signing\_alg\_values\_supported\`](ServerMetadata.md#introspection_signing_alg_values_supported)
 and fall back to `RS256` when the authorization server metadata is not set.
 
 ***
@@ -93,7 +93,7 @@ and fall back to `RS256` when the authorization server metadata is not set.
 
 • `optional` **require\_auth\_time**: `boolean`
 
-Boolean value specifying whether the [`auth_time`](IDToken.md#auth_time) Claim in the ID Token
+Boolean value specifying whether the [\`auth\_time\`](IDToken.md#auth_time) Claim in the ID Token
 is REQUIRED. Default is `false`.
 
 ***
@@ -160,5 +160,5 @@ config[client.customFetch] = (...args) =>
 
 JWS `alg` algorithm REQUIRED for signing UserInfo Responses. When not configured the default is
 to allow only algorithms listed in
-[`as.userinfo_signing_alg_values_supported`](ServerMetadata.md#userinfo_signing_alg_values_supported)
+[\`as.userinfo\_signing\_alg\_values\_supported\`](ServerMetadata.md#userinfo_signing_alg_values_supported)
 and fail otherwise.

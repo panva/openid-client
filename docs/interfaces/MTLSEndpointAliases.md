@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
- \[`metadata`: `string`\]: `undefined` \| `string`
+\[`metadata`: `string`\]: `undefined` \| `string`
 
 ## Properties
 

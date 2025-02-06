@@ -13,11 +13,11 @@ negotiating and proving proof-of-possession to sender-constrain OAuth 2.0
 tokens via [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) at the Authorization Server and Resource Server.
 
 Support for [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) at the authorization is indicated by
-[ServerMetadata.dpop_signing_alg_values_supported](../interfaces/ServerMetadata.md#dpop_signing_alg_values_supported). Whether the
+[ServerMetadata.dpop\_signing\_alg\_values\_supported](../interfaces/ServerMetadata.md#dpop_signing_alg_values_supported). Whether the
 authorization server ends up sender-constraining the access token is at the
 server's discretion. When an access token is sender-constrained then the
 resulting
-[`token_type` will be `dpop`](../interfaces/TokenEndpointResponse.md#token_type).
+[\`token\_type\` will be \`dpop\`](../interfaces/TokenEndpointResponse.md#token_type).
 
 This wrapper / handle also keeps track of server-issued nonces, allowing this
 module to automatically retry requests with a fresh nonce when the server

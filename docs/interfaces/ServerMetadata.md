@@ -14,7 +14,7 @@ Authorization Server Metadata
 
 ## Indexable
 
- \[`metadata`: `string`\]: `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)
+\[`metadata`: `string`\]: `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)
 
 ## Properties
 

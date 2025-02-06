@@ -9,7 +9,7 @@ Support from the community to continue maintaining and improving this module is 
 ▸ **enableNonRepudiationChecks**(`config`): `void`
 
 Enables validating the JWS Signature of either a JWT [Response.body](https://developer.mozilla.org/docs/Web/API/Response/body) or
-[TokenEndpointResponse.id_token](../interfaces/TokenEndpointResponse.md#id_token) of a processed [Response](https://developer.mozilla.org/docs/Web/API/Response) such as
+[TokenEndpointResponse.id\_token](../interfaces/TokenEndpointResponse.md#id_token) of a processed [Response](https://developer.mozilla.org/docs/Web/API/Response) such as
 JWT UserInfo or JWT Introspection responses.
 
 Note: Validating signatures of JWTs received via direct communication between

@@ -11,7 +11,7 @@ Support from the community to continue maintaining and improving this module is 
 **`tls_client_auth`** uses the HTTP request body to send only `client_id` as
 `application/x-www-form-urlencoded` body parameter and the mTLS key and
 certificate is configured through
-[ClientMetadata.use_mtls_endpoint_aliases](../interfaces/ClientMetadata.md#use_mtls_endpoint_aliases) and [customFetch](../variables/customFetch.md).
+[ClientMetadata.use\_mtls\_endpoint\_aliases](../interfaces/ClientMetadata.md#use_mtls_endpoint_aliases) and [customFetch](../variables/customFetch.md).
 
 ## Returns
 

@@ -20,7 +20,7 @@ must be configured.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
-| `parameters` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Authorization request parameters that will be sent to PAR |
+| `parameters` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Authorization request parameters that will be encoded in the querystring of the URL |
 
 ## Returns
 

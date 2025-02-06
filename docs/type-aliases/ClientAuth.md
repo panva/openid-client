@@ -11,7 +11,7 @@ Support from the community to continue maintaining and improving this module is 
 Implementation of the Client's Authentication Method at the Authorization
 Server.
 
-The default is [ClientSecretPost](../functions/ClientSecretPost.md) if [ClientMetadata.client_secret](../interfaces/ClientMetadata.md#client_secret)
+The default is [ClientSecretPost](../functions/ClientSecretPost.md) if [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret)
 is present, [None](../functions/None.md) otherwise.
 
 Other Client Authentication Methods must be provided explicitly and their
