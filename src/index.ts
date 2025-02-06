@@ -2906,7 +2906,8 @@ export async function clientCredentialsGrant(
  * // redirect now
  * ```
  *
- * @param parameters Authorization request parameters that will be sent to PAR
+ * @param parameters Authorization request parameters that will be encoded in
+ *   the querystring of the URL
  *
  * @returns {@link !URL} Instance with {@link !URL.searchParams} including
  *   `client_id`, `response_type`, and all parameters from the `parameters`
