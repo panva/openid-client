@@ -225,4 +225,4 @@ The supported JavaScript runtimes include those that support the utilized Web AP
 
 [^universal]: Assumes runtime support of [WebCryptoAPI][] and [Fetch API][]
 
-[^cjs]: CJS style `require('openid-client')` is possible in Node.js versions where `process.features.require_module` is `true` (^20.19.0 || ^22.12.0 || >= 23.0.0) or with the `--experimental-require-module` Node.js CLI flag.
+[^cjs]: CJS style `require('openid-client')` is possible in Node.js versions where `process.features.require_module` is `true` by default (^20.19.0 || ^22.12.0 || >= 23.0.0) or with the `--experimental-require-module` Node.js CLI flag.
