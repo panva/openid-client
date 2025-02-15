@@ -6,7 +6,7 @@ export const isDeno = typeof Deno !== 'undefined'
 
 export const isElectron =
   // @ts-ignore
-  typeof process !== 'undefined' && !!process.versions.electron
+  typeof process !== 'undefined' && process.versions?.electron !== undefined
 
 export const isNode =
   // @ts-ignore
