@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://github.com/panva/openid-client/compare/v6.1.7...v6.2.0) (2025-02-17)
+
+
+### Features
+
+* add Client-Initiated Backchannel Authentication ([fe6d996](https://github.com/panva/openid-client/commit/fe6d996f633181eaf7af771ac6a10662c806ebda))
+
+
+### Documentation
+
+* explain more discovery() behaviours ([271ac5b](https://github.com/panva/openid-client/commit/271ac5b0a4beeee5d3028bad2458cd5463f1bfc9))
+* re-run docs ([17b531a](https://github.com/panva/openid-client/commit/17b531a7ab0632ddb17ff58ad20a3519c52a20da))
+* update buildAuthorizationUrl parameters description ([23fb405](https://github.com/panva/openid-client/commit/23fb405f07707e81dae6da4dbf160061947f818d))
+* update buildAuthorizationUrl parameters description ([db9fd94](https://github.com/panva/openid-client/commit/db9fd94af4c10312597dbe4ea05d67d4eeb5b503))
+
+
+### Fixes
+
+* **types:** fix typo in DeviceAuthorizationGrantPollOptions ([d3629c9](https://github.com/panva/openid-client/commit/d3629c963953fd8b79f727563e5e558a3efc7d5a))
+
 ## [6.1.7](https://github.com/panva/openid-client/compare/v6.1.6...v6.1.7) (2024-12-02)
 
 

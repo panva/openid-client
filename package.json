@@ -1,6 +1,6 @@
 {
   "name": "openid-client",
-  "version": "6.1.7",
+  "version": "6.2.0",
   "description": "OAuth 2 / OpenID Connect Client API for JavaScript Runtimes",
   "keywords": [
     "access token",
