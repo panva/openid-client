@@ -1841,7 +1841,7 @@ export function getDPoPHandle(
   return oauth.DPoP(int(config).c, keyPair, options)
 }
 
-export interface DeviceAutorizationGrantPollOptions extends DPoPOptions {
+export interface DeviceAuthorizationGrantPollOptions extends DPoPOptions {
   /**
    * AbortSignal to abort polling. Default is that the operation will time out
    * after the indicated expires_in property returned by the server in
@@ -1897,7 +1897,7 @@ export async function pollDeviceAuthorizationGrant(
   config: Configuration,
   deviceAuthorizationResponse: oauth.DeviceAuthorizationResponse,
   parameters?: URLSearchParams | Record<string, string>,
-  options?: DeviceAutorizationGrantPollOptions,
+  options?: DeviceAuthorizationGrantPollOptions,
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
@@ -3586,3 +3586,11 @@ export async function fetchProtectedResource(
 function getContentType(response: Response): string | undefined {
   return response.headers.get('content-type')?.split(';')[0]
 }
+
+/**
+ * @ignore
+ *
+ * @deprecated Use {@link DeviceAuthorizationGrantPollOptions}.
+ */
+export interface DeviceAutorizationGrantPollOptions
+  extends DeviceAuthorizationGrantPollOptions {}

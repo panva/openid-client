@@ -1,4 +1,4 @@
-# Interface: DeviceAutorizationGrantPollOptions
+# Interface: DeviceAuthorizationGrantPollOptions
 
 [💗 Help the project](https://github.com/sponsors/panva)
 

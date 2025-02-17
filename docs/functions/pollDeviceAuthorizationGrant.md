@@ -23,7 +23,7 @@ must be configured.
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `deviceAuthorizationResponse` | [`DeviceAuthorizationResponse`](../interfaces/DeviceAuthorizationResponse.md) | Device Authorization Response obtained from [initiateDeviceAuthorization](initiateDeviceAuthorization.md) |
 | `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
-| `options`? | [`DeviceAutorizationGrantPollOptions`](../interfaces/DeviceAutorizationGrantPollOptions.md) | - |
+| `options`? | [`DeviceAuthorizationGrantPollOptions`](../interfaces/DeviceAuthorizationGrantPollOptions.md) | - |
 
 ## Returns
 
