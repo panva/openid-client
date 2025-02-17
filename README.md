@@ -10,7 +10,7 @@ The following features are currently in scope and implemented in this software:
 
 - Authorization Server Metadata discovery
 - Authorization Code Flow (profiled under OpenID Connect 1.0, OAuth 2.0, OAuth 2.1, FAPI 1.0 Advanced, and FAPI 2.0)
-- Refresh Token, Device Authorization, and Client Credentials Grants
+- Refresh Token, Device Authorization, Client-Initiated Backchannel Authentication, and Client Credentials Grants
 - Demonstrating Proof-of-Possession at the Application Layer (DPoP)
 - Token Introspection and Revocation
 - Pushed Authorization Requests (PAR)
@@ -176,6 +176,27 @@ You will display the instructions to the end-user and have them directed at `ver
 ```ts
 let tokens: client.TokenEndpointResponse =
   await client.pollDeviceAuthorizationGrant(config, response)
+
+console.log('Token Endpoint Response', tokens)
+```
+
+This will poll in a regular interval and only resolve with tokens once the end-user authenticates.
+
+### Client-Initiated Backchannel Authentication (CIBA)
+
+```ts
+let scope!: string // Scope of the access request
+let login_hint!: string // one of login_hint, id_token_hint, or login_hint_token parameters must be provided in CIBA
+
+let response = await client.initiateBackchannelAuthentication(config, {
+  scope,
+  login_hint,
+})
+
+// OPTIONAL: If your client is configured with Ping Mode you'd invoke the following after getting the CIBA Ping Callback (its implementation is framework specific and therefore out of scope for openid-client)
+
+let tokens: client.TokenEndpointResponse =
+  await client.pollBackchannelAuthenticationGrant(config, response)
 
 console.log('Token Endpoint Response', tokens)
 ```
