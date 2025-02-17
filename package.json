@@ -101,7 +101,7 @@
     "ava": "^6.2.0",
     "chrome-launcher": "^1.1.2",
     "edge-runtime": "^4.0.1",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "ky": "^1.7.5",
     "oidc-provider": "^8.7.0",
     "patch-package": "^8.0.0",
