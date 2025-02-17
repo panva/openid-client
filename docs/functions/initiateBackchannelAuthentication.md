@@ -31,7 +31,7 @@ must be configured.
 ```ts
 let config!: client.Configuration
 let scope!: string
-let login_hint!: string
+let login_hint!: string // one of login_hint, id_token_hint, or login_hint_token parameters must be provided in CIBA
 
 let backchannelAuthenticationResponse =
   await client.initiateBackchannelAuthentication(config, {

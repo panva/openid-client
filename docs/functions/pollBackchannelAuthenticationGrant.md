@@ -34,13 +34,15 @@ must be configured.
 ```ts
 let config!: client.Configuration
 let scope!: string
-let login_hint!: string
+let login_hint!: string // one of login_hint, id_token_hint, or login_hint_token parameters must be provided in CIBA
 
 let backchannelAuthenticationResponse =
   await client.initiateBackchannelAuthentication(config, {
     scope,
     login_hint,
   })
+
+// OPTIONAL: If your client is configured with Ping Mode you'd invoke the following after getting the CIBA Ping Callback (its implementation is framework specific and therefore out of scope for openid-client)
 
 let { auth_req_id } = backchannelAuthenticationResponse
 
