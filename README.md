@@ -10,7 +10,7 @@ The following features are currently in scope and implemented in this software:
 
 - Authorization Server Metadata discovery
 - Authorization Code Flow (profiled under OpenID Connect 1.0, OAuth 2.0, OAuth 2.1, FAPI 1.0 Advanced, and FAPI 2.0)
-- Refresh Token, Device Authorization, Client-Initiated Backchannel Authentication, and Client Credentials Grants
+- Refresh Token, Device Authorization, Client-Initiated Backchannel Authentication (CIBA), and Client Credentials Grants
 - Demonstrating Proof-of-Possession at the Application Layer (DPoP)
 - Token Introspection and Revocation
 - Pushed Authorization Requests (PAR)
