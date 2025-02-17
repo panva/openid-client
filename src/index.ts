@@ -56,6 +56,7 @@ export {
 
   // Type aliases
   type AuthorizationDetails,
+  type BackchannelAuthenticationResponse,
   type ConfirmationClaims,
   type DeviceAuthorizationResponse,
   type ExportedJWKSCache,
@@ -2038,6 +2039,207 @@ export async function initiateDeviceAuthorization(
       oauth.processDeviceAuthorizationResponse(as, c, response),
     )
     .catch(errorHandler)
+}
+
+/**
+ * Initiates a {@link !"Client-Initiated Backchannel Authentication Grant"} using
+ * parameters from the `parameters` argument.
+ *
+ * Note:
+ * {@link ServerMetadata.backchannel_authentication_endpoint URL of the authorization server's backchannel authentication endpoint}
+ * must be configured.
+ *
+ * @example
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let scope!: string
+ * let login_hint!: string
+ *
+ * let backchannelAuthenticationResponse =
+ *   await client.initiateBackchannelAuthentication(config, {
+ *     scope,
+ *     login_hint,
+ *   })
+ *
+ * let { auth_req_id } = backchannelAuthenticationResponse
+ * ```
+ *
+ * @param parameters Authorization request parameters that will be sent to the
+ *   backchannel authentication endpoint
+ *
+ * @group Grants
+ */
+export async function initiateBackchannelAuthentication(
+  config: Configuration,
+  parameters: URLSearchParams | Record<string, string>,
+): Promise<oauth.BackchannelAuthenticationResponse> {
+  checkConfig(config)
+
+  const { as, c, auth, fetch, tlsOnly, timeout } = int(config)
+  return oauth
+    .backchannelAuthenticationRequest(as, c, auth, parameters, {
+      [oauth.customFetch]: fetch,
+      [oauth.allowInsecureRequests]: !tlsOnly,
+      headers: new Headers(headers),
+      signal: signal(timeout),
+    })
+    .then((response) =>
+      oauth.processBackchannelAuthenticationResponse(as, c, response),
+    )
+    .catch(errorHandler)
+}
+
+export interface BackchannelAuthenticationGrantPollOptions extends DPoPOptions {
+  /**
+   * AbortSignal to abort polling. Default is that the operation will time out
+   * after the indicated expires_in property returned by the server in
+   * {@link initiateBackchannelAuthentication}
+   */
+  signal?: AbortSignal
+}
+
+/**
+ * Continuously polls the {@link ServerMetadata.token_endpoint token endpoint}
+ * until the end-user finishes the
+ * {@link !"Client-Initiated Backchannel Authentication Grant"} process
+ *
+ * Note:
+ * {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
+ * must be configured.
+ *
+ * @example
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let scope!: string
+ * let login_hint!: string
+ *
+ * let backchannelAuthenticationResponse =
+ *   await client.initiateBackchannelAuthentication(config, {
+ *     scope,
+ *     login_hint,
+ *   })
+ *
+ * let { auth_req_id } = backchannelAuthenticationResponse
+ *
+ * let tokenEndpointResponse =
+ *   await client.pollBackchannelAuthenticationGrant(
+ *     config,
+ *     backchannelAuthenticationResponse,
+ *   )
+ * ```
+ *
+ * @param backchannelAuthenticationResponse Backchannel Authentication Response
+ *   obtained from {@link initiateBackchannelAuthentication}
+ * @param parameters Additional parameters that will be sent to the token
+ *   endpoint, typically used for parameters such as `scope` and a `resource`
+ *   ({@link !"Resource Indicators" Resource Indicator})
+ *
+ * @group Grants
+ */
+export async function pollBackchannelAuthenticationGrant(
+  config: Configuration,
+  backchannelAuthenticationResponse: oauth.BackchannelAuthenticationResponse,
+  parameters?: URLSearchParams | Record<string, string>,
+  options?: BackchannelAuthenticationGrantPollOptions,
+): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+  checkConfig(config)
+
+  parameters = new URLSearchParams(parameters)
+
+  let interval = backchannelAuthenticationResponse.interval ?? 5
+
+  const pollingSignal =
+    options?.signal ??
+    AbortSignal.timeout(backchannelAuthenticationResponse.expires_in * 1000)
+
+  try {
+    pollingSignal.throwIfAborted()
+  } catch (err) {
+    errorHandler(err)
+  }
+
+  await wait(interval)
+
+  const { as, c, auth, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
+    int(config)
+
+  const response = await oauth
+    .backchannelAuthenticationGrantRequest(
+      as,
+      c,
+      auth,
+      backchannelAuthenticationResponse.auth_req_id,
+      {
+        [oauth.customFetch]: fetch,
+        [oauth.allowInsecureRequests]: !tlsOnly,
+        additionalParameters: parameters,
+        DPoP: options?.DPoP,
+        headers: new Headers(headers),
+        signal: pollingSignal.aborted ? pollingSignal : signal(timeout),
+      },
+    )
+    .catch(errorHandler)
+
+  const p = oauth.processBackchannelAuthenticationGrantResponse(
+    as,
+    c,
+    response,
+    {
+      [oauth.jweDecrypt]: decrypt,
+    },
+  )
+
+  let result: oauth.TokenEndpointResponse
+  try {
+    result = await p
+  } catch (err) {
+    if (retryable(err, options)) {
+      return pollBackchannelAuthenticationGrant(
+        config,
+        {
+          ...backchannelAuthenticationResponse,
+          interval,
+        },
+        parameters,
+        {
+          ...options,
+          signal: pollingSignal,
+          flag: retry,
+        },
+      )
+    }
+
+    if (err instanceof oauth.ResponseBodyError) {
+      switch (err.error) {
+        // @ts-ignore
+        case 'slow_down': // Fall through
+          interval += 5
+        case 'authorization_pending':
+          return pollBackchannelAuthenticationGrant(
+            config,
+            {
+              ...backchannelAuthenticationResponse,
+              interval,
+            },
+            parameters,
+            {
+              ...options,
+              signal: pollingSignal,
+              flag: undefined,
+            },
+          )
+      }
+    }
+
+    errorHandler(err)
+  }
+
+  result.id_token && (await nonRepudiation?.(response))
+
+  addHelpers(result)
+  return result
 }
 
 export interface AuthorizationCodeGrantOptions extends DPoPOptions {

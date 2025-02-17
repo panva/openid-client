@@ -46,6 +46,16 @@ const provider = new Provider('http://localhost:3000', {
     jwtResponseModes: { enabled: true },
     jwtUserinfo: { enabled: true },
     pushedAuthorizationRequests: { enabled: true },
+    ciba: {
+      enabled: true,
+      processLoginHint(ctx, loginHint) {
+        return loginHint
+      },
+      verifyUserCode() {},
+      validateRequestContext() {},
+      triggerAuthenticationDevice() {},
+      deliveryModes: ['poll'],
+    },
     resourceIndicators: {
       enabled: true,
       getResourceServerInfo: (ctx, resource) => ({
@@ -110,6 +120,58 @@ provider.use((ctx, next) => {
 })
 
 provider.use(async (ctx, next) => {
+  if (ctx.path === '/ciba-sim' && ctx.method === 'POST') {
+    const body = await raw(ctx.req, {
+      length: ctx.request.length,
+      encoding: ctx.charset,
+    })
+
+    const params = new URLSearchParams(body.toString())
+    const auth_req_id = params.get('auth_req_id')
+    const action = params.get('action')
+
+    const request =
+      await provider.BackchannelAuthenticationRequest.find(auth_req_id)
+
+    if (action === 'allow') {
+      const client = await provider.Client.find(request.clientId)
+      const grant = new provider.Grant({
+        client,
+        accountId: request.accountId,
+      })
+      grant.addOIDCScope(request.scope)
+      let claims = []
+      if (request.claims.id_token) {
+        claims = claims.concat(Object.keys(request.claims.id_token))
+      }
+      if (request.claims.userinfo) {
+        claims = claims.concat(Object.keys(request.claims.userinfo))
+      }
+      grant.addOIDCClaims(claims)
+      // eslint-disable-next-line no-restricted-syntax
+      for (const indicator of request.params.resource) {
+        grant.addResourceScope(indicator, request.params.scope)
+      }
+      await grant.save()
+      await provider
+        .backchannelResult(request, grant, {
+          acr: 'urn:mace:incommon:iap:silver',
+          authTime: Math.floor(Date.now() / 1000),
+        })
+        .catch(() => {})
+    } else {
+      await provider
+        .backchannelResult(
+          request,
+          new errors.AccessDenied('end-user cancelled request'),
+        )
+        .catch(() => {})
+    }
+
+    ctx.body = { done: true }
+    return undefined
+  }
+
   if (ctx.URL.pathname === '/drive' && ctx.method === 'POST') {
     let browser
     try {

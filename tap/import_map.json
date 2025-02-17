@@ -7,6 +7,7 @@
     "../src/index.js": "../src/index.ts",
     "./end2end-client-credentials.js": "./end2end-client-credentials.ts",
     "./end2end-device-code.js": "./end2end-device-code.ts",
+    "./end2end-ciba.js": "./end2end-ciba.ts",
     "./end2end.js": "./end2end.ts",
     "./helper.js": "./helper.ts",
     "./run.js": "./run.ts",

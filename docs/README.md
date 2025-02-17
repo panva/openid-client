@@ -22,7 +22,9 @@ Support from the community to continue maintaining and improving this module is 
 - [authorizationCodeGrant](functions/authorizationCodeGrant.md)
 - [clientCredentialsGrant](functions/clientCredentialsGrant.md)
 - [genericGrantRequest](functions/genericGrantRequest.md)
+- [initiateBackchannelAuthentication](functions/initiateBackchannelAuthentication.md)
 - [initiateDeviceAuthorization](functions/initiateDeviceAuthorization.md)
+- [pollBackchannelAuthenticationGrant](functions/pollBackchannelAuthenticationGrant.md)
 - [pollDeviceAuthorizationGrant](functions/pollDeviceAuthorizationGrant.md)
 - [refreshTokenGrant](functions/refreshTokenGrant.md)
 
@@ -95,6 +97,8 @@ Support from the community to continue maintaining and improving this module is 
 - [AuthorizationCodeGrantChecks](interfaces/AuthorizationCodeGrantChecks.md)
 - [AuthorizationCodeGrantOptions](interfaces/AuthorizationCodeGrantOptions.md)
 - [AuthorizationDetails](interfaces/AuthorizationDetails.md)
+- [BackchannelAuthenticationGrantPollOptions](interfaces/BackchannelAuthenticationGrantPollOptions.md)
+- [BackchannelAuthenticationResponse](interfaces/BackchannelAuthenticationResponse.md)
 - [ConfigurationMethods](interfaces/ConfigurationMethods.md)
 - [ConfigurationProperties](interfaces/ConfigurationProperties.md)
 - [ConfirmationClaims](interfaces/ConfirmationClaims.md)

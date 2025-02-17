@@ -1,8 +1,8 @@
 diff --git a/node_modules/typedoc-plugin-mdn-links/data/web-api.json b/node_modules/typedoc-plugin-mdn-links/data/web-api.json
-index d84389e..56bf890 100644
+index e92381a..96a13c4 100644
 --- a/node_modules/typedoc-plugin-mdn-links/data/web-api.json
 +++ b/node_modules/typedoc-plugin-mdn-links/data/web-api.json
-@@ -1,4 +1,34 @@
+@@ -1,4 +1,37 @@
  {
 +	"OIDC": {
 +		"url": "https://openid.net/specs/openid-connect-core-1_0.html"
@@ -21,6 +21,9 @@ index d84389e..56bf890 100644
 +	},
 +	"Device Authorization Grant": {
 +		"url": "https://www.rfc-editor.org/rfc/rfc8628.html"
++	},
++	"Client-Initiated Backchannel Authentication Grant": {
++		"url": "https://openid.net/specs/openid-client-initiated-backchannel-authentication-core-1_0.html"
 +	},
 +	"Resource Indicators": {
 +		"url": "https://www.rfc-editor.org/rfc/rfc8707"
