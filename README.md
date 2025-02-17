@@ -186,14 +186,22 @@ This will poll in a regular interval and only resolve with tokens once the end-u
 
 ```ts
 let scope!: string // Scope of the access request
-let login_hint!: string // one of login_hint, id_token_hint, or login_hint_token parameters must be provided in CIBA
+/**
+ * One of login_hint, id_token_hint, or login_hint_token parameters must be
+ * provided in CIBA
+ */
+let login_hint!: string
 
 let response = await client.initiateBackchannelAuthentication(config, {
   scope,
   login_hint,
 })
 
-// OPTIONAL: If your client is configured with Ping Mode you'd invoke the following after getting the CIBA Ping Callback (its implementation is framework specific and therefore out of scope for openid-client)
+/**
+ * OPTIONAL: If your client is configured with Ping Mode you'd invoke the
+ * following after getting the CIBA Ping Callback (its implementation is
+ * framework specific and therefore out of scope for openid-client)
+ */
 
 let tokens: client.TokenEndpointResponse =
   await client.pollBackchannelAuthenticationGrant(config, response)
