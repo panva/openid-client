@@ -1,0 +1,55 @@
+diff --git a/examples/oauth.ts b/examples/dpop.ts
+index dde3bbc..dcd9ff2 100644
+--- a/examples/oauth.ts
++++ b/examples/dpop.ts
+@@ -12,10 +12,19 @@ let clientSecret!: string
+  */
+ let redirect_uri!: string
+ 
++/**
++ * In order to take full advantage of DPoP you shall generate a random key pair
++ * for every session. In the browser environment you shall use IndexedDB to
++ * persist the generated CryptoKeyPair.
++ */
++let DPoPKeys!: client.CryptoKeyPair
++
+ // End of prerequisites
+ 
+ let config = await client.discovery(server, clientId, clientSecret)
+ 
++let DPoP = client.getDPoPHandle(config, DPoPKeys)
++
+ let code_challenge_method = 'S256'
+ /**
+  * The following (code_verifier and potentially state) MUST be generated for
+@@ -58,10 +67,16 @@ let state!: string
+ let access_token: string
+ {
+   let currentUrl: URL = getCurrentUrl()
+-  let tokens = await client.authorizationCodeGrant(config, currentUrl, {
+-    pkceCodeVerifier: code_verifier,
+-    expectedState: state,
+-  })
++  let tokens = await client.authorizationCodeGrant(
++    config,
++    currentUrl,
++    {
++      pkceCodeVerifier: code_verifier,
++      expectedState: state,
++    },
++    undefined,
++    { DPoP },
++  )
+ 
+   console.log('Token Endpoint Response', tokens)
+   ;({ access_token } = tokens)
+@@ -74,6 +89,9 @@ let access_token: string
+     access_token,
+     new URL('https://rs.example.com/api'),
+     'GET',
++    undefined,
++    undefined,
++    { DPoP },
+   )
+ 
+   console.log('Protected Resource Response', await protectedResource.json())

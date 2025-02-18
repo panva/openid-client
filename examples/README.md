@@ -19,6 +19,7 @@ A collection of examples for the most common use cases.
 - Authorization Code Flow (OAuth 2.0) - [source](oauth.ts)
 - Authorization Code Flow (OpenID Connect) - [source](oidc.ts) | [diff](oidc.diff)
 - Extensions
+  - DPoP - [source](dpop.ts) | [diff](dpop.diff)
   - JWT Secured Authorization Request (JAR) - [source](jar.ts) | [diff](jar.diff)
   - JWT Secured Authorization Response Mode (JARM) - [source](jarm.ts) | [diff](jarm.diff)
   - Pushed Authorization Request (PAR) - [source](par.ts) | [diff](par.diff)

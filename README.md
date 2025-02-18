@@ -54,6 +54,7 @@ import * as client from 'openid-client'
 - Authorization Code Flow (OAuth 2.0) - [source](examples/oauth.ts)
 - Authorization Code Flow (OpenID Connect) - [source](examples/oidc.ts) | [diff](examples/oidc.diff)
 - Extensions
+  - DPoP - [source](examples/dpop.ts) | [diff](examples/dpop.diff)
   - JWT Secured Authorization Request (JAR) - [source](examples/jar.ts) | [diff](examples/jar.diff)
   - JWT Secured Authorization Response Mode (JARM) - [source](examples/jarm.ts) | [diff](examples/jarm.diff)
   - Pushed Authorization Request (PAR) - [source](examples/par.ts) | [diff](examples/par.diff)
