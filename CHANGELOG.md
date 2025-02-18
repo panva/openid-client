@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://github.com/panva/openid-client/compare/v6.2.0...v6.3.0) (2025-02-18)
+
+
+### Features
+
+* add a helper to DPoPHandle to calculate dpop_jkt ([e99a9d9](https://github.com/panva/openid-client/commit/e99a9d996e88c1ba486720c24d46325fb8bf288f))
+
+
+### Documentation
+
+* add DPoP example ([2fb51e1](https://github.com/panva/openid-client/commit/2fb51e1b53256c280f025710d174dc91a3ff077a))
+* reword buildAuthorizationUrl methods for more clarity ([7e987d9](https://github.com/panva/openid-client/commit/7e987d98bb8e9d77b01511ad661cb480a6b81fe3))
+* update CIBA docs ([35ff0f5](https://github.com/panva/openid-client/commit/35ff0f551a2b80cc1e1c5608aee8c66aed9e5d02))
+* update example diffs ([2e152d9](https://github.com/panva/openid-client/commit/2e152d9b4e84c58963fa374b1bfb620aae9d97b8))
+* update JWT Introspection Response references to RFC 9701 ([d742709](https://github.com/panva/openid-client/commit/d7427096198cd533f0eeaecea7c75ded29558801))
+* update README.md ([8dbb921](https://github.com/panva/openid-client/commit/8dbb921dfe7e88587ddff9b3cd8559e395a107d3))
+* update README.md ([546b651](https://github.com/panva/openid-client/commit/546b65120e22c60a37de68da797bff6631a7becd))
+
 ## [6.2.0](https://github.com/panva/openid-client/compare/v6.1.7...v6.2.0) (2025-02-17)
 
 
