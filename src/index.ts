@@ -3082,8 +3082,8 @@ export async function clientCredentialsGrant(
 }
 
 /**
- * Returns a URL to redirect the user-agent to to request authorization at the
- * Authorization Server
+ * Returns a URL to redirect the user-agent to, in order to request
+ * authorization at the Authorization Server
  *
  * Note:
  * {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
@@ -3156,8 +3156,9 @@ export function buildAuthorizationUrl(
 }
 
 /**
- * Returns a URL to redirect the user-agent to to request authorization at the
- * Authorization Server with a prior step of using {@link !JAR}
+ * Returns a URL to redirect the user-agent to, in order to request
+ * authorization at the Authorization Server with a prior step of using
+ * {@link !JAR}
  *
  * Note:
  * {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
@@ -3260,8 +3261,9 @@ export async function buildAuthorizationUrlWithJAR(
 }
 
 /**
- * Returns a URL to redirect the user-agent to to request authorization at the
- * Authorization Server with a prior step of using {@link !PAR}
+ * Returns a URL to redirect the user-agent to, in order to request
+ * authorization at the Authorization Server with a prior step of using
+ * {@link !PAR}
  *
  * Note:
  * {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}

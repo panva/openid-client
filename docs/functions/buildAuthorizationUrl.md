@@ -8,8 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **buildAuthorizationUrl**(`config`, `parameters`): [`URL`](https://developer.mozilla.org/docs/Web/API/URL)
 
-Returns a URL to redirect the user-agent to to request authorization at the
-Authorization Server
+Returns a URL to redirect the user-agent to, in order to request
+authorization at the Authorization Server
 
 Note:
 [URL of the authorization server's authorization endpoint](../interfaces/ServerMetadata.md#authorization_endpoint)

@@ -8,8 +8,9 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **buildAuthorizationUrlWithPAR**(`config`, `parameters`, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`URL`](https://developer.mozilla.org/docs/Web/API/URL)\>
 
-Returns a URL to redirect the user-agent to to request authorization at the
-Authorization Server with a prior step of using [PAR](https://www.rfc-editor.org/rfc/rfc9126.html)
+Returns a URL to redirect the user-agent to, in order to request
+authorization at the Authorization Server with a prior step of using
+[PAR](https://www.rfc-editor.org/rfc/rfc9126.html)
 
 Note:
 [URL of the authorization server's authorization endpoint](../interfaces/ServerMetadata.md#authorization_endpoint)
