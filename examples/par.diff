@@ -1,8 +1,8 @@
 diff --git a/examples/oauth.ts b/examples/par.ts
-index d87c63e..58bb51d 100644
+index dde3bbc..fec2f50 100644
 --- a/examples/oauth.ts
 +++ b/examples/par.ts
-@@ -51,7 +51,7 @@ let state!: string
+@@ -47,7 +47,7 @@ let state!: string
      parameters.state = state
    }
  

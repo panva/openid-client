@@ -1,8 +1,8 @@
 diff --git a/examples/oauth.ts b/examples/oidc.ts
-index d87c63e..1bf04f6 100644
+index dde3bbc..58ee3ef 100644
 --- a/examples/oauth.ts
 +++ b/examples/oidc.ts
-@@ -18,27 +18,27 @@ let config = await client.discovery(server, clientId, clientSecret)
+@@ -18,33 +18,33 @@ let config = await client.discovery(server, clientId, clientSecret)
  
  let code_challenge_method = 'S256'
  /**
@@ -35,10 +35,7 @@ index d87c63e..1bf04f6 100644
     * of PKCE is backwards compatible even if the AS doesn't support it which is
     * why we're using it regardless.
     */
-@@ -47,8 +47,8 @@ let state!: string
-       .serverMetadata()
-       .code_challenge_methods_supported?.includes('S256') !== true
-   ) {
+   if (!config.serverMetadata().supportsPKCE()) {
 -    state = client.randomState()
 -    parameters.state = state
 +    nonce = client.randomNonce()
@@ -46,7 +43,7 @@ index d87c63e..1bf04f6 100644
    }
  
    let redirectTo = client.buildAuthorizationUrl(config, parameters)
-@@ -59,26 +59,26 @@ let state!: string
+@@ -55,26 +55,26 @@ let state!: string
  
  // one eternity later, the user lands back on the redirect_uri
  // Authorization Code Grant
