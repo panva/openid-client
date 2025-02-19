@@ -1,5 +1,9 @@
 import * as client from 'openid-client'
-import { Strategy, type VerifyFunction } from 'openid-client/passport'
+import {
+  Strategy,
+  type VerifyFunction,
+  type StrategyOptions,
+} from 'openid-client/passport'
 
 import express from 'express'
 import cookieParser from 'cookie-parser'
@@ -43,7 +47,12 @@ let verify: VerifyFunction = (tokens, verified) => {
   verified(null, tokens.claims())
 }
 
-passport.use(new Strategy({ config, scope }, verify))
+let options: StrategyOptions = {
+  config,
+  scope,
+}
+
+passport.use(new Strategy(options, verify))
 
 passport.serializeUser((user: Express.User, cb) => {
   cb(null, user)
