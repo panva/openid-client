@@ -256,6 +256,15 @@ export class Strategy implements passport.Strategy {
         redirectTo.searchParams.set('scope', this._scope)
       }
 
+      const DPoP = this._DPoP?.(req)
+
+      if (DPoP && !redirectTo.searchParams.has('dpop_jkt')) {
+        redirectTo.searchParams.set(
+          'dpop_jkt',
+          await DPoP.calculateThumbprint(),
+        )
+      }
+
       const sessionKey = this._sessionKey
       const stateData: StateData = { code_verifier: codeVerifier }
 
@@ -294,7 +303,7 @@ export class Strategy implements passport.Strategy {
         redirectTo = await client.buildAuthorizationUrlWithPAR(
           this._config,
           redirectTo.searchParams,
-          { DPoP: this._DPoP?.(req) },
+          { DPoP },
         )
       }
 
