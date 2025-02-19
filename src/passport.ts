@@ -242,9 +242,7 @@ export class Strategy implements passport.Strategy {
       redirectTo.searchParams.set('code_challenge_method', 'S256')
 
       if (
-        this._config
-          .serverMetadata()
-          .code_challenge_methods_supported?.includes('S256') !== true &&
+        !this._config.serverMetadata().supportsPKCE() &&
         !redirectTo.searchParams.has('nonce')
       ) {
         redirectTo.searchParams.set('state', client.randomState())
