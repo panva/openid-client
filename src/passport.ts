@@ -26,7 +26,9 @@ export type VerifyFunctionWithRequest = (
 /**
  * Retrieve an openid-client DPoPHandle for a given request.
  */
-export type getDPoPHandle = (req: express.Request) => client.DPoPHandle
+export type getDPoPHandle = (
+  req: express.Request,
+) => Promise<client.DPoPHandle | undefined> | client.DPoPHandle | undefined
 
 interface StrategyOptionsBase {
   /**
@@ -256,7 +258,7 @@ export class Strategy implements passport.Strategy {
         redirectTo.searchParams.set('scope', this._scope)
       }
 
-      const DPoP = this._DPoP?.(req)
+      const DPoP = await this._DPoP?.(req)
 
       if (DPoP && !redirectTo.searchParams.has('dpop_jkt')) {
         redirectTo.searchParams.set(
@@ -366,7 +368,7 @@ export class Strategy implements passport.Strategy {
           maxAge: stateData.max_age,
         },
         this.authorizationCodeGrantParameters(req, options),
-        { DPoP: this._DPoP?.(req) },
+        { DPoP: await this._DPoP?.(req) },
       )
 
       const verified: passport.AuthenticateCallback = (err, user, info) => {
