@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.1](https://github.com/panva/openid-client/compare/v6.3.0...v6.3.1) (2025-02-20)
+
+
+### Refactor
+
+* **passport:** allow dpop handle to be retrieved with an async function ([4491f70](https://github.com/panva/openid-client/commit/4491f701058d1396f11ff14c70c6c7067a78bb65))
+* **passport:** bind authorization code to a DPoP Key ([b536d0a](https://github.com/panva/openid-client/commit/b536d0aa4ce083f8ea469e40f6ffda4cf30fcdcb))
+* **passport:** use the supportsPKCE() metadata helper ([e13fb37](https://github.com/panva/openid-client/commit/e13fb3730c5e1a8fb9cee1dbf2006e9c0f909382))
+
 ## [6.3.0](https://github.com/panva/openid-client/compare/v6.2.0...v6.3.0) (2025-02-18)
 
 
