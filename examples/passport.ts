@@ -69,7 +69,7 @@ app.get('/', ensureLoggedIn('/login'), (req, res) => {
 app.get(
   '/login',
   ensureLoggedOut('/logout'),
-  passport.authenticate(server.host),
+  passport.authenticate(server.host, { successRedirect: '/' }),
 )
 
 app.get('/logout', (req, res) => {
