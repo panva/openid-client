@@ -1,8 +1,8 @@
 {
   "imports": {
     "oauth4webapi": "../node_modules/oauth4webapi/build/index.js",
-    "jose": "../node_modules/jose/dist/browser/index.js",
-    "jose/errors": "../node_modules/jose/dist/browser/util/errors.js",
+    "jose": "../node_modules/jose/dist/webapi/index.js",
+    "jose/errors": "../node_modules/jose/dist/webapi/util/errors.js",
     "qunit": "../node_modules/qunit/qunit/qunit.js",
     "../src/index.js": "../src/index.ts",
     "./end2end-client-credentials.js": "./end2end-client-credentials.ts",

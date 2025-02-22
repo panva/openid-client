@@ -1456,7 +1456,7 @@ async function decrypt(
           },
           { keyManagementAlgorithms, contentEncryptionAlgorithms },
         )
-        .catch((err) => {
+        .catch((err: Error) => {
           if (err instanceof JOSEError) {
             throw e('decryption failed', err, 'OAUTH_DECRYPTION_FAILED')
           }
