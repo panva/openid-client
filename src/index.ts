@@ -797,7 +797,9 @@ function CodedTypeError(message: string, code: codes, cause?: unknown) {
  * @group PKCE
  * @group Authorization Request
  */
-export function calculatePKCECodeChallenge(codeVerifier: string) {
+export function calculatePKCECodeChallenge(
+  codeVerifier: string,
+): Promise<string> {
   return oauth.calculatePKCECodeChallenge(codeVerifier)
 }
 
@@ -806,7 +808,7 @@ export function calculatePKCECodeChallenge(codeVerifier: string) {
  *
  * @group PKCE
  */
-export function randomPKCECodeVerifier() {
+export function randomPKCECodeVerifier(): string {
   return oauth.generateRandomCodeVerifier()
 }
 
@@ -815,7 +817,7 @@ export function randomPKCECodeVerifier() {
  *
  * @group Authorization Request
  */
-export function randomNonce() {
+export function randomNonce(): string {
   return oauth.generateRandomNonce()
 }
 
@@ -824,7 +826,7 @@ export function randomNonce() {
  *
  * @group Authorization Request
  */
-export function randomState() {
+export function randomState(): string {
   return oauth.generateRandomState()
 }
 

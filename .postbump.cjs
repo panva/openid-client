@@ -1,6 +1,6 @@
 const { execSync } = require('child_process')
 const { readFileSync, writeFileSync } = require('fs')
-const { version } = require('./package.json')
+const { version, dependencies } = require('./package.json')
 
 const updates = [
   [
@@ -23,5 +23,21 @@ for (const [path, regex, replace, gitAdd = true] of updates) {
   )
   if (gitAdd) execSync(`git add ${path}`, { stdio: 'inherit' })
 }
+
+const jsr = require('./jsr.json')
+jsr.imports = {}
+jsr.version = version
+
+for (const [dependency, semver] of Object.entries(dependencies)) {
+  switch (dependency) {
+    case 'jose':
+    case 'oauth4webapi':
+      jsr.imports[dependency] = `jsr:@panva/${dependency}@${semver}`
+      break
+    default:
+      throw new Error('unhandled jsr dependency')
+  }
+}
+writeFileSync('./jsr.json', JSON.stringify(jsr, null, 4) + '\n')
 
 execSync('git add build/* -f', { stdio: 'inherit' })

@@ -25,9 +25,21 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  jsr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: npx jsr publish
+
   cleanup:
     needs:
       - npm
+      - jsr
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -47,6 +59,7 @@ jobs:
   github:
     needs:
       - npm
+      - jsr
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

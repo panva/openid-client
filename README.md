@@ -41,7 +41,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## [API Reference Documentation](docs/README.md)
 
-`openid-client` is distributed via [npmjs.com](https://www.npmjs.com/package/openid-client) and [github.com](https://github.com/panva/openid-client).
+`openid-client` is distributed via [npmjs.com](https://www.npmjs.com/package/openid-client), [jsr.io](https://jsr.io/@panva/openid-client), and [github.com](https://github.com/panva/openid-client).
 
 ## [Examples](examples/README.md)
 
