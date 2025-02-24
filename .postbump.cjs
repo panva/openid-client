@@ -39,5 +39,6 @@ for (const [dependency, semver] of Object.entries(dependencies)) {
   }
 }
 writeFileSync('./jsr.json', JSON.stringify(jsr, null, 4) + '\n')
+execSync(`git add ./jsr.json`, { stdio: 'inherit' })
 
 execSync('git add build/* -f', { stdio: 'inherit' })
