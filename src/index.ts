@@ -1067,8 +1067,11 @@ function handleB2Clogin(server: URL, options?: DiscoveryRequestOptions) {
  * @param server URL representation of the Authorization Server's Issuer
  *   Identifier
  * @param clientId Client Identifier at the Authorization Server
- * @param metadata Client Metadata, when a string is passed in it is a shorthand
+ * @param metadata Client Metadata, when a string is passed it is a shorthand
  *   for passing just {@link ClientMetadata.client_secret}
+ * @param clientAuthentication Implementation of the Client's Authentication
+ *   Method at the Authorization Server. Default is {@link ClientSecretPost}
+ *   using the {@link ClientMetadata.client_secret}.
  * @param options
  *
  * @group OpenID Connect 1.0
@@ -1627,10 +1630,11 @@ export class Configuration
   /**
    * @param server Authorization Server Metadata
    * @param clientId Client Identifier at the Authorization Server
-   * @param metadata Client Metadata, when a string is passed in it is a
-   *   shorthand for passing just {@link ClientMetadata.client_secret}.
+   * @param metadata Client Metadata, when a string is passed it is a shorthand
+   *   for passing just {@link ClientMetadata.client_secret}.
    * @param clientAuthentication Implementation of the Client's Authentication
-   *   Method at the Authorization Server.
+   *   Method at the Authorization Server. Default is {@link ClientSecretPost}
+   *   using the {@link ClientMetadata.client_secret}.
    */
   constructor(
     server: ServerMetadata,

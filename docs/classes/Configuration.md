@@ -59,8 +59,8 @@ let config = new client.Configuration(server, clientId, clientSecret)
 | ------ | ------ | ------ |
 | `server` | [`ServerMetadata`](../interfaces/ServerMetadata.md) | Authorization Server Metadata |
 | `clientId` | `string` | Client Identifier at the Authorization Server |
-| `metadata`? | `string` \| [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata, when a string is passed in it is a shorthand for passing just [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
-| `clientAuthentication`? | [`ClientAuth`](../type-aliases/ClientAuth.md) | Implementation of the Client's Authentication Method at the Authorization Server. |
+| `metadata`? | `string` \| [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata, when a string is passed it is a shorthand for passing just [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
+| `clientAuthentication`? | [`ClientAuth`](../type-aliases/ClientAuth.md) | Implementation of the Client's Authentication Method at the Authorization Server. Default is [ClientSecretPost](../functions/ClientSecretPost.md) using the [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
 
 #### Returns
 
