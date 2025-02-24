@@ -2,15 +2,12 @@
     "$schema": "https://jsr.io/schema/config-file.v1.json",
     "name": "@panva/openid-client",
     "version": "6.3.2",
-    "exports": {
-        ".": "./src/index.ts",
-        "./passport": "./src/passport.ts"
-    },
+    "exports": "./src/index.ts",
     "publish": {
         "include": [
             "LICENSE.md",
             "README.md",
-            "src/*.ts"
+            "src/index.ts"
         ]
     },
     "imports": {
