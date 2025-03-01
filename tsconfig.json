@@ -19,6 +19,7 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "stripInternal": true,
+    "erasableSyntaxOnly": true,
     // NODE
     // "lib": ["ES2022.Error"],
     // "types": ["node"]

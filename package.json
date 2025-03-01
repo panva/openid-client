@@ -85,7 +85,7 @@
     "test": "bash -c 'source .node_flags.sh && ava'"
   },
   "dependencies": {
-    "jose": "^6.0.6",
+    "jose": "^6.0.8",
     "oauth4webapi": "^3.3.0"
   },
   "devDependencies": {
@@ -95,7 +95,7 @@
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.1",
     "@types/koa__cors": "^5.0.0",
-    "@types/node": "^22.13.5",
+    "@types/node": "^22.13.8",
     "@types/passport": "^1.0.17",
     "@types/qunit": "^2.19.12",
     "archiver": "^7.0.1",
@@ -116,7 +116,7 @@
     "typedoc": "^0.27.2",
     "typedoc-plugin-markdown": "^4.3.1",
     "typedoc-plugin-mdn-links": "^4.0.3",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "undici": "^6.21.1"
   }
 }
