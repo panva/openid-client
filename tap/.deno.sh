@@ -4,4 +4,6 @@
 
 echo "Using $(deno --version | head -1)"
 
-deno run --allow-read --allow-net --allow-env --import-map tap/import_map.json tap/run-deno.ts
+export DENO_UNSTABLE_SLOPPY_IMPORTS=true
+
+deno run --allow-read --allow-net --allow-env tap/run-deno.ts
