@@ -1,5 +1,5 @@
 import * as oauth from 'oauth4webapi'
-import * as jose from 'jose'
+import { compactDecrypt } from 'jose/jwe/compact/decrypt'
 import { JOSEError } from 'jose/errors'
 
 let headers: Record<string, string>
@@ -1452,22 +1452,20 @@ async function decrypt(
 ): Promise<string> {
   return decoder.decode(
     (
-      await jose
-        .compactDecrypt(
-          jwe,
-          async (header: jose.CompactJWEHeaderParameters) => {
-            const { kid, alg, epk } = header
-            return selectCryptoKeyForDecryption(keys, alg, kid, epk)
-          },
-          { keyManagementAlgorithms, contentEncryptionAlgorithms },
-        )
-        .catch((err: Error) => {
-          if (err instanceof JOSEError) {
-            throw e('decryption failed', err, 'OAUTH_DECRYPTION_FAILED')
-          }
+      await compactDecrypt(
+        jwe,
+        (header) => {
+          const { kid, alg, epk } = header
+          return selectCryptoKeyForDecryption(keys, alg, kid, epk)
+        },
+        { keyManagementAlgorithms, contentEncryptionAlgorithms },
+      ).catch((err: Error) => {
+        if (err instanceof JOSEError) {
+          throw e('decryption failed', err, 'OAUTH_DECRYPTION_FAILED')
+        }
 
-          errorHandler(err)
-        })
+        errorHandler(err)
+      })
     ).plaintext,
   )
 }
