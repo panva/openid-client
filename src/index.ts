@@ -9,7 +9,7 @@ if (
   typeof navigator === 'undefined' || !navigator.userAgent?.startsWith?.('Mozilla/5.0 ') // prettier-ignore
 ) {
   const NAME = 'openid-client'
-  const VERSION = 'v6.3.3'
+  const VERSION = 'v6.3.4'
   USER_AGENT = `${NAME}/${VERSION}`
   headers = { 'user-agent': USER_AGENT }
 }

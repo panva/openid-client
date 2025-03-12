@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.4](https://github.com/panva/openid-client/compare/v6.3.3...v6.3.4) (2025-03-12)
+
+
+### Documentation
+
+* bump typedoc ([36e8714](https://github.com/panva/openid-client/commit/36e8714cdec666afa865c2dd7b49d4a983ee3083))
+
+
+### Refactor
+
+* use subpath export for JWE decryption dependency ([f8c39fc](https://github.com/panva/openid-client/commit/f8c39fc1bb517ccfdfc2445bce4cafac6807c676))
+
 ## [6.3.3](https://github.com/panva/openid-client/compare/v6.3.2...v6.3.3) (2025-02-24)
 
 ## [6.3.2](https://github.com/panva/openid-client/compare/v6.3.1...v6.3.2) (2025-02-24)
