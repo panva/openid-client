@@ -92,10 +92,10 @@
     "@koa/cors": "^5.0.0",
     "@types/connect-ensure-login": "^0.1.9",
     "@types/cookie-parser": "^1.4.8",
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
     "@types/koa__cors": "^5.0.0",
-    "@types/node": "^22.13.10",
+    "@types/node": "^22.13.11",
     "@types/passport": "^1.0.17",
     "@types/qunit": "^2.19.12",
     "archiver": "^7.0.1",
@@ -117,6 +117,6 @@
     "typedoc-plugin-markdown": "4.4.1",
     "typedoc-plugin-mdn-links": "4.0.8",
     "typescript": "^5.8.2",
-    "undici": "^6.21.1"
+    "undici": "^6.21.2"
   }
 }
