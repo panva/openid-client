@@ -202,7 +202,7 @@ supports.
 
 • `readonly` `optional` **dpop\_signing\_alg\_values\_supported**: `string`[]
 
-JSON array containing a list of the JWS algorithms supported for DPoP proof JWTs.
+JSON array containing a list of the JWS algorithms supported for DPoP Proof JWTs.
 
 ***
 

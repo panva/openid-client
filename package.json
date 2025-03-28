@@ -86,7 +86,7 @@
   },
   "dependencies": {
     "jose": "^6.0.10",
-    "oauth4webapi": "^3.3.1"
+    "oauth4webapi": "^3.3.2"
   },
   "devDependencies": {
     "@koa/cors": "^5.0.0",
@@ -95,7 +95,7 @@
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
     "@types/koa__cors": "^5.0.0",
-    "@types/node": "^22.13.11",
+    "@types/node": "^22.13.14",
     "@types/passport": "^1.0.17",
     "@types/qunit": "^2.19.12",
     "archiver": "^7.0.1",
