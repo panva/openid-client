@@ -2827,6 +2827,14 @@ export async function authorizationCodeGrant(
     )
     .catch(errorHandler)
 
+  if (!response.ok) {
+    errorHandler(
+      new Error(response.statusText, {
+        cause: `oauth.authorizationCodeGrantRequest response with http status ${response.status} ${response.statusText}`,
+      }),
+    )
+  }
+
   if (
     typeof checks?.expectedNonce === 'string' ||
     typeof checks?.maxAge === 'number'
