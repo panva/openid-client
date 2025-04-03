@@ -3131,6 +3131,7 @@ export function buildAuthorizationUrl(
   checkConfig(config)
 
   const { as, c, tlsOnly, hybrid, jarm } = int(config)
+  // @ts-expect-error
   const authorizationEndpoint = oauth.resolveEndpoint(
     as,
     'authorization_endpoint',
@@ -3422,6 +3423,7 @@ export function buildEndSessionUrl(
   checkConfig(config)
 
   const { as, c, tlsOnly } = int(config)
+  // @ts-expect-error
   const endSessionEndpoint = oauth.resolveEndpoint(
     as,
     'end_session_endpoint',
