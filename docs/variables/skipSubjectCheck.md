@@ -21,4 +21,4 @@ Marked as deprecated only to make it stand out as something you
 
 ## See
 
-[OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse)
+[OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#UserInfoResponse)

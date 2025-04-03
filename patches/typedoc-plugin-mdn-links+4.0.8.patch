@@ -1,11 +1,11 @@
 diff --git a/node_modules/typedoc-plugin-mdn-links/data/web-api.json b/node_modules/typedoc-plugin-mdn-links/data/web-api.json
-index e92381a..96a13c4 100644
+index e92381a..00f0cba 100644
 --- a/node_modules/typedoc-plugin-mdn-links/data/web-api.json
 +++ b/node_modules/typedoc-plugin-mdn-links/data/web-api.json
 @@ -1,4 +1,37 @@
  {
 +	"OIDC": {
-+		"url": "https://openid.net/specs/openid-connect-core-1_0.html"
++		"url": "https://openid.net/specs/openid-connect-core-1_0-errata2.html"
 +	},
 +	"DPoP": {
 +		"url": "https://www.rfc-editor.org/rfc/rfc9449.html"
@@ -17,13 +17,13 @@ index e92381a..96a13c4 100644
 +		"url": "https://www.rfc-editor.org/rfc/rfc9101.html"
 +	},
 +	"JARM": {
-+		"url": "https://openid.net/specs/oauth-v2-jarm.html"
++		"url": "https://openid.net/specs/oauth-v2-jarm-final.html"
 +	},
 +	"Device Authorization Grant": {
 +		"url": "https://www.rfc-editor.org/rfc/rfc8628.html"
 +	},
 +	"Client-Initiated Backchannel Authentication Grant": {
-+		"url": "https://openid.net/specs/openid-client-initiated-backchannel-authentication-core-1_0.html"
++		"url": "https://openid.net/specs/openid-client-initiated-backchannel-authentication-core-1_0-final.html"
 +	},
 +	"Resource Indicators": {
 +		"url": "https://www.rfc-editor.org/rfc/rfc8707"

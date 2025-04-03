@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **initiateBackchannelAuthentication**(`config`, `parameters`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`BackchannelAuthenticationResponse`](../interfaces/BackchannelAuthenticationResponse.md)\>
 
-Initiates a [Client-Initiated Backchannel Authentication Grant](https://openid.net/specs/openid-client-initiated-backchannel-authentication-core-1_0.html) using
+Initiates a [Client-Initiated Backchannel Authentication Grant](https://openid.net/specs/openid-client-initiated-backchannel-authentication-core-1_0-final.html) using
 parameters from the `parameters` argument.
 
 Note:

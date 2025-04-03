@@ -43,7 +43,7 @@ Given the Issuer Identifier is https://example.com/pathname
 
 #### See
 
- - [OpenID Connect Discovery 1.0 (oidc)](https://openid.net/specs/openid-connect-discovery-1_0.html)
+ - [OpenID Connect Discovery 1.0 (oidc)](https://openid.net/specs/openid-connect-discovery-1_0-errata2.html)
  - [RFC8414 - OAuth 2.0 Authorization Server Metadata (oauth)](https://www.rfc-editor.org/rfc/rfc8414.html)
 
 ***

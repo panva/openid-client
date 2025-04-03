@@ -10,7 +10,7 @@ Support from the community to continue maintaining and improving this module is 
 
 This changes the `response_mode` used by the client to be `jwt` and expects
 the authorization server response passed to [authorizationCodeGrant](authorizationCodeGrant.md) to
-be one described by [JARM](https://openid.net/specs/oauth-v2-jarm.html).
+be one described by [JARM](https://openid.net/specs/oauth-v2-jarm-final.html).
 
 Note:
 [URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
@@ -57,4 +57,4 @@ client.useJwtResponseMode(config)
 
 ## See
 
-[JARM](https://openid.net/specs/oauth-v2-jarm.html)
+[JARM](https://openid.net/specs/oauth-v2-jarm-final.html)

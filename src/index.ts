@@ -154,7 +154,7 @@ let tbi!: WeakMap<Internal['c'], ClientAuth>
  *
  * @see [OAuth Token Endpoint Authentication Methods](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#token-endpoint-auth-method)
  * @see [RFC 6749 - The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.3)
- * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
+ * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ClientAuthentication)
  */
 export function ClientSecretPost(clientSecret?: string): ClientAuth {
   if (clientSecret !== undefined) {
@@ -230,7 +230,7 @@ function assertString(input: unknown, it: string): asserts input is string {
  *
  * @see [OAuth Token Endpoint Authentication Methods](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#token-endpoint-auth-method)
  * @see [RFC 6749 - The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.3)
- * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
+ * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ClientAuthentication)
  */
 export function ClientSecretBasic(clientSecret?: string): ClientAuth {
   if (clientSecret !== undefined) {
@@ -298,7 +298,7 @@ export function ClientSecretBasic(clientSecret?: string): ClientAuth {
  * @group Client Authentication Methods
  *
  * @see [OAuth Token Endpoint Authentication Methods](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#token-endpoint-auth-method)
- * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
+ * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ClientAuthentication)
  */
 export function ClientSecretJwt(
   clientSecret?: string,
@@ -362,7 +362,7 @@ export function ClientSecretJwt(
  * @group Client Authentication Methods
  *
  * @see [OAuth Token Endpoint Authentication Methods](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#token-endpoint-auth-method)
- * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
+ * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ClientAuthentication)
  */
 export function None(): ClientAuth {
   return oauth.None()
@@ -415,7 +415,7 @@ export function None(): ClientAuth {
  * @group Client Authentication Methods
  *
  * @see [OAuth Token Endpoint Authentication Methods](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#token-endpoint-auth-method)
- * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
+ * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ClientAuthentication)
  */
 export function PrivateKeyJwt(
   clientPrivateKey: CryptoKey | oauth.PrivateKey,
@@ -499,7 +499,7 @@ export const skipStateCheck: typeof oauth.skipStateCheck = oauth.skipStateCheck
  * @deprecated Marked as deprecated only to make it stand out as something you
  *   shouldn't use unless you've assessed the implications.
  *
- * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse)
+ * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#UserInfoResponse)
  */
 export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
   oauth.skipSubjectCheck
@@ -1020,7 +1020,7 @@ export interface DiscoveryRequestOptions {
    *   oauth => https://example.com/.well-known/oauth-authorization-server/pathname
    * ```
    *
-   * @see {@link https://openid.net/specs/openid-connect-discovery-1_0.html OpenID Connect Discovery 1.0 (oidc)}
+   * @see {@link https://openid.net/specs/openid-connect-discovery-1_0-errata2.html OpenID Connect Discovery 1.0 (oidc)}
    * @see {@link https://www.rfc-editor.org/rfc/rfc8414.html RFC8414 - OAuth 2.0 Authorization Server Metadata (oauth)}
    */
   algorithm?: 'oidc' | 'oauth2'
@@ -2697,7 +2697,7 @@ export function useJwtResponseMode(config: Configuration) {
 /**
  * This builds on top of {@link useCodeIdTokenResponseType} and enables the
  * response to be validated as per the
- * {@link https://openid.net/specs/openid-financial-api-part-2-1_0.html#id-token-as-detached-signature FAPI 1.0 Advanced profile}.
+ * {@link https://openid.net/specs/openid-financial-api-part-2-1_0-final.html#id-token-as-detached-signature FAPI 1.0 Advanced profile}.
  *
  * @example
  *
@@ -2736,7 +2736,7 @@ export function useJwtResponseMode(config: Configuration) {
  *
  * @group Advanced Configuration
  *
- * @see {@link https://openid.net/specs/openid-financial-api-part-2-1_0.html#id-token-as-detached-signature ID Token as Detached Signature}
+ * @see {@link https://openid.net/specs/openid-financial-api-part-2-1_0-final.html#id-token-as-detached-signature ID Token as Detached Signature}
  */
 export function enableDetachedSignatureResponseChecks(config: Configuration) {
   if (!int(config).hybrid) {
@@ -2767,7 +2767,7 @@ export function enableDetachedSignatureResponseChecks(config: Configuration) {
  * This changes the `response_type` used by the client to be `code id_token` and
  * expects the authorization server response passed to
  * {@link authorizationCodeGrant} to be one described by
- * {@link https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth OpenID Connect 1.0 Hybrid Flow}.
+ * {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth OpenID Connect 1.0 Hybrid Flow}.
  *
  * Note:
  * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
@@ -2806,7 +2806,7 @@ export function enableDetachedSignatureResponseChecks(config: Configuration) {
  *
  * @group Advanced Configuration
  *
- * @see {@link https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth OpenID Connect 1.0 Hybrid Flow}
+ * @see {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth OpenID Connect 1.0 Hybrid Flow}
  */
 export function useCodeIdTokenResponseType(config: Configuration) {
   checkConfig(config)
@@ -3585,7 +3585,7 @@ export async function buildAuthorizationUrlWithPAR(
 
 /**
  * Returns a URL to redirect the user-agent to after they log out to trigger
- * {@link https://openid.net/specs/openid-connect-rpinitiated-1_0.html#RPLogout RP-Initiated Logout}
+ * {@link https://openid.net/specs/openid-connect-rpinitiated-1_0-final.html#RPLogout RP-Initiated Logout}
  * at the Authorization Server.
  *
  * Note:
@@ -3682,7 +3682,7 @@ function signal(timeout?: number): AbortSignal | undefined {
  * @group OpenID Connect 1.0
  * @group Protected Resource Requests
  *
- * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
+ * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#UserInfo)
  */
 export async function fetchUserInfo(
   config: Configuration,

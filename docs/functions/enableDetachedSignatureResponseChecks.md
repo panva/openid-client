@@ -10,7 +10,7 @@ Support from the community to continue maintaining and improving this module is 
 
 This builds on top of [useCodeIdTokenResponseType](useCodeIdTokenResponseType.md) and enables the
 response to be validated as per the
-[FAPI 1.0 Advanced profile](https://openid.net/specs/openid-financial-api-part-2-1_0.html#id-token-as-detached-signature).
+[FAPI 1.0 Advanced profile](https://openid.net/specs/openid-financial-api-part-2-1_0-final.html#id-token-as-detached-signature).
 
 ## Parameters
 
@@ -57,4 +57,4 @@ client.enableDetachedSignatureResponseChecks(config)
 
 ## See
 
-[ID Token as Detached Signature](https://openid.net/specs/openid-financial-api-part-2-1_0.html#id-token-as-detached-signature)
+[ID Token as Detached Signature](https://openid.net/specs/openid-financial-api-part-2-1_0-final.html#id-token-as-detached-signature)

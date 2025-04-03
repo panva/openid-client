@@ -11,7 +11,7 @@ Support from the community to continue maintaining and improving this module is 
 This changes the `response_type` used by the client to be `code id_token` and
 expects the authorization server response passed to
 [authorizationCodeGrant](authorizationCodeGrant.md) to be one described by
-[OpenID Connect 1.0 Hybrid Flow](https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth).
+[OpenID Connect 1.0 Hybrid Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth).
 
 Note:
 [URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
@@ -58,4 +58,4 @@ client.useCodeIdTokenResponseType(config)
 
 ## See
 
-[OpenID Connect 1.0 Hybrid Flow](https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth)
+[OpenID Connect 1.0 Hybrid Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth)

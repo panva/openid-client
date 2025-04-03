@@ -9,7 +9,7 @@ Support from the community to continue maintaining and improving this module is 
 ▸ **buildEndSessionUrl**(`config`, `parameters`?): [`URL`](https://developer.mozilla.org/docs/Web/API/URL)
 
 Returns a URL to redirect the user-agent to after they log out to trigger
-[RP-Initiated Logout](https://openid.net/specs/openid-connect-rpinitiated-1_0.html#RPLogout)
+[RP-Initiated Logout](https://openid.net/specs/openid-connect-rpinitiated-1_0-final.html#RPLogout)
 at the Authorization Server.
 
 Note:
