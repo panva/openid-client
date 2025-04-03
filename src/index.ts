@@ -59,6 +59,7 @@ export {
   type BackchannelAuthenticationResponse,
   type ConfirmationClaims,
   type DeviceAuthorizationResponse,
+  type OmitSymbolProperties,
   type ExportedJWKSCache,
   type GenerateKeyPairOptions,
   type IDToken,
@@ -1048,6 +1049,118 @@ function handleB2Clogin(server: URL, options?: DiscoveryRequestOptions) {
   return false
 }
 
+export interface DynamicClientRegistrationRequestOptions
+  extends DiscoveryRequestOptions,
+    DPoPOptions {
+  /**
+   * Access token optionally issued by an authorization server used to authorize
+   * calls to the client registration endpoint.
+   */
+  initialAccessToken?: string
+
+  /**
+   * This is not part of the public API.
+   *
+   * @private
+   *
+   * @ignore
+   *
+   * @internal
+   */
+  as?: oauth.AuthorizationServer
+}
+
+/**
+ * Performs Authorization Server Metadata discovery and subsequently a Dynamic
+ * Client Registration at the discovered Authorization Server's
+ * {@link ServerMetadata.registration_endpoint} using the provided client
+ * metadata.
+ *
+ * Note: This method also accepts a URL pointing directly to the Authorization
+ * Server's discovery document. Doing so is NOT RECOMMENDED as it disables the
+ * {@link ServerMetadata.issuer} validation.
+ *
+ * @param server URL representation of the Authorization Server's Issuer
+ *   Identifier
+ * @param metadata Client Metadata to register at the Authorization Server
+ * @param clientAuthentication Implementation of the Client's Authentication
+ *   Method at the Authorization Server. Default is {@link ClientSecretPost}
+ *   using the {@link ClientMetadata.client_secret} that the Authorization Server
+ *   issued.
+ * @param options
+ *
+ * @group Dynamic Client Registration
+ */
+export async function dynamicClientRegistration(
+  server: URL,
+  metadata: Partial<ClientMetadata>,
+  clientAuthentication?: ClientAuth,
+  options?: DynamicClientRegistrationRequestOptions,
+): Promise<Configuration> {
+  let as: oauth.AuthorizationServer
+  if (options?.flag === retry) {
+    as = options.as!
+  } else {
+    as = await performDiscovery(server, options)
+  }
+
+  const timeout = options?.timeout ?? 30
+  const signal = AbortSignal.timeout(timeout * 1000)
+
+  let registered: ClientMetadata
+  try {
+    registered = await oauth
+      .dynamicClientRegistrationRequest(as, metadata, {
+        initialAccessToken: options?.initialAccessToken,
+        DPoP: options?.DPoP,
+        headers: new Headers(headers),
+        [oauth.customFetch]: options?.[customFetch],
+        [oauth.allowInsecureRequests]: options?.execute?.includes(
+          allowInsecureRequests,
+        ),
+        signal,
+      })
+      .then(oauth.processDynamicClientRegistrationResponse)
+  } catch (err) {
+    if (retryable(err, options)) {
+      return dynamicClientRegistration(server, metadata, clientAuthentication, {
+        ...options,
+        flag: retry,
+        as,
+      })
+    }
+
+    errorHandler(err)
+  }
+
+  registered[oauth.clockSkew] = metadata[oauth.clockSkew] ?? 0
+  registered[oauth.clockTolerance] = metadata[oauth.clockTolerance] ?? 30
+
+  const instance = new Configuration(
+    as,
+    registered.client_id,
+    registered,
+    clientAuthentication,
+  )
+  let internals = int(instance)
+
+  if (options?.[customFetch]) {
+    internals.fetch = options[customFetch]
+  }
+
+  if (options?.timeout) {
+    internals.timeout = options.timeout
+  }
+
+  if (options?.execute) {
+    for (const extension of options.execute) {
+      extension(instance)
+    }
+  }
+
+  return instance
+}
+
 /**
  * Performs Authorization Server Metadata discovery and returns a
  * {@link Configuration} with the discovered
@@ -1087,6 +1200,74 @@ export async function discovery(
   clientAuthentication?: ClientAuth,
   options?: DiscoveryRequestOptions,
 ): Promise<Configuration> {
+  const as = await performDiscovery(server, options)
+
+  const instance = new Configuration(
+    as,
+    clientId,
+    metadata,
+    clientAuthentication,
+  )
+  let internals = int(instance)
+
+  if (options?.[customFetch]) {
+    internals.fetch = options[customFetch]
+  }
+
+  if (options?.timeout) {
+    internals.timeout = options.timeout
+  }
+
+  if (options?.execute) {
+    for (const extension of options.execute) {
+      extension(instance)
+    }
+  }
+
+  return instance
+}
+
+export interface DecryptionKey {
+  /**
+   * An asymmetric private CryptoKey. Its algorithm must be compatible with a
+   * supported JWE Key Management Algorithm Identifier
+   */
+  key: CryptoKey
+
+  /**
+   * The key's JWE Key Management Algorithm Identifier, this can be used to
+   * limit ECDH and X25519 keys to only a specified ECDH-ES* JWE Key Management
+   * Algorithm (The other (RSA) keys have a JWE Key Management Algorithm
+   * Identifier fully specified by their CryptoKey algorithm).
+   */
+  alg?: string
+
+  /**
+   * The key's JWK Key ID.
+   */
+  kid?: string
+}
+
+interface EcKeyAlgorithm extends KeyAlgorithm {
+  namedCurve: string
+}
+
+interface KeyAlgorithm {
+  name: string
+}
+
+interface RsaKeyAlgorithm extends KeyAlgorithm {
+  modulusLength: number
+}
+
+interface RsaHashedKeyAlgorithm extends RsaKeyAlgorithm {
+  hash: KeyAlgorithm
+}
+
+async function performDiscovery(
+  server: URL,
+  options?: DiscoveryRequestOptions,
+) {
   if (!(server instanceof URL)) {
     throw CodedTypeError(
       '"server" must be an instance of URL',
@@ -1153,66 +1334,7 @@ export async function discovery(
       })()
   }
 
-  const instance = new Configuration(
-    as,
-    clientId,
-    metadata,
-    clientAuthentication,
-  )
-  let internals = int(instance)
-
-  if (options?.[customFetch]) {
-    internals.fetch = options[customFetch]
-  }
-
-  if (options?.timeout) {
-    internals.timeout = options.timeout
-  }
-
-  if (options?.execute) {
-    for (const extension of options.execute) {
-      extension(instance)
-    }
-  }
-
-  return instance
-}
-
-export interface DecryptionKey {
-  /**
-   * An asymmetric private CryptoKey. Its algorithm must be compatible with a
-   * supported JWE Key Management Algorithm Identifier
-   */
-  key: CryptoKey
-
-  /**
-   * The key's JWE Key Management Algorithm Identifier, this can be used to
-   * limit ECDH and X25519 keys to only a specified ECDH-ES* JWE Key Management
-   * Algorithm (The other (RSA) keys have a JWE Key Management Algorithm
-   * Identifier fully specified by their CryptoKey algorithm).
-   */
-  alg?: string
-
-  /**
-   * The key's JWK Key ID.
-   */
-  kid?: string
-}
-
-interface EcKeyAlgorithm extends KeyAlgorithm {
-  namedCurve: string
-}
-
-interface KeyAlgorithm {
-  name: string
-}
-
-interface RsaKeyAlgorithm extends KeyAlgorithm {
-  modulusLength: number
-}
-
-interface RsaHashedKeyAlgorithm extends RsaKeyAlgorithm {
-  hash: KeyAlgorithm
+  return as
 }
 
 function isRsaOaep(input: KeyAlgorithm): input is RsaHashedKeyAlgorithm {
@@ -1522,6 +1644,10 @@ export interface ConfigurationMethods {
    * Used to retrieve the Authorization Server Metadata
    */
   serverMetadata(): Readonly<ServerMetadata> & ServerMetadataHelpers
+  /**
+   * Used to retrieve the Client Metadata
+   */
+  clientMetadata(): Readonly<oauth.OmitSymbolProperties<ClientMetadata>>
 }
 
 export interface CustomFetchOptions {
@@ -1707,6 +1833,13 @@ export class Configuration
   serverMetadata(): Readonly<ServerMetadata> & ServerMetadataHelpers {
     const metadata = structuredClone(int(this).as)
     addServerHelpers(metadata)
+    return metadata
+  }
+  /**
+   * @ignore
+   */
+  clientMetadata(): Readonly<oauth.OmitSymbolProperties<ClientMetadata>> {
+    const metadata = structuredClone(int(this).c)
     return metadata
   }
 
@@ -3596,7 +3729,7 @@ const retry: unique symbol = Symbol()
 export interface DPoPOptions {
   /**
    * DPoP handle to use for requesting a sender-constrained access token.
-   * Obtained from {@link getDPoPHandle}
+   * Usually obtained from {@link getDPoPHandle}
    *
    * @see {@link !DPoP RFC 9449 - OAuth 2.0 Demonstrating Proof of Possession (DPoP)}
    */

@@ -13,7 +13,7 @@ Support from the community to continue maintaining and improving this module is 
 • `optional` **DPoP**: [`DPoPHandle`](DPoPHandle.md)
 
 DPoP handle to use for requesting a sender-constrained access token.
-Obtained from [getDPoPHandle](../functions/getDPoPHandle.md)
+Usually obtained from [getDPoPHandle](../functions/getDPoPHandle.md)
 
 #### See
 

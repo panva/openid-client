@@ -69,6 +69,10 @@ Support from the community to continue maintaining and improving this module is 
 - [getDPoPHandle](functions/getDPoPHandle.md)
 - [randomDPoPKeyPair](functions/randomDPoPKeyPair.md)
 
+## Dynamic Client Registration
+
+- [dynamicClientRegistration](functions/dynamicClientRegistration.md)
+
 ## OpenID Connect 1.0
 
 - [authorizationCodeGrant](functions/authorizationCodeGrant.md)
@@ -110,6 +114,7 @@ Support from the community to continue maintaining and improving this module is 
 - [DiscoveryRequestOptions](interfaces/DiscoveryRequestOptions.md)
 - [DPoPHandle](interfaces/DPoPHandle.md)
 - [DPoPOptions](interfaces/DPoPOptions.md)
+- [DynamicClientRegistrationRequestOptions](interfaces/DynamicClientRegistrationRequestOptions.md)
 - [ExportedJWKSCache](interfaces/ExportedJWKSCache.md)
 - [GenerateKeyPairOptions](interfaces/GenerateKeyPairOptions.md)
 - [IDToken](interfaces/IDToken.md)
@@ -138,6 +143,7 @@ Support from the community to continue maintaining and improving this module is 
 - [JsonPrimitive](type-aliases/JsonPrimitive.md)
 - [JsonValue](type-aliases/JsonValue.md)
 - [JWSAlgorithm](type-aliases/JWSAlgorithm.md)
+- [OmitSymbolProperties](type-aliases/OmitSymbolProperties.md)
 
 ## Variables
 

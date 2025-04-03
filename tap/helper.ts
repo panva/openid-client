@@ -104,11 +104,15 @@ export async function setup(
     grant_types: grantTypes,
     backchannel_token_delivery_mode: 'poll',
     jwks: {
-      keys: [
-        authMethod === 'private_key_jwt' || jar ? clientJwk : undefined,
-        encryption ? clientEncJwk : undefined,
-      ].filter(Boolean),
+      keys: [] as lib.JsonObject[],
     },
+  }
+
+  if (authMethod === 'private_key_jwt' || jar) {
+    metadata.jwks.keys.push(clientJwk)
+  }
+  if (encryption) {
+    metadata.jwks.keys.push(clientEncJwk)
   }
 
   if (authEndpoint) {
@@ -124,6 +128,15 @@ export async function setup(
     }
   }
 
+  const configuration = await lib.dynamicClientRegistration(
+    new URL('http://localhost:3000'),
+    metadata,
+    undefined,
+    {
+      execute: [lib.allowInsecureRequests],
+    },
+  )
+
   let response = await fetch(new URL('http://localhost:3000/reg'), {
     method: 'POST',
     headers: { 'content-type': 'application/json;charset=utf-8' },
@@ -136,7 +149,7 @@ export async function setup(
 
   return {
     metadata: {
-      ...(await response.json()),
+      ...configuration.clientMetadata(),
       introspection_signed_response_alg: jwtIntrospection ? alg : undefined,
     },
     clientSigningKey: {

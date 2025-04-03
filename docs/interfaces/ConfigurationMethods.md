@@ -10,6 +10,18 @@ Public methods available on a [Configuration](../classes/Configuration.md) insta
 
 ## Methods
 
+### clientMetadata()
+
+▸ **clientMetadata**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`OmitSymbolProperties`](../type-aliases/OmitSymbolProperties.md)\<[`ClientMetadata`](ClientMetadata.md)\>\>
+
+Used to retrieve the Client Metadata
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`OmitSymbolProperties`](../type-aliases/OmitSymbolProperties.md)\<[`ClientMetadata`](ClientMetadata.md)\>\>
+
+***
+
 ### serverMetadata()
 
 ▸ **serverMetadata**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`ServerMetadata`](ServerMetadata.md)\> & [`ServerMetadataHelpers`](ServerMetadataHelpers.md)
