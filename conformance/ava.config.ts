@@ -20,7 +20,6 @@ const {
 switch (PLAN_NAME) {
   case 'oidcc-client-basic-certification-test-plan':
   case 'oidcc-client-test-plan':
-  case 'oidcc-client-implicit-certification-test-plan':
   case 'oidcc-client-hybrid-certification-test-plan':
   case 'fapi1-advanced-final-client-test-plan':
   case 'fapi2-security-profile-id2-client-test-plan':
@@ -51,7 +50,7 @@ function needsSecret(variant: Record<string, string>) {
     case undefined:
     case 'client_secret_basic':
     case 'client_secret_post':
-      return true
+      return variant.client_registration !== 'dynamic_client'
     default:
       return false
   }
@@ -60,22 +59,18 @@ function needsSecret(variant: Record<string, string>) {
 const DEFAULTS: Record<typeof PLAN_NAME, Record<string, string>> = {
   'oidcc-client-test-plan': {
     response_mode: 'default',
-    client_registration: 'static_client',
+    client_registration: 'static_client', // dynamic_client
     request_type: 'plain_http_request', // plain_http_request, request_object
     response_type: 'code', // code, id_token
     client_auth_type: 'client_secret_basic', // none, client_secret_basic, client_secret_post, private_key_jwt
   },
   'oidcc-client-basic-certification-test-plan': {
     request_type: 'plain_http_request',
-    client_registration: 'static_client',
-  },
-  'oidcc-client-implicit-certification-test-plan': {
-    request_type: 'plain_http_request',
-    client_registration: 'static_client',
+    client_registration: 'static_client', // dynamic_client
   },
   'oidcc-client-hybrid-certification-test-plan': {
     request_type: 'plain_http_request',
-    client_registration: 'static_client',
+    client_registration: 'static_client', // dynamic_client
   },
   'fapi1-advanced-final-client-test-plan': {
     client_auth_type: 'private_key_jwt', // private_key_jwt, mtls
@@ -123,7 +118,7 @@ export function logToActions(content: string) {
   }
 }
 
-function makePublicJwks(def: any) {
+export function makePublicJwks(def: any) {
   const client = structuredClone(def)
   client.jwks.keys.forEach((jwk: any) => {
     delete jwk.d
@@ -167,7 +162,10 @@ const variant = {
 
 export default async () => {
   const clientConfig = {
-    client_id: `client-${UUID}`,
+    client_id:
+      variant.client_registration !== 'dynamic_client'
+        ? `client-${UUID}`
+        : undefined,
     client_secret: needsSecret(variant) ? `client-${UUID}` : undefined,
     scope: getScope(variant),
     redirect_uri: `https://client-${UUID}.local/cb`,
@@ -211,11 +209,17 @@ export default async () => {
     PLAN_NAME,
     {
       ...configuration,
-      client: makePublicJwks(clientConfig),
-      client2: {
-        ...pushEncryptionKey(makePublicJwks(clientConfig)),
-        id_token_encrypted_response_alg: 'RSA-OAEP',
-      },
+      client:
+        variant.client_registration !== 'dynamic_client'
+          ? makePublicJwks(clientConfig)
+          : undefined,
+      client2:
+        variant.client_registration !== 'dynamic_client'
+          ? {
+              ...pushEncryptionKey(makePublicJwks(clientConfig)),
+              id_token_encrypted_response_alg: 'RSA-OAEP',
+            }
+          : undefined,
     },
     variant,
   )

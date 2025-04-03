@@ -23,9 +23,15 @@ jobs:
         setup:
           # Core 1.0 response_type=code
           - plan: oidcc-client-basic-certification-test-plan
+          - plan: oidcc-client-basic-certification-test-plan
+            variant:
+              client_registration: dynamic_client
 
           # Core 1.0 response_type=code id_token
           - plan: oidcc-client-hybrid-certification-test-plan
+          - plan: oidcc-client-hybrid-certification-test-plan
+            variant:
+              client_registration: dynamic_client
 
           # Comprehensive Core 1.0 client test
           - plan: oidcc-client-test-plan

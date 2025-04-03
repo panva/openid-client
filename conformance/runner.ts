@@ -7,7 +7,7 @@ import { inspect } from 'node:util'
 
 export const test = anyTest as TestFn<{ instance: Test }>
 
-import { getScope } from './ava.config.js'
+import { getScope, makePublicJwks } from './ava.config.js'
 import * as client from '../src/index.js'
 import {
   createTestFromPlan,
@@ -59,7 +59,6 @@ switch (plan.name) {
     break
   case 'oidcc-client-test-plan':
   case 'oidcc-client-basic-certification-test-plan':
-  case 'oidcc-client-implicit-certification-test-plan':
   case 'oidcc-client-hybrid-certification-test-plan':
     prefix = 'oidcc-client-test-'
     break
@@ -153,6 +152,10 @@ function responseType(planName: string, variant: Record<string, string>) {
   return variant.fapi_response_mode === 'jarm' ? 'code' : 'code id_token'
 }
 
+function dcr(variant: Record<string, string>) {
+  return variant.client_registration === 'dynamic_client'
+}
+
 export interface MacroOptions {
   useNonce?: boolean
   useState?: boolean
@@ -184,12 +187,22 @@ export const flow = (options?: MacroOptions) => {
 
       const issuer = new URL(issuerIdentifier)
 
-      const metadata: client.ClientMetadata = {
-        client_id: configuration.client.client_id,
-        client_secret: configuration.client.client_secret,
+      const response_type = responseType(plan.name, variant)
+      const metadata: client.ClientMetadata = makePublicJwks({
+        client_id: dcr(variant) ? undefined : configuration.client.client_id,
+        client_secret: dcr(variant)
+          ? undefined
+          : configuration.client.client_secret,
         use_mtls_endpoint_aliases:
           configuration.client.use_mtls_endpoint_aliases,
-      }
+        jwks: configuration.client.jwks,
+        redirect_uris: [configuration.client.redirect_uri],
+        response_types: [response_type],
+        grant_types:
+          response_type === 'code'
+            ? ['authorization_code']
+            : ['authorization_code', 'implicit'],
+      })
 
       switch (variant.client_auth_type) {
         case 'mtls':
@@ -208,9 +221,11 @@ export const flow = (options?: MacroOptions) => {
       }
 
       // @ts-expect-error
-      const mtlsFetch: typeof fetch = (...args: Parameters<typeof fetch>) => {
+      const mtlsFetch: typeof fetch = async (
+        ...args: Parameters<typeof fetch>
+      ) => {
         // @ts-expect-error
-        return undici.fetch(args[0], {
+        let response = await undici.fetch(args[0], {
           ...args[1],
           dispatcher: new undici.Agent({
             connect: {
@@ -219,6 +234,36 @@ export const flow = (options?: MacroOptions) => {
             },
           }),
         })
+
+        if (dcr(variant)) {
+          // TODO: remove when https://gitlab.com/openid/conformance-suite/-/issues/1503 is fixed
+          if (response.ok && (args[0] as string).endsWith('/register')) {
+            const body = (await response.json()) as any
+            if (body.client_secret) {
+              body.client_secret_expires_at = 0
+            }
+            // @ts-expect-error
+            response = new Response(JSON.stringify(body), response)
+          }
+        }
+
+        return response
+      }
+
+      let dcrFetch: typeof fetch | undefined
+      if (dcr(variant)) {
+        // TODO: remove when https://gitlab.com/openid/conformance-suite/-/issues/1503 is fixed
+        dcrFetch = async (...args: Parameters<typeof fetch>) => {
+          let response = await fetch(...args)
+          if (response.ok && (args[0] as string).endsWith('/register')) {
+            const body = await response.json()
+            if (body.client_secret) {
+              body.client_secret_expires_at = 0
+            }
+            response = new Response(JSON.stringify(body), response)
+          }
+          return response
+        }
       }
 
       const mtlsAuth = variant.client_auth_type === 'mtls'
@@ -226,8 +271,6 @@ export const flow = (options?: MacroOptions) => {
         plan.name.startsWith('fapi1') || variant.sender_constrain === 'mtls'
 
       const execute: Array<(config: client.Configuration) => void> = []
-
-      const response_type = responseType(plan.name, variant)
 
       if (nonRepudiation(plan)) {
         execute.push(client.enableNonRepudiationChecks)
@@ -249,6 +292,7 @@ export const flow = (options?: MacroOptions) => {
         kid: jwk.kid,
         key: await importPrivateKey(ALG, jwk),
       }
+      const client_secret = dcr(variant) ? undefined : metadata.client_secret
 
       let clientAuth: client.ClientAuth | undefined
       if (metadata.token_endpoint_auth_method === 'private_key_jwt') {
@@ -256,22 +300,40 @@ export const flow = (options?: MacroOptions) => {
       } else if (
         metadata.token_endpoint_auth_method === 'client_secret_basic'
       ) {
-        clientAuth = client.ClientSecretBasic(metadata.client_secret as string)
+        clientAuth = client.ClientSecretBasic(client_secret)
       }
 
-      const config = await client.discovery(
-        issuer,
-        configuration.client.client_id,
-        metadata,
-        clientAuth,
-        {
-          execute,
-          [client.customFetch]:
-            mtlsAuth || mtlsConstrain || metadata.use_mtls_endpoint_aliases
-              ? mtlsFetch
-              : undefined,
-        },
-      )
+      let config: client.Configuration
+      if (dcr(variant)) {
+        config = await client.dynamicClientRegistration(
+          issuer,
+          metadata,
+          clientAuth,
+          {
+            execute,
+            [client.customFetch]:
+              mtlsAuth || mtlsConstrain || metadata.use_mtls_endpoint_aliases
+                ? mtlsFetch
+                : dcr(variant)
+                  ? dcrFetch
+                  : undefined,
+          },
+        )
+      } else {
+        config = await client.discovery(
+          issuer,
+          configuration.client.client_id,
+          metadata,
+          clientAuth,
+          {
+            execute,
+            [client.customFetch]:
+              mtlsAuth || mtlsConstrain || metadata.use_mtls_endpoint_aliases
+                ? mtlsFetch
+                : undefined,
+          },
+        )
+      }
 
       if (module.testModule.includes('encrypted')) {
         const jwk = configuration.client.jwks.keys[0]
@@ -283,6 +345,12 @@ export const flow = (options?: MacroOptions) => {
       }
 
       t.log('AS Metadata discovered for', issuer.href)
+      if (dcr(variant)) {
+        t.log(
+          'Client Metadata registered for',
+          config.clientMetadata().client_id,
+        )
+      }
 
       const DPoP = usesDpop(variant)
         ? client.getDPoPHandle(config, await client.randomDPoPKeyPair(ALG))
