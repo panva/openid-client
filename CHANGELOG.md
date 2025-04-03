@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.1](https://github.com/panva/openid-client/compare/v6.4.0...v6.4.1) (2025-04-03)
+
+
+### Fixes
+
+* allow client secret based auth factories to be used with DCR ([d125b30](https://github.com/panva/openid-client/commit/d125b30b062894924a484cdfa6f06c7b412b8fae))
+
 ## [6.4.0](https://github.com/panva/openid-client/compare/v6.3.4...v6.4.0) (2025-04-03)
 
 
