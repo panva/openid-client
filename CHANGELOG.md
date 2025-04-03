@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.0](https://github.com/panva/openid-client/compare/v6.3.4...v6.4.0) (2025-04-03)
+
+
+### Features
+
+* add support for Dynamic Client Registration ([15f6953](https://github.com/panva/openid-client/commit/15f69538d6712ae90f03a425c8698ea3acfdf12d))
+
+
+### Fixes
+
+* handle max_age=0 in buildAuthorizationUrlWithJAR() ([5a5a7c9](https://github.com/panva/openid-client/commit/5a5a7c991f5d4dae83c17a8115c2c312d33cb661))
+
 ## [6.3.4](https://github.com/panva/openid-client/compare/v6.3.3...v6.3.4) (2025-03-12)
 
 
