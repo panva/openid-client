@@ -17,6 +17,7 @@ The following features are currently in scope and implemented in this software:
 - UserInfo and Protected Resource Requests
 - Authorization Server Issuer Identification
 - JWT Secured Introspection, Response Mode (JARM), Authorization Request (JAR), and UserInfo
+- Dynamic Client Registration (DCR)
 - [Passport](https://www.passportjs.org/) Strategy
 
 ## Sponsor

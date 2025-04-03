@@ -31,6 +31,7 @@ Support from the community to continue maintaining and improving this module is 
 ## Advanced Configuration
 
 - [~~allowInsecureRequests~~](functions/allowInsecureRequests.md)
+- [dynamicClientRegistration](functions/dynamicClientRegistration.md)
 - [enableDecryptingResponses](functions/enableDecryptingResponses.md)
 - [enableDetachedSignatureResponseChecks](functions/enableDetachedSignatureResponseChecks.md)
 - [enableNonRepudiationChecks](functions/enableNonRepudiationChecks.md)
@@ -69,7 +70,7 @@ Support from the community to continue maintaining and improving this module is 
 - [getDPoPHandle](functions/getDPoPHandle.md)
 - [randomDPoPKeyPair](functions/randomDPoPKeyPair.md)
 
-## Dynamic Client Registration
+## Dynamic Client Registration (DCR)
 
 - [dynamicClientRegistration](functions/dynamicClientRegistration.md)
 

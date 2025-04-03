@@ -1149,7 +1149,12 @@ export interface DynamicClientRegistrationRequestOptions
  *   issued, {@link None} otherwise.
  * @param options
  *
- * @group Dynamic Client Registration
+ * @group Advanced Configuration
+ * @group Dynamic Client Registration (DCR)
+ *
+ * @see [RFC 7591 - OAuth 2.0 Dynamic Client Registration Protocol (DCR)](https://www.rfc-editor.org/rfc/rfc7591.html)
+ * @see [OpenID Connect Dynamic Client Registration 1.0 (DCR)](https://openid.net/specs/openid-connect-registration-1_0-errata2.html)
+ * @see [RFC 9449 - OAuth 2.0 Demonstrating Proof-of-Possession at the Application Layer (DPoP)](https://www.rfc-editor.org/rfc/rfc9449.html#name-protected-resource-access)
  */
 export async function dynamicClientRegistration(
   server: URL,
