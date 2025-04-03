@@ -17,13 +17,19 @@ Note: This method also accepts a URL pointing directly to the Authorization
 Server's discovery document. Doing so is NOT RECOMMENDED as it disables the
 [ServerMetadata.issuer](../interfaces/ServerMetadata.md#issuer) validation.
 
+Note: The method does not contain any logic to default the registered
+"token_endpoint_auth_method" based on
+[ServerMetadata.token\_endpoint\_auth\_methods\_supported](../interfaces/ServerMetadata.md#token_endpoint_auth_methods_supported), nor does it
+default the "clientAuthentication" argument value beyond what its description
+says.
+
 ## Parameters
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `server` | [`URL`](https://developer.mozilla.org/docs/Web/API/URL) | URL representation of the Authorization Server's Issuer Identifier |
 | `metadata` | [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata to register at the Authorization Server |
-| `clientAuthentication`? | [`ClientAuth`](../type-aliases/ClientAuth.md) | Implementation of the Client's Authentication Method at the Authorization Server. Default is [ClientSecretPost](ClientSecretPost.md) using the [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret) that the Authorization Server issued. |
+| `clientAuthentication`? | [`ClientAuth`](../type-aliases/ClientAuth.md) | Implementation of the Client's Authentication Method at the Authorization Server. Default is [ClientSecretPost](ClientSecretPost.md) using the [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret) that the Authorization Server issued, [None](None.md) otherwise. |
 | `options`? | [`DynamicClientRegistrationRequestOptions`](../interfaces/DynamicClientRegistrationRequestOptions.md) |  |
 
 ## Returns

@@ -106,6 +106,8 @@ export type ClientAuth = (
   headers: Headers,
 ) => void
 
+let tbi!: WeakMap<Internal['c'], ClientAuth>
+
 /**
  * **`client_secret_post`** uses the HTTP request body to send `client_id` and
  * `client_secret` as `application/x-www-form-urlencoded` body parameters
@@ -154,8 +156,32 @@ export type ClientAuth = (
  * @see [RFC 6749 - The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.3)
  * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
  */
-export function ClientSecretPost(clientSecret: string): ClientAuth {
-  return oauth.ClientSecretPost(clientSecret)
+export function ClientSecretPost(clientSecret?: string): ClientAuth {
+  if (clientSecret !== undefined) {
+    return oauth.ClientSecretPost(clientSecret)
+  }
+
+  tbi ||= new WeakMap()
+
+  return (as, client, body, headers) => {
+    let auth: ClientAuth | undefined
+    if (!(auth = tbi.get(client))) {
+      assertString(client.client_secret, '"metadata.client_secret"')
+      auth = oauth.ClientSecretPost(client.client_secret)
+      tbi.set(client, auth)
+    }
+    return auth(as, client, body, headers)
+  }
+}
+
+function assertString(input: unknown, it: string): asserts input is string {
+  if (typeof input !== 'string') {
+    throw CodedTypeError(`${it} must be a string`, ERR_INVALID_ARG_TYPE)
+  }
+
+  if (input.length === 0) {
+    throw CodedTypeError(`${it} must not be empty`, ERR_INVALID_ARG_VALUE)
+  }
 }
 
 /**
@@ -206,8 +232,22 @@ export function ClientSecretPost(clientSecret: string): ClientAuth {
  * @see [RFC 6749 - The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.3)
  * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
  */
-export function ClientSecretBasic(clientSecret: string): ClientAuth {
-  return oauth.ClientSecretBasic(clientSecret)
+export function ClientSecretBasic(clientSecret?: string): ClientAuth {
+  if (clientSecret !== undefined) {
+    return oauth.ClientSecretBasic(clientSecret)
+  }
+
+  tbi ||= new WeakMap()
+
+  return (as, client, body, headers) => {
+    let auth: ClientAuth | undefined
+    if (!(auth = tbi.get(client))) {
+      assertString(client.client_secret, '"metadata.client_secret"')
+      auth = oauth.ClientSecretBasic(client.client_secret)
+      tbi.set(client, auth)
+    }
+    return auth(as, client, body, headers)
+  }
 }
 
 /**
@@ -261,10 +301,24 @@ export function ClientSecretBasic(clientSecret: string): ClientAuth {
  * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication)
  */
 export function ClientSecretJwt(
-  clientSecret: string,
+  clientSecret?: string,
   options?: oauth.ModifyAssertionOptions,
 ): ClientAuth {
-  return oauth.ClientSecretJwt(clientSecret, options)
+  if (clientSecret !== undefined) {
+    return oauth.ClientSecretJwt(clientSecret, options)
+  }
+
+  tbi ||= new WeakMap()
+
+  return (as, client, body, headers) => {
+    let auth: ClientAuth | undefined
+    if (!(auth = tbi.get(client))) {
+      assertString(client.client_secret, '"metadata.client_secret"')
+      auth = oauth.ClientSecretJwt(client.client_secret, options)
+      tbi.set(client, auth)
+    }
+    return auth(as, client, body, headers)
+  }
 }
 
 /**
@@ -1080,13 +1134,19 @@ export interface DynamicClientRegistrationRequestOptions
  * Server's discovery document. Doing so is NOT RECOMMENDED as it disables the
  * {@link ServerMetadata.issuer} validation.
  *
+ * Note: The method does not contain any logic to default the registered
+ * "token_endpoint_auth_method" based on
+ * {@link ServerMetadata.token_endpoint_auth_methods_supported}, nor does it
+ * default the "clientAuthentication" argument value beyond what its description
+ * says.
+ *
  * @param server URL representation of the Authorization Server's Issuer
  *   Identifier
  * @param metadata Client Metadata to register at the Authorization Server
  * @param clientAuthentication Implementation of the Client's Authentication
  *   Method at the Authorization Server. Default is {@link ClientSecretPost}
  *   using the {@link ClientMetadata.client_secret} that the Authorization Server
- *   issued.
+ *   issued, {@link None} otherwise.
  * @param options
  *
  * @group Dynamic Client Registration
@@ -1103,6 +1163,10 @@ export async function dynamicClientRegistration(
   } else {
     as = await performDiscovery(server, options)
   }
+
+  const clockSkew = metadata[oauth.clockSkew] ?? 0
+  const clockTolerance = metadata[oauth.clockTolerance] ?? 30
+  metadata = structuredClone(metadata)
 
   const timeout = options?.timeout ?? 30
   const signal = AbortSignal.timeout(timeout * 1000)
@@ -1133,8 +1197,8 @@ export async function dynamicClientRegistration(
     errorHandler(err)
   }
 
-  registered[oauth.clockSkew] = metadata[oauth.clockSkew] ?? 0
-  registered[oauth.clockTolerance] = metadata[oauth.clockTolerance] ?? 30
+  registered[oauth.clockSkew] = clockSkew
+  registered[oauth.clockTolerance] = clockTolerance
 
   const instance = new Configuration(
     as,
