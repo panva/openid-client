@@ -108,6 +108,8 @@ jobs:
           node-version: lts/*
           cache: 'npm'
       - run: npm clean-install
+      - run: npm install --global edge-runtime
+      - run: npm link edge-runtime
       - name: Run Test Suite
         run: npm run tap:edge-runtime
       - name: Upload server logs
@@ -185,6 +187,7 @@ jobs:
           cache: 'npm'
       - run: npm clean-install
       - run: npm install --global workerd
+      - run: npm link workerd
       - name: Run Test Suite
         run: npm run tap:workerd
 

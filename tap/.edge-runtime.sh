@@ -2,7 +2,9 @@
 
 . ./tap/.server.sh
 
-echo "Using edge-runtime $(cat package-lock.json | jq -r '.packages["node_modules/edge-runtime"].version')"
+RUNTIME_VERSION=$(npm ls --global --json | jq -r '.dependencies["edge-runtime"].version')
+
+echo "Using edge-runtime $RUNTIME_VERSION"
 
 ./node_modules/.bin/esbuild \
   --log-level=warning \
