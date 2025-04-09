@@ -611,7 +611,7 @@ export const rejects = (
       t.log('Test Finished')
       t.pass()
     },
-    title: <any>macro.title,
+    title: macro.title as any,
   })
 }
 
@@ -630,6 +630,6 @@ export const skippable = (
       t.log('Test Finished')
       t.pass()
     },
-    title: <any>macro.title,
+    title: macro.title as any,
   })
 }
