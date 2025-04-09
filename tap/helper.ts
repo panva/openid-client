@@ -82,7 +82,7 @@ export async function setup(
 
   const metadata = {
     token_endpoint_auth_method: authMethod,
-    redirect_uris: <string[]>[],
+    redirect_uris: [] as string[],
     id_token_signed_response_alg: alg,
     request_object_signing_alg: jar ? alg : undefined,
     userinfo_signed_response_alg: jwtUserinfo ? alg : undefined,
@@ -98,7 +98,7 @@ export async function setup(
             : undefined,
         }
       : undefined),
-    response_types: <string[]>[],
+    response_types: [] as string[],
     require_auth_time: random(),
     default_max_age: random() ? 30 : undefined,
     grant_types: grantTypes,
