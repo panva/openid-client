@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+WWW-Authenticate challenge auth-param dictionary with known and unknown parameter names
+
 ## Indexable
 
 \[`parameter`: [`Lowercase`](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html#lowercasestringtype)\<`string`\>\]: `undefined` \| `string`
