@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.2](https://github.com/panva/openid-client/compare/v6.4.1...v6.4.2) (2025-04-10)
+
+
+### Documentation
+
+* add more resources for DCR ([e9b978d](https://github.com/panva/openid-client/commit/e9b978da4feb6396936262706f9b5b6c29653715))
+* hardcode spec revision links (e.g. final or errata) ([afef152](https://github.com/panva/openid-client/commit/afef152b9217a82c8b78c923b4ff64b38d5fdf20))
+
+
+### Fixes
+
+* properly handle a number of edge-cases in www-authenticate header parsing ([56f0ed1](https://github.com/panva/openid-client/commit/56f0ed18a5e4114d5835b6e5647816f4532fc25b))
+
 ## [6.4.1](https://github.com/panva/openid-client/compare/v6.4.0...v6.4.1) (2025-04-03)
 
 
