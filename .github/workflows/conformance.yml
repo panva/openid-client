@@ -51,27 +51,27 @@ jobs:
               fapi_response_mode: 'plain_response'
               fapi_auth_request_method: 'by_value'
 
-          # FAPI 2.0 Security Profile ID2
-          - plan: fapi2-security-profile-id2-client-test-plan
+          # FAPI 2.0 Security Profile Final
+          - plan: fapi2-security-profile-final-client-test-plan
             variant:
               client_auth_type: 'private_key_jwt'
               sender_constrain: 'dpop'
-          - plan: fapi2-security-profile-id2-client-test-plan
+          - plan: fapi2-security-profile-final-client-test-plan
             variant:
               client_auth_type: 'private_key_jwt'
               sender_constrain: 'mtls'
-          - plan: fapi2-security-profile-id2-client-test-plan
+          - plan: fapi2-security-profile-final-client-test-plan
             variant:
               client_auth_type: 'mtls'
               sender_constrain: 'dpop'
-          - plan: fapi2-security-profile-id2-client-test-plan
+          - plan: fapi2-security-profile-final-client-test-plan
             variant:
               client_auth_type: 'mtls'
               sender_constrain: 'mtls'
 
-          # FAPI 2.0 Message Signing ID1
-          - plan: fapi2-message-signing-id1-client-test-plan
-          - plan: fapi2-message-signing-id1-client-test-plan
+          # FAPI 2.0 Message Signing Final
+          - plan: fapi2-message-signing-final-client-test-plan
+          - plan: fapi2-message-signing-final-client-test-plan
             variant:
               fapi_client_type: 'plain_oauth'
 

@@ -54,7 +54,7 @@ for CLIENT_AUTH_TYPE in "${CLIENT_AUTH_TYPES[@]}"; do
 done
 
 # FAPI 2.0
-export PLAN_NAMES=("fapi2-security-profile-id2-client-test-plan" "fapi2-message-signing-id1-client-test-plan")
+export PLAN_NAMES=("fapi2-security-profile-final-client-test-plan" "fapi2-message-signing-final-client-test-plan")
 export SENDER_CONSTRAINS=("mtls" "dpop")
 
 for PLAN_NAME in "${PLAN_NAMES[@]}"; do

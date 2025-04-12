@@ -51,11 +51,11 @@ let prefix = ''
 
 switch (plan.name) {
   case 'fapi1-advanced-final-client-test-plan':
-  case 'fapi2-security-profile-id2-client-test-plan':
+  case 'fapi2-security-profile-final-client-test-plan':
     prefix = plan.name.slice(0, -4)
     break
-  case 'fapi2-message-signing-id1-client-test-plan':
-    prefix = 'fapi2-security-profile-id2-client-test-'
+  case 'fapi2-message-signing-final-client-test-plan':
+    prefix = 'fapi2-security-profile-final-client-test-'
     break
   case 'oidcc-client-test-plan':
   case 'oidcc-client-basic-certification-test-plan':

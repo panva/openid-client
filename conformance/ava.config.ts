@@ -22,8 +22,8 @@ switch (PLAN_NAME) {
   case 'oidcc-client-test-plan':
   case 'oidcc-client-hybrid-certification-test-plan':
   case 'fapi1-advanced-final-client-test-plan':
-  case 'fapi2-security-profile-id2-client-test-plan':
-  case 'fapi2-message-signing-id1-client-test-plan':
+  case 'fapi2-security-profile-final-client-test-plan':
+  case 'fapi2-message-signing-final-client-test-plan':
     break
   default:
     throw new Error()
@@ -79,13 +79,13 @@ const DEFAULTS: Record<typeof PLAN_NAME, Record<string, string>> = {
     fapi_profile: 'plain_fapi',
     fapi_response_mode: 'jarm', // jarm, plain_response
   },
-  'fapi2-security-profile-id2-client-test-plan': {
+  'fapi2-security-profile-final-client-test-plan': {
     client_auth_type: 'private_key_jwt', // private_key_jwt, mtls
     sender_constrain: 'dpop', // dpop, mtls
     fapi_client_type: 'oidc', // oidc, plain_oauth
     fapi_profile: 'plain_fapi',
   },
-  'fapi2-message-signing-id1-client-test-plan': {
+  'fapi2-message-signing-final-client-test-plan': {
     client_auth_type: 'private_key_jwt', // private_key_jwt, mtls
     sender_constrain: 'dpop', // dpop, mtls
     fapi_client_type: 'oidc', // oidc, plain_oauth
@@ -254,7 +254,7 @@ export default async () => {
         continue
     }
     const name = module.testModule.replace(
-      /(?:fapi2-(?:security-profile-id2|message-signing-id1)|fapi1-advanced-final|oidcc)-client-test-/,
+      /(?:fapi2-(?:security-profile-final|message-signing-final)|fapi1-advanced-final|oidcc)-client-test-/,
       '',
     )
     const path = `./conformance/modules/${name}.ts`
