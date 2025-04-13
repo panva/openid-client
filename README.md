@@ -46,7 +46,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## [Examples](examples/README.md)
 
-**`example`** ESM import
+**`example`** ESM import[^cjs]
 
 ```ts
 import * as client from 'openid-client'
