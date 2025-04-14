@@ -359,6 +359,14 @@ the authorization server's terms of service.
 
 ***
 
+### protected\_resources?
+
+• `readonly` `optional` **protected\_resources**: `string`[]
+
+JSON array containing a list of resource identifiers for OAuth protected resources.
+
+***
+
 ### pushed\_authorization\_request\_endpoint?
 
 • `readonly` `optional` **pushed\_authorization\_request\_endpoint**: `string`
