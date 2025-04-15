@@ -70,8 +70,7 @@ const provider = new Provider('http://localhost:3000', {
       useGrantedResource: () => true,
     },
     requestObjects: {
-      mode: 'strict',
-      request: true,
+      enabled: true,
     },
     userinfo: { enabled: true },
     mTLS: {
@@ -80,7 +79,6 @@ const provider = new Provider('http://localhost:3000', {
       selfSignedTlsClientAuth: true,
     },
   },
-  pkce: { required: () => true },
   clientAuthMethods: [
     'client_secret_basic',
     'client_secret_post',
