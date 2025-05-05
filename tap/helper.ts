@@ -137,16 +137,6 @@ export async function setup(
     },
   )
 
-  let response = await fetch(new URL('http://localhost:3000/reg'), {
-    method: 'POST',
-    headers: { 'content-type': 'application/json;charset=utf-8' },
-    body: JSON.stringify(metadata),
-  })
-
-  if (response.status !== 201) {
-    throw new Error(await response.text())
-  }
-
   return {
     metadata: {
       ...configuration.clientMetadata(),
