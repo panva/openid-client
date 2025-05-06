@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://github.com/panva/openid-client/compare/v6.4.2...v6.5.0) (2025-05-06)
+
+
+### Features
+
+* support response_type=id_token OIDC Authentication Responses ([94bba9d](https://github.com/panva/openid-client/commit/94bba9d7f7e6f1a2116fa20466be4811a7ee9cf3))
+
+
+### Fixes
+
+* handle POST method Request inputs for non-hybrid responses ([92faadc](https://github.com/panva/openid-client/commit/92faadc2a07af8f94889ef833ceae2dfdfe82352))
+
+
+### Documentation
+
+* add WWW-Authenticate parameter descriptions and RS Metadata related parameters ([38f3448](https://github.com/panva/openid-client/commit/38f3448d6cc761541e498afcd6cacc3e4a86657b))
+* update implicitAuthentication and authorizationCodeGrant inline examples ([b1f0a28](https://github.com/panva/openid-client/commit/b1f0a28e38d4a3015107609aeb127099176bc2e0))
+
 ## [6.4.2](https://github.com/panva/openid-client/compare/v6.4.1...v6.4.2) (2025-04-10)
 
 
