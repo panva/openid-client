@@ -13,6 +13,4 @@ for (let i = 0; i < lines.length; i++) {
     rm "${file%.*}.tmp"
 done
 
-npx tsc -p tsconfig.docs.json
-
-rm docs/**/*.ts
+npx tsc -p tsconfig.docs.json && rm docs/**/*.ts
