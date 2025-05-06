@@ -188,15 +188,19 @@ provider.use(async (ctx, next) => {
         headless: 'new',
       })
 
-      const s = '[type="submit"]'
+      const actions = {
+        submit: '[type="submit"]',
+        cancel: 'a[href$="/abort"]',
+      }
 
       const page = await browser.newPage()
       await Promise.all([
         page.goto(target),
-        page.waitForSelector(s),
+        page.waitForSelector(actions.submit),
         page.waitForNetworkIdle({ idleTime: 100 }),
       ])
 
+      let cancel = params.has('cancel')
       let pending = true
       let deviceFlow
       let destination
@@ -209,25 +213,31 @@ provider.use(async (ctx, next) => {
         }
         switch (title) {
           case 'Device Login Confirmation':
-            deviceFlow = true
             await Promise.all([
-              page.click(s),
+              page.click(actions.submit),
               page.waitForFunction('document.title === "Sign-in"'),
               page.waitForNetworkIdle({ idleTime: 100 }),
             ])
+            deviceFlow = true
             break
           case 'Sign-in':
-            await page.type('[name="login"]', 'user')
-            await page.type('[name="password"]', 'pass')
-            await Promise.all([
-              page.click(s),
-              page.waitForFunction('document.title === "Consent"'),
-              page.waitForNetworkIdle({ idleTime: 100 }),
-            ])
+            if (cancel) {
+              await page.click(actions.cancel)
+              destination = '/cb'
+              pending = false
+            } else {
+              await page.type('[name="login"]', 'user')
+              await page.type('[name="password"]', 'pass')
+              await Promise.all([
+                page.click(actions.submit),
+                page.waitForFunction('document.title === "Consent"'),
+                page.waitForNetworkIdle({ idleTime: 100 }),
+              ])
+            }
             break
           case 'Consent':
             await Promise.all([
-              page.click(s),
+              page.click(actions.submit),
               page.waitForNetworkIdle({ idleTime: 100 }),
             ])
             pending = false

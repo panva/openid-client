@@ -30,6 +30,7 @@ export default (QUnit: QUnit) => {
       | 'encryption'
       | 'implicit'
       | 'form_post'
+      | 'error_response'
     >
   ) => {
     const conf = {
@@ -43,6 +44,7 @@ export default (QUnit: QUnit) => {
       implicit: false,
       nonrepudiation: false,
       form_post: false,
+      error_response: false,
     }
     for (const flag of flags) {
       conf[flag] = true
@@ -52,7 +54,9 @@ export default (QUnit: QUnit) => {
 
   const testCases = [
     options(),
+    options('error_response'),
     options('form_post'),
+    options('form_post', 'error_response'),
     options('nonrepudiation'),
     options('nonrepudiation', 'encryption'),
     options('par'),
@@ -61,16 +65,23 @@ export default (QUnit: QUnit) => {
     options('par', 'jar'),
     options('par', 'dpop'),
     options('encryption'),
-    options('encryption', 'form_post'),
     options('jarm'),
+    options('jarm', 'error_response'),
     options('jarm', 'encryption'),
+    options('jarm', 'encryption', 'error_response'),
     options('jwtUserinfo'),
     options('jwtUserinfo', 'encryption'),
     options('hybrid'),
+    options('hybrid', 'error_response'),
     options('hybrid', 'form_post'),
+    options('hybrid', 'form_post', 'error_response'),
+    options('hybrid', 'encryption'),
     options('hybrid', 'encryption'),
     options('implicit'),
+    options('implicit', 'error_response'),
     options('implicit', 'form_post'),
+    options('implicit', 'form_post', 'error_response'),
+    options('implicit', 'encryption'),
     options('implicit', 'encryption'),
   ]
 
@@ -86,6 +97,7 @@ export default (QUnit: QUnit) => {
       encryption,
       nonrepudiation,
       form_post,
+      error_response,
     } = testCase
 
     test(`end-to-end ${label(testCase)}`, async (t) => {
@@ -208,12 +220,16 @@ export default (QUnit: QUnit) => {
 
       let currentUrl: URL
       {
+        const body = new URLSearchParams({
+          goto: authorizationUrl.href,
+        })
+        if (error_response) {
+          body.append('cancel', '1')
+        }
         currentUrl = new URL(
           await fetch('http://localhost:3000/drive', {
             method: 'POST',
-            body: new URLSearchParams({
-              goto: authorizationUrl.href,
-            }),
+            body,
           }).then((r) => r.text()),
         )
       }
@@ -246,48 +262,59 @@ export default (QUnit: QUnit) => {
         }
       }
 
-      if (implicit) {
-        await client.signIn(config, input, nonce!, {
-          maxAge,
-        })
-      } else {
-        const response = await client.authorizationCodeGrant(
-          config,
-          input,
-          {
-            expectedNonce: nonce,
-            pkceCodeVerifier: code_verifier,
+      try {
+        if (implicit) {
+          await client.implicitAuthentication(config, input, nonce!, {
             maxAge,
-          },
-          undefined,
-          { DPoP },
-        )
+          })
+        } else {
+          const response = await client.authorizationCodeGrant(
+            config,
+            input,
+            {
+              expectedNonce: nonce,
+              pkceCodeVerifier: code_verifier,
+              maxAge,
+            },
+            undefined,
+            { DPoP },
+          )
 
-        await client.fetchUserInfo(
-          config,
-          response.access_token,
-          response.claims()?.sub!,
-          {
-            DPoP,
-          },
-        )
+          await client.fetchUserInfo(
+            config,
+            response.access_token,
+            response.claims()?.sub!,
+            {
+              DPoP,
+            },
+          )
 
-        await client.refreshTokenGrant(
-          config,
-          response.refresh_token!,
-          undefined,
-          {
-            DPoP,
-          },
-        )
-      }
+          await client.refreshTokenGrant(
+            config,
+            response.refresh_token!,
+            undefined,
+            {
+              DPoP,
+            },
+          )
+        }
 
-      if (jarm || hybrid || nonrepudiation || implicit) {
-        const cache = client.getJwksCache(config)
-        t.ok(cache?.uat)
-        t.ok(cache?.jwks)
-      } else {
-        t.notOk(client.getJwksCache(config))
+        if (jarm || hybrid || nonrepudiation || implicit) {
+          const cache = client.getJwksCache(config)
+          t.ok(cache?.uat)
+          t.ok(cache?.jwks)
+        } else {
+          t.notOk(client.getJwksCache(config))
+        }
+      } catch (err) {
+        if (
+          error_response &&
+          err instanceof client.AuthorizationResponseError
+        ) {
+          t.equal(err.error, 'access_denied')
+        } else {
+          throw err
+        }
       }
 
       t.ok(1)
