@@ -31,7 +31,7 @@ must be configured.
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
-## Example
+## Examples
 
 ```ts
 let config!: client.Configuration
@@ -45,4 +45,16 @@ let tokens = await client.authorizationCodeGrant(
     pkceCodeVerifier: getCodeVerifierFromSession(),
   },
 )
+```
+
+Using an incoming [Request](https://developer.mozilla.org/docs/Web/API/Request) instance
+
+```ts
+let config!: client.Configuration
+let getCodeVerifierFromSession!: (...args: any) => string
+let request!: Request
+
+let tokens = await client.authorizationCodeGrant(config, request, {
+  pkceCodeVerifier: getCodeVerifierFromSession(),
+})
 ```

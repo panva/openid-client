@@ -2789,22 +2789,23 @@ export interface ImplicitAuthenticationResponseChecks
  *
  * @example
  *
- * In a browser
+ * Using an incoming {@link !Request} instance
  *
  * ```ts
  * let config!: client.Configuration
  * let expectedNonce!: string
+ * let request!: Request
  *
  * let idTokenClaims = await client.implicitAuthentication(
  *   config,
- *   new URL(location.href),
+ *   request,
  *   expectedNonce,
  * )
  * ```
  *
  * @example
  *
- * On a server in response to a `form_post` response mode
+ * When using a `form_post` response mode without a {@link !Request} instance
  *
  * ```ts
  * let config!: client.Configuration
@@ -2824,18 +2825,19 @@ export interface ImplicitAuthenticationResponseChecks
  *
  * @example
  *
- * On a server in response to a `form_post` response mode using an incoming
- * {@link !Request} object
+ * In a browser environment
  *
  * ```ts
  * let config!: client.Configuration
- * let expectedNonce!: string
- * let request!: Request
+ * let getCodeVerifierFromSession!: (...args: any) => string
+ * let getCurrentUrl!: (...args: any) => URL
  *
- * let idTokenClaims = await client.implicitAuthentication(
+ * let tokens = await client.authorizationCodeGrant(
  *   config,
- *   request,
- *   expectedNonce,
+ *   new URL(location.href),
+ *   {
+ *     pkceCodeVerifier: getCodeVerifierFromSession(),
+ *   },
  * )
  * ```
  *
@@ -3173,6 +3175,20 @@ function webInstanceOf<T>(input: unknown, toStringTag: string): input is T {
  *     pkceCodeVerifier: getCodeVerifierFromSession(),
  *   },
  * )
+ * ```
+ *
+ * @example
+ *
+ * Using an incoming {@link !Request} instance
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let getCodeVerifierFromSession!: (...args: any) => string
+ * let request!: Request
+ *
+ * let tokens = await client.authorizationCodeGrant(config, request, {
+ *   pkceCodeVerifier: getCodeVerifierFromSession(),
+ * })
  * ```
  *
  * @param currentUrl Current {@link !URL} the Authorization Server provided an

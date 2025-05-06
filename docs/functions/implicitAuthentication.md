@@ -36,20 +36,21 @@ ID Token Claims Set
 
 ## Examples
 
-In a browser
+Using an incoming [Request](https://developer.mozilla.org/docs/Web/API/Request) instance
 
 ```ts
 let config!: client.Configuration
 let expectedNonce!: string
+let request!: Request
 
 let idTokenClaims = await client.implicitAuthentication(
   config,
-  new URL(location.href),
+  request,
   expectedNonce,
 )
 ```
 
-On a server in response to a `form_post` response mode
+When using a `form_post` response mode without a [Request](https://developer.mozilla.org/docs/Web/API/Request) instance
 
 ```ts
 let config!: client.Configuration
@@ -67,17 +68,18 @@ let idTokenClaims = await client.implicitAuthentication(
 )
 ```
 
-On a server in response to a `form_post` response mode using an incoming
-[Request](https://developer.mozilla.org/docs/Web/API/Request) object
+In a browser environment
 
 ```ts
 let config!: client.Configuration
-let expectedNonce!: string
-let request!: Request
+let getCodeVerifierFromSession!: (...args: any) => string
+let getCurrentUrl!: (...args: any) => URL
 
-let idTokenClaims = await client.implicitAuthentication(
+let tokens = await client.authorizationCodeGrant(
   config,
-  request,
-  expectedNonce,
+  new URL(location.href),
+  {
+    pkceCodeVerifier: getCodeVerifierFromSession(),
+  },
 )
 ```
