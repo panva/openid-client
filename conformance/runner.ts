@@ -18,10 +18,6 @@ import {
   type Test,
 } from './api.js'
 
-function random() {
-  return Math.random() < 0.5
-}
-
 const conformance = JSON.parse(process.env.CONFORMANCE!)
 
 const configuration: {
@@ -448,32 +444,7 @@ export const flow = (options?: MacroOptions) => {
         throw new Error()
       }
 
-      let currentUrl = new URL(authorization_endpoint_response_redirect)
-
-      let input: URL | Request
-      switch ([URL, Request][Math.floor(Math.random() * 2)]) {
-        case URL:
-          input = currentUrl
-          break
-        case Request:
-          if (response_type === 'code id_token' && random()) {
-            input = new Request(
-              `${currentUrl.protocol}//${currentUrl.host}${currentUrl.pathname}`,
-              {
-                method: 'POST',
-                headers: {
-                  'content-type': 'application/x-www-form-urlencoded',
-                },
-                body: currentUrl.hash.slice(1),
-              },
-            )
-          } else {
-            input = new Request(currentUrl)
-          }
-          break
-        default:
-          throw new Error('unreachable')
-      }
+      const currentUrl = new URL(authorization_endpoint_response_redirect)
 
       t.log('response redirect to', currentUrl.href)
 
@@ -493,7 +464,7 @@ export const flow = (options?: MacroOptions) => {
       } else {
         const response = await client.authorizationCodeGrant(
           config,
-          input,
+          currentUrl,
           {
             expectedNonce: nonce,
             expectedState: state,

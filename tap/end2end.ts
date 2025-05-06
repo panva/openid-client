@@ -29,6 +29,7 @@ export default (QUnit: QUnit) => {
       | 'nonrepudiation'
       | 'encryption'
       | 'implicit'
+      | 'form_post'
     >
   ) => {
     const conf = {
@@ -41,6 +42,7 @@ export default (QUnit: QUnit) => {
       encryption: false,
       implicit: false,
       nonrepudiation: false,
+      form_post: false,
     }
     for (const flag of flags) {
       conf[flag] = true
@@ -50,6 +52,7 @@ export default (QUnit: QUnit) => {
 
   const testCases = [
     options(),
+    options('form_post'),
     options('nonrepudiation'),
     options('nonrepudiation', 'encryption'),
     options('par'),
@@ -58,13 +61,16 @@ export default (QUnit: QUnit) => {
     options('par', 'jar'),
     options('par', 'dpop'),
     options('encryption'),
+    options('encryption', 'form_post'),
     options('jarm'),
     options('jarm', 'encryption'),
     options('jwtUserinfo'),
     options('jwtUserinfo', 'encryption'),
     options('hybrid'),
+    options('hybrid', 'form_post'),
     options('hybrid', 'encryption'),
     options('implicit'),
+    options('implicit', 'form_post'),
     options('implicit', 'encryption'),
   ]
 
@@ -79,6 +85,7 @@ export default (QUnit: QUnit) => {
       implicit,
       encryption,
       nonrepudiation,
+      form_post,
     } = testCase
 
     test(`end-to-end ${label(testCase)}`, async (t) => {
@@ -212,28 +219,31 @@ export default (QUnit: QUnit) => {
       }
 
       let input: URL | Request
-      switch ([URL, Request][Math.floor(Math.random() * 2)]) {
-        case URL:
-          input = currentUrl
-          break
-        case Request:
-          if (hybrid && random()) {
-            input = new Request(
-              `${currentUrl.protocol}//${currentUrl.host}${currentUrl.pathname}`,
-              {
-                method: 'POST',
-                headers: {
-                  'content-type': 'application/x-www-form-urlencoded',
-                },
-                body: currentUrl.hash.slice(1),
-              },
-            )
-          } else {
+      if (form_post) {
+        input = new Request(
+          `${currentUrl.protocol}//${currentUrl.host}${currentUrl.pathname}`,
+          {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded',
+            },
+            body:
+              implicit || hybrid
+                ? currentUrl.hash.slice(1)
+                : currentUrl.searchParams.toString(),
+          },
+        )
+      } else {
+        switch ([URL, Request][Math.floor(Math.random() * 2)]) {
+          case URL:
+            input = currentUrl
+            break
+          case Request:
             input = new Request(currentUrl)
-          }
-          break
-        default:
-          throw new Error('unreachable')
+            break
+          default:
+            throw new Error('unreachable')
+        }
       }
 
       if (implicit) {

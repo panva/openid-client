@@ -1700,7 +1700,7 @@ type JARMImplementation = (
   expectedState?: string | typeof skipStateCheck,
 ) => Promise<URLSearchParams>
 type HybridImplementation = (
-  authorizationResponse: URL | Request,
+  authorizationResponse: URL,
   expectedNonce?: string,
   expectedState?: string | typeof skipStateCheck,
   maxAge?: number,
@@ -2847,7 +2847,7 @@ export interface ImplicitAuthenticationResponseChecks
  *   must match exactly.
  * @param checks Additional optional Implicit Authentication Response checks
  *
- * @returns End-User Claims from the ID Token.
+ * @returns ID Token Claims Set
  *
  * @group OpenID Connect 1.0
  */
@@ -3223,23 +3223,37 @@ export async function authorizationCodeGrant(
 
   const { as, c, auth, fetch, tlsOnly, jarm, hybrid, nonRepudiation, timeout, decrypt, implicit } = int(config) // prettier-ignore
 
-  if (implicit) {
-    throw new TypeError(
-      'authorizationCodeGrant() cannot be used by response_type=id_token clients',
-    )
-  }
-
   if (options?.flag === retry) {
     authResponse = options.authResponse!
     redirectUri = options.redirectUri!
   } else {
-    let request: Request | undefined
     if (!(currentUrl instanceof URL)) {
-      if (currentUrl.method === 'POST') {
-        request = currentUrl
-      }
+      const request: Request = currentUrl
       currentUrl = new URL(currentUrl.url)
+      switch (request.method) {
+        case 'GET':
+          break
+        case 'POST':
+          const params = new URLSearchParams(
+            // @ts-expect-error
+            await oauth.formPostResponse(request),
+          )
+          if (hybrid) {
+            currentUrl.hash = params.toString()
+          } else {
+            for (const [k, v] of params.entries()) {
+              currentUrl.searchParams.append(k, v)
+            }
+          }
+          break
+        default:
+          throw CodedTypeError(
+            'unexpected Request HTTP method',
+            ERR_INVALID_ARG_VALUE,
+          )
+      }
     }
+    // TODO: what if searchParams *are* part of the registered redirect_uri?
     redirectUri = stripParams(currentUrl)
     switch (true) {
       case !!jarm:
@@ -3247,13 +3261,16 @@ export async function authorizationCodeGrant(
         break
       case !!hybrid:
         authResponse = await hybrid(
-          request || currentUrl,
+          currentUrl,
           checks?.expectedNonce,
           checks?.expectedState,
           checks?.maxAge,
         )
         break
-
+      case !!implicit:
+        throw new TypeError(
+          'authorizationCodeGrant() cannot be used by response_type=id_token clients',
+        )
       default:
         try {
           authResponse = oauth.validateAuthResponse(
