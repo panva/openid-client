@@ -61,7 +61,7 @@ Error code given in the JSON response
 
 • **response**: [`Response`](https://developer.mozilla.org/docs/Web/API/Response)
 
-The "OAuth-style" error [Response](https://developer.mozilla.org/docs/Web/API/Response), its [Response.bodyUsed](https://developer.mozilla.org/docs/Web/API/Response/bodyUsed) is `false` and the JSON
+The "OAuth-style" error [Response](https://developer.mozilla.org/docs/Web/API/Response), its [Response.bodyUsed](https://developer.mozilla.org/docs/Web/API/Response/bodyUsed) is `true` and the JSON
 body is available in [ResponseBodyError.cause](ResponseBodyError.md#cause)
 
 ***

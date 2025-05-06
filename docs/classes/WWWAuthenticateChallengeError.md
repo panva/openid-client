@@ -13,8 +13,7 @@ expired tokens, or bad client authentication
 
 ```http
 HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Bearer error="invalid_token",
-                         error_description="The access token expired"
+WWW-Authenticate: Bearer error="invalid_token", error_description="The access token expired"
 ```
 
 ## Properties
@@ -50,7 +49,7 @@ The parsed WWW-Authenticate HTTP Header challenges
 • **response**: [`Response`](https://developer.mozilla.org/docs/Web/API/Response)
 
 The [Response](https://developer.mozilla.org/docs/Web/API/Response) that included a WWW-Authenticate HTTP Header challenges, its
-[Response.bodyUsed](https://developer.mozilla.org/docs/Web/API/Response/bodyUsed) is `true`
+[Response.bodyUsed](https://developer.mozilla.org/docs/Web/API/Response/bodyUsed) is `false`
 
 ***
 

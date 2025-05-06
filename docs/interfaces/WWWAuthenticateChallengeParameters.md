@@ -18,7 +18,7 @@ WWW-Authenticate challenge auth-param dictionary with known and unknown paramete
 
 • `readonly` `optional` **algs**: `string`
 
-A comma-delimited list of supported algorithms, used in
+A space-delimited list of supported algorithms, used in
 [RFC 9449 - OAuth 2.0 Demonstrating Proof of Possession (DPoP)](https://www.rfc-editor.org/rfc/rfc9449.html)
 challenges
 
