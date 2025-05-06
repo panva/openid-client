@@ -112,6 +112,7 @@ let config = await client.discovery(
  - [allowInsecureRequests](../functions/allowInsecureRequests.md)
  - [enableNonRepudiationChecks](../functions/enableNonRepudiationChecks.md)
  - [useCodeIdTokenResponseType](../functions/useCodeIdTokenResponseType.md)
+ - [useIdTokenResponseType](../functions/useIdTokenResponseType.md)
  - [enableDetachedSignatureResponseChecks](../functions/enableDetachedSignatureResponseChecks.md)
  - [useJwtResponseMode](../functions/useJwtResponseMode.md)
 

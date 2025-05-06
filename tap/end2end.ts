@@ -8,7 +8,7 @@ function label(testCase: Record<string, boolean>) {
   const keys = Object.keys(
     Object.fromEntries(Object.entries(testCase).filter(([, v]) => v === true)),
   )
-  let msg = `w/ response_type=${testCase.hybrid ? 'code id_token' : 'code'}`
+  let msg = `w/ response_type=${testCase.hybrid ? 'code id_token' : testCase.implicit ? 'id_token' : 'code'}`
   return keys.length ? `${msg}, ${keys.join(', ')}` : msg
 }
 
@@ -28,7 +28,7 @@ export default (QUnit: QUnit) => {
       | 'hybrid'
       | 'nonrepudiation'
       | 'encryption'
-      | 'login'
+      | 'implicit'
     >
   ) => {
     const conf = {
@@ -38,8 +38,8 @@ export default (QUnit: QUnit) => {
       dpop: false,
       jwtUserinfo: false,
       hybrid: false,
-      login: false,
       encryption: false,
+      implicit: false,
       nonrepudiation: false,
     }
     for (const flag of flags) {
@@ -64,6 +64,8 @@ export default (QUnit: QUnit) => {
     options('jwtUserinfo', 'encryption'),
     options('hybrid'),
     options('hybrid', 'encryption'),
+    options('implicit'),
+    options('implicit', 'encryption'),
   ]
 
   for (const testCase of testCases) {
@@ -74,6 +76,7 @@ export default (QUnit: QUnit) => {
       dpop,
       jwtUserinfo,
       hybrid,
+      implicit,
       encryption,
       nonrepudiation,
     } = testCase
@@ -95,7 +98,9 @@ export default (QUnit: QUnit) => {
         false,
         hybrid
           ? ['implicit', 'authorization_code', 'refresh_token']
-          : ['authorization_code', 'refresh_token'],
+          : implicit
+            ? ['implicit']
+            : ['authorization_code', 'refresh_token'],
         encryption,
       )
 
@@ -112,7 +117,9 @@ export default (QUnit: QUnit) => {
       if (hybrid) {
         execute.push(client.useCodeIdTokenResponseType)
       }
-
+      if (implicit) {
+        execute.push(client.useIdTokenResponseType)
+      }
       const config = await client.discovery(
         issuerIdentifier,
         metadata.client_id,
@@ -158,7 +165,7 @@ export default (QUnit: QUnit) => {
       const maxAge = random() ? 30 : undefined
 
       let nonce: string | undefined
-      if (hybrid) {
+      if (hybrid || implicit) {
         nonce = client.randomNonce()
         params.set('nonce', nonce)
       }
@@ -229,36 +236,43 @@ export default (QUnit: QUnit) => {
           throw new Error('unreachable')
       }
 
-      const response = await client.authorizationCodeGrant(
-        config,
-        input,
-        {
-          expectedNonce: nonce,
-          pkceCodeVerifier: code_verifier,
-        },
-        undefined,
-        { DPoP },
-      )
+      if (implicit) {
+        await client.signIn(config, input, nonce!, {
+          maxAge,
+        })
+      } else {
+        const response = await client.authorizationCodeGrant(
+          config,
+          input,
+          {
+            expectedNonce: nonce,
+            pkceCodeVerifier: code_verifier,
+            maxAge,
+          },
+          undefined,
+          { DPoP },
+        )
 
-      await client.fetchUserInfo(
-        config,
-        response.access_token,
-        response.claims()?.sub!,
-        {
-          DPoP,
-        },
-      )
+        await client.fetchUserInfo(
+          config,
+          response.access_token,
+          response.claims()?.sub!,
+          {
+            DPoP,
+          },
+        )
 
-      await client.refreshTokenGrant(
-        config,
-        response.refresh_token!,
-        undefined,
-        {
-          DPoP,
-        },
-      )
+        await client.refreshTokenGrant(
+          config,
+          response.refresh_token!,
+          undefined,
+          {
+            DPoP,
+          },
+        )
+      }
 
-      if (jarm || hybrid || nonrepudiation) {
+      if (jarm || hybrid || nonrepudiation || implicit) {
         const cache = client.getJwksCache(config)
         t.ok(cache?.uat)
         t.ok(cache?.jwks)

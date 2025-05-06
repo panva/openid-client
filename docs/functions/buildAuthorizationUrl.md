@@ -15,6 +15,9 @@ Note:
 [URL of the authorization server's authorization endpoint](../interfaces/ServerMetadata.md#authorization_endpoint)
 must be configured.
 
+Note: When used, PKCE code challenge, state, and nonce parameter values must
+always be random and be tied to the user-agent.
+
 ## Parameters
 
 | Parameter | Type | Description |

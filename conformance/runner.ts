@@ -59,6 +59,7 @@ switch (plan.name) {
     break
   case 'oidcc-client-test-plan':
   case 'oidcc-client-basic-certification-test-plan':
+  case 'oidcc-client-implicit-certification-test-plan':
   case 'oidcc-client-hybrid-certification-test-plan':
     prefix = 'oidcc-client-test-'
     break
@@ -287,6 +288,10 @@ export const flow = (options?: MacroOptions) => {
         }
       }
 
+      if (response_type === 'id_token') {
+        execute.push(client.useIdTokenResponseType)
+      }
+
       const [jwk] = configuration.client.jwks.keys
       const clientPrivateKey = {
         kid: jwk.kid,
@@ -472,54 +477,69 @@ export const flow = (options?: MacroOptions) => {
 
       t.log('response redirect to', currentUrl.href)
 
-      const response = await client.authorizationCodeGrant(
-        config,
-        input,
-        {
-          expectedNonce: nonce,
-          expectedState: state,
-          pkceCodeVerifier: code_verifier,
-        },
-        undefined,
-        { DPoP },
-      )
-
-      t.log('token endpoint response', { ...response })
-
-      if (
-        !plan.name.startsWith('fapi1') &&
-        scope.includes('openid') &&
-        config.serverMetadata().userinfo_endpoint
-      ) {
-        // fetch userinfo response
-        t.log('fetching', config.serverMetadata().userinfo_endpoint)
-        const userinfo = await client.fetchUserInfo(
+      if (response_type === 'id_token') {
+        const response = await client.implicitAuthentication(
           config,
-          response.access_token,
-          response.claims()?.sub!,
+          currentUrl,
+          nonce!,
           {
-            DPoP,
+            expectedState: state,
           },
         )
-        t.log('userinfo endpoint response', { ...userinfo })
-      }
 
-      if (accounts_endpoint) {
-        const resource = await client.fetchProtectedResource(
+        t.log('validated ID Token Claims Set', {
+          ...response,
+        })
+      } else {
+        const response = await client.authorizationCodeGrant(
           config,
-          response.access_token,
-          new URL(accounts_endpoint),
-          'GET',
-          null,
+          input,
+          {
+            expectedNonce: nonce,
+            expectedState: state,
+            pkceCodeVerifier: code_verifier,
+          },
           undefined,
           { DPoP },
         )
 
-        const result = await resource.text()
-        try {
-          t.log('accounts endpoint response', JSON.parse(result))
-        } catch {
-          t.log('accounts endpoint response body', result)
+        t.log('token endpoint response', { ...response })
+
+        if (
+          !plan.name.startsWith('fapi1') &&
+          scope.includes('openid') &&
+          config.serverMetadata().userinfo_endpoint
+        ) {
+          // fetch userinfo response
+          t.log('fetching', config.serverMetadata().userinfo_endpoint)
+          const userinfo = await client.fetchUserInfo(
+            config,
+            response.access_token,
+            response.claims()?.sub!,
+            {
+              DPoP,
+            },
+          )
+          t.log('userinfo endpoint response', { ...userinfo })
+        }
+
+        if (accounts_endpoint) {
+          const resource = await client.fetchProtectedResource(
+            config,
+            response.access_token,
+            new URL(accounts_endpoint),
+            'GET',
+            null,
+            undefined,
+            { DPoP },
+          )
+
+          const result = await resource.text()
+          try {
+            t.log('accounts endpoint response', JSON.parse(result))
+          } catch {
+            t.log('accounts endpoint response body', result)
+          }
         }
       }
 

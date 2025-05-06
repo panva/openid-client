@@ -38,6 +38,7 @@ Support from the community to continue maintaining and improving this module is 
 - [getJwksCache](functions/getJwksCache.md)
 - [setJwksCache](functions/setJwksCache.md)
 - [useCodeIdTokenResponseType](functions/useCodeIdTokenResponseType.md)
+- [useIdTokenResponseType](functions/useIdTokenResponseType.md)
 - [useJwtResponseMode](functions/useJwtResponseMode.md)
 
 ## Client Authentication Methods
@@ -80,6 +81,7 @@ Support from the community to continue maintaining and improving this module is 
 - [buildEndSessionUrl](functions/buildEndSessionUrl.md)
 - [discovery](functions/discovery.md)
 - [fetchUserInfo](functions/fetchUserInfo.md)
+- [implicitAuthentication](functions/implicitAuthentication.md)
 
 ## PKCE
 
@@ -119,6 +121,7 @@ Support from the community to continue maintaining and improving this module is 
 - [ExportedJWKSCache](interfaces/ExportedJWKSCache.md)
 - [GenerateKeyPairOptions](interfaces/GenerateKeyPairOptions.md)
 - [IDToken](interfaces/IDToken.md)
+- [ImplicitAuthenticationResponseChecks](interfaces/ImplicitAuthenticationResponseChecks.md)
 - [IntrospectionResponse](interfaces/IntrospectionResponse.md)
 - [JWK](interfaces/JWK.md)
 - [JWKS](interfaces/JWKS.md)

@@ -19,6 +19,7 @@ const {
 
 switch (PLAN_NAME) {
   case 'oidcc-client-basic-certification-test-plan':
+  case 'oidcc-client-implicit-certification-test-plan':
   case 'oidcc-client-test-plan':
   case 'oidcc-client-hybrid-certification-test-plan':
   case 'fapi1-advanced-final-client-test-plan':
@@ -65,6 +66,10 @@ const DEFAULTS: Record<typeof PLAN_NAME, Record<string, string>> = {
     client_auth_type: 'client_secret_basic', // none, client_secret_basic, client_secret_post, private_key_jwt
   },
   'oidcc-client-basic-certification-test-plan': {
+    request_type: 'plain_http_request',
+    client_registration: 'static_client', // dynamic_client
+  },
+  'oidcc-client-implicit-certification-test-plan': {
     request_type: 'plain_http_request',
     client_registration: 'static_client', // dynamic_client
   },

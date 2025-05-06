@@ -40,6 +40,7 @@ interface Internal {
   nonRepudiation?: NonRepudiationImplementation
   decrypt?: oauth.JweDecryptFunction
   jwksCache: oauth.JWKSCacheInput
+  implicit?: boolean
 }
 
 const int = (config: Configuration) => {
@@ -1061,6 +1062,7 @@ export interface DiscoveryRequestOptions {
    * @see {@link allowInsecureRequests}
    * @see {@link enableNonRepudiationChecks}
    * @see {@link useCodeIdTokenResponseType}
+   * @see {@link useIdTokenResponseType}
    * @see {@link enableDetachedSignatureResponseChecks}
    * @see {@link useJwtResponseMode}
    */
@@ -2556,8 +2558,8 @@ export function setJwksCache(
  * memory cache between requests is available is not desirable.
  *
  * Note: the client only uses the authorization server's JWK Set when
- * {@link enableNonRepudiationChecks}, {@link useJwtResponseMode}, or
- * {@link useCodeIdTokenResponseType} is used.
+ * {@link enableNonRepudiationChecks}, {@link useJwtResponseMode},
+ * {@link useCodeIdTokenResponseType}, or {@link useIdTokenResponseType} is used.
  *
  * @group Advanced Configuration
  */
@@ -2687,9 +2689,11 @@ export function enableNonRepudiationChecks(config: Configuration) {
 export function useJwtResponseMode(config: Configuration) {
   checkConfig(config)
 
-  if (int(config).hybrid) {
+  const { hybrid, implicit } = int(config)
+
+  if (hybrid || implicit) {
     throw e(
-      'JARM cannot be combined with a hybrid response mode',
+      'JARM cannot be combined with a hybrid or implicit response types',
       undefined,
       oauth.UNSUPPORTED_OPERATION,
     )
@@ -2768,6 +2772,191 @@ export function enableDetachedSignatureResponseChecks(config: Configuration) {
     )
 }
 
+export interface ImplicitAuthenticationResponseChecks
+  extends Pick<AuthorizationCodeGrantChecks, 'expectedState' | 'maxAge'> {}
+
+/**
+ * This method validates the authorization server's
+ * {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth Implicit Authentication Flow}
+ * Response.
+ *
+ * Note:
+ * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
+ * must be configured.
+ *
+ * Note: Only `response_type=id_token` responses are supported and prior use of
+ * {@link useIdTokenResponseType} is required.
+ *
+ * @example
+ *
+ * In a browser
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let expectedNonce!: string
+ *
+ * let idTokenClaims = await client.implicitAuthentication(
+ *   config,
+ *   new URL(location.href),
+ *   expectedNonce,
+ * )
+ * ```
+ *
+ * @example
+ *
+ * On a server in response to a `form_post` response mode
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let expectedNonce!: string
+ * let getCurrentUrl!: (...args: any) => URL
+ * let getBody!: (...args: any) => Record<string, string>
+ *
+ * let url = getCurrentUrl()
+ * url.hash = new URLSearchParams(getBody()).toString()
+ *
+ * let idTokenClaims = await client.implicitAuthentication(
+ *   config,
+ *   url,
+ *   expectedNonce,
+ * )
+ * ```
+ *
+ * @example
+ *
+ * On a server in response to a `form_post` response mode using an incoming
+ * {@link !Request} object
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let expectedNonce!: string
+ * let request!: Request
+ *
+ * let idTokenClaims = await client.implicitAuthentication(
+ *   config,
+ *   request,
+ *   expectedNonce,
+ * )
+ * ```
+ *
+ * @param currentUrl Current {@link !URL} the Authorization Server provided an
+ *   Authorization Response to or a {@link !Request}, the
+ *   {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitAuthResponse Authentication Response Parameters}
+ *   are extracted from this.
+ * @param expectedNonce Expected value of the `nonce` ID Token claim. This value
+ *   must match exactly.
+ * @param checks Additional optional Implicit Authentication Response checks
+ *
+ * @returns End-User Claims from the ID Token.
+ *
+ * @group OpenID Connect 1.0
+ */
+export async function implicitAuthentication(
+  config: Configuration,
+  currentUrl: URL | Request,
+  expectedNonce: string,
+  checks?: ImplicitAuthenticationResponseChecks,
+): Promise<oauth.IDToken> {
+  checkConfig(config)
+
+  if (
+    !(currentUrl instanceof URL) &&
+    !webInstanceOf<Request>(currentUrl, 'Request')
+  ) {
+    throw CodedTypeError(
+      '"currentUrl" must be an instance of URL, or Request',
+      ERR_INVALID_ARG_TYPE,
+    )
+  }
+
+  if (typeof expectedNonce !== 'string') {
+    throw CodedTypeError(
+      '"expectedNonce" must be a string',
+      ERR_INVALID_ARG_TYPE,
+    )
+  }
+
+  const { as, c, fetch, tlsOnly, timeout, decrypt, implicit, jwksCache } =
+    int(config)
+
+  if (!implicit) {
+    throw new TypeError(
+      'implicitAuthentication() cannot be used by clients using flows other than response_type=id_token',
+    )
+  }
+
+  let params: URLSearchParams
+  if (!(currentUrl instanceof URL)) {
+    const request: Request = currentUrl
+    switch (request.method) {
+      case 'GET':
+        params = new URLSearchParams(new URL(request.url).hash.slice(1))
+        break
+      case 'POST':
+        // @ts-expect-error
+        params = new URLSearchParams(await oauth.formPostResponse(request))
+        break
+      default:
+        throw CodedTypeError(
+          'unexpected Request HTTP method',
+          ERR_INVALID_ARG_VALUE,
+        )
+    }
+  } else {
+    params = new URLSearchParams(currentUrl.hash.slice(1))
+  }
+
+  try {
+    // validate state, iss, error codes etc
+    {
+      const decoy = new URLSearchParams(params)
+      decoy.delete('id_token')
+      oauth.validateAuthResponse(
+        {
+          ...as,
+          authorization_response_iss_parameter_supported: undefined,
+        },
+        c,
+        decoy,
+        checks?.expectedState,
+      )
+    }
+
+    // validate id_token
+    {
+      const decoy = new Response(
+        JSON.stringify({
+          access_token: 'decoy',
+          token_type: 'bearer',
+          id_token: params.get('id_token'),
+        }),
+        {
+          headers: new Headers({ 'content-type': 'application/json' }),
+        },
+      )
+
+      const ref = await oauth.processAuthorizationCodeResponse(as, c, decoy, {
+        expectedNonce,
+        maxAge: checks?.maxAge,
+        [oauth.jweDecrypt]: decrypt,
+      })
+
+      // validate ID Token signature
+      await oauth.validateApplicationLevelSignature(as, decoy, {
+        [oauth.customFetch]: fetch,
+        [oauth.allowInsecureRequests]: !tlsOnly,
+        headers: new Headers(headers),
+        signal: signal(timeout),
+        [oauth.jwksCache]: jwksCache,
+      })
+
+      return oauth.getValidatedIdTokenClaims(ref)!
+    }
+  } catch (err) {
+    errorHandler(err)
+  }
+}
+
 /**
  * This changes the `response_type` used by the client to be `code id_token` and
  * expects the authorization server response passed to
@@ -2816,9 +3005,11 @@ export function enableDetachedSignatureResponseChecks(config: Configuration) {
 export function useCodeIdTokenResponseType(config: Configuration) {
   checkConfig(config)
 
-  if (int(config).jarm) {
+  const { jarm, implicit } = int(config)
+
+  if (jarm || implicit) {
     throw e(
-      '"code id_token" response type cannot be combined with JARM',
+      '"code id_token" response type cannot be combined with JARM or implicit response type',
       undefined,
       oauth.UNSUPPORTED_OPERATION,
     )
@@ -2838,6 +3029,68 @@ export function useCodeIdTokenResponseType(config: Configuration) {
       maxAge,
       false,
     )
+}
+
+/**
+ * This changes the `response_type` used by the client to be `id_token`, this
+ * subsequently requires that the authorization server response be passed to
+ * {@link implicitAuthentication} (instead of {@link authorizationCodeGrant}) and
+ * for it to be one described by
+ * {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth OpenID Connect 1.0 Implicit Flow}.
+ *
+ * Note:
+ * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
+ * must be configured.
+ *
+ * @example
+ *
+ * Usage with a {@link Configuration} obtained through {@link discovery}
+ *
+ * ```ts
+ * let server!: URL
+ * let clientId!: string
+ * let clientMetadata!: Partial<client.ClientMetadata> | undefined
+ * let clientAuth = client.None()
+ *
+ * let config = await client.discovery(
+ *   server,
+ *   clientId,
+ *   clientMetadata,
+ *   clientAuth,
+ *   {
+ *     execute: [client.useIdTokenResponseType],
+ *   },
+ * )
+ * ```
+ *
+ * @example
+ *
+ * Usage with a {@link Configuration} instance
+ *
+ * ```ts
+ * let config!: client.Configuration
+ *
+ * client.useIdTokenResponseType(config)
+ * ```
+ *
+ * @group Advanced Configuration
+ *
+ * @see {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth OpenID Connect 1.0 Hybrid Flow}
+ */
+export function useIdTokenResponseType(config: Configuration) {
+  checkConfig(config)
+
+  const { jarm, hybrid } = int(config)
+
+  if (jarm || hybrid) {
+    throw e(
+      '"id_token" response type cannot be combined with JARM or hybrid response type',
+      undefined,
+      oauth.UNSUPPORTED_OPERATION,
+    )
+  }
+
+  int(config).implicit = true
 }
 
 export interface AuthorizationCodeGrantChecks {
@@ -2968,7 +3221,13 @@ export async function authorizationCodeGrant(
 
   let redirectUri: string
 
-  const { as, c, auth, fetch, tlsOnly, jarm, hybrid, nonRepudiation, timeout, decrypt } = int(config) // prettier-ignore
+  const { as, c, auth, fetch, tlsOnly, jarm, hybrid, nonRepudiation, timeout, decrypt, implicit } = int(config) // prettier-ignore
+
+  if (implicit) {
+    throw new TypeError(
+      'authorizationCodeGrant() cannot be used by response_type=id_token clients',
+    )
+  }
 
   if (options?.flag === retry) {
     authResponse = options.authResponse!
@@ -3004,7 +3263,7 @@ export async function authorizationCodeGrant(
             checks?.expectedState,
           )
         } catch (err) {
-          return errorHandler(err)
+          errorHandler(err)
         }
     }
   }
@@ -3295,6 +3554,9 @@ export async function clientCredentialsGrant(
  * {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
  * must be configured.
  *
+ * Note: When used, PKCE code challenge, state, and nonce parameter values must
+ * always be random and be tied to the user-agent.
+ *
  * @example
  *
  * ```ts
@@ -3332,7 +3594,7 @@ export function buildAuthorizationUrl(
 ): URL {
   checkConfig(config)
 
-  const { as, c, tlsOnly, hybrid, jarm } = int(config)
+  const { as, c, tlsOnly, hybrid, jarm, implicit } = int(config)
   // @ts-expect-error
   const authorizationEndpoint = oauth.resolveEndpoint(
     as,
@@ -3348,7 +3610,16 @@ export function buildAuthorizationUrl(
   }
   if (!parameters.has('request_uri') && !parameters.has('request')) {
     if (!parameters.has('response_type')) {
-      parameters.set('response_type', hybrid ? 'code id_token' : 'code')
+      parameters.set(
+        'response_type',
+        hybrid ? 'code id_token' : implicit ? 'id_token' : 'code',
+      )
+    }
+    if (implicit && !parameters.has('nonce')) {
+      throw CodedTypeError(
+        'response_type=id_token clients must provide a nonce parameter in their authorization request parameters',
+        ERR_INVALID_ARG_VALUE,
+      )
     }
     if (jarm) {
       parameters.set('response_mode', 'jwt')
@@ -3727,7 +3998,8 @@ export async function fetchUserInfo(
     errorHandler(err)
   }
 
-  getContentType(response) === 'application/jwt' &&
+  // @ts-expect-error
+  oauth.getContentType(response) === 'application/jwt' &&
     (await nonRepudiation?.(response))
 
   return result
@@ -3788,7 +4060,8 @@ export async function tokenIntrospection(
     })
     .catch(errorHandler)
 
-  getContentType(response) === 'application/token-introspection+jwt' &&
+  // @ts-expect-error
+  oauth.getContentType(response) === 'application/token-introspection+jwt' &&
     (await nonRepudiation?.(response))
 
   return result
@@ -3995,10 +4268,6 @@ export async function fetchProtectedResource(
   }
 
   return result
-}
-
-function getContentType(response: Response): string | undefined {
-  return response.headers.get('content-type')?.split(';')[0]
 }
 
 /**

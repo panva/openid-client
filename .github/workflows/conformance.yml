@@ -33,11 +33,20 @@ jobs:
             variant:
               client_registration: dynamic_client
 
+          # Core 1.0 response_type=id_token
+          - plan: oidcc-client-implicit-certification-test-plan
+          - plan: oidcc-client-implicit-certification-test-plan
+            variant:
+              client_registration: dynamic_client
+
           # Comprehensive Core 1.0 client test
           - plan: oidcc-client-test-plan
           - plan: oidcc-client-test-plan
             variant:
               response_type: code id_token
+          - plan: oidcc-client-test-plan
+            variant:
+              response_type: id_token
 
           # Financial-grade API Security Profile 1.0 - Part 2: Advanced
           - plan: fapi1-advanced-final-client-test-plan
