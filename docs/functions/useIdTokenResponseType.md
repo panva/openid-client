@@ -59,4 +59,4 @@ client.useIdTokenResponseType(config)
 
 ## See
 
-[OpenID Connect 1.0 Hybrid Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth)
+[OpenID Connect 1.0 Implicit Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth)

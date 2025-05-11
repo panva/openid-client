@@ -2829,15 +2829,13 @@ export interface ImplicitAuthenticationResponseChecks
  *
  * ```ts
  * let config!: client.Configuration
- * let getCodeVerifierFromSession!: (...args: any) => string
+ * let expectedNonce!: string
  * let getCurrentUrl!: (...args: any) => URL
  *
- * let tokens = await client.authorizationCodeGrant(
+ * let tokens = await client.implicitAuthentication(
  *   config,
  *   new URL(location.href),
- *   {
- *     pkceCodeVerifier: getCodeVerifierFromSession(),
- *   },
+ *   expectedNonce,
  * )
  * ```
  *
@@ -2852,6 +2850,8 @@ export interface ImplicitAuthenticationResponseChecks
  * @returns ID Token Claims Set
  *
  * @group OpenID Connect 1.0
+ *
+ * @see {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth OpenID Connect 1.0 Implicit Flow}
  */
 export async function implicitAuthentication(
   config: Configuration,
@@ -3077,7 +3077,7 @@ export function useCodeIdTokenResponseType(config: Configuration) {
  *
  * @group Advanced Configuration
  *
- * @see {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth OpenID Connect 1.0 Hybrid Flow}
+ * @see {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth OpenID Connect 1.0 Implicit Flow}
  */
 export function useIdTokenResponseType(config: Configuration) {
   checkConfig(config)

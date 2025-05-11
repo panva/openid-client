@@ -72,14 +72,16 @@ In a browser environment
 
 ```ts
 let config!: client.Configuration
-let getCodeVerifierFromSession!: (...args: any) => string
+let expectedNonce!: string
 let getCurrentUrl!: (...args: any) => URL
 
-let tokens = await client.authorizationCodeGrant(
+let tokens = await client.implicitAuthentication(
   config,
   new URL(location.href),
-  {
-    pkceCodeVerifier: getCodeVerifierFromSession(),
-  },
+  expectedNonce,
 )
 ```
+
+## See
+
+[OpenID Connect 1.0 Implicit Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth)
