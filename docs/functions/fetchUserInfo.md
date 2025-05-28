@@ -15,9 +15,9 @@ parsed UserInfo claims from either its JSON or JWT response.
 Authorization Header is used to transmit the Access Token value. No other
 Access Token means of transport are supported.
 
-Note:
-[URL of authorization server's UserInfo endpoint](../interfaces/ServerMetadata.md#userinfo_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of authorization server's UserInfo endpoint](../interfaces/ServerMetadata.md#userinfo_endpoint)
+> must be configured.
 
 ## Parameters
 

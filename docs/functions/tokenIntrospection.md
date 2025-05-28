@@ -13,9 +13,9 @@ Queries the
 obtain the status and metadata of a given token. The range of metadata
 returned is at the discretion of the authorization server.
 
-Note:
-[URL of the authorization server's token introspection endpoint](../interfaces/ServerMetadata.md#introspection_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token introspection endpoint](../interfaces/ServerMetadata.md#introspection_endpoint)
+> must be configured.
 
 ## Parameters
 

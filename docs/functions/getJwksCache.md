@@ -17,9 +17,10 @@ This function is intended for cloud computing runtimes that cannot keep an in
 memory cache between their code's invocations. Use in runtimes where an in
 memory cache between requests is available is not desirable.
 
-Note: the client only uses the authorization server's JWK Set when
-[enableNonRepudiationChecks](enableNonRepudiationChecks.md), [useJwtResponseMode](useJwtResponseMode.md),
-[useCodeIdTokenResponseType](useCodeIdTokenResponseType.md), or [useIdTokenResponseType](useIdTokenResponseType.md) is used.
+> [!NOTE]\
+> The client only uses the authorization server's JWK Set when
+> [enableNonRepudiationChecks](enableNonRepudiationChecks.md), [useJwtResponseMode](useJwtResponseMode.md),
+> [useCodeIdTokenResponseType](useCodeIdTokenResponseType.md), or [useIdTokenResponseType](useIdTokenResponseType.md) is used.
 
 ## Parameters
 

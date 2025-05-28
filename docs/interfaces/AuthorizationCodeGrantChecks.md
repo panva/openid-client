@@ -37,7 +37,8 @@ must match exactly. When `undefined` the expectation is that there is no
 Use this to have the client assert that an ID Token is returned by the
 Authorization Server.
 
-Note: When `expectedNonce` or `maxAge` is used this has no effect.
+> [!NOTE]\
+> When `expectedNonce` or `maxAge` is used this has no effect.
 
 ***
 

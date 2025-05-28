@@ -24,7 +24,8 @@ The following JWE Key Management Algorithms are supported
 - RSA-OAEP-384
 - RSA-OAEP-512
 
-Note: ECDH algorithms only allow P-256 or X25519 key curve to be used
+> [!NOTE]\
+> ECDH algorithms only allow P-256 or X25519 key curve to be used
 
 The following JWE Content Encryption Algorithms are supported
 

@@ -12,9 +12,9 @@ Returns a URL to redirect the user-agent to, in order to request
 authorization at the Authorization Server with a prior step of using
 [JAR](https://www.rfc-editor.org/rfc/rfc9101.html)
 
-Note:
-[URL of the authorization server's authorization endpoint](../interfaces/ServerMetadata.md#authorization_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's authorization endpoint](../interfaces/ServerMetadata.md#authorization_endpoint)
+> must be configured.
 
 ## Parameters
 

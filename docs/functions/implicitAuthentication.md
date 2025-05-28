@@ -12,12 +12,13 @@ This method validates the authorization server's
 [Implicit Authentication Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth)
 Response.
 
-Note:
-[URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
+> must be configured.
 
-Note: Only `response_type=id_token` responses are supported and prior use of
-[useIdTokenResponseType](useIdTokenResponseType.md) is required.
+> [!NOTE]\
+> Only `response_type=id_token` responses are supported and prior use of
+> [useIdTokenResponseType](useIdTokenResponseType.md) is required.
 
 ## Parameters
 

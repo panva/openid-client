@@ -13,9 +13,9 @@ Attempts revocation of an OAuth 2.0 token by making a request to the
 the token gets revoked, and the effect of that revocation is at the
 discretion of the authorization server.
 
-Note:
-[URL of the authorization server's token revocation endpoint](../interfaces/ServerMetadata.md#revocation_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token revocation endpoint](../interfaces/ServerMetadata.md#revocation_endpoint)
+> must be configured.
 
 ## Parameters
 

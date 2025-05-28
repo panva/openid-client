@@ -8,9 +8,10 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **setJwksCache**(`config`, `jwksCache`): `void`
 
-DANGER ZONE - Use of this function has security implications that must be
-understood, assessed for applicability, and accepted before use. It is
-critical that the JSON Web Key Set cache only be writable by your own code.
+> [!WARNING]\
+> Use of this function has security implications that must be understood,
+> assessed for applicability, and accepted before use. It is critical that the
+> JSON Web Key Set cache only be writable by your own code.
 
 This option is intended for cloud computing runtimes that cannot keep an in
 memory cache between their code's invocations. Use in runtimes where an in

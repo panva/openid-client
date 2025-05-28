@@ -12,9 +12,9 @@ Continuously polls the [token endpoint](../interfaces/ServerMetadata.md#token_en
 until the end-user finishes the [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628.html) process
 on their secondary device
 
-Note:
-[URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
+> must be configured.
 
 ## Parameters
 

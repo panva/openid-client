@@ -13,9 +13,9 @@ Server's [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) using 
 from the `parameters` argument, allowing a client to obtain a new access
 token using a valid refresh token.
 
-Note:
-[URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
+> must be configured.
 
 ## Parameters
 

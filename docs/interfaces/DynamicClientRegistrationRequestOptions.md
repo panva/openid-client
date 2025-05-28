@@ -68,9 +68,10 @@ Usually obtained from [getDPoPHandle](../functions/getDPoPHandle.md)
 Methods (available list linked below) to execute with the
 [Configuration](../classes/Configuration.md) instance as argument after it is instantiated
 
-Note: Presence of [allowInsecureRequests](../functions/allowInsecureRequests.md) in this option also enables
-the use of insecure HTTP requests for the Authorization Server Metadata
-discovery request itself.
+> [!NOTE]\
+> Presence of [allowInsecureRequests](../functions/allowInsecureRequests.md) in this option also enables the
+> use of insecure HTTP requests for the Authorization Server Metadata
+> discovery request itself.
 
 #### Parameters
 

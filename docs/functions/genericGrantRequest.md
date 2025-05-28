@@ -13,9 +13,9 @@ Performs any Grant request at the
 able to execute grant requests such as Token Exchange Grant, JWT Bearer Token
 Grant, SAML 2.0 Bearer Assertion Grant, or any other grant.
 
-Note:
-[URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
+> must be configured.
 
 ## Parameters
 

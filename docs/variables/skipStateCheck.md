@@ -8,8 +8,9 @@ Support from the community to continue maintaining and improving this module is 
 
 • `const` **skipStateCheck**: *typeof* `oauth.skipStateCheck` = `oauth.skipStateCheck`
 
-DANGER ZONE - This option has security implications that must be understood,
-assessed for applicability, and accepted before use.
+> [!WARNING]\
+> This option has security implications that must be understood, assessed for
+> applicability, and accepted before use.
 
 Use this as a value for `state` check state parameter options to skip the
 `state` value check. This should only be done if the `state` parameter value

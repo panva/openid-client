@@ -12,9 +12,9 @@ Continuously polls the [token endpoint](../interfaces/ServerMetadata.md#token_en
 until the end-user finishes the
 [Client-Initiated Backchannel Authentication Grant](https://openid.net/specs/openid-client-initiated-backchannel-authentication-core-1_0-final.html) process
 
-Note:
-[URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
+> must be configured.
 
 ## Parameters
 

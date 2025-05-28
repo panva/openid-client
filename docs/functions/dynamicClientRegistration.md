@@ -13,15 +13,17 @@ Client Registration at the discovered Authorization Server's
 [ServerMetadata.registration\_endpoint](../interfaces/ServerMetadata.md#registration_endpoint) using the provided client
 metadata.
 
-Note: This method also accepts a URL pointing directly to the Authorization
-Server's discovery document. Doing so is NOT RECOMMENDED as it disables the
-[ServerMetadata.issuer](../interfaces/ServerMetadata.md#issuer) validation.
+> [!NOTE]\
+> This method also accepts a URL pointing directly to the Authorization
+> Server's discovery document. Doing so is NOT RECOMMENDED as it disables the
+> [ServerMetadata.issuer](../interfaces/ServerMetadata.md#issuer) validation.
 
-Note: The method does not contain any logic to default the registered
-"token_endpoint_auth_method" based on
-[ServerMetadata.token\_endpoint\_auth\_methods\_supported](../interfaces/ServerMetadata.md#token_endpoint_auth_methods_supported), nor does it
-default the "clientAuthentication" argument value beyond what its description
-says.
+> [!NOTE]\
+> The method does not contain any logic to default the registered
+> "token_endpoint_auth_method" based on
+> [ServerMetadata.token\_endpoint\_auth\_methods\_supported](../interfaces/ServerMetadata.md#token_endpoint_auth_methods_supported), nor does it
+> default the "clientAuthentication" argument value beyond what its description
+> says.
 
 ## Parameters
 

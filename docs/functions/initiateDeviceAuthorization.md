@@ -11,9 +11,9 @@ Support from the community to continue maintaining and improving this module is 
 Initiates a [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628.html) using parameters from the
 `parameters` argument.
 
-Note:
-[URL of the authorization server's device authorization endpoint](../interfaces/ServerMetadata.md#device_authorization_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's device authorization endpoint](../interfaces/ServerMetadata.md#device_authorization_endpoint)
+> must be configured.
 
 ## Parameters
 

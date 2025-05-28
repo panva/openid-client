@@ -11,9 +11,9 @@ Support from the community to continue maintaining and improving this module is 
 Initiates a [Client-Initiated Backchannel Authentication Grant](https://openid.net/specs/openid-client-initiated-backchannel-authentication-core-1_0-final.html) using
 parameters from the `parameters` argument.
 
-Note:
-[URL of the authorization server's backchannel authentication endpoint](../interfaces/ServerMetadata.md#backchannel_authentication_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's backchannel authentication endpoint](../interfaces/ServerMetadata.md#backchannel_authentication_endpoint)
+> must be configured.
 
 ## Parameters
 

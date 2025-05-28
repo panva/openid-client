@@ -18,9 +18,9 @@ Returns the parsed JWT Claims Set of an
 [id\_token](TokenEndpointResponse.md#id_token) returned by the
 authorization server
 
-Note: Returns `undefined` when
-[expires\_in](TokenEndpointResponse.md#expires_in) was not returned by the
-authorization server
+> [!NOTE]\
+> Returns `undefined` when [expires\_in](TokenEndpointResponse.md#expires_in)
+> was not returned by the authorization server
 
 #### Returns
 
@@ -35,11 +35,12 @@ authorization server
 Returns the number of seconds until the
 [access\_token](TokenEndpointResponse.md#access_token) expires
 
-Note: Returns `0` when already expired
+> [!NOTE]\
+> Returns `0` when already expired
 
-Note: Returns `undefined` when
-[expires\_in](TokenEndpointResponse.md#expires_in) was not returned by the
-authorization server
+> [!NOTE]\
+> Returns `undefined` when [expires\_in](TokenEndpointResponse.md#expires_in)
+> was not returned by the authorization server
 
 #### Returns
 

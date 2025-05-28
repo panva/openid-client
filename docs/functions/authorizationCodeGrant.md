@@ -13,9 +13,9 @@ This method validates the authorization response and then executes the
 [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) to obtain an access
 token. ID Token and Refresh Token are also optionally issued by the server.
 
-Note:
-[URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
+> must be configured.
 
 ## Parameters
 

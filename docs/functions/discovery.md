@@ -19,11 +19,12 @@ This has the same effect as calling the [Configuration](../classes/Configuration
 except that the server metadata is discovered from its own Authorization
 Server Metadata discovery document.
 
-Note: This method also accepts a URL pointing directly to the Authorization
-Server's discovery document, doing so is merely a shorthand for using
-[fetch](https://developer.mozilla.org/docs/Web/API/Window/fetch) and passing the discovered JSON metadata (as
-[ServerMetadata](../interfaces/ServerMetadata.md)) into the [Configuration](../classes/Configuration.md) constructor. Doing so is
-NOT RECOMMENDED as it disables the [ServerMetadata.issuer](../interfaces/ServerMetadata.md#issuer) validation.
+> [!NOTE]\
+> This method also accepts a URL pointing directly to the Authorization
+> Server's discovery document, doing so is merely a shorthand for using
+> [fetch](https://developer.mozilla.org/docs/Web/API/Window/fetch) and passing the discovered JSON metadata (as
+> [ServerMetadata](../interfaces/ServerMetadata.md)) into the [Configuration](../classes/Configuration.md) constructor. Doing so is
+> NOT RECOMMENDED as it disables the [ServerMetadata.issuer](../interfaces/ServerMetadata.md#issuer) validation.
 
 ## Parameters
 

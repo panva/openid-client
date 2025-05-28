@@ -13,9 +13,9 @@ expects the authorization server response passed to
 [authorizationCodeGrant](authorizationCodeGrant.md) to be one described by
 [OpenID Connect 1.0 Hybrid Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth).
 
-Note:
-[URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
+> must be configured.
 
 ## Parameters
 

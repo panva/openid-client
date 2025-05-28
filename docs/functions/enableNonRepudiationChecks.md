@@ -12,18 +12,20 @@ Enables validating the JWS Signature of either a JWT [Response.body](https://dev
 [TokenEndpointResponse.id\_token](../interfaces/TokenEndpointResponse.md#id_token) of a processed [Response](https://developer.mozilla.org/docs/Web/API/Response) such as
 JWT UserInfo or JWT Introspection responses.
 
-Note: Validating signatures of JWTs received via direct communication between
-the client and a TLS-secured endpoint (which it is here) is not mandatory
-since the TLS server validation is used to validate the issuer instead of
-checking the token signature. You only need to use this method for
-non-repudiation purposes.
+> [!NOTE]\
+> Validating signatures of JWTs received via direct communication between the
+> client and a TLS-secured endpoint (which it is here) is not mandatory since
+> the TLS server validation is used to validate the issuer instead of checking
+> the token signature. You only need to use this method for non-repudiation
+> purposes.
 
-Note:
-[URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
+> must be configured.
 
-Note: Supports only digital signatures using
-[these supported JWS Algorithms](../type-aliases/JWSAlgorithm.md).
+> [!NOTE]\
+> Supports only digital signatures using
+> [these supported JWS Algorithms](../type-aliases/JWSAlgorithm.md).
 
 ## Parameters
 

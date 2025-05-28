@@ -23,8 +23,9 @@ This wrapper / handle also keeps track of server-issued nonces, allowing this
 module to automatically retry requests with a fresh nonce when the server
 indicates the need to use one.
 
-Note: Public Clients that use DPoP will also get their Refresh Token
-sender-constrained, this binding is not indicated in the response.
+> [!NOTE]\
+> Public Clients that use DPoP will also get their Refresh Token
+> sender-constrained, this binding is not indicated in the response.
 
 ## Parameters
 

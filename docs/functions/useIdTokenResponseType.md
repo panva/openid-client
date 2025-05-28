@@ -14,9 +14,9 @@ subsequently requires that the authorization server response be passed to
 for it to be one described by
 [OpenID Connect 1.0 Implicit Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth).
 
-Note:
-[URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's JWK Set document](../interfaces/ServerMetadata.md#jwks_uri)
+> must be configured.
 
 ## Parameters
 

@@ -475,8 +475,9 @@ export function TlsClientAuth(): ClientAuth {
 }
 
 /**
- * DANGER ZONE - This option has security implications that must be understood,
- * assessed for applicability, and accepted before use.
+ * > [!WARNING]\
+ * > This option has security implications that must be understood, assessed for
+ * > applicability, and accepted before use.
  *
  * Use this as a value for `state` check state parameter options to skip the
  * `state` value check. This should only be done if the `state` parameter value
@@ -491,8 +492,9 @@ export function TlsClientAuth(): ClientAuth {
 export const skipStateCheck: typeof oauth.skipStateCheck = oauth.skipStateCheck
 
 /**
- * DANGER ZONE - This option has security implications that must be understood,
- * assessed for applicability, and accepted before use.
+ * > [!WARNING]\
+ * > This option has security implications that must be understood, assessed for
+ * > applicability, and accepted before use.
  *
  * Use this as a value to {@link fetchUserInfo} `expectedSubject` parameter to
  * skip the `sub` claim value check.
@@ -1030,9 +1032,10 @@ export interface DiscoveryRequestOptions {
    * Methods (available list linked below) to execute with the
    * {@link Configuration} instance as argument after it is instantiated
    *
-   * Note: Presence of {@link allowInsecureRequests} in this option also enables
-   * the use of insecure HTTP requests for the Authorization Server Metadata
-   * discovery request itself.
+   * > [!NOTE]\
+   * > Presence of {@link allowInsecureRequests} in this option also enables the
+   * > use of insecure HTTP requests for the Authorization Server Metadata
+   * > discovery request itself.
    *
    * @example
    *
@@ -1132,15 +1135,17 @@ export interface DynamicClientRegistrationRequestOptions
  * {@link ServerMetadata.registration_endpoint} using the provided client
  * metadata.
  *
- * Note: This method also accepts a URL pointing directly to the Authorization
- * Server's discovery document. Doing so is NOT RECOMMENDED as it disables the
- * {@link ServerMetadata.issuer} validation.
+ * > [!NOTE]\
+ * > This method also accepts a URL pointing directly to the Authorization
+ * > Server's discovery document. Doing so is NOT RECOMMENDED as it disables the
+ * > {@link ServerMetadata.issuer} validation.
  *
- * Note: The method does not contain any logic to default the registered
- * "token_endpoint_auth_method" based on
- * {@link ServerMetadata.token_endpoint_auth_methods_supported}, nor does it
- * default the "clientAuthentication" argument value beyond what its description
- * says.
+ * > [!NOTE]\
+ * > The method does not contain any logic to default the registered
+ * > "token_endpoint_auth_method" based on
+ * > {@link ServerMetadata.token_endpoint_auth_methods_supported}, nor does it
+ * > default the "clientAuthentication" argument value beyond what its description
+ * > says.
  *
  * @param server URL representation of the Authorization Server's Issuer
  *   Identifier
@@ -1244,11 +1249,12 @@ export async function dynamicClientRegistration(
  * except that the server metadata is discovered from its own Authorization
  * Server Metadata discovery document.
  *
- * Note: This method also accepts a URL pointing directly to the Authorization
- * Server's discovery document, doing so is merely a shorthand for using
- * {@link !fetch} and passing the discovered JSON metadata (as
- * {@link ServerMetadata}) into the {@link Configuration} constructor. Doing so is
- * NOT RECOMMENDED as it disables the {@link ServerMetadata.issuer} validation.
+ * > [!NOTE]\
+ * > This method also accepts a URL pointing directly to the Authorization
+ * > Server's discovery document, doing so is merely a shorthand for using
+ * > {@link !fetch} and passing the discovered JSON metadata (as
+ * > {@link ServerMetadata}) into the {@link Configuration} constructor. Doing so is
+ * > NOT RECOMMENDED as it disables the {@link ServerMetadata.issuer} validation.
  *
  * @param server URL representation of the Authorization Server's Issuer
  *   Identifier
@@ -1456,7 +1462,8 @@ function checkEcdhAlg(algs: Set<string>, alg: unknown, pk: unknown) {
  * - RSA-OAEP-384
  * - RSA-OAEP-512
  *
- * Note: ECDH algorithms only allow P-256 or X25519 key curve to be used
+ * > [!NOTE]\
+ * > ECDH algorithms only allow P-256 or X25519 key curve to be used
  *
  * The following JWE Content Encryption Algorithms are supported
  *
@@ -1953,9 +1960,9 @@ export interface TokenEndpointResponseHelpers {
    * {@link TokenEndpointResponse.id_token id_token} returned by the
    * authorization server
    *
-   * Note: Returns `undefined` when
-   * {@link TokenEndpointResponse.expires_in expires_in} was not returned by the
-   * authorization server
+   * > [!NOTE]\
+   * > Returns `undefined` when {@link TokenEndpointResponse.expires_in expires_in}
+   * > was not returned by the authorization server
    */
   claims(): oauth.IDToken | undefined
 
@@ -1963,11 +1970,12 @@ export interface TokenEndpointResponseHelpers {
    * Returns the number of seconds until the
    * {@link TokenEndpointResponse.access_token access_token} expires
    *
-   * Note: Returns `0` when already expired
+   * > [!NOTE]\
+   * > Returns `0` when already expired
    *
-   * Note: Returns `undefined` when
-   * {@link TokenEndpointResponse.expires_in expires_in} was not returned by the
-   * authorization server
+   * > [!NOTE]\
+   * > Returns `undefined` when {@link TokenEndpointResponse.expires_in expires_in}
+   * > was not returned by the authorization server
    */
   expiresIn(): number | undefined
 }
@@ -2031,8 +2039,9 @@ function addHelpers(
  * module to automatically retry requests with a fresh nonce when the server
  * indicates the need to use one.
  *
- * Note: Public Clients that use DPoP will also get their Refresh Token
- * sender-constrained, this binding is not indicated in the response.
+ * > [!NOTE]\
+ * > Public Clients that use DPoP will also get their Refresh Token
+ * > sender-constrained, this binding is not indicated in the response.
  *
  * @param keyPair {@link CryptoKeyPair} to sign the DPoP Proof JWT,
  *   {@link randomDPoPKeyPair} may be used to generate it
@@ -2070,9 +2079,9 @@ function wait(interval: number): Promise<void> {
  * until the end-user finishes the {@link !"Device Authorization Grant"} process
  * on their secondary device
  *
- * Note:
- * {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -2205,9 +2214,9 @@ export async function pollDeviceAuthorizationGrant(
  * Initiates a {@link !"Device Authorization Grant"} using parameters from the
  * `parameters` argument.
  *
- * Note:
- * {@link ServerMetadata.device_authorization_endpoint URL of the authorization server's device authorization endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.device_authorization_endpoint URL of the authorization server's device authorization endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -2253,9 +2262,9 @@ export async function initiateDeviceAuthorization(
  * Initiates a {@link !"Client-Initiated Backchannel Authentication Grant"} using
  * parameters from the `parameters` argument.
  *
- * Note:
- * {@link ServerMetadata.backchannel_authentication_endpoint URL of the authorization server's backchannel authentication endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.backchannel_authentication_endpoint URL of the authorization server's backchannel authentication endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -2312,9 +2321,9 @@ export interface BackchannelAuthenticationGrantPollOptions extends DPoPOptions {
  * until the end-user finishes the
  * {@link !"Client-Initiated Backchannel Authentication Grant"} process
  *
- * Note:
- * {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -2528,9 +2537,10 @@ export function allowInsecureRequests(config: Configuration) {
 }
 
 /**
- * DANGER ZONE - Use of this function has security implications that must be
- * understood, assessed for applicability, and accepted before use. It is
- * critical that the JSON Web Key Set cache only be writable by your own code.
+ * > [!WARNING]\
+ * > Use of this function has security implications that must be understood,
+ * > assessed for applicability, and accepted before use. It is critical that the
+ * > JSON Web Key Set cache only be writable by your own code.
  *
  * This option is intended for cloud computing runtimes that cannot keep an in
  * memory cache between their code's invocations. Use in runtimes where an in
@@ -2557,9 +2567,10 @@ export function setJwksCache(
  * memory cache between their code's invocations. Use in runtimes where an in
  * memory cache between requests is available is not desirable.
  *
- * Note: the client only uses the authorization server's JWK Set when
- * {@link enableNonRepudiationChecks}, {@link useJwtResponseMode},
- * {@link useCodeIdTokenResponseType}, or {@link useIdTokenResponseType} is used.
+ * > [!NOTE]\
+ * > The client only uses the authorization server's JWK Set when
+ * > {@link enableNonRepudiationChecks}, {@link useJwtResponseMode},
+ * > {@link useCodeIdTokenResponseType}, or {@link useIdTokenResponseType} is used.
  *
  * @group Advanced Configuration
  */
@@ -2578,18 +2589,20 @@ export function getJwksCache(
  * {@link TokenEndpointResponse.id_token} of a processed {@link !Response} such as
  * JWT UserInfo or JWT Introspection responses.
  *
- * Note: Validating signatures of JWTs received via direct communication between
- * the client and a TLS-secured endpoint (which it is here) is not mandatory
- * since the TLS server validation is used to validate the issuer instead of
- * checking the token signature. You only need to use this method for
- * non-repudiation purposes.
+ * > [!NOTE]\
+ * > Validating signatures of JWTs received via direct communication between the
+ * > client and a TLS-secured endpoint (which it is here) is not mandatory since
+ * > the TLS server validation is used to validate the issuer instead of checking
+ * > the token signature. You only need to use this method for non-repudiation
+ * > purposes.
  *
- * Note:
- * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
+ * > must be configured.
  *
- * Note: Supports only digital signatures using
- * {@link JWSAlgorithm these supported JWS Algorithms}.
+ * > [!NOTE]\
+ * > Supports only digital signatures using
+ * > {@link JWSAlgorithm these supported JWS Algorithms}.
  *
  * @example
  *
@@ -2647,9 +2660,9 @@ export function enableNonRepudiationChecks(config: Configuration) {
  * the authorization server response passed to {@link authorizationCodeGrant} to
  * be one described by {@link !JARM}.
  *
- * Note:
- * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
+ * > must be configured.
  *
  * @example
  *
@@ -2780,12 +2793,13 @@ export interface ImplicitAuthenticationResponseChecks
  * {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth Implicit Authentication Flow}
  * Response.
  *
- * Note:
- * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
+ * > must be configured.
  *
- * Note: Only `response_type=id_token` responses are supported and prior use of
- * {@link useIdTokenResponseType} is required.
+ * > [!NOTE]\
+ * > Only `response_type=id_token` responses are supported and prior use of
+ * > {@link useIdTokenResponseType} is required.
  *
  * @example
  *
@@ -2965,9 +2979,9 @@ export async function implicitAuthentication(
  * {@link authorizationCodeGrant} to be one described by
  * {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#HybridFlowAuth OpenID Connect 1.0 Hybrid Flow}.
  *
- * Note:
- * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
+ * > must be configured.
  *
  * @example
  *
@@ -3040,9 +3054,9 @@ export function useCodeIdTokenResponseType(config: Configuration) {
  * for it to be one described by
  * {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth OpenID Connect 1.0 Implicit Flow}.
  *
- * Note:
- * {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.jwks_uri URL of the authorization server's JWK Set document}
+ * > must be configured.
  *
  * @example
  *
@@ -3116,7 +3130,8 @@ export interface AuthorizationCodeGrantChecks {
    * Use this to have the client assert that an ID Token is returned by the
    * Authorization Server.
    *
-   * Note: When `expectedNonce` or `maxAge` is used this has no effect.
+   * > [!NOTE]\
+   * > When `expectedNonce` or `maxAge` is used this has no effect.
    */
   idTokenExpected?: boolean
 
@@ -3157,9 +3172,9 @@ function webInstanceOf<T>(input: unknown, toStringTag: string): input is T {
  * {@link ServerMetadata.token_endpoint token endpoint} to obtain an access
  * token. ID Token and Refresh Token are also optionally issued by the server.
  *
- * Note:
- * {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -3426,9 +3441,9 @@ async function validateCodeIdTokenResponse(
  * from the `parameters` argument, allowing a client to obtain a new access
  * token using a valid refresh token.
  *
- * Note:
- * {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -3512,9 +3527,9 @@ export async function refreshTokenGrant(
  * Server's {@link ServerMetadata.token_endpoint token endpoint} using parameters
  * from the `parameters` argument
  *
- * Note:
- * {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -3583,12 +3598,13 @@ export async function clientCredentialsGrant(
  * Returns a URL to redirect the user-agent to, in order to request
  * authorization at the Authorization Server
  *
- * Note:
- * {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
+ * > must be configured.
  *
- * Note: When used, PKCE code challenge, state, and nonce parameter values must
- * always be random and be tied to the user-agent.
+ * > [!NOTE]\
+ * > When used, PKCE code challenge, state, and nonce parameter values must always
+ * > be random and be tied to the user-agent.
  *
  * @example
  *
@@ -3671,9 +3687,9 @@ export function buildAuthorizationUrl(
  * authorization at the Authorization Server with a prior step of using
  * {@link !JAR}
  *
- * Note:
- * {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -3776,13 +3792,13 @@ export async function buildAuthorizationUrlWithJAR(
  * authorization at the Authorization Server with a prior step of using
  * {@link !PAR}
  *
- * Note:
- * {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.authorization_endpoint URL of the authorization server's authorization endpoint}
+ * > must be configured.
  *
- * Note:
- * {@link ServerMetadata.pushed_authorization_request_endpoint URL of the authorization server's pushed authorization request endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.pushed_authorization_request_endpoint URL of the authorization server's pushed authorization request endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -3897,9 +3913,9 @@ export async function buildAuthorizationUrlWithPAR(
  * {@link https://openid.net/specs/openid-connect-rpinitiated-1_0-final.html#RPLogout RP-Initiated Logout}
  * at the Authorization Server.
  *
- * Note:
- * {@link ServerMetadata.end_session_endpoint URL of the authorization server's end session endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.end_session_endpoint URL of the authorization server's end session endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -3978,9 +3994,9 @@ function signal(timeout?: number): AbortSignal | undefined {
  * Authorization Header is used to transmit the Access Token value. No other
  * Access Token means of transport are supported.
  *
- * Note:
- * {@link ServerMetadata.userinfo_endpoint URL of authorization server's UserInfo endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.userinfo_endpoint URL of authorization server's UserInfo endpoint}
+ * > must be configured.
  *
  * @param accessToken OAuth 2.0 Access Token
  * @param expectedSubject Expected `sub` claim value. In response to OpenID
@@ -4052,9 +4068,9 @@ function retryable(err: unknown, options: DPoPOptions | undefined) {
  * obtain the status and metadata of a given token. The range of metadata
  * returned is at the discretion of the authorization server.
  *
- * Note:
- * {@link ServerMetadata.introspection_endpoint URL of the authorization server's token introspection endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.introspection_endpoint URL of the authorization server's token introspection endpoint}
+ * > must be configured.
  *
  * @param token OAuth 2.0 token (either access token or refresh token) that is
  *   being introspected
@@ -4128,9 +4144,9 @@ export interface DPoPOptions {
  * able to execute grant requests such as Token Exchange Grant, JWT Bearer Token
  * Grant, SAML 2.0 Bearer Assertion Grant, or any other grant.
  *
- * Note:
- * {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.token_endpoint URL of the authorization server's token endpoint}
+ * > must be configured.
  *
  * @example
  *
@@ -4200,9 +4216,9 @@ export async function genericGrantRequest(
  * the token gets revoked, and the effect of that revocation is at the
  * discretion of the authorization server.
  *
- * Note:
- * {@link ServerMetadata.revocation_endpoint URL of the authorization server's token revocation endpoint}
- * must be configured.
+ * > [!NOTE]\
+ * > {@link ServerMetadata.revocation_endpoint URL of the authorization server's token revocation endpoint}
+ * > must be configured.
  *
  * @param token OAuth 2.0 token (either access token or refresh token) that is
  *   being revoked

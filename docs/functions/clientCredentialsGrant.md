@@ -12,9 +12,9 @@ Performs an OAuth 2.0 [Client Credentials Grant](https://datatracker.ietf.org/do
 Server's [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) using parameters
 from the `parameters` argument
 
-Note:
-[URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
-must be configured.
+> [!NOTE]\
+> [URL of the authorization server's token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
+> must be configured.
 
 ## Parameters
 

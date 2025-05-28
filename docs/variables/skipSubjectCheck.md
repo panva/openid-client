@@ -8,8 +8,9 @@ Support from the community to continue maintaining and improving this module is 
 
 • `const` **skipSubjectCheck**: *typeof* `oauth.skipSubjectCheck` = `oauth.skipSubjectCheck`
 
-DANGER ZONE - This option has security implications that must be understood,
-assessed for applicability, and accepted before use.
+> [!WARNING]\
+> This option has security implications that must be understood, assessed for
+> applicability, and accepted before use.
 
 Use this as a value to [fetchUserInfo](../functions/fetchUserInfo.md) `expectedSubject` parameter to
 skip the `sub` claim value check.
