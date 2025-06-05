@@ -2488,6 +2488,10 @@ export interface AuthorizationCodeGrantOptions extends DPoPOptions {
    * @internal
    */
   redirectUri?: string
+  /**
+   * cutUri will cut URI search params and last slash, before passing it on token endpoint.
+   */
+  cutUri?: boolean
 }
 
 /**
@@ -3322,7 +3326,7 @@ export async function authorizationCodeGrant(
       c,
       auth,
       authResponse,
-      redirectUri,
+      options?.cutUri ? cleanUrl(redirectUri) : redirectUri,
       // @ts-expect-error
       checks?.pkceCodeVerifier || oauth._nopkce,
       {
@@ -4326,3 +4330,16 @@ export async function fetchProtectedResource(
  */
 export interface DeviceAutorizationGrantPollOptions
   extends DeviceAuthorizationGrantPollOptions {}
+
+function cleanUrl(input: string) {
+  const url = new URL(input);
+  url.search = ""; // removes all search params
+
+  let href = url.toString();
+
+  if (href.endsWith("/")) {
+    href = href.slice(0, -1); // remove trailing slash
+  }
+
+  return href;
+}

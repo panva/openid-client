@@ -8,6 +8,14 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Properties
 
+### cutUri?
+
+• `optional` **cutUri**: `boolean`
+
+cutUri will cut URI search params and last slash, before passing it on token endpoint.
+
+***
+
 ### DPoP?
 
 • `optional` **DPoP**: [`DPoPHandle`](DPoPHandle.md)
