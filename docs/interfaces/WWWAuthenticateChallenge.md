@@ -25,7 +25,8 @@ Parsed WWW-Authenticate challenge auth-param dictionary (always present but will
 
 Parsed WWW-Authenticate challenge auth-scheme
 
-NOTE: because the value is case insensitive it is always returned lowercased
+> [!NOTE]\
+> Because the value is case insensitive it is always returned lowercased
 
 ***
 
