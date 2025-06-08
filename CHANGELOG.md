@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.1](https://github.com/panva/openid-client/compare/v6.5.0...v6.5.1) (2025-06-08)
+
+
+### Documentation
+
+* update implicitAuthentication and useIdTokenResponseType ([4036242](https://github.com/panva/openid-client/commit/40362423b4b1d13b9afd49500dcf515caab1b3ba))
+* use GitHub Flavored Markdown for notes and warnings ([a2482c7](https://github.com/panva/openid-client/commit/a2482c71f8de47b70ba491830f92df553af1c7b4))
+
+
+### Refactor
+
+* use native Uint8Array<->base64 when available in the runtime ([daf9118](https://github.com/panva/openid-client/commit/daf9118d956585edc603ee8ad4dc81233faef3e2))
+
 ## [6.5.0](https://github.com/panva/openid-client/compare/v6.4.2...v6.5.0) (2025-05-06)
 
 
