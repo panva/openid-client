@@ -95,7 +95,7 @@
     "@types/express": "^5.0.3",
     "@types/express-session": "^1.18.2",
     "@types/koa__cors": "^5.0.0",
-    "@types/node": "^22.15.30",
+    "@types/node": "^22.15.31",
     "@types/passport": "^1.0.17",
     "@types/qunit": "^2.19.12",
     "archiver": "^7.0.1",
