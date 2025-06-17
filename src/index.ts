@@ -1614,11 +1614,11 @@ function selectCryptoKeyForDecryption(
   epk?: unknown,
 ): CryptoKey {
   const { 0: key, length } = keys.filter((key) => {
-    if (kid !== key.kid) {
+    if (key.kid !== undefined && kid !== key.kid) {
       return false
     }
 
-    if (key.alg && alg !== key.alg) {
+    if (key.alg !== undefined && alg !== key.alg) {
       return false
     }
 
