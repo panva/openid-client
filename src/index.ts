@@ -3323,8 +3323,7 @@ export async function authorizationCodeGrant(
       auth,
       authResponse,
       redirectUri,
-      // @ts-expect-error
-      checks?.pkceCodeVerifier || oauth._nopkce,
+      checks?.pkceCodeVerifier || oauth.nopkce,
       {
         additionalParameters: tokenEndpointParameters,
         [oauth.customFetch]: fetch,
