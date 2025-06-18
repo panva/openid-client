@@ -11,6 +11,7 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -31,6 +32,7 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -44,6 +46,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -62,6 +65,7 @@ jobs:
       - jsr
     runs-on: ubuntu-latest
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
       - name: Checkout
         uses: actions/checkout@v4
         with:
