@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.2](https://github.com/panva/openid-client/compare/v6.5.1...v6.5.2) (2025-06-19)
+
+
+### Fixes
+
+* **passport:** allow custom query params in the initial authenticate() invocation ([deb9925](https://github.com/panva/openid-client/commit/deb9925e9424f7f2e77ec338a69f82502129e0c9))
+
 ## [6.5.1](https://github.com/panva/openid-client/compare/v6.5.0...v6.5.1) (2025-06-08)
 
 
