@@ -438,8 +438,9 @@ export class Strategy implements passport.Strategy {
     const currentUrl = this.currentUrl(req)
 
     if (
-      (req.method === 'GET' && currentUrl.searchParams.size === 0) ||
-      (currentUrl.searchParams.size === 1 && currentUrl.searchParams.has('iss'))
+      req.method === 'GET' &&
+      !currentUrl.searchParams.has('code') &&
+      !currentUrl.searchParams.has('error')
     ) {
       Strategy.prototype.authorizationRequest.call(this, req, options)
     } else {
