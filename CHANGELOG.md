@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.3](https://github.com/panva/openid-client/compare/v6.5.2...v6.5.3) (2025-06-19)
+
+
+### Fixes
+
+* **passport:** handle JARM responses with authorizationCodeGrant instead of authorizationRequest ([e734bec](https://github.com/panva/openid-client/commit/e734bec4bb27d799fa03c1f7758d9ccde45e0cb3))
+
 ## [6.5.2](https://github.com/panva/openid-client/compare/v6.5.1...v6.5.2) (2025-06-19)
 
 
