@@ -51,6 +51,25 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
   authorizationDetails?:
     | client.AuthorizationDetails
     | client.AuthorizationDetails[]
+
+  /**
+   * OpenID Connect prompt. This will be used as the `prompt` authorization
+   * request parameter unless specified through other means.
+   */
+  prompt?: string
+
+  /**
+   * OAuth 2.0 scope to use for the authorization request. It is ignored for
+   * token endpoint requests.
+   */
+  scope?: string | string[]
+
+  /**
+   * The state option is ignored by this strategy.
+   *
+   * @deprecated
+   */
+  state?: never
 }
 
 /**
@@ -88,8 +107,8 @@ interface StrategyOptionsBase {
    */
   callbackURL?: string
   /**
-   * Authorization Request Scope. This will be used as the `scope` authorization
-   * request parameter unless specified elsewhere.
+   * OAuth 2.0 Authorization Request Scope. This will be used as the `scope`
+   * authorization request parameter unless specified through other means.
    */
   scope?: string
   /**
