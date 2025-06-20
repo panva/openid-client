@@ -23,6 +23,16 @@ export type VerifyFunctionWithRequest = (
   verified: passport.AuthenticateCallback,
 ) => void
 
+export interface AuthenticateOptions extends passport.AuthenticateOptions {
+  /**
+   * OAuth 2.0 Resource Indicator(s) to use for the request either for the
+   * authorization request or token endpoint request, depending on whether it's
+   * part of {@link Strategy.authenticate} options during the initial redirect or
+   * callback phase.
+   */
+  resource?: string | string[]
+}
+
 /**
  * Retrieve an openid-client DPoPHandle for a given request.
  */
@@ -63,6 +73,11 @@ interface StrategyOptionsBase {
    */
   scope?: string
   /**
+   * OAuth 2.0 Resource Indicator(s). This will be used as the `resource`
+   * authorization request parameter unless specified through other means.
+   */
+  resource?: string | string[]
+  /**
    * Whether the strategy will use PAR. Default is `false`.
    */
   usePAR?: boolean
@@ -89,6 +104,16 @@ export interface StrategyOptions extends StrategyOptionsBase {
 }
 export interface StrategyOptionsWithRequest extends StrategyOptionsBase {
   passReqToCallback: true
+}
+
+function setResource(params: URLSearchParams, resource: string | string[]) {
+  if (Array.isArray(resource)) {
+    for (const value of resource) {
+      params.append('resource', value)
+    }
+  } else {
+    params.set('resource', resource)
+  }
 }
 
 export class Strategy implements passport.Strategy {
@@ -132,6 +157,10 @@ export class Strategy implements passport.Strategy {
    * @internal
    */
   _scope?: string
+  /**
+   * @internal
+   */
+  _resource: StrategyOptionsBase['resource']
 
   constructor(options: StrategyOptions, verify: VerifyFunction)
   constructor(
@@ -162,18 +191,16 @@ export class Strategy implements passport.Strategy {
     this._verify = verify
     this._callbackURL = options.callbackURL
     this._passReqToCallback = options.passReqToCallback
+    this._resource = options.resource
   }
 
-  // prettier-ignore
   /**
    * Return extra parameters to be included an authorization request.
    */
-  authorizationRequestParams<
-    TOptions extends
-      passport.AuthenticateOptions = passport.AuthenticateOptions,
-  >(
+  authorizationRequestParams<TOptions extends AuthenticateOptions>(
     // @ts-ignore
-    req: express.Request, options: TOptions,
+    req: express.Request,
+    options: TOptions,
   ): URLSearchParams | Record<string, string> | undefined {
     let params = new URLSearchParams()
 
@@ -189,31 +216,35 @@ export class Strategy implements passport.Strategy {
       params.set('prompt', options.prompt)
     }
 
+    if (options?.resource) {
+      setResource(params, options.resource)
+    }
+
     return params
   }
 
-  // prettier-ignore
   /**
    * Return extra parameters to be included in the authorization code grant
    * token endpoint request.
    */
-  authorizationCodeGrantParameters<
-    TOptions extends
-      passport.AuthenticateOptions = passport.AuthenticateOptions,
-  >(
+  authorizationCodeGrantParameters<TOptions extends AuthenticateOptions>(
     // @ts-ignore
-    req: express.Request, options: TOptions,
+    req: express.Request,
+    options: TOptions,
   ): URLSearchParams | Record<string, string> | undefined {
-    return {}
+    let params = new URLSearchParams()
+
+    if (options?.resource) {
+      setResource(params, options.resource)
+    }
+
+    return params
   }
 
   /**
    * @internal
    */
-  async authorizationRequest<
-    TOptions extends
-      passport.AuthenticateOptions = passport.AuthenticateOptions,
-  >(
+  async authorizationRequest<TOptions extends AuthenticateOptions>(
     this: passport.StrategyCreated<
       Strategy,
       Strategy & passport.StrategyCreatedStatic
@@ -250,6 +281,10 @@ export class Strategy implements passport.Strategy {
 
       if (this._scope && !redirectTo.searchParams.has('scope')) {
         redirectTo.searchParams.set('scope', this._scope)
+      }
+
+      if (this._resource && !redirectTo.searchParams.has('resource')) {
+        setResource(redirectTo.searchParams, this._resource)
       }
 
       const DPoP = await this._DPoP?.(req)
@@ -312,10 +347,7 @@ export class Strategy implements passport.Strategy {
   /**
    * @internal
    */
-  async authorizationCodeGrant<
-    TOptions extends
-      passport.AuthenticateOptions = passport.AuthenticateOptions,
-  >(
+  async authorizationCodeGrant<TOptions extends AuthenticateOptions>(
     this: passport.StrategyCreated<
       Strategy,
       Strategy & passport.StrategyCreatedStatic
@@ -412,10 +444,7 @@ export class Strategy implements passport.Strategy {
   /**
    * Authenticate request.
    */
-  authenticate<
-    TOptions extends
-      passport.AuthenticateOptions = passport.AuthenticateOptions,
-  >(
+  authenticate<TOptions extends AuthenticateOptions>(
     this: passport.StrategyCreated<
       Strategy,
       Strategy & passport.StrategyCreatedStatic
