@@ -33,6 +33,12 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
   resource?: string | string[]
 
   /**
+   * Login Hint to use for the authorization request. It is ignored for token
+   * endpoint requests.
+   */
+  loginHint?: string
+
+  /**
    * OAuth 2.0 Rich Authorization Requests to use for the authorization request.
    * It is ignored for token endpoint requests.
    */
@@ -248,6 +254,10 @@ export class Strategy implements passport.Strategy {
 
     if (options?.prompt) {
       params.set('prompt', options.prompt)
+    }
+
+    if (options?.loginHint) {
+      params.set('login_hint', options.loginHint)
     }
 
     if (options?.resource) {
