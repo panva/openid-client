@@ -31,6 +31,14 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
    * callback phase.
    */
   resource?: string | string[]
+
+  /**
+   * OAuth 2.0 Rich Authorization Requests to use for the authorization request.
+   * It is ignored for token endpoint requests.
+   */
+  authorizationDetails?:
+    | client.AuthorizationDetails
+    | client.AuthorizationDetails[]
 }
 
 /**
@@ -73,6 +81,14 @@ interface StrategyOptionsBase {
    */
   scope?: string
   /**
+   * OAuth 2.0 Rich Authorization Request(s). This will be used as the
+   * `authorization_details` authorization request parameter unless specified
+   * through other means.
+   */
+  authorizationDetails?:
+    | client.AuthorizationDetails
+    | client.AuthorizationDetails[]
+  /**
    * OAuth 2.0 Resource Indicator(s). This will be used as the `resource`
    * authorization request parameter unless specified through other means.
    */
@@ -113,6 +129,19 @@ function setResource(params: URLSearchParams, resource: string | string[]) {
     }
   } else {
     params.set('resource', resource)
+  }
+}
+
+function setAuthorizationDetails(
+  params: URLSearchParams,
+  authorizationDetails:
+    | client.AuthorizationDetails
+    | client.AuthorizationDetails[],
+) {
+  if (Array.isArray(authorizationDetails)) {
+    params.set('authorization_details', JSON.stringify(authorizationDetails))
+  } else {
+    params.set('authorization_details', JSON.stringify([authorizationDetails]))
   }
 }
 
@@ -161,6 +190,10 @@ export class Strategy implements passport.Strategy {
    * @internal
    */
   _resource: StrategyOptionsBase['resource']
+  /**
+   * @internal
+   */
+  _authorizationDetails: StrategyOptionsBase['authorizationDetails']
 
   constructor(options: StrategyOptions, verify: VerifyFunction)
   constructor(
@@ -192,6 +225,7 @@ export class Strategy implements passport.Strategy {
     this._callbackURL = options.callbackURL
     this._passReqToCallback = options.passReqToCallback
     this._resource = options.resource
+    this._authorizationDetails = options.authorizationDetails
   }
 
   /**
@@ -218,6 +252,10 @@ export class Strategy implements passport.Strategy {
 
     if (options?.resource) {
       setResource(params, options.resource)
+    }
+
+    if (options?.authorizationDetails) {
+      setAuthorizationDetails(params, options.authorizationDetails)
     }
 
     return params
@@ -285,6 +323,16 @@ export class Strategy implements passport.Strategy {
 
       if (this._resource && !redirectTo.searchParams.has('resource')) {
         setResource(redirectTo.searchParams, this._resource)
+      }
+
+      if (
+        this._authorizationDetails &&
+        !redirectTo.searchParams.has('authorization_details')
+      ) {
+        setAuthorizationDetails(
+          redirectTo.searchParams,
+          this._authorizationDetails,
+        )
       }
 
       const DPoP = await this._DPoP?.(req)
