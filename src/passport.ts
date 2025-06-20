@@ -29,6 +29,8 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
    * authorization request or token endpoint request, depending on whether it's
    * part of {@link Strategy.authenticate} options during the initial redirect or
    * callback phase.
+   *
+   * This is a request-specific override for {@link StrategyOptions.resource}.
    */
   resource?: string | string[]
 
@@ -47,6 +49,9 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
   /**
    * OAuth 2.0 Rich Authorization Requests to use for the authorization request.
    * It is ignored for token endpoint requests.
+   *
+   * This is a request-specific override for
+   * {@link StrategyOptions.authorizationDetails}.
    */
   authorizationDetails?:
     | client.AuthorizationDetails
@@ -61,6 +66,8 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
   /**
    * OAuth 2.0 scope to use for the authorization request. It is ignored for
    * token endpoint requests.
+   *
+   * This is a request-specific override for {@link StrategyOptions.scope}.
    */
   scope?: string | string[]
 
@@ -98,22 +105,26 @@ interface StrategyOptionsBase {
    * Openid-client Configuration instance.
    */
   config: client.Configuration
+
   /**
    * Name of the strategy, default is the host component of the authorization
    * server's issuer identifier.
    */
   name?: string
+
   /**
    * Property in the session to use for storing the authorization request state,
    * default is the host component of the authorization server's issuer
    * identifier.
    */
   sessionKey?: string
+
   /**
    * Function used to retrieve an openid-client DPoPHandle for a given request,
    * when provided the strategy will use DPoP where applicable.
    */
   DPoP?: getDPoPHandle
+
   /**
    * An absolute URL to which the authorization server will redirect the user
    * after obtaining authorization. The {@link !URL} instance's `href` will be
@@ -122,11 +133,13 @@ interface StrategyOptionsBase {
    * {@link URL} instance.
    */
   callbackURL?: URL | string
+
   /**
    * OAuth 2.0 Authorization Request Scope. This will be used as the `scope`
    * authorization request parameter unless specified through other means.
    */
   scope?: string
+
   /**
    * OAuth 2.0 Rich Authorization Request(s). This will be used as the
    * `authorization_details` authorization request parameter unless specified
@@ -135,15 +148,18 @@ interface StrategyOptionsBase {
   authorizationDetails?:
     | client.AuthorizationDetails
     | client.AuthorizationDetails[]
+
   /**
    * OAuth 2.0 Resource Indicator(s). This will be used as the `resource`
    * authorization request parameter unless specified through other means.
    */
   resource?: string | string[]
+
   /**
    * Whether the strategy will use PAR. Default is `false`.
    */
   usePAR?: boolean
+
   /**
    * Whether the strategy will use JAR. Its value can be a private key to sign
    * with or an array with the private key and a modify assertion function that
@@ -155,6 +171,7 @@ interface StrategyOptionsBase {
     | client.CryptoKey
     | PrivateKey
     | [client.CryptoKey | PrivateKey, client.ModifyAssertionFunction]
+
   /**
    * Whether the verify function should get the `req` as first argument instead.
    * Default is `false`.
@@ -200,7 +217,7 @@ export class Strategy implements passport.Strategy {
   /**
    * @internal
    */
-  _config: client.Configuration
+  _config: StrategyOptionsBase['config']
   /**
    * @internal
    */
@@ -212,27 +229,27 @@ export class Strategy implements passport.Strategy {
   /**
    * @internal
    */
-  _sessionKey: string
+  _sessionKey: NonNullable<StrategyOptionsBase['sessionKey']>
   /**
    * @internal
    */
-  _passReqToCallback?: boolean
+  _passReqToCallback: StrategyOptionsBase['passReqToCallback']
   /**
    * @internal
    */
-  _usePAR?: boolean
+  _usePAR: StrategyOptionsBase['usePAR']
   /**
    * @internal
    */
-  _useJAR?: StrategyOptionsBase['useJAR']
+  _useJAR: StrategyOptionsBase['useJAR']
   /**
    * @internal
    */
-  _DPoP?: StrategyOptionsBase['DPoP']
+  _DPoP: StrategyOptionsBase['DPoP']
   /**
    * @internal
    */
-  _scope?: string
+  _scope: StrategyOptionsBase['scope']
   /**
    * @internal
    */
@@ -278,7 +295,24 @@ export class Strategy implements passport.Strategy {
   }
 
   /**
-   * Return extra parameters to be included an authorization request.
+   * [Strategy method] Return additional authorization request parameters.
+   *
+   * This method is intended to be overloaded if additional parameters need to
+   * be included an authorization request are needed.
+   *
+   * By default this method takes care of adding the corresponding authorization
+   * endpoint parameters when
+   * {@link AuthenticateOptions.authorizationDetails authorizationDetails},
+   * {@link AuthenticateOptions.idTokenHint idTokenHint},
+   * {@link AuthenticateOptions.loginHint loginHint},
+   * {@link AuthenticateOptions.prompt prompt},
+   * {@link AuthenticateOptions.resource resource}, or
+   * {@link AuthenticateOptions.scope scope} properties of
+   * {@link AuthenticateOptions} are used.
+   *
+   * @param req
+   * @param options This is the value originally passed to
+   *   `passport.authenticate()` as its `options` argument.
    */
   authorizationRequestParams<TOptions extends AuthenticateOptions>(
     // @ts-ignore
@@ -323,8 +357,18 @@ export class Strategy implements passport.Strategy {
   }
 
   /**
-   * Return extra parameters to be included in the authorization code grant
-   * token endpoint request.
+   * [Strategy method] Return additional token endpoint request parameters.
+   *
+   * This method is intended to be overloaded if additional parameters to be
+   * included in the authorization code grant token endpoint request are
+   * needed.
+   *
+   * By default this method takes care of adding the `resource` token endpoint
+   * parameters when {@link AuthenticateOptions.resource} is used.
+   *
+   * @param req
+   * @param options This is the value originally passed to
+   *   `passport.authenticate()` as its `options` argument.
    */
   authorizationCodeGrantParameters<TOptions extends AuthenticateOptions>(
     // @ts-ignore
@@ -341,6 +385,8 @@ export class Strategy implements passport.Strategy {
   }
 
   /**
+   * @private
+   *
    * @internal
    */
   async authorizationRequest<TOptions extends AuthenticateOptions>(
@@ -458,6 +504,8 @@ export class Strategy implements passport.Strategy {
   }
 
   /**
+   * @private
+   *
    * @internal
    */
   async authorizationCodeGrant<TOptions extends AuthenticateOptions>(
@@ -500,6 +548,7 @@ export class Strategy implements passport.Strategy {
             },
             new Headers(),
           ),
+          // @ts-ignore
           body: req,
           duplex: 'half',
         })
@@ -561,13 +610,29 @@ export class Strategy implements passport.Strategy {
    *   {@link StrategyOptionsBase.callbackURL} are used in which case those are
    *   used as the `redirect_uri` parameter instead.
    *
+   * Default is
+   *
+   * ```ts
+   * function currentUrl(req: express.Request): URL {
+   *   return new URL(
+   *     `${req.protocol}://${req.host}${req.originalUrl ?? req.url}`,
+   *   )
+   * }
+   * ```
+   *
+   * When behind a reverse proxy it assumes common proxy headers are in use and
+   * that
+   * {@link https://expressjs.com/en/guide/behind-proxies.html Express (behind proxies docs)},
+   * or
+   * {@link https://fastify.dev/docs/latest/Reference/Server/#trustproxy Fastify (trustProxy docs)}
+   * are properly configured to trust them.
    */
   currentUrl(req: express.Request): URL {
     return new URL(`${req.protocol}://${req.host}${req.originalUrl ?? req.url}`)
   }
 
   /**
-   * Authenticate request.
+   * [Passport method] Authenticate the request.
    */
   authenticate<TOptions extends AuthenticateOptions>(
     this: passport.StrategyCreated<
