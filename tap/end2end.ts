@@ -189,7 +189,7 @@ export default (QUnit: QUnit) => {
         params.set('nonce', nonce)
       }
 
-      params.set('redirect_uri', 'http://localhost:3000/cb')
+      params.set('redirect_uri', 'http://localhost:8080/cb')
       params.set('scope', 'openid offline_access')
       params.set('prompt', 'consent')
 

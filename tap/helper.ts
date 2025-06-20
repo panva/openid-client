@@ -116,7 +116,7 @@ export async function setup(
   }
 
   if (authEndpoint) {
-    metadata.redirect_uris.push('http://localhost:3000/cb')
+    metadata.redirect_uris.push('http://localhost:8080/cb')
     if (grantTypes.includes('implicit')) {
       if (grantTypes.includes('authorization_code')) {
         metadata.response_types.push('code id_token')
