@@ -3285,6 +3285,7 @@ export async function authorizationCodeGrant(
       }
     }
     // TODO: what if searchParams *are* part of the registered redirect_uri?
+    // TODO: what if the registered redirect_uri has no pathname and no trailing /
     redirectUri = stripParams(currentUrl)
     switch (true) {
       case !!jarm:
