@@ -308,6 +308,10 @@ export class Strategy implements passport.Strategy {
 
       if (redirectTo.searchParams.get('response_type')?.includes('id_token')) {
         redirectTo.searchParams.set('nonce', client.randomNonce())
+
+        if (!redirectTo.searchParams.has('response_mode')) {
+          redirectTo.searchParams.set('response_mode', 'form_post')
+        }
       }
 
       const codeVerifier = client.randomPKCECodeVerifier()
