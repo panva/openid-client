@@ -3,6 +3,7 @@ import {
   Strategy,
   type VerifyFunction,
   type StrategyOptions,
+  type AuthenticateOptions,
 } from 'openid-client/passport'
 
 import express from 'express'
@@ -15,6 +16,11 @@ import { ensureLoggedIn, ensureLoggedOut } from 'connect-ensure-login'
 
 let app!: express.Application
 let server!: URL // Authorization server's Issuer Identifier URL
+/**
+ * In this example it is expected your application's origin + '/login' is
+ * registered as an allowed redirect URL at the Authorization server
+ */
+let callbackURL!: URL
 let clientId!: string // Client identifier at the Authorization Server
 let clientSecret!: string // Client Secret
 let scope = 'openid email'
@@ -50,9 +56,10 @@ let verify: VerifyFunction = (tokens, verified) => {
 let options: StrategyOptions = {
   config,
   scope,
+  callbackURL,
 }
 
-passport.use(new Strategy(options, verify))
+passport.use('openid', new Strategy(options, verify))
 
 passport.serializeUser((user: Express.User, cb) => {
   cb(null, user)
@@ -69,7 +76,9 @@ app.get('/', ensureLoggedIn('/login'), (req, res) => {
 app.get(
   '/login',
   ensureLoggedOut('/logout'),
-  passport.authenticate(server.host, { successRedirect: '/' }),
+  passport.authenticate('openid', {
+    successRedirect: '/',
+  } as AuthenticateOptions),
 )
 
 app.get('/logout', (req, res) => {

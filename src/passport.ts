@@ -70,6 +70,20 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
    * @deprecated
    */
   state?: never
+
+  /**
+   * OAuth 2.0 redirect_uri to use for the request either for the authorization
+   * request or token endpoint request, depending on whether it's part of
+   * {@link Strategy.authenticate} options during the initial redirect or
+   * callback phase.
+   *
+   * This is a request-specific override for {@link StrategyOptions.callbackURL}.
+   *
+   * Note: The option is called "callbackURL" to keep some continuity and
+   * familiarity with other oauth-based strategies in the passport ecosystem,
+   * namely "passport-oauth2".
+   */
+  callbackURL?: URL | string
 }
 
 /**
@@ -101,11 +115,13 @@ interface StrategyOptionsBase {
    */
   DPoP?: getDPoPHandle
   /**
-   * URL to which the authorization server will redirect the user after
-   * obtaining authorization. This will be used as the `redirect_uri`
-   * authorization request parameter unless specified elsewhere.
+   * An absolute URL to which the authorization server will redirect the user
+   * after obtaining authorization. The {@link !URL} instance's `href` will be
+   * used as the `redirect_uri` authorization request and token endpoint request
+   * parameters. When string is provided it will be internally casted to a
+   * {@link URL} instance.
    */
-  callbackURL?: string
+  callbackURL?: URL | string
   /**
    * OAuth 2.0 Authorization Request Scope. This will be used as the `scope`
    * authorization request parameter unless specified through other means.
@@ -192,7 +208,7 @@ export class Strategy implements passport.Strategy {
   /**
    * @internal
    */
-  _callbackURL?: string
+  _callbackURL: Exclude<StrategyOptionsBase['callbackURL'], string>
   /**
    * @internal
    */
@@ -253,7 +269,9 @@ export class Strategy implements passport.Strategy {
     this._useJAR = options.useJAR
     this._usePAR = options.usePAR
     this._verify = verify
-    this._callbackURL = options.callbackURL
+    if (options.callbackURL) {
+      this._callbackURL = new URL(options.callbackURL)
+    }
     this._passReqToCallback = options.passReqToCallback
     this._resource = options.resource
     this._authorizationDetails = options.authorizationDetails
@@ -295,6 +313,10 @@ export class Strategy implements passport.Strategy {
 
     if (options?.authorizationDetails) {
       setAuthorizationDetails(params, options.authorizationDetails)
+    }
+
+    if (options?.callbackURL) {
+      params.set('redirect_uri', new URL(options.callbackURL).href)
     }
 
     return params
@@ -357,7 +379,7 @@ export class Strategy implements passport.Strategy {
       }
 
       if (this._callbackURL && !redirectTo.searchParams.has('redirect_uri')) {
-        redirectTo.searchParams.set('redirect_uri', this._callbackURL)
+        redirectTo.searchParams.set('redirect_uri', this._callbackURL.href)
       }
 
       if (this._scope && !redirectTo.searchParams.has('scope')) {
@@ -457,6 +479,14 @@ export class Strategy implements passport.Strategy {
         })
       }
 
+      if (options.callbackURL || this._callbackURL) {
+        const _currentUrl = new URL(options.callbackURL! || this._callbackURL!)
+        for (const [k, v] of currentUrl.searchParams.entries()) {
+          _currentUrl.searchParams.append(k, v)
+        }
+        currentUrl = _currentUrl
+      }
+
       let input: URL | Request = currentUrl
       if (req.method === 'POST') {
         input = new Request(currentUrl.href, {
@@ -518,15 +548,19 @@ export class Strategy implements passport.Strategy {
   }
 
   /**
-   * Return the current request URL.
+   * [Strategy method] Return the current request URL.
+   *
+   * This method is intended to be overloaded if its return value does not match
+   * the actual URL the authorization server redirected the user to.
    *
    * - Its `searchParams` are used as the authorization response parameters when
-   *   the response type used by the client is `code`
-   * - Its value stripped of `searchParams` and `hash` is used as the
-   *   `redirect_uri` authorization code grant token endpoint parameter
+   *   the authorization response request is a GET.
+   * - Its resulting `href` value (after stripping its `searchParams` and `hash`)
+   *   is used as the `redirect_uri` authorization code grant token endpoint
+   *   parameter unless {@link AuthenticateOptions.callbackURL}, or
+   *   {@link StrategyOptionsBase.callbackURL} are used in which case those are
+   *   used as the `redirect_uri` parameter instead.
    *
-   * This function may need to be overridden by users if its return value does
-   * not match the actual URL the authorization server redirected the user to.
    */
   currentUrl(req: express.Request): URL {
     return new URL(`${req.protocol}://${req.host}${req.originalUrl ?? req.url}`)
