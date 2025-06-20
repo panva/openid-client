@@ -119,10 +119,6 @@ export class Strategy implements passport.Strategy {
   /**
    * @internal
    */
-  _proxy?: boolean
-  /**
-   * @internal
-   */
   _usePAR?: boolean
   /**
    * @internal
