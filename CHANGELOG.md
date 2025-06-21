@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.0](https://github.com/panva/openid-client/compare/v6.5.3...v6.6.0) (2025-06-21)
+
+
+### Features
+
+* **passport:** automatically use form_post response mode when using hybrid response types ([c9f2993](https://github.com/panva/openid-client/commit/c9f2993a626b9da3d223137eadaf169040e11032))
+* **passport:** easier way to use id_token_hint without overloads ([afe24ae](https://github.com/panva/openid-client/commit/afe24ae132564060437e7a2680b391a8fe89a1d9))
+* **passport:** easier way to use login_hint without overloads ([264db00](https://github.com/panva/openid-client/commit/264db00c0dcd59524073659b76263d011bdd71ed))
+* **passport:** easier way to use OAuth 2.0 Resource Indicators without overloads ([7eb3076](https://github.com/panva/openid-client/commit/7eb3076b681a5d820f4829e4f0c655b43498d932))
+* **passport:** easier way to use OAuth 2.0 Rich Authorization Requests without overloads ([af0f9d6](https://github.com/panva/openid-client/commit/af0f9d6e3bd865fb58c6920ac43ddcc3e334434b))
+
+
+### Refactor
+
+* **passport:** align use of callbackURL with other strategies and user expectations ([333ad31](https://github.com/panva/openid-client/commit/333ad31f1aa8f0f1ccefbec8b477626f3ff6212b))
+* **passport:** use 303 See Other for the redirect ([4004070](https://github.com/panva/openid-client/commit/4004070ccce953b22065500348dd547dd5cdee55))
+
+
+### Documentation
+
+* **passport:** add clarity to oauth-specific AuthenticateOptions ([dba27f3](https://github.com/panva/openid-client/commit/dba27f391906a83677100d7e73410f82dd77c3f7))
+* **passport:** expand descriptions and structure ([0a173ce](https://github.com/panva/openid-client/commit/0a173ce542609a058f08cfc6a290fe9aaf4e05ee))
+
 ## [6.5.3](https://github.com/panva/openid-client/compare/v6.5.2...v6.5.3) (2025-06-19)
 
 
