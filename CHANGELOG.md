@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.1](https://github.com/panva/openid-client/compare/v6.6.0...v6.6.1) (2025-06-21)
+
+
+### Refactor
+
+* revert use 303 See Other for the redirect ([54f2170](https://github.com/panva/openid-client/commit/54f21705dc8f382aca694947ce10609aac7bfcc5))
+
 ## [6.6.0](https://github.com/panva/openid-client/compare/v6.5.3...v6.6.0) (2025-06-21)
 
 
