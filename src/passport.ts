@@ -496,7 +496,7 @@ export class Strategy implements passport.Strategy {
         )
       }
 
-      return this.redirect(redirectTo.href, 303)
+      return this.redirect(redirectTo.href)
     } catch (err) {
       return this.error(err)
     }
