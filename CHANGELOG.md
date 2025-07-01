@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.2](https://github.com/panva/openid-client/compare/v6.6.1...v6.6.2) (2025-07-01)
+
+
+### Fixes
+
+* **RFC8414:** strip any terminating "/" when pathname is present ([e884302](https://github.com/panva/openid-client/commit/e884302aaee525ade17c5ebaa03d40d402f9287c))
+
 ## [6.6.1](https://github.com/panva/openid-client/compare/v6.6.0...v6.6.1) (2025-06-21)
 
 
