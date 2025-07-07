@@ -1393,7 +1393,7 @@ async function performDiscovery(
     )
     .catch(errorHandler)
 
-  if (resolve && new URL(as.issuer).href !== server.href) {
+  if (resolve && stripTrailingSlash(new URL(as.issuer).href) !== stripTrailingSlash(server.href)) {
     handleEntraId(server, as, options) ||
       handleB2Clogin(server, options) ||
       (() => {
@@ -3156,6 +3156,10 @@ function stripParams(url: URL) {
   url.search = ''
   url.hash = ''
   return url.href
+}
+
+function stripTrailingSlash(url: string): string {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
 }
 
 function webInstanceOf<T>(input: unknown, toStringTag: string): input is T {
