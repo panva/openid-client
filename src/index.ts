@@ -99,6 +99,7 @@ export {
  * @see {@link None}
  * @see {@link PrivateKeyJwt}
  * @see {@link TlsClientAuth}
+ * @see {@link AttestationAuth}
  */
 export type ClientAuth = (
   as: ServerMetadata,
@@ -423,6 +424,83 @@ export function PrivateKeyJwt(
   options?: oauth.ModifyAssertionOptions,
 ): ClientAuth {
   return oauth.PrivateKeyJwt(clientPrivateKey, options)
+}
+
+/**
+ * **`attest_jwt_client_auth`** uses the HTTP request body to send only
+ * `client_id` as `application/x-www-form-urlencoded` body parameter,
+ * `OAuth-Client-Attestation` HTTP Header field to transmit a Client Attestation
+ * JWT issued to the client instance by its Client Attester, and
+ * `OAuth-Client-Attestation-PoP` HTTP Header field to transmit a Proof of
+ * Possession (PoP) of its Client Instance Key.
+ *
+ * This implementation will fetch the {@link ServerMetadata.challenge_endpoint}
+ * (if one is available) once to fetch an initial `challenge` claim value before
+ * the authenticated request is made. Afterwards it will keep track of the
+ * latest `challenge` based on the response's
+ * `OAuth-Client-Attestation-Challenge` HTTP Header (if one was returned).
+ *
+ * It will also retry the request once when the `use_attestation_challenge`
+ * error is encountered.
+ *
+ * > [!NOTE]\
+ * > This is an experimental feature not subject to semantic versioning
+ * > guarantees.
+ *
+ * @example
+ *
+ * Usage with a {@link Configuration} obtained through {@link discovery}
+ *
+ * ```ts
+ * let server!: URL
+ * let attestation!: string
+ * let clientInstanceKey!: client.CryptoKey
+ * let clientId!: string
+ * let clientMetadata!: Partial<client.ClientMetadata> | string | undefined
+ *
+ * let config = await client.discovery(
+ *   server,
+ *   clientId,
+ *   clientMetadata,
+ *   client.AttestationAuth(attestation, clientInstanceKey),
+ * )
+ * ```
+ *
+ * @example
+ *
+ * Usage with a {@link Configuration} instance
+ *
+ * ```ts
+ * let server!: client.ServerMetadata
+ * let attestation!: string
+ * let clientInstanceKey!: client.CryptoKey
+ * let clientId!: string
+ * let clientMetadata!: Partial<client.ClientMetadata> | string | undefined
+ *
+ * let config = new client.Configuration(
+ *   server,
+ *   clientId,
+ *   clientMetadata,
+ *   client.AttestationAuth(attestation, clientInstanceKey),
+ * )
+ * ```
+ *
+ * @param attestation Client Attestation JWT issued to the client instance by
+ *   its Client Attester.
+ * @param clientInstanceKey Client Instance Key
+ * @param options
+ *
+ * @group Client Authentication Methods
+ *
+ * @see [OAuth Token Endpoint Authentication Methods](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#token-endpoint-auth-method)
+ * @see [draft-ietf-oauth-attestation-based-client-auth-06 - OAuth 2.0 Attestation-Based Client Authentication](https://www.ietf.org/archive/id/draft-ietf-oauth-attestation-based-client-auth-06.html)
+ */
+export function AttestationAuth(
+  attestation: string,
+  clientInstanceKey: CryptoKey,
+  options?: oauth.ModifyAssertionOptions,
+): ClientAuth {
+  return oauth.AttestationAuth(attestation, clientInstanceKey, options)
 }
 
 /**
@@ -1116,7 +1194,6 @@ export interface DynamicClientRegistrationRequestOptions
    * calls to the client registration endpoint.
    */
   initialAccessToken?: string
-
   /**
    * This is not part of the public API.
    *
@@ -1127,6 +1204,16 @@ export interface DynamicClientRegistrationRequestOptions
    * @internal
    */
   as?: oauth.AuthorizationServer
+  /**
+   * This is not part of the public API.
+   *
+   * @private
+   *
+   * @ignore
+   *
+   * @internal
+   */
+  flags?: number
 }
 
 /**
@@ -1169,11 +1256,11 @@ export async function dynamicClientRegistration(
   clientAuthentication?: ClientAuth,
   options?: DynamicClientRegistrationRequestOptions,
 ): Promise<Configuration> {
-  let as: oauth.AuthorizationServer
-  if (options?.flag === retry) {
-    as = options.as!
-  } else {
+  let as!: oauth.AuthorizationServer
+  if (!options?.as) {
     as = await performDiscovery(server, options)
+  } else if (hasFlag(retries.dpop, options?.flags)) {
+    as = options.as
   }
 
   const clockSkew = metadata[oauth.clockSkew] ?? 0
@@ -1198,10 +1285,11 @@ export async function dynamicClientRegistration(
       })
       .then(oauth.processDynamicClientRegistrationResponse)
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP)
+    if (retry) {
       return dynamicClientRegistration(server, metadata, clientAuthentication, {
         ...options,
-        flag: retry,
+        flags: retry,
         as,
       })
     }
@@ -2163,7 +2251,8 @@ export async function pollDeviceAuthorizationGrant(
   try {
     result = await p
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP, retryAttest)
+    if (retry) {
       return pollDeviceAuthorizationGrant(
         config,
         {
@@ -2174,7 +2263,7 @@ export async function pollDeviceAuthorizationGrant(
         {
           ...options,
           signal: pollingSignal,
-          flag: retry,
+          flags: retry,
         },
       )
     }
@@ -2195,7 +2284,6 @@ export async function pollDeviceAuthorizationGrant(
             {
               ...options,
               signal: pollingSignal,
-              flag: undefined,
             },
           )
       }
@@ -2414,7 +2502,8 @@ export async function pollBackchannelAuthenticationGrant(
   try {
     result = await p
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP, retryAttest)
+    if (retry) {
       return pollBackchannelAuthenticationGrant(
         config,
         {
@@ -2425,7 +2514,7 @@ export async function pollBackchannelAuthenticationGrant(
         {
           ...options,
           signal: pollingSignal,
-          flag: retry,
+          flags: retry,
         },
       )
     }
@@ -2446,7 +2535,6 @@ export async function pollBackchannelAuthenticationGrant(
             {
               ...options,
               signal: pollingSignal,
-              flag: undefined,
             },
           )
       }
@@ -2488,6 +2576,16 @@ export interface AuthorizationCodeGrantOptions extends DPoPOptions {
    * @internal
    */
   redirectUri?: string
+  /**
+   * This is not part of the public API.
+   *
+   * @private
+   *
+   * @ignore
+   *
+   * @internal
+   */
+  flags?: number
 }
 
 /**
@@ -3232,7 +3330,7 @@ export async function authorizationCodeGrant(
   checkConfig(config)
 
   if (
-    options?.flag !== retry &&
+    !hasFlag(retries.dpop, options?.flags) &&
     !(currentUrl instanceof URL) &&
     !webInstanceOf<Request>(currentUrl, 'Request')
   ) {
@@ -3241,6 +3339,8 @@ export async function authorizationCodeGrant(
       ERR_INVALID_ARG_TYPE,
     )
   }
+
+  const { as, c, auth, fetch, tlsOnly, jarm, hybrid, nonRepudiation, timeout, decrypt, implicit } = int(config) // prettier-ignore
 
   let authResponse: Awaited<
     ReturnType<
@@ -3252,11 +3352,9 @@ export async function authorizationCodeGrant(
 
   let redirectUri: string
 
-  const { as, c, auth, fetch, tlsOnly, jarm, hybrid, nonRepudiation, timeout, decrypt, implicit } = int(config) // prettier-ignore
-
-  if (options?.flag === retry) {
-    authResponse = options.authResponse!
-    redirectUri = options.redirectUri!
+  if (hasFlag(retries.dpop, options?.flags)) {
+    authResponse = options!.authResponse!
+    redirectUri = options!.redirectUri!
   } else {
     if (!(currentUrl instanceof URL)) {
       const request: Request = currentUrl
@@ -3354,7 +3452,8 @@ export async function authorizationCodeGrant(
   try {
     result = await p
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP, retryAttest)
+    if (retry) {
       return authorizationCodeGrant(
         config,
         // @ts-expect-error
@@ -3363,9 +3462,9 @@ export async function authorizationCodeGrant(
         tokenEndpointParameters,
         {
           ...options,
-          flag: retry,
-          authResponse: authResponse,
-          redirectUri: redirectUri,
+          authResponse,
+          redirectUri,
+          flags: retry,
         },
       )
     }
@@ -3506,10 +3605,11 @@ export async function refreshTokenGrant(
   try {
     result = await p
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP, retryAttest)
+    if (retry) {
       return refreshTokenGrant(config, refreshToken, parameters, {
         ...options,
-        flag: retry,
+        flags: retry,
       })
     }
 
@@ -3580,10 +3680,11 @@ export async function clientCredentialsGrant(
   try {
     result = await p
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP, retryAttest)
+    if (retry) {
       return clientCredentialsGrant(config, parameters, {
         ...options,
-        flag: retry,
+        flags: retry,
       })
     }
 
@@ -3896,10 +3997,11 @@ export async function buildAuthorizationUrlWithPAR(
   try {
     result = await p
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP, retryAttest)
+    if (retry) {
       return buildAuthorizationUrlWithPAR(config, parameters, {
         ...options,
-        flag: retry,
+        flags: retry,
       })
     }
     errorHandler(err)
@@ -4037,10 +4139,11 @@ export async function fetchUserInfo(
   try {
     result = await exec
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP)
+    if (retry) {
       return fetchUserInfo(config, accessToken, expectedSubject, {
         ...options,
-        flag: retry,
+        flags: retry,
       })
     }
 
@@ -4054,12 +4157,40 @@ export async function fetchUserInfo(
   return result
 }
 
-function retryable(err: unknown, options: DPoPOptions | undefined) {
-  if (options?.DPoP && options.flag !== retry) {
-    return oauth.isDPoPNonceError(err)
+const retries = {
+  dpop: 1 << 0,
+  attest: 1 << 1,
+}
+
+function hasFlag(flag: number, flags: number = 0): boolean {
+  return (flags & flag) !== 0
+}
+
+function setFlag(flag: number, flags: number = 0): number {
+  return flags | flag
+}
+
+const retryDPoP = [oauth.isDPoPNonceError, retries.dpop] as [
+  (err: unknown) => boolean,
+  number,
+]
+const retryAttest = [oauth.isAttestationAuthChallengeError, retries.attest] as [
+  (err: unknown) => boolean,
+  number,
+]
+
+function retryable(
+  err: unknown,
+  flags: number = 0,
+  ...checks: [(err: unknown) => boolean, number][]
+): number {
+  for (const [method, flag] of checks) {
+    if (!hasFlag(flag, flags) && method(err)) {
+      return setFlag(flag, flags)
+    }
   }
 
-  return false
+  return 0
 }
 
 /**
@@ -4116,7 +4247,6 @@ export async function tokenIntrospection(
   return result
 }
 
-const retry: unique symbol = Symbol()
 export interface DPoPOptions {
   /**
    * DPoP handle to use for requesting a sender-constrained access token.
@@ -4135,7 +4265,7 @@ export interface DPoPOptions {
    *
    * @internal
    */
-  flag?: typeof retry
+  flags?: number
 }
 
 /**
@@ -4298,7 +4428,8 @@ export async function fetchProtectedResource(
   try {
     result = await exec
   } catch (err) {
-    if (retryable(err, options)) {
+    const retry = retryable(err, options?.flags, retryDPoP)
+    if (retry) {
       return fetchProtectedResource(
         config,
         accessToken,
@@ -4308,7 +4439,7 @@ export async function fetchProtectedResource(
         headers,
         {
           ...options,
-          flag: retry,
+          flags: retry,
         },
       )
     }

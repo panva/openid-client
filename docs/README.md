@@ -43,6 +43,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Client Authentication Methods
 
+- [AttestationAuth](functions/AttestationAuth.md)
 - [ClientSecretBasic](functions/ClientSecretBasic.md)
 - [ClientSecretJwt](functions/ClientSecretJwt.md)
 - [ClientSecretPost](functions/ClientSecretPost.md)

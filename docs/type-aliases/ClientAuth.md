@@ -38,3 +38,4 @@ implementations are linked below.
  - [None](../functions/None.md)
  - [PrivateKeyJwt](../functions/PrivateKeyJwt.md)
  - [TlsClientAuth](../functions/TlsClientAuth.md)
+ - [AttestationAuth](../functions/AttestationAuth.md)

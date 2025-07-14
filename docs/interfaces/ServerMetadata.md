@@ -129,6 +129,15 @@ Indicates whether the authorization server supports the use of the CIBA `user_co
 
 ***
 
+### challenge\_endpoint?
+
+• `readonly` `optional` **challenge\_endpoint**: `string`
+
+URL at the authorization server which is used to obtain a fresh challenge e.g. for usage in
+client authentication methods such as client attestation.
+
+***
+
 ### check\_session\_iframe?
 
 • `readonly` `optional` **check\_session\_iframe**: `string`
