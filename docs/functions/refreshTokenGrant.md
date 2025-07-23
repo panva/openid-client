@@ -24,7 +24,7 @@ token using a valid refresh token.
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `refreshToken` | `string` | OAuth 2.0 Refresh Token provided by the authorization server that is used to obtain a new access token. |
 | `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
-| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
+| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) & [`Pick`](https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys)\<`ProcessTokenResponseOptions`, `"recognizedTokenTypes"`\> | - |
 
 ## Returns
 

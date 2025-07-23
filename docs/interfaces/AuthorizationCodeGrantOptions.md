@@ -18,3 +18,11 @@ Usually obtained from [getDPoPHandle](../functions/getDPoPHandle.md)
 #### See
 
 [RFC 9449 - OAuth 2.0 Demonstrating Proof of Possession (DPoP)](https://www.rfc-editor.org/rfc/rfc9449.html)
+
+***
+
+### recognizedTokenTypes?
+
+• `optional` **recognizedTokenTypes**: [`RecognizedTokenTypes`](../type-aliases/RecognizedTokenTypes.md)
+
+See [RecognizedTokenTypes](../type-aliases/RecognizedTokenTypes.md).

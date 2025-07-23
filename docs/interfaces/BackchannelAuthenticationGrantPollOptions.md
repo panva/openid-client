@@ -21,6 +21,14 @@ Usually obtained from [getDPoPHandle](../functions/getDPoPHandle.md)
 
 ***
 
+### recognizedTokenTypes?
+
+• `optional` **recognizedTokenTypes**: [`RecognizedTokenTypes`](../type-aliases/RecognizedTokenTypes.md)
+
+See [RecognizedTokenTypes](../type-aliases/RecognizedTokenTypes.md).
+
+***
+
 ### signal?
 
 • `optional` **signal**: [`AbortSignal`](https://developer.mozilla.org/docs/Web/API/AbortSignal)

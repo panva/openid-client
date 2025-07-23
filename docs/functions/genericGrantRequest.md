@@ -24,7 +24,7 @@ Grant, SAML 2.0 Bearer Assertion Grant, or any other grant.
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `grantType` | `string` | Grant Type |
 | `parameters` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Parameters required by the given grant type to send to the [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) |
-| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
+| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) & [`Pick`](https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys)\<`ProcessTokenResponseOptions`, `"recognizedTokenTypes"`\> | - |
 
 ## Returns
 

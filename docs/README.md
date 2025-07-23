@@ -148,6 +148,7 @@ Support from the community to continue maintaining and improving this module is 
 - [JsonValue](type-aliases/JsonValue.md)
 - [JWSAlgorithm](type-aliases/JWSAlgorithm.md)
 - [OmitSymbolProperties](type-aliases/OmitSymbolProperties.md)
+- [RecognizedTokenTypes](type-aliases/RecognizedTokenTypes.md)
 
 ## Variables
 

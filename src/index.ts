@@ -76,6 +76,7 @@ export {
   type ModifyAssertionOptions,
   type MTLSEndpointAliases,
   type PrivateKey,
+  type RecognizedTokenTypes,
   type TokenEndpointResponse,
   type UserInfoAddress,
   type UserInfoResponse,
@@ -2059,7 +2060,9 @@ export function getDPoPHandle(
   return oauth.DPoP(int(config).c, keyPair, options)
 }
 
-export interface DeviceAuthorizationGrantPollOptions extends DPoPOptions {
+export interface DeviceAuthorizationGrantPollOptions
+  extends DPoPOptions,
+    Pick<oauth.ProcessTokenResponseOptions, 'recognizedTokenTypes'> {
   /**
    * AbortSignal to abort polling. Default is that the operation will time out
    * after the indicated expires_in property returned by the server in
@@ -2157,6 +2160,7 @@ export async function pollDeviceAuthorizationGrant(
 
   const p = oauth.processDeviceCodeResponse(as, c, response, {
     [oauth.jweDecrypt]: decrypt,
+    recognizedTokenTypes: options?.recognizedTokenTypes,
   })
 
   let result: oauth.TokenEndpointResponse
@@ -2307,7 +2311,9 @@ export async function initiateBackchannelAuthentication(
     .catch(errorHandler)
 }
 
-export interface BackchannelAuthenticationGrantPollOptions extends DPoPOptions {
+export interface BackchannelAuthenticationGrantPollOptions
+  extends DPoPOptions,
+    Pick<oauth.ProcessTokenResponseOptions, 'recognizedTokenTypes'> {
   /**
    * AbortSignal to abort polling. Default is that the operation will time out
    * after the indicated expires_in property returned by the server in
@@ -2407,6 +2413,7 @@ export async function pollBackchannelAuthenticationGrant(
     response,
     {
       [oauth.jweDecrypt]: decrypt,
+      recognizedTokenTypes: options?.recognizedTokenTypes,
     },
   )
 
@@ -2461,7 +2468,9 @@ export async function pollBackchannelAuthenticationGrant(
   return result
 }
 
-export interface AuthorizationCodeGrantOptions extends DPoPOptions {
+export interface AuthorizationCodeGrantOptions
+  extends DPoPOptions,
+    Pick<oauth.ProcessTokenResponseOptions, 'recognizedTokenTypes'> {
   /**
    * This is not part of the public API.
    *
@@ -3348,6 +3357,7 @@ export async function authorizationCodeGrant(
     maxAge: checks?.maxAge,
     requireIdToken: checks?.idTokenExpected,
     [oauth.jweDecrypt]: decrypt,
+    recognizedTokenTypes: options?.recognizedTokenTypes,
   })
 
   let result: oauth.TokenEndpointResponse
@@ -3479,7 +3489,8 @@ export async function refreshTokenGrant(
   config: Configuration,
   refreshToken: string,
   parameters?: URLSearchParams | Record<string, string>,
-  options?: DPoPOptions,
+  options?: DPoPOptions &
+    Pick<oauth.ProcessTokenResponseOptions, 'recognizedTokenTypes'>,
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
@@ -3500,6 +3511,7 @@ export async function refreshTokenGrant(
 
   const p = oauth.processRefreshTokenResponse(as, c, response, {
     [oauth.jweDecrypt]: decrypt,
+    recognizedTokenTypes: options?.recognizedTokenTypes,
   })
 
   let result: oauth.TokenEndpointResponse
@@ -3557,7 +3569,8 @@ export async function refreshTokenGrant(
 export async function clientCredentialsGrant(
   config: Configuration,
   parameters?: URLSearchParams | Record<string, string>,
-  options?: DPoPOptions,
+  options?: DPoPOptions &
+    Pick<oauth.ProcessTokenResponseOptions, 'recognizedTokenTypes'>,
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
@@ -3574,7 +3587,9 @@ export async function clientCredentialsGrant(
     })
     .catch(errorHandler)
 
-  const p = oauth.processClientCredentialsResponse(as, c, response)
+  const p = oauth.processClientCredentialsResponse(as, c, response, {
+    recognizedTokenTypes: options?.recognizedTokenTypes,
+  })
 
   let result: oauth.TokenEndpointResponse
   try {
@@ -4179,7 +4194,8 @@ export async function genericGrantRequest(
   config: Configuration,
   grantType: string,
   parameters: URLSearchParams | Record<string, string>,
-  options?: DPoPOptions,
+  options?: DPoPOptions &
+    Pick<oauth.ProcessTokenResponseOptions, 'recognizedTokenTypes'>,
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
@@ -4202,6 +4218,7 @@ export async function genericGrantRequest(
     .then((response) =>
       oauth.processGenericTokenEndpointResponse(as, c, response, {
         [oauth.jweDecrypt]: decrypt,
+        recognizedTokenTypes: options?.recognizedTokenTypes,
       }),
     )
     .catch(errorHandler)
