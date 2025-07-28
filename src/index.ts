@@ -1961,8 +1961,8 @@ export interface TokenEndpointResponseHelpers {
    * authorization server
    *
    * > [!NOTE]\
-   * > Returns `undefined` when {@link TokenEndpointResponse.expires_in expires_in}
-   * > was not returned by the authorization server
+   * > Returns `undefined` when {@link TokenEndpointResponse.id_token id_token} was
+   * > not returned by the authorization server
    */
   claims(): oauth.IDToken | undefined
 

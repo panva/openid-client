@@ -19,8 +19,8 @@ Returns the parsed JWT Claims Set of an
 authorization server
 
 > [!NOTE]\
-> Returns `undefined` when [expires\_in](TokenEndpointResponse.md#expires_in)
-> was not returned by the authorization server
+> Returns `undefined` when [id\_token](TokenEndpointResponse.md#id_token) was
+> not returned by the authorization server
 
 #### Returns
 
