@@ -631,6 +631,38 @@ export class Strategy implements passport.Strategy {
   }
 
   /**
+   * [Strategy method] Determine whether to initiate an authorization request.
+   *
+   * This method is intended to be overloaded if custom logic for determining
+   * whether to initiate an authorization request or process an authorization
+   * response.
+   *
+   * By default, this method returns `true` when the request method is GET and
+   * the current URL does not contain `code`, `error`, or `response` query
+   * parameters, indicating that this is an initial authorization request rather
+   * than a callback from the authorization server.
+   *
+   * @param req
+   * @param currentUrl The current request URL as determined by
+   *   {@link Strategy.currentUrl}
+   * @param options This is the value originally passed to
+   *   `passport.authenticate()` as its `options` argument.
+   */
+  shouldInitiateAuthRequest<TOptions extends AuthenticateOptions>(
+    req: express.Request,
+    currentUrl: URL,
+    // @ts-ignore
+    options: TOptions,
+  ): boolean {
+    return (
+      req.method === 'GET' &&
+      !currentUrl.searchParams.has('code') &&
+      !currentUrl.searchParams.has('error') &&
+      !currentUrl.searchParams.has('response')
+    )
+  }
+
+  /**
    * [Passport method] Authenticate the request.
    */
   authenticate<TOptions extends AuthenticateOptions>(
@@ -651,12 +683,7 @@ export class Strategy implements passport.Strategy {
 
     const currentUrl = this.currentUrl(req)
 
-    if (
-      req.method === 'GET' &&
-      !currentUrl.searchParams.has('code') &&
-      !currentUrl.searchParams.has('error') &&
-      !currentUrl.searchParams.has('response')
-    ) {
+    if (this.shouldInitiateAuthRequest(req, currentUrl, options)) {
       Strategy.prototype.authorizationRequest.call(this, req, options)
     } else {
       Strategy.prototype.authorizationCodeGrant.call(
