@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.3](https://github.com/panva/openid-client/compare/v6.6.2...v6.6.3) (2025-08-05)
+
+
+### Documentation
+
+* fix TokenEndpointResponseHelpers.claims() note ([b77c786](https://github.com/panva/openid-client/commit/b77c7861f2f9f07103f975326f2f7a84c9d52968))
+
+
+### Refactor
+
+* **passport:** allow custom logic to drive initiating auth requests ([0b57115](https://github.com/panva/openid-client/commit/0b571155c2c11a003d067114bf587cd350fc847c)), closes [#811](https://github.com/panva/openid-client/issues/811)
+
 ## [6.6.2](https://github.com/panva/openid-client/compare/v6.6.1...v6.6.2) (2025-07-01)
 
 
