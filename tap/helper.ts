@@ -129,10 +129,17 @@ export async function setup(
   }
 
   const configuration = await lib.dynamicClientRegistration(
-    new URL('http://localhost:3000'),
+    new URL(
+      random()
+        ? 'http://localhost:3000'
+        : random()
+          ? 'http://localhost:3000/.well-known/openid-configuration'
+          : 'http://localhost:3000/.well-known/oauth-authorization-server',
+    ),
     metadata,
     undefined,
     {
+      algorithm: random() ? 'oauth2' : 'oidc',
       execute: [lib.allowInsecureRequests],
     },
   )
@@ -151,6 +158,6 @@ export async function setup(
       kid: clientEncJwk.kid,
       key: encKp.privateKey,
     },
-    issuerIdentifier: new URL('http://localhost:3000'),
+    issuerIdentifier: new URL(configuration.serverMetadata().issuer),
   }
 }

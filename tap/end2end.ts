@@ -140,7 +140,15 @@ export default (QUnit: QUnit) => {
         execute.push(client.useIdTokenResponseType)
       }
       const config = await client.discovery(
-        issuerIdentifier,
+        random()
+          ? new URL(issuerIdentifier.origin)
+          : new URL(
+              `${issuerIdentifier.origin}/${
+                random()
+                  ? '.well-known/openid-configuration'
+                  : '.well-known/oauth-authorization-server'
+              }`,
+            ),
         metadata.client_id,
         metadata,
         undefined,
