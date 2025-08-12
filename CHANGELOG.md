@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.4](https://github.com/panva/openid-client/compare/v6.6.3...v6.6.4) (2025-08-12)
+
+
+### Fixes
+
+* recognize N_A in the token exchange grant ([770b177](https://github.com/panva/openid-client/commit/770b1770efcbd85accb35005dab5a42716d1aebe))
+
 ## [6.6.3](https://github.com/panva/openid-client/compare/v6.6.2...v6.6.3) (2025-08-05)
 
 
