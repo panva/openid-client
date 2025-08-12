@@ -4199,11 +4199,17 @@ export async function genericGrantRequest(
         signal: signal(timeout),
       },
     )
-    .then((response) =>
-      oauth.processGenericTokenEndpointResponse(as, c, response, {
+    .then((response) => {
+      let recognizedTokenTypes: oauth.RecognizedTokenTypes | undefined
+      if (grantType === 'urn:ietf:params:oauth:grant-type:token-exchange') {
+        recognizedTokenTypes = { n_a: () => {} }
+      }
+
+      return oauth.processGenericTokenEndpointResponse(as, c, response, {
         [oauth.jweDecrypt]: decrypt,
-      }),
-    )
+        recognizedTokenTypes,
+      })
+    })
     .catch(errorHandler)
 
   addHelpers(result)
