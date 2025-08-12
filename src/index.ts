@@ -2854,7 +2854,8 @@ export interface ImplicitAuthenticationResponseChecks
  * ```
  *
  * @param currentUrl Current {@link !URL} the Authorization Server provided an
- *   Authorization Response to or a {@link !Request}, the
+ *   Authorization Response, or a {@link !URLSearchParams}, or a {@link !Request}.
+ *   The
  *   {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitAuthResponse Authentication Response Parameters}
  *   are extracted from this.
  * @param expectedNonce Expected value of the `nonce` ID Token claim. This value
@@ -2869,7 +2870,7 @@ export interface ImplicitAuthenticationResponseChecks
  */
 export async function implicitAuthentication(
   config: Configuration,
-  currentUrl: URL | Request,
+  currentUrl: URL | URLSearchParams | Request,
   expectedNonce: string,
   checks?: ImplicitAuthenticationResponseChecks,
 ): Promise<oauth.IDToken> {
@@ -2877,10 +2878,11 @@ export async function implicitAuthentication(
 
   if (
     !(currentUrl instanceof URL) &&
+    !(currentUrl instanceof URLSearchParams) &&
     !webInstanceOf<Request>(currentUrl, 'Request')
   ) {
     throw CodedTypeError(
-      '"currentUrl" must be an instance of URL, or Request',
+      '"currentUrl" must be an instance of URL, or URLSearchParams, or Request',
       ERR_INVALID_ARG_TYPE,
     )
   }
@@ -2902,7 +2904,9 @@ export async function implicitAuthentication(
   }
 
   let params: URLSearchParams
-  if (!(currentUrl instanceof URL)) {
+  if (currentUrl instanceof URLSearchParams) {
+    params = currentUrl
+  } else if (!(currentUrl instanceof URL)) {
     const request: Request = currentUrl
     switch (request.method) {
       case 'GET':

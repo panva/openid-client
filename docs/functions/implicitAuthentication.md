@@ -25,7 +25,7 @@ Response.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
-| `currentUrl` | [`URL`](https://developer.mozilla.org/docs/Web/API/URL) \| [`Request`](https://developer.mozilla.org/docs/Web/API/Request) | Current [URL](https://developer.mozilla.org/docs/Web/API/URL) the Authorization Server provided an Authorization Response to or a [Request](https://developer.mozilla.org/docs/Web/API/Request), the [Authentication Response Parameters](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitAuthResponse) are extracted from this. |
+| `currentUrl` | [`URL`](https://developer.mozilla.org/docs/Web/API/URL) \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) \| [`Request`](https://developer.mozilla.org/docs/Web/API/Request) | Current [URL](https://developer.mozilla.org/docs/Web/API/URL) the Authorization Server provided an Authorization Response to or a [Request](https://developer.mozilla.org/docs/Web/API/Request), the [Authentication Response Parameters](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitAuthResponse) are extracted from this. |
 | `expectedNonce` | `string` | Expected value of the `nonce` ID Token claim. This value must match exactly. |
 | `checks`? | [`ImplicitAuthenticationResponseChecks`](../interfaces/ImplicitAuthenticationResponseChecks.md) | Additional optional Implicit Authentication Response checks |
 
