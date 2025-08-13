@@ -242,7 +242,7 @@ export default (QUnit: QUnit) => {
         )
       }
 
-      let input: URL | Request
+      let input: URL | URLSearchParams | Request
       if (form_post) {
         input = new Request(
           `${currentUrl.protocol}//${currentUrl.host}${currentUrl.pathname}`,
@@ -258,9 +258,14 @@ export default (QUnit: QUnit) => {
           },
         )
       } else {
-        switch ([URL, Request][Math.floor(Math.random() * 2)]) {
+        switch (
+          [URL, URLSearchParams, Request][Math.floor(Math.random() * 2)]
+        ) {
           case URL:
             input = currentUrl
+            break
+          case URLSearchParams:
+            input = new URLSearchParams(new URL(currentUrl).hash.slice(1))
             break
           case Request:
             input = new Request(currentUrl)
