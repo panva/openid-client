@@ -2068,9 +2068,70 @@ export interface DeviceAuthorizationGrantPollOptions extends DPoPOptions {
   signal?: AbortSignal
 }
 
-function wait(interval: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, interval * 1000)
+/**
+ * Gets the retry-after header and if it indicates a needed wait longer than the
+ * current interval, it waits for the (needed wait - current interval). Current
+ * interval is subtracted from the total wait here because it will be waited on
+ * by the subsequent poll operation anyway.
+ */
+async function handleRetryAfter(
+  response: Response,
+  currentInterval: number,
+  signal: AbortSignal,
+  throwIfInvalid = false,
+): Promise<void> {
+  const retryAfter = response.headers.get('retry-after')
+  if (retryAfter === null) return
+
+  let delaySeconds: number | undefined
+  if (/^\d+$/.test(retryAfter)) {
+    delaySeconds = parseInt(retryAfter, 10)
+  } else {
+    const retryDate = new Date(retryAfter)
+    if (Number.isFinite(retryDate.getTime())) {
+      const now = new Date()
+      const delayMs = retryDate.getTime() - now.getTime()
+      if (delayMs > 0) {
+        delaySeconds = Math.ceil(delayMs / 1000)
+      }
+    }
+  }
+
+  if (throwIfInvalid && !Number.isFinite(delaySeconds)) {
+    throw new oauth.OperationProcessingError(
+      'invalid Retry-After header value',
+      { cause: response },
+    )
+  }
+
+  if (delaySeconds! > currentInterval) {
+    await wait(delaySeconds! - currentInterval, signal)
+  }
+}
+
+/**
+ * Waits for a given duration or until an AbortSignal gets aborted
+ */
+function wait(duration: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const waitStep = (remaining: number) => {
+      try {
+        signal.throwIfAborted()
+      } catch (err) {
+        reject(err)
+        return
+      }
+
+      if (remaining <= 0) {
+        resolve()
+        return
+      }
+
+      const currentWait = Math.min(remaining, 5)
+      setTimeout(() => waitStep(remaining - currentWait), currentWait * 1000)
+    }
+
+    waitStep(duration)
   })
 }
 
@@ -2128,15 +2189,28 @@ export async function pollDeviceAuthorizationGrant(
     AbortSignal.timeout(deviceAuthorizationResponse.expires_in * 1000)
 
   try {
-    pollingSignal.throwIfAborted()
+    await wait(interval, pollingSignal)
   } catch (err) {
     errorHandler(err)
   }
 
-  await wait(interval)
-
   const { as, c, auth, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
     int(config)
+
+  const retryPoll = (updatedInterval: number, flag?: typeof retry) =>
+    pollDeviceAuthorizationGrant(
+      config,
+      {
+        ...deviceAuthorizationResponse,
+        interval: updatedInterval,
+      },
+      parameters,
+      {
+        ...options,
+        signal: pollingSignal,
+        flag,
+      },
+    )
 
   const response = await oauth
     .deviceCodeGrantRequest(
@@ -2155,6 +2229,12 @@ export async function pollDeviceAuthorizationGrant(
     )
     .catch(errorHandler)
 
+  if (response.status === 503 && response.headers.get('retry-after') !== null) {
+    await handleRetryAfter(response, interval, pollingSignal, true)
+    await response.body?.cancel()
+    return retryPoll(interval)
+  }
+
   const p = oauth.processDeviceCodeResponse(as, c, response, {
     [oauth.jweDecrypt]: decrypt,
   })
@@ -2164,19 +2244,7 @@ export async function pollDeviceAuthorizationGrant(
     result = await p
   } catch (err) {
     if (retryable(err, options)) {
-      return pollDeviceAuthorizationGrant(
-        config,
-        {
-          ...deviceAuthorizationResponse,
-          interval,
-        },
-        parameters,
-        {
-          ...options,
-          signal: pollingSignal,
-          flag: retry,
-        },
-      )
+      return retryPoll(interval, retry)
     }
 
     if (err instanceof oauth.ResponseBodyError) {
@@ -2185,19 +2253,8 @@ export async function pollDeviceAuthorizationGrant(
         case 'slow_down': // Fall through
           interval += 5
         case 'authorization_pending':
-          return pollDeviceAuthorizationGrant(
-            config,
-            {
-              ...deviceAuthorizationResponse,
-              interval,
-            },
-            parameters,
-            {
-              ...options,
-              signal: pollingSignal,
-              flag: undefined,
-            },
-          )
+          await handleRetryAfter(err.response, interval, pollingSignal)
+          return retryPoll(interval)
       }
     }
 
@@ -2374,15 +2431,28 @@ export async function pollBackchannelAuthenticationGrant(
     AbortSignal.timeout(backchannelAuthenticationResponse.expires_in * 1000)
 
   try {
-    pollingSignal.throwIfAborted()
+    await wait(interval, pollingSignal)
   } catch (err) {
     errorHandler(err)
   }
 
-  await wait(interval)
-
   const { as, c, auth, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
     int(config)
+
+  const retryPoll = (updatedInterval: number, flag?: typeof retry) =>
+    pollBackchannelAuthenticationGrant(
+      config,
+      {
+        ...backchannelAuthenticationResponse,
+        interval: updatedInterval,
+      },
+      parameters,
+      {
+        ...options,
+        signal: pollingSignal,
+        flag,
+      },
+    )
 
   const response = await oauth
     .backchannelAuthenticationGrantRequest(
@@ -2401,6 +2471,12 @@ export async function pollBackchannelAuthenticationGrant(
     )
     .catch(errorHandler)
 
+  if (response.status === 503 && response.headers.get('retry-after') !== null) {
+    await handleRetryAfter(response, interval, pollingSignal, true)
+    await response.body?.cancel()
+    return retryPoll(interval)
+  }
+
   const p = oauth.processBackchannelAuthenticationGrantResponse(
     as,
     c,
@@ -2415,19 +2491,7 @@ export async function pollBackchannelAuthenticationGrant(
     result = await p
   } catch (err) {
     if (retryable(err, options)) {
-      return pollBackchannelAuthenticationGrant(
-        config,
-        {
-          ...backchannelAuthenticationResponse,
-          interval,
-        },
-        parameters,
-        {
-          ...options,
-          signal: pollingSignal,
-          flag: retry,
-        },
-      )
+      return retryPoll(interval, retry)
     }
 
     if (err instanceof oauth.ResponseBodyError) {
@@ -2436,19 +2500,8 @@ export async function pollBackchannelAuthenticationGrant(
         case 'slow_down': // Fall through
           interval += 5
         case 'authorization_pending':
-          return pollBackchannelAuthenticationGrant(
-            config,
-            {
-              ...backchannelAuthenticationResponse,
-              interval,
-            },
-            parameters,
-            {
-              ...options,
-              signal: pollingSignal,
-              flag: undefined,
-            },
-          )
+          await handleRetryAfter(err.response, interval, pollingSignal)
+          return retryPoll(interval)
       }
     }
 
