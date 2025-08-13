@@ -306,7 +306,7 @@ provider.use(async (ctx, next) => {
         '<title>Consent</title>',
       )
     }
-    if (ctx.body?.verification_uri_complete) {
+    if (ctx.body?.verification_uri_complete || ctx.body?.auth_req_id) {
       ctx.body.interval = 0.1
     }
   }
