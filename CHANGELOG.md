@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.7.0](https://github.com/panva/openid-client/compare/v6.6.4...v6.7.0) (2025-08-27)
+
+
+### Features
+
+* support for the ML-DSA Algorithm Identifiers ([9543da5](https://github.com/panva/openid-client/commit/9543da5eff8e97c232c8187a33bdfe80096dd008))
+
 ## [6.6.4](https://github.com/panva/openid-client/compare/v6.6.3...v6.6.4) (2025-08-12)
 
 
