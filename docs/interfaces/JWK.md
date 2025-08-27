@@ -54,6 +54,12 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+### pub?
+
+• `readonly` `optional` **pub**: `string`
+
+***
+
 ### use?
 
 • `readonly` `optional` **use**: `string`

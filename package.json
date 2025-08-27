@@ -85,8 +85,8 @@
     "test": "bash -c 'source .node_flags.sh && ava'"
   },
   "dependencies": {
-    "jose": "^6.0.12",
-    "oauth4webapi": "^3.7.0"
+    "jose": "^6.1.0",
+    "oauth4webapi": "^3.8.0"
   },
   "devDependencies": {
     "@koa/cors": "^5.0.0",
