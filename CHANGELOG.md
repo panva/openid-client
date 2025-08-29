@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.7.1](https://github.com/panva/openid-client/compare/v6.7.0...v6.7.1) (2025-08-29)
+
+
+### Fixes
+
+* **passport:** include req.host from express@5 for ease of use in express@4 ([81f6c12](https://github.com/panva/openid-client/commit/81f6c12b5a3717f882b98a959cab62fc479cc682))
+
 ## [6.7.0](https://github.com/panva/openid-client/compare/v6.6.4...v6.7.0) (2025-08-27)
 
 
