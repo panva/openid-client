@@ -208,6 +208,29 @@ function setAuthorizationDetails(
   }
 }
 
+/**
+ * Taken from express@5 req.host implementation to get around the fact that
+ * req.host in express@4 is not the host but hostname. Catches errors stemming
+ * from possibly not using express and returns req.host for compatibility with
+ * e.g. fastify-express.
+ */
+function host(req: express.Request): string | undefined {
+  try {
+    const trust = req.app.get('trust proxy fn')
+    let val = req.get('x-forwarded-host')
+
+    if (!val || !trust(req.socket.remoteAddress, 0)) {
+      val = req.get('host')
+    } else if (val.indexOf(',') !== -1) {
+      val = val.substring(0, val.indexOf(',')).trimRight()
+    }
+
+    return val || undefined
+  } catch {
+    return req.host
+  }
+}
+
 export class Strategy implements passport.Strategy {
   /**
    * Name of the strategy
@@ -627,7 +650,9 @@ export class Strategy implements passport.Strategy {
    * are properly configured to trust them.
    */
   currentUrl(req: express.Request): URL {
-    return new URL(`${req.protocol}://${req.host}${req.originalUrl ?? req.url}`)
+    return new URL(
+      `${req.protocol}://${host(req)}${req.originalUrl ?? req.url}`,
+    )
   }
 
   /**
