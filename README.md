@@ -239,7 +239,6 @@ The supported JavaScript runtimes include those that support the utilized Web AP
 - Deno
 - Electron
 - Node.js[^nodejs]
-- Vercel's Edge Runtime
 
 ## Supported Versions
 
