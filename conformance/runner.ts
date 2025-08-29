@@ -312,6 +312,7 @@ export const flow = (options?: MacroOptions) => {
           clientAuth,
           {
             execute,
+            // @ts-ignore
             [client.customFetch]:
               mtlsAuth || mtlsConstrain || metadata.use_mtls_endpoint_aliases
                 ? mtlsFetch
@@ -328,6 +329,7 @@ export const flow = (options?: MacroOptions) => {
           clientAuth,
           {
             execute,
+            // @ts-ignore
             [client.customFetch]:
               mtlsAuth || mtlsConstrain || metadata.use_mtls_endpoint_aliases
                 ? mtlsFetch

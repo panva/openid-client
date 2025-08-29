@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **tokenIntrospection**(`config`, `token`, `parameters`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`IntrospectionResponse`](../interfaces/IntrospectionResponse.md)\>
+▸ **tokenIntrospection**(`config`, `token`, `parameters?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`IntrospectionResponse`](../interfaces/IntrospectionResponse.md)\>
 
 Queries the
 [token introspection endpoint](../interfaces/ServerMetadata.md#introspection_endpoint) to
@@ -23,7 +23,7 @@ returned is at the discretion of the authorization server.
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `token` | `string` | OAuth 2.0 token (either access token or refresh token) that is being introspected |
-| `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters to be included in the introspection request body, such as `token_type_hint` |
+| `parameters?` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters to be included in the introspection request body, such as `token_type_hint` |
 
 ## Returns
 

@@ -6,6 +6,6 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-• **JsonObject**: `{ [Key in string]?: JsonValue }`
+• **JsonObject** = `{ [Key in string]?: JsonValue }`
 
 JSON Object

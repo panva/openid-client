@@ -1,4 +1,4 @@
-# Function: ~~allowInsecureRequests()~~
+# Function: allowInsecureRequests()
 
 [💗 Help the project](https://github.com/sponsors/panva)
 

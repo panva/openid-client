@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-• **ClientAuth**: (`as`, `client`, `body`, `headers`) => `void`
+• **ClientAuth** = (`as`, `client`, `body`, `headers`) => `void`
 
 Implementation of the Client's Authentication Method at the Authorization
 Server.

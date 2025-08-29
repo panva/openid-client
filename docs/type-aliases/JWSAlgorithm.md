@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-• **JWSAlgorithm**: `"PS256"` \| `"ES256"` \| `"RS256"` \| `"Ed25519"` \| `"ES384"` \| `"PS384"` \| `"RS384"` \| `"ES512"` \| `"PS512"` \| `"RS512"` \| `"ML-DSA-44"` \| `"ML-DSA-65"` \| `"ML-DSA-87"` \| `"EdDSA"`
+• **JWSAlgorithm** = `"PS256"` \| `"ES256"` \| `"RS256"` \| `"Ed25519"` \| `"ES384"` \| `"PS384"` \| `"RS384"` \| `"ES512"` \| `"PS512"` \| `"RS512"` \| `"ML-DSA-44"` \| `"ML-DSA-65"` \| `"ML-DSA-87"` \| `"EdDSA"`
 
 JWS `alg` Algorithm identifiers from the
 [JSON Web Signature and Encryption Algorithms IANA registry](https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms)

@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **buildEndSessionUrl**(`config`, `parameters`?): [`URL`](https://developer.mozilla.org/docs/Web/API/URL)
+▸ **buildEndSessionUrl**(`config`, `parameters?`): [`URL`](https://developer.mozilla.org/docs/Web/API/URL)
 
 Returns a URL to redirect the user-agent to after they log out to trigger
 [RP-Initiated Logout](https://openid.net/specs/openid-connect-rpinitiated-1_0-final.html#RPLogout)
@@ -21,7 +21,7 @@ at the Authorization Server.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
-| `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Logout endpoint parameters |
+| `parameters?` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Logout endpoint parameters |
 
 ## Returns
 

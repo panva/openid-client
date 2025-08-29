@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **buildAuthorizationUrlWithJAR**(`config`, `parameters`, `signingKey`, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`URL`](https://developer.mozilla.org/docs/Web/API/URL)\>
+▸ **buildAuthorizationUrlWithJAR**(`config`, `parameters`, `signingKey`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`URL`](https://developer.mozilla.org/docs/Web/API/URL)\>
 
 Returns a URL to redirect the user-agent to, in order to request
 authorization at the Authorization Server with a prior step of using
@@ -23,7 +23,7 @@ authorization at the Authorization Server with a prior step of using
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `parameters` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Authorization request parameters that will be encoded in a [JAR](https://www.rfc-editor.org/rfc/rfc9101.html) Request Object |
 | `signingKey` | [`CryptoKey`](https://developer.mozilla.org/docs/Web/API/CryptoKey) \| [`PrivateKey`](../interfaces/PrivateKey.md) | Key to sign the JAR Request Object with. |
-| `options`? | [`ModifyAssertionOptions`](../interfaces/ModifyAssertionOptions.md) | - |
+| `options?` | [`ModifyAssertionOptions`](../interfaces/ModifyAssertionOptions.md) | - |
 
 ## Returns
 

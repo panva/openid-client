@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **pollDeviceAuthorizationGrant**(`config`, `deviceAuthorizationResponse`, `parameters`?, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
+▸ **pollDeviceAuthorizationGrant**(`config`, `deviceAuthorizationResponse`, `parameters?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
 Continuously polls the [token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
 until the end-user finishes the [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628.html) process
@@ -22,8 +22,8 @@ on their secondary device
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `deviceAuthorizationResponse` | [`DeviceAuthorizationResponse`](../interfaces/DeviceAuthorizationResponse.md) | Device Authorization Response obtained from [initiateDeviceAuthorization](initiateDeviceAuthorization.md) |
-| `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
-| `options`? | [`DeviceAuthorizationGrantPollOptions`](../interfaces/DeviceAuthorizationGrantPollOptions.md) | - |
+| `parameters?` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
+| `options?` | [`DeviceAuthorizationGrantPollOptions`](../interfaces/DeviceAuthorizationGrantPollOptions.md) | - |
 
 ## Returns
 

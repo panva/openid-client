@@ -10,7 +10,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ### supportsPKCE()
 
-▸ **supportsPKCE**(`method`?): `boolean`
+▸ **supportsPKCE**(`method?`): `boolean`
 
 Determines whether the Authorization Server supports a given Code Challenge
 Method
@@ -19,7 +19,7 @@ Method
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `method`? | `string` | Code Challenge Method. Default is `S256` |
+| `method?` | `string` | Code Challenge Method. Default is `S256` |
 
 #### Returns
 

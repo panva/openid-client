@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **randomDPoPKeyPair**(`alg`?, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`CryptoKeyPair`](../interfaces/CryptoKeyPair.md)\>
+▸ **randomDPoPKeyPair**(`alg?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`CryptoKeyPair`](../interfaces/CryptoKeyPair.md)\>
 
 Generates random [CryptoKeyPair](../interfaces/CryptoKeyPair.md) to sign DPoP Proof JWTs with
 
@@ -14,8 +14,8 @@ Generates random [CryptoKeyPair](../interfaces/CryptoKeyPair.md) to sign DPoP Pr
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `alg`? | `string` | One of the supported [JWS Algorithm](../type-aliases/JWSAlgorithm.md) identifiers. Default is `ES256`. |
-| `options`? | [`GenerateKeyPairOptions`](../interfaces/GenerateKeyPairOptions.md) |  |
+| `alg?` | `string` | One of the supported [JWS Algorithm](../type-aliases/JWSAlgorithm.md) identifiers. Default is `ES256`. |
+| `options?` | [`GenerateKeyPairOptions`](../interfaces/GenerateKeyPairOptions.md) |  |
 
 ## Returns
 

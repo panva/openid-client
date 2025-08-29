@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **buildAuthorizationUrlWithPAR**(`config`, `parameters`, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`URL`](https://developer.mozilla.org/docs/Web/API/URL)\>
+▸ **buildAuthorizationUrlWithPAR**(`config`, `parameters`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`URL`](https://developer.mozilla.org/docs/Web/API/URL)\>
 
 Returns a URL to redirect the user-agent to, in order to request
 authorization at the Authorization Server with a prior step of using
@@ -26,7 +26,7 @@ authorization at the Authorization Server with a prior step of using
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `parameters` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Authorization request parameters that will be sent to [PAR](https://www.rfc-editor.org/rfc/rfc9126.html) |
-| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
+| `options?` | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
 
 ## Returns
 

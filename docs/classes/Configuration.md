@@ -15,7 +15,7 @@ Configuration instances are obtained either through
 - (RECOMMENDED) the [discovery](../functions/discovery.md) function that discovers the
   [OAuth 2.0 Authorization Server metadata](../interfaces/ServerMetadata.md) using the
   Authorization Server's Issuer Identifier, or
-- The [Configuration](Configuration.md) constructor if the
+- The Configuration constructor if the
   [OAuth 2.0 Authorization Server metadata](../interfaces/ServerMetadata.md) is known
   upfront
 
@@ -49,9 +49,9 @@ let config = new client.Configuration(server, clientId, clientSecret)
 
 ## Constructors
 
-### new Configuration()
+### Constructor
 
-▸ **new Configuration**(`server`, `clientId`, `metadata`?, `clientAuthentication`?): [`Configuration`](Configuration.md)
+▸ **new Configuration**(`server`, `clientId`, `metadata?`, `clientAuthentication?`): `Configuration`
 
 #### Parameters
 
@@ -59,9 +59,9 @@ let config = new client.Configuration(server, clientId, clientSecret)
 | ------ | ------ | ------ |
 | `server` | [`ServerMetadata`](../interfaces/ServerMetadata.md) | Authorization Server Metadata |
 | `clientId` | `string` | Client Identifier at the Authorization Server |
-| `metadata`? | `string` \| [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata, when a string is passed it is a shorthand for passing just [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
-| `clientAuthentication`? | [`ClientAuth`](../type-aliases/ClientAuth.md) | Implementation of the Client's Authentication Method at the Authorization Server. Default is [ClientSecretPost](../functions/ClientSecretPost.md) using the [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
+| `metadata?` | `string` \| [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata, when a string is passed it is a shorthand for passing just [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
+| `clientAuthentication?` | [`ClientAuth`](../type-aliases/ClientAuth.md) | Implementation of the Client's Authentication Method at the Authorization Server. Default is [ClientSecretPost](../functions/ClientSecretPost.md) using the [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
 
 #### Returns
 
-[`Configuration`](Configuration.md)
+`Configuration`

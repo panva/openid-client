@@ -52,6 +52,7 @@ let logRetry!: (
 ) => void
 
 config[client.customFetch] = (...args) =>
+  // @ts-expect-error
   ky(args[0], {
     ...args[1],
     hooks: {

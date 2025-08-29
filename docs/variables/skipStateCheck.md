@@ -1,4 +1,4 @@
-# Variable: ~~skipStateCheck~~
+# Variable: skipStateCheck
 
 [💗 Help the project](https://github.com/sponsors/panva)
 

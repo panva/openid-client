@@ -1,4 +1,4 @@
-# Variable: ~~skipSubjectCheck~~
+# Variable: skipSubjectCheck
 
 [💗 Help the project](https://github.com/sponsors/panva)
 

@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **refreshTokenGrant**(`config`, `refreshToken`, `parameters`?, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
+▸ **refreshTokenGrant**(`config`, `refreshToken`, `parameters?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
 Performs an OAuth 2.0 [Refresh Token Grant](https://datatracker.ietf.org/doc/html/rfc6749#section-6) at the Authorization
 Server's [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) using parameters
@@ -23,8 +23,8 @@ token using a valid refresh token.
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `refreshToken` | `string` | OAuth 2.0 Refresh Token provided by the authorization server that is used to obtain a new access token. |
-| `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
-| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
+| `parameters?` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
+| `options?` | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
 
 ## Returns
 

@@ -1,5 +1,5 @@
 diff --git a/node_modules/typedoc-plugin-mdn-links/data/web-api.json b/node_modules/typedoc-plugin-mdn-links/data/web-api.json
-index e92381a..00f0cba 100644
+index bfb4fc4..ae5f238 100644
 --- a/node_modules/typedoc-plugin-mdn-links/data/web-api.json
 +++ b/node_modules/typedoc-plugin-mdn-links/data/web-api.json
 @@ -1,4 +1,37 @@

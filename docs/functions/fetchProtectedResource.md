@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **fetchProtectedResource**(`config`, `accessToken`, `url`, `method`, `body`?, `headers`?, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Response`](https://developer.mozilla.org/docs/Web/API/Response)\>
+▸ **fetchProtectedResource**(`config`, `accessToken`, `url`, `method`, `body?`, `headers?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Response`](https://developer.mozilla.org/docs/Web/API/Response)\>
 
 Performs an arbitrary Protected Resource resource.
 
@@ -21,9 +21,9 @@ Access Token means of transport are supported.
 | `accessToken` | `string` | OAuth 2.0 Access Token |
 | `url` | [`URL`](https://developer.mozilla.org/docs/Web/API/URL) | URL to send the request to |
 | `method` | `string` | HTTP Request method to use for the request |
-| `body`? | [`FetchBody`](../type-aliases/FetchBody.md) | HTTP Request body to send in the request |
-| `headers`? | [`Headers`](https://developer.mozilla.org/docs/Web/API/Headers) | HTTP Request headers to add to the request |
-| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
+| `body?` | [`FetchBody`](../type-aliases/FetchBody.md) | HTTP Request body to send in the request |
+| `headers?` | [`Headers`](https://developer.mozilla.org/docs/Web/API/Headers) | HTTP Request headers to add to the request |
+| `options?` | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
 
 ## Returns
 

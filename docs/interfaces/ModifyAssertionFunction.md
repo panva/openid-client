@@ -12,8 +12,8 @@ Support from the community to continue maintaining and improving this module is 
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `header` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)\> | JWS Header to modify right before it is signed. |
-| `payload` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `undefined` \| [`JsonValue`](../type-aliases/JsonValue.md)\> | JWT Claims Set to modify right before it is signed. |
+| `header` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`\> | JWS Header to modify right before it is signed. |
+| `payload` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`\> | JWT Claims Set to modify right before it is signed. |
 
 ## Returns
 

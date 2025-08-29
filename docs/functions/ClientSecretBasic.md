@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **ClientSecretBasic**(`clientSecret`?): [`ClientAuth`](../type-aliases/ClientAuth.md)
+▸ **ClientSecretBasic**(`clientSecret?`): [`ClientAuth`](../type-aliases/ClientAuth.md)
 
 **`client_secret_basic`** uses the HTTP `Basic` authentication scheme to send
 `client_id` and `client_secret` in an `Authorization` HTTP Header.
@@ -15,7 +15,7 @@ Support from the community to continue maintaining and improving this module is 
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `clientSecret`? | `string` | Client Secret |
+| `clientSecret?` | `string` | Client Secret |
 
 ## Returns
 

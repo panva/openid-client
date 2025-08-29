@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **PrivateKeyJwt**(`clientPrivateKey`, `options`?): [`ClientAuth`](../type-aliases/ClientAuth.md)
+▸ **PrivateKeyJwt**(`clientPrivateKey`, `options?`): [`ClientAuth`](../type-aliases/ClientAuth.md)
 
 **`private_key_jwt`** uses the HTTP request body to send `client_id`,
 `client_assertion_type`, and `client_assertion` as
@@ -18,7 +18,7 @@ used for the assertion's authenticity and integrity.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `clientPrivateKey` | [`CryptoKey`](https://developer.mozilla.org/docs/Web/API/CryptoKey) \| [`PrivateKey`](../interfaces/PrivateKey.md) |  |
-| `options`? | [`ModifyAssertionOptions`](../interfaces/ModifyAssertionOptions.md) | - |
+| `options?` | [`ModifyAssertionOptions`](../interfaces/ModifyAssertionOptions.md) | - |
 
 ## Returns
 

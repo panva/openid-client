@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **pollBackchannelAuthenticationGrant**(`config`, `backchannelAuthenticationResponse`, `parameters`?, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
+▸ **pollBackchannelAuthenticationGrant**(`config`, `backchannelAuthenticationResponse`, `parameters?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
 Continuously polls the [token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
 until the end-user finishes the
@@ -22,8 +22,8 @@ until the end-user finishes the
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `backchannelAuthenticationResponse` | [`BackchannelAuthenticationResponse`](../interfaces/BackchannelAuthenticationResponse.md) | Backchannel Authentication Response obtained from [initiateBackchannelAuthentication](initiateBackchannelAuthentication.md) |
-| `parameters`? | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
-| `options`? | [`BackchannelAuthenticationGrantPollOptions`](../interfaces/BackchannelAuthenticationGrantPollOptions.md) | - |
+| `parameters?` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Additional parameters that will be sent to the token endpoint, typically used for parameters such as `scope` and a `resource` ([Resource Indicator](https://www.rfc-editor.org/rfc/rfc8707)) |
+| `options?` | [`BackchannelAuthenticationGrantPollOptions`](../interfaces/BackchannelAuthenticationGrantPollOptions.md) | - |
 
 ## Returns
 

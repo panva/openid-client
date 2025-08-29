@@ -15,7 +15,7 @@ Parsed WWW-Authenticate challenge
 • `readonly` **parameters**: [`WWWAuthenticateChallengeParameters`](WWWAuthenticateChallengeParameters.md)
 
 Parsed WWW-Authenticate challenge auth-param dictionary (always present but will be empty when
-[token68](WWWAuthenticateChallenge.md#token68) is present)
+[token68](#token68) is present)
 
 ***
 

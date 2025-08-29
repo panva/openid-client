@@ -12,6 +12,9 @@ WWW-Authenticate challenge auth-param dictionary with known and unknown paramete
 
 \[`parameter`: [`Lowercase`](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html#lowercasestringtype)\<`string`\>\]: `undefined` \| `string`
 
+> [!NOTE]\
+> Because the parameter names are case insensitive they are always returned lowercased
+
 ## Properties
 
 ### algs?

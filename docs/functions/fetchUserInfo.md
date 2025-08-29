@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **fetchUserInfo**(`config`, `accessToken`, `expectedSubject`, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`UserInfoResponse`](../interfaces/UserInfoResponse.md)\>
+▸ **fetchUserInfo**(`config`, `accessToken`, `expectedSubject`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`UserInfoResponse`](../interfaces/UserInfoResponse.md)\>
 
 Performs a UserInfo Request at the
 [userinfo endpoint](../interfaces/ServerMetadata.md#userinfo_endpoint) and returns the
@@ -26,7 +26,7 @@ Access Token means of transport are supported.
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `accessToken` | `string` | OAuth 2.0 Access Token |
 | `expectedSubject` | `string` \| *typeof* `skipSubjectCheck` | Expected `sub` claim value. In response to OpenID Connect authentication requests, the expected subject is the one from the ID Token claims retrieved from [TokenEndpointResponseHelpers.claims](../interfaces/TokenEndpointResponseHelpers.md#claims) which is available on all returned Token Endpoint responses. |
-| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
+| `options?` | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
 
 ## Returns
 

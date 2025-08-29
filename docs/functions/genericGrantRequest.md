@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **genericGrantRequest**(`config`, `grantType`, `parameters`, `options`?): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
+▸ **genericGrantRequest**(`config`, `grantType`, `parameters`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
 Performs any Grant request at the
 [token endpoint](../interfaces/ServerMetadata.md#token_endpoint). The purpose is to be
@@ -24,7 +24,7 @@ Grant, SAML 2.0 Bearer Assertion Grant, or any other grant.
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `grantType` | `string` | Grant Type |
 | `parameters` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Parameters required by the given grant type to send to the [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) |
-| `options`? | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
+| `options?` | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
 
 ## Returns
 
