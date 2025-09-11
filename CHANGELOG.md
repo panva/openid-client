@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.8.0](https://github.com/panva/openid-client/compare/v6.7.1...v6.8.0) (2025-09-11)
+
+
+### Features
+
+* respect retry-after in CIBA and Device Authorization Grant polling ([6ce3411](https://github.com/panva/openid-client/commit/6ce3411befb0da106ad6f62555219a6d1e784017))
+
+
+### Documentation
+
+* remove mention of Edge Runtime from the readme ([2e41ad5](https://github.com/panva/openid-client/commit/2e41ad592922d8f11b271a2f746d432aab6952ac))
+
 ## [6.7.1](https://github.com/panva/openid-client/compare/v6.7.0...v6.7.1) (2025-08-29)
 
 
