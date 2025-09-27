@@ -531,8 +531,6 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
  * - Expect Type-related issues when passing the inputs through to fetch-like
  *   modules, they hardly ever get their typings inline with actual fetch, you
  *   should `@ts-expect-error` them.
- * - Returning self-constructed {@link !Response} instances prohibits
- *   AS/RS-signalled DPoP Nonce caching.
  *
  * @example
  *

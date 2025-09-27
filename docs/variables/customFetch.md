@@ -31,8 +31,6 @@ Known caveats:
 - Expect Type-related issues when passing the inputs through to fetch-like
   modules, they hardly ever get their typings inline with actual fetch, you
   should `@ts-expect-error` them.
-- Returning self-constructed [Response](https://developer.mozilla.org/docs/Web/API/Response) instances prohibits
-  AS/RS-signalled DPoP Nonce caching.
 
 ## Examples
 
