@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.8.1](https://github.com/panva/openid-client/compare/v6.8.0...v6.8.1) (2025-09-27)
+
+
+### Refactor
+
+* workaround dpop nonce caching caveats with customFetch ([a9eb50f](https://github.com/panva/openid-client/commit/a9eb50fde43e1f7da564fff485b3ea6092d65b5f))
+
 ## [6.8.0](https://github.com/panva/openid-client/compare/v6.7.1...v6.8.0) (2025-09-11)
 
 
