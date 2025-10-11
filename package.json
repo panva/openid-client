@@ -101,7 +101,7 @@
     "archiver": "^7.0.1",
     "ava": "^6.4.1",
     "esbuild": "^0.25.10",
-    "happy-dom": "^19.0.1",
+    "happy-dom": "^20.0.0",
     "http-cookie-agent": "^7.0.2",
     "ky": "^1.11.0",
     "oidc-provider": "^9.5.1",
