@@ -2297,21 +2297,38 @@ export async function pollDeviceAuthorizationGrant(
 export async function initiateDeviceAuthorization(
   config: Configuration,
   parameters: URLSearchParams | Record<string, string>,
+  options?: DPoPOptions,
 ): Promise<oauth.DeviceAuthorizationResponse> {
   checkConfig(config)
 
   const { as, c, auth, fetch, tlsOnly, timeout } = int(config)
-  return oauth
+
+  const response = await oauth
     .deviceAuthorizationRequest(as, c, auth, parameters, {
       [oauth.customFetch]: fetch,
       [oauth.allowInsecureRequests]: !tlsOnly,
       headers: new Headers(headers),
       signal: signal(timeout),
     })
-    .then((response) =>
-      oauth.processDeviceAuthorizationResponse(as, c, response),
-    )
     .catch(errorHandler)
+
+  const p = oauth.processDeviceAuthorizationResponse(as, c, response)
+
+  let result: oauth.DeviceAuthorizationResponse
+
+  try {
+    result = await p
+  } catch (err) {
+    if (retryable(err, options)) {
+      return initiateDeviceAuthorization(config, parameters, {
+        ...options,
+        flag: retry,
+      })
+    }
+    errorHandler(err)
+  }
+
+  return result
 }
 
 /**

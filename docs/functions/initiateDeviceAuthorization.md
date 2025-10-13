@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **initiateDeviceAuthorization**(`config`, `parameters`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DeviceAuthorizationResponse`](../interfaces/DeviceAuthorizationResponse.md)\>
+▸ **initiateDeviceAuthorization**(`config`, `parameters`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DeviceAuthorizationResponse`](../interfaces/DeviceAuthorizationResponse.md)\>
 
 Initiates a [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628.html) using parameters from the
 `parameters` argument.
@@ -21,6 +21,7 @@ Initiates a [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628.
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
 | `parameters` | [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<`string`, `string`\> \| [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | Authorization request parameters that will be sent to the device authorization endpoint |
+| `options?` | [`DPoPOptions`](../interfaces/DPoPOptions.md) | - |
 
 ## Returns
 
