@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-▸ **getJwksCache**(`config`): `undefined` \| [`ExportedJWKSCache`](../interfaces/ExportedJWKSCache.md)
+▸ **getJwksCache**(`config`): [`ExportedJWKSCache`](../interfaces/ExportedJWKSCache.md) \| `undefined`
 
 This function can be used to export the JSON Web Key Set and the timestamp at
 which it was last fetched if the client used the
@@ -30,4 +30,4 @@ memory cache between requests is available is not desirable.
 
 ## Returns
 
-`undefined` \| [`ExportedJWKSCache`](../interfaces/ExportedJWKSCache.md)
+[`ExportedJWKSCache`](../interfaces/ExportedJWKSCache.md) \| `undefined`

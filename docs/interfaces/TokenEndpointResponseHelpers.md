@@ -12,7 +12,7 @@ Helpers attached to any resolved [TokenEndpointResponse](TokenEndpointResponse.m
 
 ### claims()
 
-▸ **claims**(): `undefined` \| [`IDToken`](IDToken.md)
+▸ **claims**(): [`IDToken`](IDToken.md) \| `undefined`
 
 Returns the parsed JWT Claims Set of an
 [id\_token](TokenEndpointResponse.md#id_token) returned by the
@@ -24,13 +24,13 @@ authorization server
 
 #### Returns
 
-`undefined` \| [`IDToken`](IDToken.md)
+[`IDToken`](IDToken.md) \| `undefined`
 
 ***
 
 ### expiresIn()
 
-▸ **expiresIn**(): `undefined` \| `number`
+▸ **expiresIn**(): `number` \| `undefined`
 
 Returns the number of seconds until the
 [access\_token](TokenEndpointResponse.md#access_token) expires
@@ -44,4 +44,4 @@ Returns the number of seconds until the
 
 #### Returns
 
-`undefined` \| `number`
+`number` \| `undefined`
