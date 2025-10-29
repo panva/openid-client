@@ -97,32 +97,6 @@ jobs:
           name: node idx(${{ strategy.job-index }}) server log
           if-no-files-found: warn
 
-  edge-runtime:
-    needs:
-      - build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: 'npm'
-      - run: npm clean-install
-      - run: npm install --global edge-runtime
-      - run: npm link edge-runtime
-      - name: Run Test Suite
-        run: npm run tap:edge-runtime
-      - name: Upload server logs
-        if: ${{ failure() }}
-        id: artifact-upload-step
-        uses: actions/upload-artifact@v4
-        with:
-          path: server.log
-          name: edge-runtime server log
-          if-no-files-found: warn
-
   electron:
     needs:
       - build
