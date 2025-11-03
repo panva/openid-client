@@ -185,7 +185,7 @@ export default async () => {
 
   if (needsClientCertificate(PLAN_NAME, variant)) {
     const { generate } = await import('selfsigned')
-    const selfsigned = generate(undefined, { keySize: 2048 })
+    const selfsigned = generate()
     clientConfig.certificate = selfsigned.cert
     mtls = {
       cert: selfsigned.cert,
