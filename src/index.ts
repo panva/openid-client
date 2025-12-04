@@ -1108,8 +1108,7 @@ function handleB2Clogin(server: URL, options?: DiscoveryRequestOptions) {
 }
 
 export interface DynamicClientRegistrationRequestOptions
-  extends DiscoveryRequestOptions,
-    DPoPOptions {
+  extends DiscoveryRequestOptions, DPoPOptions {
   /**
    * Access token optionally issued by an authorization server used to authorize
    * calls to the client registration endpoint.
@@ -2837,8 +2836,10 @@ export function enableDetachedSignatureResponseChecks(config: Configuration) {
     )
 }
 
-export interface ImplicitAuthenticationResponseChecks
-  extends Pick<AuthorizationCodeGrantChecks, 'expectedState' | 'maxAge'> {}
+export interface ImplicitAuthenticationResponseChecks extends Pick<
+  AuthorizationCodeGrantChecks,
+  'expectedState' | 'maxAge'
+> {}
 
 /**
  * This method validates the authorization server's
@@ -4382,5 +4383,4 @@ export async function fetchProtectedResource(
  *
  * @deprecated Use {@link DeviceAuthorizationGrantPollOptions}.
  */
-export interface DeviceAutorizationGrantPollOptions
-  extends DeviceAuthorizationGrantPollOptions {}
+export interface DeviceAutorizationGrantPollOptions extends DeviceAuthorizationGrantPollOptions {}
