@@ -100,7 +100,7 @@
     "archiver": "^7.0.1",
     "ava": "^6.4.1",
     "esbuild": "^0.27.2",
-    "happy-dom": "^20.4.0",
+    "happy-dom": "^20.5.0",
     "http-cookie-agent": "^7.0.3",
     "ky": "^1.14.3",
     "oidc-provider": "^9.6.0",
@@ -116,6 +116,6 @@
     "typedoc-plugin-markdown": "^4.9.0",
     "typedoc-plugin-mdn-links": "^5.1.1",
     "typescript": "^5.9.3",
-    "undici": "^7.19.2"
+    "undici": "^7.20.0"
   }
 }
