@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.8.2](https://github.com/panva/openid-client/compare/v6.8.1...v6.8.2) (2026-02-07)
+
+
+### Fixes
+
+* use duplex: half for fetchProtectedResource with ReadableStream body input ([f6f84e2](https://github.com/panva/openid-client/commit/f6f84e28923634d5ff8c16e5173206cd3f5ec967))
+
 ## [6.8.1](https://github.com/panva/openid-client/compare/v6.8.0...v6.8.1) (2025-09-27)
 
 
