@@ -2,7 +2,7 @@
 
 . ./tap/.server.sh
 
-COMPATIBILITY_DATE=$(node -p "require('workerd').compatibilityDate")
+COMPATIBILITY_DATE=$(node -p "const d = require('workerd').compatibilityDate, t = new Date().toISOString().slice(0,10); d > t ? t : d")
 WORKERD_VERSION=$(npm ls --global --json | jq -r '.dependencies.workerd.version')
 
 echo "Using workerd $WORKERD_VERSION, compatibility date $COMPATIBILITY_DATE"
