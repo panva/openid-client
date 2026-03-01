@@ -128,7 +128,7 @@ jobs:
           sudo rm -rf mongo
       - name: Upload test artifacts
         id: artifact-upload-step
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           path: |
             *.zip
