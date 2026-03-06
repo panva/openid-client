@@ -34,7 +34,7 @@ Server Metadata discovery document.
 | `clientId` | `string` | Client Identifier at the Authorization Server |
 | `metadata?` | `string` \| [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ClientMetadata`](../interfaces/ClientMetadata.md)\> | Client Metadata, when a string is passed it is a shorthand for passing just [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret) |
 | `clientAuthentication?` | [`ClientAuth`](../type-aliases/ClientAuth.md) | Implementation of the Client's Authentication Method at the Authorization Server. Default is [ClientSecretPost](ClientSecretPost.md) using the [ClientMetadata.client\_secret](../interfaces/ClientMetadata.md#client_secret). |
-| `options?` | [`DiscoveryRequestOptions`](../interfaces/DiscoveryRequestOptions.md) |  |
+| `options?` | [`DiscoveryRequestOptions`](../interfaces/DiscoveryRequestOptions.md) | - |
 
 ## Returns
 

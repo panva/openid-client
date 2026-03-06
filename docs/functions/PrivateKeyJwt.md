@@ -17,7 +17,7 @@ used for the assertion's authenticity and integrity.
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `clientPrivateKey` | [`CryptoKey`](https://developer.mozilla.org/docs/Web/API/CryptoKey) \| [`PrivateKey`](../interfaces/PrivateKey.md) |  |
+| `clientPrivateKey` | [`CryptoKey`](https://developer.mozilla.org/docs/Web/API/CryptoKey) \| [`PrivateKey`](../interfaces/PrivateKey.md) | - |
 | `options?` | [`ModifyAssertionOptions`](../interfaces/ModifyAssertionOptions.md) | - |
 
 ## Returns
