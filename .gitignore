@@ -42,3 +42,4 @@ tap/.workers.capnp
 tap/*.js
 tap/run-*.cjs
 *.zip
+test-results/.last-run.json
