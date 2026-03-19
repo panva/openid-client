@@ -22,16 +22,16 @@ Support from the community to continue maintaining and improving this module is 
 
 ### cause?
 
-• `optional` **cause**: `unknown`
+• `optional` **cause?**: `unknown`
 
 ***
 
 ### code?
 
-• `optional` **code**: `string`
+• `optional` **code?**: `string`
 
 ***
 
 ### stack?
 
-• `optional` **stack**: `string`
+• `optional` **stack?**: `string`

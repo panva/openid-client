@@ -10,7 +10,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ### expectedState?
 
-• `optional` **expectedState**: `string` \| *typeof* `skipStateCheck`
+• `optional` **expectedState?**: `string` \| *typeof* `skipStateCheck`
 
 Expected value of the `state` authorization response parameter. This value
 must match exactly. When `undefined` the expectation is that there is no
@@ -20,7 +20,7 @@ must match exactly. When `undefined` the expectation is that there is no
 
 ### maxAge?
 
-• `optional` **maxAge**: `number`
+• `optional` **maxAge?**: `number`
 
 ID Token [`auth\_time`](IDToken.md#auth_time) claim value will be checked
 to be present and conform to this `maxAge` value. Use of this option is

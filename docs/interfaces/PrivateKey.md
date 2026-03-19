@@ -23,7 +23,7 @@ Its algorithm must be compatible with a supported [JWS Algorithm](../type-aliase
 
 ### kid?
 
-• `optional` **kid**: `string`
+• `optional` **kid?**: `string`
 
 JWK Key ID to add to JOSE headers when this key is used. When not provided no `kid` (JWK Key
 ID) will be added to the JOSE Header.

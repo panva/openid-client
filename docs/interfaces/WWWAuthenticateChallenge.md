@@ -33,6 +33,6 @@ Parsed WWW-Authenticate challenge auth-scheme
 
 ### token68?
 
-• `readonly` `optional` **token68**: `string`
+• `readonly` `optional` **token68?**: `string`
 
 Parsed WWW-Authenticate challenge token68

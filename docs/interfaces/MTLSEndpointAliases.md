@@ -8,13 +8,13 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`metadata`: `string`\]: `string` \| `undefined`
+> \[`metadata`: `string`\]: `string` \| `undefined`
 
 ## Properties
 
 ### backchannel\_authentication\_endpoint?
 
-• `readonly` `optional` **backchannel\_authentication\_endpoint**: `string`
+• `readonly` `optional` **backchannel\_authentication\_endpoint?**: `string`
 
 CIBA Backchannel Authentication Endpoint.
 
@@ -22,7 +22,7 @@ CIBA Backchannel Authentication Endpoint.
 
 ### device\_authorization\_endpoint?
 
-• `readonly` `optional` **device\_authorization\_endpoint**: `string`
+• `readonly` `optional` **device\_authorization\_endpoint?**: `string`
 
 URL of the authorization server's device authorization endpoint.
 
@@ -30,7 +30,7 @@ URL of the authorization server's device authorization endpoint.
 
 ### introspection\_endpoint?
 
-• `readonly` `optional` **introspection\_endpoint**: `string`
+• `readonly` `optional` **introspection\_endpoint?**: `string`
 
 URL of the authorization server's introspection endpoint.
 
@@ -38,7 +38,7 @@ URL of the authorization server's introspection endpoint.
 
 ### pushed\_authorization\_request\_endpoint?
 
-• `readonly` `optional` **pushed\_authorization\_request\_endpoint**: `string`
+• `readonly` `optional` **pushed\_authorization\_request\_endpoint?**: `string`
 
 URL of the authorization server's pushed authorization request endpoint.
 
@@ -46,7 +46,7 @@ URL of the authorization server's pushed authorization request endpoint.
 
 ### revocation\_endpoint?
 
-• `readonly` `optional` **revocation\_endpoint**: `string`
+• `readonly` `optional` **revocation\_endpoint?**: `string`
 
 URL of the authorization server's revocation endpoint.
 
@@ -54,7 +54,7 @@ URL of the authorization server's revocation endpoint.
 
 ### token\_endpoint?
 
-• `readonly` `optional` **token\_endpoint**: `string`
+• `readonly` `optional` **token\_endpoint?**: `string`
 
 URL of the authorization server's token endpoint.
 
@@ -62,6 +62,6 @@ URL of the authorization server's token endpoint.
 
 ### userinfo\_endpoint?
 
-• `readonly` `optional` **userinfo\_endpoint**: `string`
+• `readonly` `optional` **userinfo\_endpoint?**: `string`
 
 URL of the authorization server's UserInfo Endpoint.

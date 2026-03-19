@@ -10,7 +10,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ### DPoP?
 
-• `optional` **DPoP**: [`DPoPHandle`](DPoPHandle.md)
+• `optional` **DPoP?**: [`DPoPHandle`](DPoPHandle.md)
 
 DPoP handle to use for requesting a sender-constrained access token.
 Usually obtained from [getDPoPHandle](../functions/getDPoPHandle.md)
@@ -23,7 +23,7 @@ Usually obtained from [getDPoPHandle](../functions/getDPoPHandle.md)
 
 ### signal?
 
-• `optional` **signal**: [`AbortSignal`](https://developer.mozilla.org/docs/Web/API/AbortSignal)
+• `optional` **signal?**: [`AbortSignal`](https://developer.mozilla.org/docs/Web/API/AbortSignal)
 
 AbortSignal to abort polling. Default is that the operation will time out
 after the indicated expires_in property returned by the server in

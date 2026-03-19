@@ -63,4 +63,4 @@ HTTP Status Code of the response
 
 ### stack?
 
-• `optional` **stack**: `string`
+• `optional` **stack?**: `string`

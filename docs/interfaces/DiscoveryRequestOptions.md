@@ -10,7 +10,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ### \[customFetch\]?
 
-• `optional` **\[customFetch\]**: [`CustomFetch`](../type-aliases/CustomFetch.md)
+• `optional` **\[customFetch\]?**: [`CustomFetch`](../type-aliases/CustomFetch.md)
 
 Custom [Fetch API](https://developer.mozilla.org/docs/Web/API/Window/fetch) implementation to use for the HTTP Requests
 the client will be making. If this option is used, then the customFetch
@@ -25,7 +25,7 @@ use with all its future individual HTTP requests.
 
 ### algorithm?
 
-• `optional` **algorithm**: `"oidc"` \| `"oauth2"`
+• `optional` **algorithm?**: `"oidc"` \| `"oauth2"`
 
 The issuer transformation algorithm to use. Default is `oidc`.
 
@@ -50,7 +50,7 @@ Given the Issuer Identifier is https://example.com/pathname
 
 ### execute?
 
-• `optional` **execute**: (`config`) => `void`[]
+• `optional` **execute?**: (`config`) => `void`[]
 
 Methods (available list linked below) to execute with the
 [Configuration](../classes/Configuration.md) instance as argument after it is instantiated
@@ -108,7 +108,7 @@ let config = await client.discovery(
 
 ### timeout?
 
-• `optional` **timeout**: `number`
+• `optional` **timeout?**: `number`
 
 Timeout (in seconds) for the Authorization Server Metadata discovery. If
 this option is used, then the same timeout value will be assigned to the

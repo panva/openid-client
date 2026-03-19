@@ -8,40 +8,40 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
 ### country?
 
-• `readonly` `optional` **country**: `string`
+• `readonly` `optional` **country?**: `string`
 
 ***
 
 ### formatted?
 
-• `readonly` `optional` **formatted**: `string`
+• `readonly` `optional` **formatted?**: `string`
 
 ***
 
 ### locality?
 
-• `readonly` `optional` **locality**: `string`
+• `readonly` `optional` **locality?**: `string`
 
 ***
 
 ### postal\_code?
 
-• `readonly` `optional` **postal\_code**: `string`
+• `readonly` `optional` **postal\_code?**: `string`
 
 ***
 
 ### region?
 
-• `readonly` `optional` **region**: `string`
+• `readonly` `optional` **region?**: `string`
 
 ***
 
 ### street\_address?
 
-• `readonly` `optional` **street\_address**: `string`
+• `readonly` `optional` **street\_address?**: `string`

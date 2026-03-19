@@ -1,4 +1,4 @@
-# Type Alias: ClientAuth()
+# Type Alias: ClientAuth
 
 [💗 Help the project](https://github.com/sponsors/panva)
 

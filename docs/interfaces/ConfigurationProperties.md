@@ -12,7 +12,7 @@ Public properties available on a [Configuration](../classes/Configuration.md) in
 
 ### \[customFetch\]?
 
-• `optional` **\[customFetch\]**: [`CustomFetch`](../type-aliases/CustomFetch.md)
+• `optional` **\[customFetch\]?**: [`CustomFetch`](../type-aliases/CustomFetch.md)
 
 Custom [Fetch API](https://developer.mozilla.org/docs/Web/API/Window/fetch) implementation to use for the HTTP Requests
 the client will be making.
@@ -25,7 +25,7 @@ the client will be making.
 
 ### timeout?
 
-• `optional` **timeout**: `number`
+• `optional` **timeout?**: `number`
 
 Timeout (in seconds) for the HTTP Requests the client will be making.
 Default is `30` (seconds)

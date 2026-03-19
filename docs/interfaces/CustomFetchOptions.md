@@ -43,7 +43,7 @@ See [Request.redirect](https://developer.mozilla.org/docs/Web/API/Request/redire
 
 ### signal?
 
-• `optional` **signal**: [`AbortSignal`](https://developer.mozilla.org/docs/Web/API/AbortSignal)
+• `optional` **signal?**: [`AbortSignal`](https://developer.mozilla.org/docs/Web/API/AbortSignal)
 
 An AbortSignal configured as per the [ConfigurationProperties.timeout](ConfigurationProperties.md#timeout)
 value

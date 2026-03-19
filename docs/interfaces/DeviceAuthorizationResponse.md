@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
@@ -47,7 +47,7 @@ remember as end users will be asked to manually type it into their user agent.
 
 ### interval?
 
-• `readonly` `optional` **interval**: `number`
+• `readonly` `optional` **interval?**: `number`
 
 The minimum amount of time in seconds that the client should wait between polling requests to
 the token endpoint.
@@ -56,7 +56,7 @@ the token endpoint.
 
 ### verification\_uri\_complete?
 
-• `readonly` `optional` **verification\_uri\_complete**: `string`
+• `readonly` `optional` **verification\_uri\_complete?**: `string`
 
 A verification URI that includes the "user_code" (or other information with the same function
 as the "user_code"), which is designed for non-textual transmission

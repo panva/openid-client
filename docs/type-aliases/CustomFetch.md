@@ -1,4 +1,4 @@
-# Type Alias: CustomFetch()
+# Type Alias: CustomFetch
 
 [💗 Help the project](https://github.com/sponsors/panva)
 

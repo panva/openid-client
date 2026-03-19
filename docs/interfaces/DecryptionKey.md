@@ -19,7 +19,7 @@ supported JWE Key Management Algorithm Identifier
 
 ### alg?
 
-• `optional` **alg**: `string`
+• `optional` **alg?**: `string`
 
 The key's JWE Key Management Algorithm Identifier, this can be used to
 limit ECDH and X25519 keys to only a specified ECDH-ES* JWE Key Management
@@ -30,6 +30,6 @@ Identifier fully specified by their CryptoKey algorithm).
 
 ### kid?
 
-• `optional` **kid**: `string`
+• `optional` **kid?**: `string`
 
 The key's JWK Key ID.

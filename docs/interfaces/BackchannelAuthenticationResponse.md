@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
@@ -30,7 +30,7 @@ The lifetime in seconds of the "auth_req_id".
 
 ### interval?
 
-• `readonly` `optional` **interval**: `number`
+• `readonly` `optional` **interval?**: `number`
 
 The minimum amount of time in seconds that the client should wait between polling requests to
 the token endpoint.

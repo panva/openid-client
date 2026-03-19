@@ -8,16 +8,16 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
 ### jkt?
 
-• `readonly` `optional` **jkt**: `string`
+• `readonly` `optional` **jkt?**: `string`
 
 ***
 
 ### x5t#S256?
 
-• `readonly` `optional` **x5t#S256**: `string`
+• `readonly` `optional` **x5t#S256?**: `string`

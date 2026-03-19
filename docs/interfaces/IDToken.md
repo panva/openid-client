@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
@@ -44,34 +44,34 @@ Support from the community to continue maintaining and improving this module is 
 
 ### auth\_time?
 
-• `readonly` `optional` **auth\_time**: `number`
+• `readonly` `optional` **auth\_time?**: `number`
 
 ***
 
 ### azp?
 
-• `readonly` `optional` **azp**: `string`
+• `readonly` `optional` **azp?**: `string`
 
 ***
 
 ### cnf?
 
-• `readonly` `optional` **cnf**: [`ConfirmationClaims`](ConfirmationClaims.md)
+• `readonly` `optional` **cnf?**: [`ConfirmationClaims`](ConfirmationClaims.md)
 
 ***
 
 ### jti?
 
-• `readonly` `optional` **jti**: `string`
+• `readonly` `optional` **jti?**: `string`
 
 ***
 
 ### nbf?
 
-• `readonly` `optional` **nbf**: `number`
+• `readonly` `optional` **nbf?**: `number`
 
 ***
 
 ### nonce?
 
-• `readonly` `optional` **nonce**: `string`
+• `readonly` `optional` **nonce?**: `string`

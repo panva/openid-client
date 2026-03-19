@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
@@ -20,82 +20,82 @@ Support from the community to continue maintaining and improving this module is 
 
 ### aud?
 
-• `readonly` `optional` **aud**: `string` \| `string`[]
+• `readonly` `optional` **aud?**: `string` \| `string`[]
 
 ***
 
 ### authorization\_details?
 
-• `readonly` `optional` **authorization\_details**: [`AuthorizationDetails`](AuthorizationDetails.md)[]
+• `readonly` `optional` **authorization\_details?**: [`AuthorizationDetails`](AuthorizationDetails.md)[]
 
 ***
 
 ### client\_id?
 
-• `readonly` `optional` **client\_id**: `string`
+• `readonly` `optional` **client\_id?**: `string`
 
 ***
 
 ### cnf?
 
-• `readonly` `optional` **cnf**: [`ConfirmationClaims`](ConfirmationClaims.md)
+• `readonly` `optional` **cnf?**: [`ConfirmationClaims`](ConfirmationClaims.md)
 
 ***
 
 ### exp?
 
-• `readonly` `optional` **exp**: `number`
+• `readonly` `optional` **exp?**: `number`
 
 ***
 
 ### iat?
 
-• `readonly` `optional` **iat**: `number`
+• `readonly` `optional` **iat?**: `number`
 
 ***
 
 ### iss?
 
-• `readonly` `optional` **iss**: `string`
+• `readonly` `optional` **iss?**: `string`
 
 ***
 
 ### jti?
 
-• `readonly` `optional` **jti**: `string`
+• `readonly` `optional` **jti?**: `string`
 
 ***
 
 ### nbf?
 
-• `readonly` `optional` **nbf**: `number`
+• `readonly` `optional` **nbf?**: `number`
 
 ***
 
 ### scope?
 
-• `readonly` `optional` **scope**: `string`
+• `readonly` `optional` **scope?**: `string`
 
 ***
 
 ### sid?
 
-• `readonly` `optional` **sid**: `string`
+• `readonly` `optional` **sid?**: `string`
 
 ***
 
 ### sub?
 
-• `readonly` `optional` **sub**: `string`
+• `readonly` `optional` **sub?**: `string`
 
 ***
 
 ### token\_type?
 
-• `readonly` `optional` **token\_type**: `string`
+• `readonly` `optional` **token\_type?**: `string`
 
 ***
 
 ### username?
 
-• `readonly` `optional` **username**: `string`
+• `readonly` `optional` **username?**: `string`

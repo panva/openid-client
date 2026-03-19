@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
@@ -29,28 +29,28 @@ Support from the community to continue maintaining and improving this module is 
 
 ### authorization\_details?
 
-• `readonly` `optional` **authorization\_details**: [`AuthorizationDetails`](AuthorizationDetails.md)[]
+• `readonly` `optional` **authorization\_details?**: [`AuthorizationDetails`](AuthorizationDetails.md)[]
 
 ***
 
 ### expires\_in?
 
-• `readonly` `optional` **expires\_in**: `number`
+• `readonly` `optional` **expires\_in?**: `number`
 
 ***
 
 ### id\_token?
 
-• `readonly` `optional` **id\_token**: `string`
+• `readonly` `optional` **id\_token?**: `string`
 
 ***
 
 ### refresh\_token?
 
-• `readonly` `optional` **refresh\_token**: `string`
+• `readonly` `optional` **refresh\_token?**: `string`
 
 ***
 
 ### scope?
 
-• `readonly` `optional` **scope**: `string`
+• `readonly` `optional` **scope?**: `string`

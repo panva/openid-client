@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
@@ -20,28 +20,28 @@ Support from the community to continue maintaining and improving this module is 
 
 ### actions?
 
-• `readonly` `optional` **actions**: `string`[]
+• `readonly` `optional` **actions?**: `string`[]
 
 ***
 
 ### datatypes?
 
-• `readonly` `optional` **datatypes**: `string`[]
+• `readonly` `optional` **datatypes?**: `string`[]
 
 ***
 
 ### identifier?
 
-• `readonly` `optional` **identifier**: `string`
+• `readonly` `optional` **identifier?**: `string`
 
 ***
 
 ### locations?
 
-• `readonly` `optional` **locations**: `string`[]
+• `readonly` `optional` **locations?**: `string`[]
 
 ***
 
 ### privileges?
 
-• `readonly` `optional` **privileges**: `string`[]
+• `readonly` `optional` **privileges?**: `string`[]

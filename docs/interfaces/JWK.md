@@ -8,70 +8,70 @@ Support from the community to continue maintaining and improving this module is 
 
 ## Indexable
 
-\[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
+> \[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`
 
 ## Properties
 
 ### alg?
 
-• `readonly` `optional` **alg**: `string`
+• `readonly` `optional` **alg?**: `string`
 
 ***
 
 ### crv?
 
-• `readonly` `optional` **crv**: `string`
+• `readonly` `optional` **crv?**: `string`
 
 ***
 
 ### e?
 
-• `readonly` `optional` **e**: `string`
+• `readonly` `optional` **e?**: `string`
 
 ***
 
 ### key\_ops?
 
-• `readonly` `optional` **key\_ops**: `string`[]
+• `readonly` `optional` **key\_ops?**: `string`[]
 
 ***
 
 ### kid?
 
-• `readonly` `optional` **kid**: `string`
+• `readonly` `optional` **kid?**: `string`
 
 ***
 
 ### kty?
 
-• `readonly` `optional` **kty**: `string`
+• `readonly` `optional` **kty?**: `string`
 
 ***
 
 ### n?
 
-• `readonly` `optional` **n**: `string`
+• `readonly` `optional` **n?**: `string`
 
 ***
 
 ### pub?
 
-• `readonly` `optional` **pub**: `string`
+• `readonly` `optional` **pub?**: `string`
 
 ***
 
 ### use?
 
-• `readonly` `optional` **use**: `string`
+• `readonly` `optional` **use?**: `string`
 
 ***
 
 ### x?
 
-• `readonly` `optional` **x**: `string`
+• `readonly` `optional` **x?**: `string`
 
 ***
 
 ### y?
 
-• `readonly` `optional` **y**: `string`
+• `readonly` `optional` **y?**: `string`

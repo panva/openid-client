@@ -10,7 +10,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ### \[modifyAssertion\]?
 
-• `optional` **\[modifyAssertion\]**: [`ModifyAssertionFunction`](ModifyAssertionFunction.md)
+• `optional` **\[modifyAssertion\]?**: [`ModifyAssertionFunction`](ModifyAssertionFunction.md)
 
 Use to modify a JWT assertion payload or header right before it is signed.
 
