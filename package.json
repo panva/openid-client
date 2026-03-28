@@ -101,7 +101,7 @@
     "archiver": "^7.0.1",
     "ava": "^7.0.0",
     "esbuild": "^0.27.4",
-    "happy-dom": "^20.8.4",
+    "happy-dom": "^20.8.9",
     "http-cookie-agent": "^7.0.3",
     "ky": "^1.14.3",
     "oidc-provider": "^9.7.1",
@@ -113,10 +113,10 @@
     "selfsigned": "^5.5.0",
     "tough-cookie": "^6.0.1",
     "tsx": "^4.21.0",
-    "typedoc": "^0.28.17",
+    "typedoc": "^0.28.18",
     "typedoc-plugin-markdown": "^4.11.0",
     "typedoc-plugin-mdn-links": "^5.1.1",
-    "typescript": "^5.9.3",
-    "undici": "^7.24.4"
+    "typescript": "^6.0.2",
+    "undici": "^7.24.6"
   }
 }
