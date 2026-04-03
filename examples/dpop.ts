@@ -65,6 +65,7 @@ let state!: string
 // one eternity later, the user lands back on the redirect_uri
 // Authorization Code Grant
 let access_token: string
+let token_type: string
 {
   let currentUrl: URL = getCurrentUrl()
   let tokens = await client.authorizationCodeGrant(
@@ -79,7 +80,7 @@ let access_token: string
   )
 
   console.log('Token Endpoint Response', tokens)
-  ;({ access_token } = tokens)
+  ;({ access_token, token_type } = tokens)
 }
 
 // Protected Resource Request
@@ -91,7 +92,7 @@ let access_token: string
     'GET',
     undefined,
     undefined,
-    { DPoP },
+    token_type === 'dpop' ? { DPoP } : undefined,
   )
 
   console.log('Protected Resource Response', await protectedResource.json())

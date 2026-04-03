@@ -1,5 +1,5 @@
 diff --git a/examples/oauth.ts b/examples/dpop.ts
-index dde3bbc..dcd9ff2 100644
+index dde3bbc..666c632 100644
 --- a/examples/oauth.ts
 +++ b/examples/dpop.ts
 @@ -12,10 +12,19 @@ let clientSecret!: string
@@ -22,8 +22,11 @@ index dde3bbc..dcd9ff2 100644
  let code_challenge_method = 'S256'
  /**
   * The following (code_verifier and potentially state) MUST be generated for
-@@ -58,10 +67,16 @@ let state!: string
+@@ -56,15 +65,22 @@ let state!: string
+ // one eternity later, the user lands back on the redirect_uri
+ // Authorization Code Grant
  let access_token: string
++let token_type: string
  {
    let currentUrl: URL = getCurrentUrl()
 -  let tokens = await client.authorizationCodeGrant(config, currentUrl, {
@@ -42,14 +45,18 @@ index dde3bbc..dcd9ff2 100644
 +  )
  
    console.log('Token Endpoint Response', tokens)
-   ;({ access_token } = tokens)
-@@ -74,6 +89,9 @@ let access_token: string
+-  ;({ access_token } = tokens)
++  ;({ access_token, token_type } = tokens)
+ }
+ 
+ // Protected Resource Request
+@@ -74,6 +90,9 @@ let access_token: string
      access_token,
      new URL('https://rs.example.com/api'),
      'GET',
 +    undefined,
 +    undefined,
-+    { DPoP },
++    token_type === 'dpop' ? { DPoP } : undefined,
    )
  
    console.log('Protected Resource Response', await protectedResource.json())
