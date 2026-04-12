@@ -658,7 +658,9 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
  * let config!: client.Configuration
  * let registeredRedirectUri!: string
  *
- * config[client.customFetch] = (url, options) => {
+ * // @ts-ignore
+ * config[client.customFetch] = (...args) => {
+ *   let [url, options] = args
  *   if (
  *     options.body instanceof URLSearchParams &&
  *     options.body.get('grant_type') === 'authorization_code'
@@ -666,7 +668,8 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
  *     options.body.set('redirect_uri', registeredRedirectUri)
  *   }
  *
- *   return fetch(url, options)
+ *   // @ts-ignore
+ *   return fetch(...args)
  * }
  * ```
  */
