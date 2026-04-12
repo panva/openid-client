@@ -138,3 +138,26 @@ config[client.customFetch] = (...args) => {
   return undici.fetch(args[0], { ...args[1], dispatcher: mockAgent }) // prettier-ignore
 }
 ```
+
+Correcting the `redirect_uri` token endpoint request parameter when the
+registered redirect URI contains query string components or when URL
+normalization alters it (e.g. adding a trailing slash to a bare origin).
+The module derives `redirect_uri` from the callback URL by stripping all
+query parameters but it cannot distinguish the redirect URI's own
+parameters from those added by the authorization server response.
+
+```ts
+let config!: client.Configuration
+let registeredRedirectUri!: string
+
+config[client.customFetch] = (url, options) => {
+  if (
+    options.body instanceof URLSearchParams &&
+    options.body.get('grant_type') === 'authorization_code'
+  ) {
+    options.body.set('redirect_uri', registeredRedirectUri)
+  }
+
+  return fetch(url, options)
+}
+```

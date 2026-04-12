@@ -644,6 +644,31 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
  *   return undici.fetch(args[0], { ...args[1], dispatcher: mockAgent }) // prettier-ignore
  * }
  * ```
+ *
+ * @example
+ *
+ * Correcting the `redirect_uri` token endpoint request parameter when the
+ * registered redirect URI contains query string components or when URL
+ * normalization alters it (e.g. adding a trailing slash to a bare origin).
+ * The module derives `redirect_uri` from the callback URL by stripping all
+ * query parameters but it cannot distinguish the redirect URI's own
+ * parameters from those added by the authorization server response.
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let registeredRedirectUri!: string
+ *
+ * config[client.customFetch] = (url, options) => {
+ *   if (
+ *     options.body instanceof URLSearchParams &&
+ *     options.body.get('grant_type') === 'authorization_code'
+ *   ) {
+ *     options.body.set('redirect_uri', registeredRedirectUri)
+ *   }
+ *
+ *   return fetch(url, options)
+ * }
+ * ```
  */
 export const customFetch: typeof oauth.customFetch = oauth.customFetch
 
@@ -3337,8 +3362,13 @@ export async function authorizationCodeGrant(
           )
       }
     }
-    // TODO: what if searchParams *are* part of the registered redirect_uri?
-    // TODO: what if the registered redirect_uri has no pathname and no trailing /
+    // Note: stripParams removes all searchParams and hash from the URL to
+    // derive redirect_uri for the token endpoint. This won't produce the
+    // correct value when the registered redirect_uri itself contains query
+    // string components (they'll be stripped too) or when URL normalization
+    // alters the URL (e.g. adding a trailing slash to a bare origin). In
+    // those cases clients can use customFetch to adjust the redirect_uri
+    // sent to the token endpoint.
     redirectUri = stripParams(currentUrl)
     switch (true) {
       case !!jarm:
