@@ -649,10 +649,10 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
  *
  * Correcting the `redirect_uri` token endpoint request parameter when the
  * registered redirect URI contains query string components or when URL
- * normalization alters it (e.g. adding a trailing slash to a bare origin).
- * The module derives `redirect_uri` from the callback URL by stripping all
- * query parameters but it cannot distinguish the redirect URI's own
- * parameters from those added by the authorization server response.
+ * normalization alters it (e.g. adding a trailing slash to a bare origin). The
+ * module derives `redirect_uri` from the callback URL by stripping all query
+ * parameters but it cannot distinguish the redirect URI's own parameters from
+ * those added by the authorization server response.
  *
  * ```ts
  * let config!: client.Configuration
