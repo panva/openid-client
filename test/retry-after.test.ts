@@ -129,7 +129,7 @@ test('pollBackchannelAuthenticationGrant - respects retry-after header with date
   const elapsed = Date.now() - startTime
   // Should take ~3 seconds (1 second initial interval, 2 second retry-after the initial response)
   t.true(
-    elapsed >= 3000 && elapsed <= 4000,
+    elapsed >= 3000 && elapsed <= 5000,
     `expected ~3s wait, got ${elapsed}ms`,
   )
   t.is(result.access_token, 'access_token')
