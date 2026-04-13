@@ -7,7 +7,7 @@ import test from 'ava'
 import type passport from 'passport'
 import * as client from '../src/index.js'
 import { Strategy } from '../src/passport.js'
-import type { AuthenticateOptions } from '../src/passport.js'
+import type { AuthenticateOptions, VerifyFunction } from '../src/passport.js'
 
 function close(server: http.Server): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -863,7 +863,7 @@ test('authenticate routes to authorizationCodeGrant for callback GET with code',
   const harness = createStrategyHarness(port)
 
   // First, do the auth request to populate session
-  const redirectTo = await doAuthorizationRequest(harness)
+  await doAuthorizationRequest(harness)
 
   const req = {
     method: 'GET',
@@ -1130,7 +1130,7 @@ test('callback handles POST form_post response', async (t) => {
   t.teardown(() => close(server))
 
   const harness = createStrategyHarness(port)
-  const redirectTo = await doAuthorizationRequest(harness)
+  await doAuthorizationRequest(harness)
 
   // Simulate a form_post: the authorization response params come in the POST body
   const formBody = 'code=post_code'
@@ -1211,9 +1211,10 @@ test('authorizationRequest uses JAR when useJAR is configured', async (t) => {
     {
       callbackURL: `http://127.0.0.1:${port}/cb`,
       config,
-      useJAR: keyPair.privateKey,
+      useJAR: keyPair.privateKey as CryptoKey,
     },
-    (_tokens, verified) => verified(null, { sub: 'user' } as Express.User),
+    ((_tokens: any, verified: any) =>
+      verified(null, { sub: 'user' } as Express.User)) as VerifyFunction,
   ) as StrategyHarness
 
   const session: Record<string, unknown> = {}
@@ -1258,7 +1259,7 @@ test('authorizationRequest uses JAR with modifyAssertion function', async (t) =>
       callbackURL: `http://127.0.0.1:${port}/cb`,
       config,
       useJAR: [
-        keyPair.privateKey,
+        keyPair.privateKey as CryptoKey,
         (header, _payload) => {
           modifyCalled = true
           // just verify we can modify the header
@@ -1266,7 +1267,8 @@ test('authorizationRequest uses JAR with modifyAssertion function', async (t) =>
         },
       ],
     },
-    (_tokens, verified) => verified(null, { sub: 'user' } as Express.User),
+    ((_tokens: any, verified: any) =>
+      verified(null, { sub: 'user' } as Express.User)) as VerifyFunction,
   ) as StrategyHarness
 
   const session: Record<string, unknown> = {}
