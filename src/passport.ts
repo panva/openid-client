@@ -222,7 +222,7 @@ function host(req: express.Request): string | undefined {
     if (!val || !trust(req.socket.remoteAddress, 0)) {
       val = req.get('host')
     } else if (val.indexOf(',') !== -1) {
-      val = val.substring(0, val.indexOf(',')).trimRight()
+      val = val.substring(0, val.indexOf(',')).trimEnd()
     }
 
     return val || undefined
@@ -344,9 +344,9 @@ export class Strategy implements passport.Strategy {
     let params = new URLSearchParams()
 
     if (options?.scope) {
-      if (Array.isArray(options?.scope) && options.scope.length) {
+      if (Array.isArray(options.scope) && options.scope.length) {
         params.set('scope', options.scope.join(' '))
-      } else if (typeof options?.scope === 'string' && options.scope.length) {
+      } else if (typeof options.scope === 'string' && options.scope.length) {
         params.set('scope', options.scope)
       }
     }
