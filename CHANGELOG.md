@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.8.3](https://github.com/panva/openid-client/compare/v6.8.2...v6.8.3) (2026-04-13)
+
+
+### Documentation
+
+* note a workaround for redirect_uri with query string or bare origin ([e9689de](https://github.com/panva/openid-client/commit/e9689de336fed2c9e6678ac804f1c6b7d9bbd338)), closes [#868](https://github.com/panva/openid-client/issues/868)
+
+
+### Fixes
+
+* **passport:** delete one-time state on callback ([1e7dd2e](https://github.com/panva/openid-client/commit/1e7dd2eced03e729447bfa38c8c455268748c5c3))
+
 ## [6.8.2](https://github.com/panva/openid-client/compare/v6.8.1...v6.8.2) (2026-02-07)
 
 
