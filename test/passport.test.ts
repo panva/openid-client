@@ -1395,3 +1395,45 @@ test('custom sessionKey isolates state from another strategy', async (t) => {
   t.truthy(harness1.session['strategy-b'])
   t.not(harness1.session['strategy-a'], harness1.session['strategy-b'])
 })
+
+// --- Session state cleanup ---
+
+test('successful callback calls success and clears session state', async (t) => {
+  const { port, server } = await startTokenEndpoint()
+  t.teardown(() => close(server))
+
+  const harness = createStrategyHarness(port)
+  const redirectTo = await doAuthorizationRequest(harness)
+
+  await doAuthorizationCodeGrant(
+    harness,
+    `${new URL(redirectTo).origin}/cb?code=ok`,
+  )
+
+  t.truthy(harness.results.successUser)
+  t.deepEqual(harness.session, {})
+})
+
+test('replayed callback fails because state was consumed', async (t) => {
+  const { port, server } = await startTokenEndpoint()
+  t.teardown(() => close(server))
+
+  const harness = createStrategyHarness(port)
+  const redirectTo = await doAuthorizationRequest(harness)
+  const callbackUrl = `${new URL(redirectTo).origin}/cb?code=ok`
+
+  // First callback succeeds
+  await doAuthorizationCodeGrant(harness, callbackUrl)
+  t.truthy(harness.results.successUser)
+
+  // Reset results
+  harness.results.successUser = undefined
+  harness.results.failInfo = undefined
+
+  // Second callback with same session should fail
+  await doAuthorizationCodeGrant(harness, callbackUrl)
+  t.truthy(harness.results.failInfo)
+  t.like(harness.results.failInfo as Record<string, unknown>, {
+    message: 'Unable to verify authorization request state',
+  })
+})

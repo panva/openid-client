@@ -541,7 +541,13 @@ export class Strategy implements passport.Strategy {
   ): Promise<void> {
     try {
       const sessionKey = this._sessionKey
-      const stateData: StateData = (req as any).session[sessionKey]
+      const session: Record<string, StateData | undefined> = (req as any)
+        .session
+      const stateData = session[sessionKey]
+
+      // Consume the one-time transaction state as soon as the callback is
+      // handled so it cannot be reused by a later request.
+      delete session[sessionKey]
 
       if (!stateData?.code_verifier) {
         return this.fail({
