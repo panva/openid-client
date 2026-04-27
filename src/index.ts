@@ -4270,7 +4270,7 @@ export async function genericGrantRequest(
   checkConfig(config)
 
   const { as, c, auth, fetch, tlsOnly, timeout, decrypt } = int(config)
-  const result = await oauth
+  const response = await oauth
     .genericTokenEndpointRequest(
       as,
       c,
@@ -4285,18 +4285,31 @@ export async function genericGrantRequest(
         signal: signal(timeout),
       },
     )
-    .then((response) => {
-      let recognizedTokenTypes: oauth.RecognizedTokenTypes | undefined
-      if (grantType === 'urn:ietf:params:oauth:grant-type:token-exchange') {
-        recognizedTokenTypes = { n_a: () => {} }
-      }
-
-      return oauth.processGenericTokenEndpointResponse(as, c, response, {
-        [oauth.jweDecrypt]: decrypt,
-        recognizedTokenTypes,
-      })
-    })
     .catch(errorHandler)
+
+  let recognizedTokenTypes: oauth.RecognizedTokenTypes | undefined
+  if (grantType === 'urn:ietf:params:oauth:grant-type:token-exchange') {
+    recognizedTokenTypes = { n_a: () => {} }
+  }
+
+  const p = oauth.processGenericTokenEndpointResponse(as, c, response, {
+    [oauth.jweDecrypt]: decrypt,
+    recognizedTokenTypes,
+  })
+
+  let result: oauth.TokenEndpointResponse
+  try {
+    result = await p
+  } catch (err) {
+    if (retryable(err, options)) {
+      return genericGrantRequest(config, grantType, parameters, {
+        ...options,
+        flag: retry,
+      })
+    }
+
+    errorHandler(err)
+  }
 
   addHelpers(result)
   return result

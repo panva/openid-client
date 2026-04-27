@@ -1,6 +1,7 @@
 import test from 'ava'
 import * as client from '../src/index.js'
 import * as undici from 'undici'
+import * as jose from 'jose'
 
 test('genericGrantRequest accepts n_a token type in token exchange grant response', async (t) => {
   let agent = new undici.MockAgent()
@@ -120,6 +121,91 @@ test('genericGrantRequest with other grant types does not add n_a token type rec
       message: /unsupported operation/,
     },
   )
+
+  t.notThrows(() => agent.assertNoPendingInterceptors())
+})
+
+test('genericGrantRequest retries DPoP nonce errors', async (t) => {
+  let agent = new undici.MockAgent()
+  agent.disableNetConnect()
+
+  const mockAgent = agent.get('https://as.example.com')
+
+  mockAgent
+    .intercept({
+      method: 'POST',
+      path: '/token',
+      headers({ dpop }) {
+        return (
+          typeof dpop === 'string' && jose.decodeJwt(dpop).nonce === undefined
+        )
+      },
+    })
+    .reply(
+      400,
+      {},
+      {
+        headers: {
+          'dpop-nonce': 'use this',
+          'www-authenticate': 'dpop error="use_dpop_nonce"',
+        },
+      },
+    )
+
+  mockAgent
+    .intercept({
+      method: 'POST',
+      path: '/token',
+      headers({ dpop }) {
+        return (
+          typeof dpop === 'string' && jose.decodeJwt(dpop).nonce === 'use this'
+        )
+      },
+    })
+    .reply(
+      200,
+      {
+        access_token: 'test-access-token',
+        token_type: 'DPoP',
+      },
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    )
+
+  const config = new client.Configuration(
+    {
+      issuer: 'https://as.example.com',
+      token_endpoint: 'https://as.example.com/token',
+    },
+    'test-client-id',
+    undefined,
+    client.None(),
+  )
+
+  // @ts-ignore
+  config[client.customFetch] = (url, options) => {
+    return undici.fetch(url, { ...options, dispatcher: agent })
+  }
+
+  const DPoP = client.getDPoPHandle(
+    config,
+    await client.randomDPoPKeyPair('ES256'),
+  )
+
+  const result = await client.genericGrantRequest(
+    config,
+    'urn:ietf:params:oauth:grant-type:jwt-bearer',
+    {
+      assertion: 'jwt-assertion-value',
+    },
+    { DPoP },
+  )
+
+  t.is(result.access_token, 'test-access-token')
+  t.is(result.token_type, 'dpop')
 
   t.notThrows(() => agent.assertNoPendingInterceptors())
 })
