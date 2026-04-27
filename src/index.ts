@@ -1611,7 +1611,7 @@ export function enableDecryptingResponses(
 
 function checkCryptoKey(key: CryptoKey, alg: string, epk: unknown) {
   if (alg.startsWith('RSA-OAEP')) {
-    return true
+    return key.algorithm.name === 'RSA-OAEP'
   }
 
   if (alg.startsWith('ECDH-ES')) {
