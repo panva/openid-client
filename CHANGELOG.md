@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.8.4](https://github.com/panva/openid-client/compare/v6.8.3...v6.8.4) (2026-04-27)
+
+
+### Fixes
+
+* apply optional non-repudiation on generic grant ID Tokens ([6202888](https://github.com/panva/openid-client/commit/62028884943a1987eb1ddedc9efc01953189a14f))
+* filter jwe decryption keys by algorithm ([34e2ffd](https://github.com/panva/openid-client/commit/34e2ffdea5b3b5afffeff55208aaad1d3b42d0fb))
+* preserve poll abort signals on requests ([96a2d17](https://github.com/panva/openid-client/commit/96a2d176b982196f432990ef1f64978cb7cb881c))
+* retry dpop nonce errors for generic grants ([498c4d9](https://github.com/panva/openid-client/commit/498c4d9c098340ad2f8b9dbb91bfe7f1166a3fd4))
+
 ## [6.8.3](https://github.com/panva/openid-client/compare/v6.8.2...v6.8.3) (2026-04-13)
 
 
