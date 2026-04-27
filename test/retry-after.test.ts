@@ -30,7 +30,183 @@ function createConfig(agent: undici.MockAgent) {
   return config
 }
 
+function createSignalTrackingConfig() {
+  const seenSignals: AbortSignal[] = []
+
+  const config = new client.Configuration(
+    {
+      issuer: issuer.href,
+      token_endpoint: `${issuer.origin}/token`,
+    },
+    'client_id',
+  )
+
+  config[client.customFetch] = async (_url, options) => {
+    if (options.signal) {
+      seenSignals.push(options.signal)
+    }
+
+    return new Response(
+      JSON.stringify({
+        access_token: 'access_token',
+        token_type: 'bearer',
+      }),
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    )
+  }
+
+  return { config, seenSignals }
+}
+
 // Tests for Device Authorization Grant polling with retry-after
+
+test('pollBackchannelAuthenticationGrant - passes abort signal to token request', async (t) => {
+  const { config, seenSignals } = createSignalTrackingConfig()
+  const controller = new AbortController()
+
+  await client.pollBackchannelAuthenticationGrant(
+    config,
+    {
+      auth_req_id: 'req-id',
+      expires_in: 600,
+      interval: 0,
+    },
+    undefined,
+    { signal: controller.signal },
+  )
+
+  const [signal] = seenSignals
+  t.truthy(signal)
+  controller.abort()
+  t.true(signal.aborted)
+})
+
+test('pollDeviceAuthorizationGrant - passes abort signal to token request', async (t) => {
+  const { config, seenSignals } = createSignalTrackingConfig()
+  const controller = new AbortController()
+
+  await client.pollDeviceAuthorizationGrant(
+    config,
+    {
+      device_code: 'device123',
+      user_code: 'user123',
+      verification_uri: `${issuer.origin}/device`,
+      expires_in: 600,
+      interval: 0,
+    },
+    undefined,
+    { signal: controller.signal },
+  )
+
+  const [signal] = seenSignals
+  t.truthy(signal)
+  controller.abort()
+  t.true(signal.aborted)
+})
+
+test('pollBackchannelAuthenticationGrant - passes abort signal to retried token request', async (t) => {
+  const { config, seenSignals } = createSignalTrackingConfig()
+  const controller = new AbortController()
+
+  let attempt = 0
+  config[client.customFetch] = async (_url, options) => {
+    if (options.signal) {
+      seenSignals.push(options.signal)
+    }
+
+    if (++attempt === 1) {
+      return new Response('Service Unavailable', {
+        status: 503,
+        headers: {
+          'retry-after': '0',
+        },
+      })
+    }
+
+    return new Response(
+      JSON.stringify({
+        access_token: 'access_token',
+        token_type: 'bearer',
+      }),
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    )
+  }
+
+  await client.pollBackchannelAuthenticationGrant(
+    config,
+    {
+      auth_req_id: 'req-id',
+      expires_in: 600,
+      interval: 0,
+    },
+    undefined,
+    { signal: controller.signal },
+  )
+
+  t.is(seenSignals.length, 2)
+  controller.abort()
+  t.true(seenSignals[0]!.aborted)
+  t.true(seenSignals[1]!.aborted)
+})
+
+test('pollDeviceAuthorizationGrant - passes abort signal to retried token request', async (t) => {
+  const { config, seenSignals } = createSignalTrackingConfig()
+  const controller = new AbortController()
+
+  let attempt = 0
+  config[client.customFetch] = async (_url, options) => {
+    if (options.signal) {
+      seenSignals.push(options.signal)
+    }
+
+    if (++attempt === 1) {
+      return new Response('Service Unavailable', {
+        status: 503,
+        headers: {
+          'retry-after': '0',
+        },
+      })
+    }
+
+    return new Response(
+      JSON.stringify({
+        access_token: 'access_token',
+        token_type: 'bearer',
+      }),
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    )
+  }
+
+  await client.pollDeviceAuthorizationGrant(
+    config,
+    {
+      device_code: 'device123',
+      user_code: 'user123',
+      verification_uri: `${issuer.origin}/device`,
+      expires_in: 600,
+      interval: 0,
+    },
+    undefined,
+    { signal: controller.signal },
+  )
+
+  t.is(seenSignals.length, 2)
+  controller.abort()
+  t.true(seenSignals[0]!.aborted)
+  t.true(seenSignals[1]!.aborted)
+})
 
 test('pollBackchannelAuthenticationGrant - respects retry-after header with numeric seconds', async (t) => {
   const { agent, mockAgent } = await setupMockAgent()

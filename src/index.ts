@@ -2161,6 +2161,44 @@ function wait(duration: number, signal: AbortSignal): Promise<void> {
   })
 }
 
+function pollRequestSignal(
+  pollingSignal: AbortSignal,
+  timeout?: number,
+): { signal: AbortSignal; cleanup(): void } {
+  const timeoutSignal = signal(timeout)
+
+  if (!timeoutSignal) {
+    return {
+      signal: pollingSignal,
+      cleanup() {},
+    }
+  }
+
+  const controller = new AbortController()
+
+  const abort = (event: Event) => {
+    const source = event.target as AbortSignal
+    controller.abort(source.reason)
+  }
+
+  if (pollingSignal.aborted) {
+    controller.abort(pollingSignal.reason)
+  } else if (timeoutSignal.aborted) {
+    controller.abort(timeoutSignal.reason)
+  } else {
+    pollingSignal.addEventListener('abort', abort, { once: true })
+    timeoutSignal.addEventListener('abort', abort, { once: true })
+  }
+
+  return {
+    signal: controller.signal,
+    cleanup() {
+      pollingSignal.removeEventListener('abort', abort)
+      timeoutSignal.removeEventListener('abort', abort)
+    },
+  }
+}
+
 /**
  * Continuously polls the {@link ServerMetadata.token_endpoint token endpoint}
  * until the end-user finishes the {@link !"Device Authorization Grant"} process
@@ -2238,6 +2276,7 @@ export async function pollDeviceAuthorizationGrant(
       },
     )
 
+  const requestSignal = pollRequestSignal(pollingSignal, timeout)
   const response = await oauth
     .deviceCodeGrantRequest(
       as,
@@ -2250,10 +2289,11 @@ export async function pollDeviceAuthorizationGrant(
         additionalParameters: parameters,
         DPoP: options?.DPoP,
         headers: new Headers(headers),
-        signal: pollingSignal.aborted ? pollingSignal : signal(timeout),
+        signal: requestSignal.signal,
       },
     )
     .catch(errorHandler)
+    .finally(requestSignal.cleanup)
 
   if (response.status === 503 && response.headers.has('retry-after')) {
     await handleRetryAfter(response, interval, pollingSignal, true)
@@ -2480,6 +2520,7 @@ export async function pollBackchannelAuthenticationGrant(
       },
     )
 
+  const requestSignal = pollRequestSignal(pollingSignal, timeout)
   const response = await oauth
     .backchannelAuthenticationGrantRequest(
       as,
@@ -2492,10 +2533,11 @@ export async function pollBackchannelAuthenticationGrant(
         additionalParameters: parameters,
         DPoP: options?.DPoP,
         headers: new Headers(headers),
-        signal: pollingSignal.aborted ? pollingSignal : signal(timeout),
+        signal: requestSignal.signal,
       },
     )
     .catch(errorHandler)
+    .finally(requestSignal.cleanup)
 
   if (response.status === 503 && response.headers.has('retry-after')) {
     await handleRetryAfter(response, interval, pollingSignal, true)
