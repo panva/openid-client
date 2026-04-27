@@ -209,3 +209,84 @@ test('genericGrantRequest retries DPoP nonce errors', async (t) => {
 
   t.notThrows(() => agent.assertNoPendingInterceptors())
 })
+
+test('genericGrantRequest applies non-repudiation checks to ID Tokens', async (t) => {
+  let agent = new undici.MockAgent()
+  agent.disableNetConnect()
+
+  const issuer = new URL('https://as.example.com')
+  const keyPair = await client.randomDPoPKeyPair('ES256')
+  const mockAgent = agent.get(issuer.origin)
+
+  mockAgent
+    .intercept({
+      method: 'POST',
+      path: '/token',
+    })
+    .reply(
+      200,
+      {
+        access_token: 'test-access-token',
+        token_type: 'bearer',
+        id_token: await new jose.SignJWT()
+          .setProtectedHeader({ alg: 'ES256' })
+          .setIssuer(issuer.href)
+          .setAudience('test-client-id')
+          .setSubject('subject')
+          .setIssuedAt()
+          .setExpirationTime('1m')
+          .sign(keyPair.privateKey),
+      },
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    )
+
+  mockAgent
+    .intercept({
+      method: 'GET',
+      path: '/jwks',
+    })
+    .reply(
+      200,
+      {
+        keys: [await jose.exportJWK(keyPair.publicKey)],
+      },
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    )
+
+  const config = new client.Configuration(
+    {
+      issuer: issuer.href,
+      token_endpoint: `${issuer.origin}/token`,
+      jwks_uri: `${issuer.origin}/jwks`,
+      id_token_signing_alg_values_supported: ['ES256'],
+    },
+    'test-client-id',
+    undefined,
+    client.None(),
+  )
+
+  client.enableNonRepudiationChecks(config)
+  // @ts-ignore
+  config[client.customFetch] = (url, options) => {
+    return undici.fetch(url, { ...options, dispatcher: agent })
+  }
+
+  const result = await client.genericGrantRequest(
+    config,
+    'urn:ietf:params:oauth:grant-type:jwt-bearer',
+    {
+      assertion: 'jwt-assertion-value',
+    },
+  )
+
+  t.is(result.claims()?.sub, 'subject')
+  t.notThrows(() => agent.assertNoPendingInterceptors())
+})

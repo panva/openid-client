@@ -4269,7 +4269,8 @@ export async function genericGrantRequest(
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
-  const { as, c, auth, fetch, tlsOnly, timeout, decrypt } = int(config)
+  const { as, c, auth, fetch, tlsOnly, timeout, decrypt, nonRepudiation } =
+    int(config)
   const response = await oauth
     .genericTokenEndpointRequest(
       as,
@@ -4310,6 +4311,8 @@ export async function genericGrantRequest(
 
     errorHandler(err)
   }
+
+  result.id_token && (await nonRepudiation?.(response))
 
   addHelpers(result)
   return result
