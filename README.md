@@ -245,7 +245,6 @@ The supported JavaScript runtimes include those that support the utilized Web AP
 | Version                                                  | Security Fixes 🔑 | Other Bug Fixes 🐞 | New Features ⭐ | Runtime and Module type         |
 | -------------------------------------------------------- | ----------------- | ------------------ | --------------- | ------------------------------- |
 | [v6.x](https://github.com/panva/openid-client/tree/v6.x) | [Security Policy] | ✅                 | ✅              | Universal[^universal] ESM[^cjs] |
-| [v5.x](https://github.com/panva/openid-client/tree/v5.x) | [Security Policy] | ❌                 | ❌              | Node.js CJS + ESM               |
 
 [sponsor-auth0]: https://a0.to/signup/panva
 [WebCryptoAPI]: https://w3c.github.io/webcrypto/
