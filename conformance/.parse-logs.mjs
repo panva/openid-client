@@ -3,7 +3,7 @@ import * as fs from 'node:fs'
 import * as readline from 'node:readline'
 import { parseArgs } from 'node:util'
 
-import archiver from 'archiver'
+import { ZipArchive } from 'archiver'
 
 const {
   values: { submission },
@@ -76,7 +76,7 @@ rl.on('line', (line) => {
 await events.once(rl, 'close')
 
 if (submission) {
-  const archive = archiver('zip')
+  const archive = new ZipArchive()
   const zip = fs.createWriteStream(`${planId}-client-data.zip`)
   archive.pipe(zip)
   for (const file of files) {
