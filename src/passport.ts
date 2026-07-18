@@ -53,8 +53,7 @@ export interface AuthenticateOptions extends passport.AuthenticateOptions {
    * {@link StrategyOptions.authorizationDetails}.
    */
   authorizationDetails?:
-    | client.AuthorizationDetails
-    | client.AuthorizationDetails[]
+    client.AuthorizationDetails | client.AuthorizationDetails[]
 
   /**
    * OpenID Connect prompt. This will be used as the `prompt` authorization
@@ -145,8 +144,7 @@ interface StrategyOptionsBase {
    * through other means.
    */
   authorizationDetails?:
-    | client.AuthorizationDetails
-    | client.AuthorizationDetails[]
+    client.AuthorizationDetails | client.AuthorizationDetails[]
 
   /**
    * OAuth 2.0 Resource Indicator(s). This will be used as the `resource`
@@ -198,8 +196,7 @@ function setResource(params: URLSearchParams, resource: string | string[]) {
 function setAuthorizationDetails(
   params: URLSearchParams,
   authorizationDetails:
-    | client.AuthorizationDetails
-    | client.AuthorizationDetails[],
+    client.AuthorizationDetails | client.AuthorizationDetails[],
 ) {
   if (Array.isArray(authorizationDetails)) {
     params.set('authorization_details', JSON.stringify(authorizationDetails))

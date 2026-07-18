@@ -79,9 +79,7 @@ for all requests made with the resulting [Configuration](../classes/Configuratio
 let server!: URL
 let clientId!: string
 let clientMetadata!:
-  | Partial<client.ClientMetadata>
-  | undefined
-  | string
+  Partial<client.ClientMetadata> | undefined | string
 let clientAuth!: client.ClientAuth | undefined
 
 let config = await client.discovery(

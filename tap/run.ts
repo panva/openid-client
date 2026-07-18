@@ -14,12 +14,10 @@ export default async (
     import('./end2end-device-code.js'),
     import('./end2end.js'),
   ])
-  if (
-    !(
-      typeof navigator !== 'undefined' &&
-      navigator.userAgent?.startsWith?.('Mozilla/5.0 ')
-    )
-  ) {
+  if (!(
+    typeof navigator !== 'undefined' &&
+    navigator.userAgent?.startsWith?.('Mozilla/5.0 ')
+  )) {
     modules.push(await import('./end2end-ciba.js'))
   }
   for (const { default: module } of modules) {

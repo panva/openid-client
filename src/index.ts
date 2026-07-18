@@ -1073,9 +1073,7 @@ export interface DiscoveryRequestOptions {
    * let server!: URL
    * let clientId!: string
    * let clientMetadata!:
-   *   | Partial<client.ClientMetadata>
-   *   | undefined
-   *   | string
+   *   Partial<client.ClientMetadata> | undefined | string
    * let clientAuth!: client.ClientAuth | undefined
    *
    * let config = await client.discovery(
