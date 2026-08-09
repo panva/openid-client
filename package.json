@@ -84,12 +84,12 @@
     "test": "bash -c 'source .node_flags.sh && ava'"
   },
   "dependencies": {
-    "jose": "^6.2.3",
+    "jose": "^6.2.7",
     "oauth4webapi": "^3.8.6"
   },
   "devDependencies": {
     "@koa/cors": "^5.0.0",
-    "@playwright/test": "^1.61.1",
+    "@playwright/test": "^1.62.1",
     "@types/connect-ensure-login": "^0.1.9",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
@@ -101,12 +101,12 @@
     "archiver": "^8.0.0",
     "ava": "^7.0.0",
     "esbuild": "^0.28.1",
-    "happy-dom": "^20.10.6",
+    "happy-dom": "^20.11.1",
     "http-cookie-agent": "^7.0.4",
     "ky": "^1.14.3",
-    "oidc-provider": "^9.9.1",
+    "oidc-provider": "^9.11.1",
     "patch-package": "^8.0.1",
-    "prettier": "^3.9.5",
+    "prettier": "^3.9.6",
     "prettier-plugin-jsdoc": "^1.8.1",
     "qunit": "^2.26.0",
     "raw-body": "^3.0.2",
@@ -117,6 +117,6 @@
     "typedoc-plugin-markdown": "^4.12.0",
     "typedoc-plugin-mdn-links": "^5.1.1",
     "typescript": "^6.0.3",
-    "undici": "^7.28.0"
+    "undici": "^7.29.0"
   }
 }
