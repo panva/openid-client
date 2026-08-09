@@ -12,20 +12,13 @@ on:
   workflow_dispatch:
     inputs:
       conformance_suite_version:
-        description: 'Conformance Suite version override, e.g. release-v5.1.39 (takes precedence over vars.CONFORMANCE_SUITE_VERSION)'
+        description: 'Conformance Suite version override, e.g. release-v5.2.2 (takes precedence over vars.CONFORMANCE_SUITE_VERSION)'
         required: false
         type: string
 
 jobs:
-  build:
-    uses: panva/.github/.github/workflows/build-conformance-suite.yml@main
-    with:
-      version: ${{ inputs.conformance_suite_version || vars.CONFORMANCE_SUITE_VERSION || '' }}
-
   run:
     runs-on: ubuntu-latest
-    needs:
-      - build
     strategy:
       fail-fast: false
       matrix:
@@ -96,43 +89,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Load Cached Conformance Suite Build
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        id: cache
-        with:
-          path: ./conformance-suite
-          key: ${{ needs.build.outputs.cache-key }}
-          fail-on-cache-miss: true
-      - name: Run Conformance Suite
-        working-directory: ./conformance-suite
-        env:
-          COMPOSE_BAKE: true
-        run: |
-          docker compose -f docker-compose-dev.yml up -d
-          while ! curl -skfail https://localhost.emobix.co.uk:8443/api/runner/available >/dev/null; do sleep 2; done
       - name: Setup node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: lts/*
           cache: 'npm'
       - run: npm clean-install
+      - name: Start Conformance Suite
+        uses: panva/.github/.github/actions/conformance-suite@main
+        with:
+          version-override: ${{ inputs.conformance_suite_version || vars.CONFORMANCE_SUITE_VERSION || '' }}
       - name: npm run conformance
         run: |
           set -o pipefail
           npm run conformance | tee capture.txt
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
-          SUITE_BASE_URL: https://localhost.emobix.co.uk:8443
           PLAN_NAME: ${{ matrix.setup.plan }}
           VARIANT: ${{ toJSON(matrix.setup.variant) }}
       - run: node ./conformance/.parse-logs.mjs capture.txt
-      - name: Stop Conformance Suite
-        working-directory: ./conformance-suite
-        env:
-          COMPOSE_BAKE: true
-        run: |
-          docker compose -f docker-compose-dev.yml down
-          sudo rm -rf mongo
       - name: Upload test artifacts
         id: artifact-upload-step
         uses: actions/upload-artifact@v7.0.1
