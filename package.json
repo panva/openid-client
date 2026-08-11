@@ -89,7 +89,7 @@
     "typecheck:types": "tsc -p test-d && tsc -p test-d/tsconfig.node.json && tsc -p test-d/tsconfig.fallback.json && tsc -p test-d/tsconfig.fallback.const.json && tsc -p test-d/tsconfig.fallback.let.json"
   },
   "dependencies": {
-    "jose": "^6.2.7",
+    "jose": "^6.2.8",
     "oauth4webapi": "^3.8.7"
   },
   "devDependencies": {
@@ -110,7 +110,7 @@
     "happy-dom": "^20.11.1",
     "http-cookie-agent": "^7.0.4",
     "ky": "^1.14.3",
-    "oidc-provider": "^9.11.1",
+    "oidc-provider": "^9.11.3",
     "patch-package": "^8.0.1",
     "prettier": "^3.9.6",
     "prettier-plugin-jsdoc": "^1.8.1",
