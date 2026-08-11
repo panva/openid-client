@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "files": ["lexical-host.d.ts", "fallback.let.ts"],
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "types": []
+  }
+}

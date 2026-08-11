@@ -60,9 +60,9 @@ export default (QUnit: QUnit) => {
     test(`end-to-end client auth, client credentials, introspection, revocation ${label(
       testCase,
     )}`, async (t) => {
-      const kp = (await jose.generateKeyPair('ES256', {
+      const kp = await jose.generateKeyPair('ES256', {
         extractable: true,
-      })) as client.CryptoKeyPair
+      })
       const {
         metadata,
         issuerIdentifier,

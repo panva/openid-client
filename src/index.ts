@@ -14,19 +14,6 @@ if (
   headers = { 'user-agent': USER_AGENT }
 }
 
-/**
- * @ignore
- */
-export type CryptoKey = Extract<
-  Awaited<ReturnType<typeof crypto.subtle.generateKey>>,
-  { type: string }
->
-
-export interface CryptoKeyPair {
-  privateKey: CryptoKey
-  publicKey: CryptoKey
-}
-
 interface Internal {
   __proto__: null
   as: Readonly<ServerMetadata>
@@ -59,6 +46,8 @@ export {
   type AuthorizationDetails,
   type BackchannelAuthenticationResponse,
   type ConfirmationClaims,
+  type CryptoKey,
+  type CryptoKeyPair,
   type DeviceAuthorizationResponse,
   type OmitSymbolProperties,
   type ExportedJWKSCache,
@@ -419,7 +408,7 @@ export function None(): ClientAuth {
  * @see [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ClientAuthentication)
  */
 export function PrivateKeyJwt(
-  clientPrivateKey: CryptoKey | oauth.PrivateKey,
+  clientPrivateKey: oauth.CryptoKey | oauth.PrivateKey,
   options?: oauth.ModifyAssertionOptions,
 ): ClientAuth {
   return oauth.PrivateKeyJwt(clientPrivateKey, options)
@@ -1016,7 +1005,7 @@ function errorHandler(err: unknown): never {
 export function randomDPoPKeyPair(
   alg?: string,
   options?: oauth.GenerateKeyPairOptions,
-): Promise<CryptoKeyPair> {
+): Promise<oauth.CryptoKeyPair> {
   return oauth
     .generateKeyPair(alg ?? 'ES256', {
       extractable: options?.extractable,
@@ -1333,7 +1322,7 @@ export interface DecryptionKey {
    * An asymmetric private CryptoKey. Its algorithm must be compatible with a
    * supported JWE Key Management Algorithm Identifier
    */
-  key: CryptoKey
+  key: oauth.CryptoKey
 
   /**
    * The key's JWE Key Management Algorithm Identifier, this can be used to
@@ -1523,7 +1512,7 @@ export function enableDecryptingResponses(
     'A192CBC-HS384',
     'A256CBC-HS512',
   ],
-  ...keys: Array<CryptoKey | DecryptionKey>
+  ...keys: Array<oauth.CryptoKey | DecryptionKey>
 ) {
   if (int(config).decrypt !== undefined) {
     throw new TypeError(
@@ -1607,7 +1596,7 @@ export function enableDecryptingResponses(
     )
 }
 
-function checkCryptoKey(key: CryptoKey, alg: string, epk: unknown) {
+function checkCryptoKey(key: oauth.CryptoKey, alg: string, epk: unknown) {
   if (alg.startsWith('RSA-OAEP')) {
     return key.algorithm.name === 'RSA-OAEP'
   }
@@ -1636,7 +1625,7 @@ function selectCryptoKeyForDecryption(
   alg: string,
   kid?: string,
   epk?: unknown,
-): CryptoKey {
+): oauth.CryptoKey {
   const { 0: key, length } = keys.filter((key) => {
     if (kid !== key.kid) {
       return false
@@ -2076,7 +2065,7 @@ function addHelpers(
  */
 export function getDPoPHandle(
   config: Configuration,
-  keyPair: CryptoKeyPair,
+  keyPair: oauth.CryptoKeyPair,
   options?: oauth.ModifyAssertionOptions,
 ): DPoPHandle {
   checkConfig(config)
@@ -3893,7 +3882,7 @@ export async function buildAuthorizationUrlWithJAR(
   /**
    * Key to sign the JAR Request Object with.
    */
-  signingKey: CryptoKey | oauth.PrivateKey,
+  signingKey: oauth.CryptoKey | oauth.PrivateKey,
   options?: oauth.ModifyAssertionOptions,
 ): Promise<URL> {
   checkConfig(config)
