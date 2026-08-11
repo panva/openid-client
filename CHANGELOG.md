@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.8.5](https://github.com/panva/openid-client/compare/v6.8.4...v6.8.5) (2026-08-11)
+
+### Fixes
+
+* **types:** expose custom fetch duplex option ([a125bc8](https://github.com/panva/openid-client/commit/a125bc8b70b0aea1d13aa4189e51cdda5df938a4))
+* **types:** use portable oauth4webapi declarations ([2cab98f](https://github.com/panva/openid-client/commit/2cab98f3cb53971b0b6804e8b42a4103054e52f0))
+
+### Documentation
+
+* improve API index tables ([c6e4ae3](https://github.com/panva/openid-client/commit/c6e4ae338f21e5e1502a10bba345a14a9dc57095))
+* update README.md and SECURITY.md to reflect passed EOL dates ([d3721c2](https://github.com/panva/openid-client/commit/d3721c2cab93d6525d85ac32fe767bc6124972df))
 ## [6.8.4](https://github.com/panva/openid-client/compare/v6.8.3...v6.8.4) (2026-04-27)
 
 
