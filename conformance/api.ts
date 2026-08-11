@@ -1,5 +1,7 @@
 import * as fs from 'node:fs/promises'
 
+import { validatePlanId } from './report.js'
+
 const {
   SUITE_BASE_URL = 'https://www.certification.openid.net',
   SUITE_ACCESS_TOKEN,
@@ -135,12 +137,17 @@ async function getModuleInfo(module: Test) {
 }
 
 export async function downloadArtifact(plan: Plan) {
-  const response = await fetch(url(`/api/plan/exporthtml/${plan.id}`), {
+  const planId = validatePlanId(plan.id)
+  const response = await fetch(url(`/api/plan/exporthtml/${planId}`), {
     headers: headers(),
   })
 
+  if (!response.ok) {
+    throw new Error(await response.text())
+  }
+
   await fs.writeFile(
-    `${plan.id}.zip`,
+    `${planId}.zip`,
     new Uint8Array(await response.arrayBuffer()),
     { flag: 'w' },
   )

@@ -17,6 +17,8 @@ import {
   type Plan,
   type Test,
 } from './api.js'
+import { isRunnableModule } from './modules.js'
+import { normalizeAvaTestTitle, requestReport } from './report.js'
 
 const conformance = JSON.parse(process.env.CONFORMANCE!)
 
@@ -42,6 +44,18 @@ const ALG = conformance.ALG as string
 export const plan: Plan = conformance.plan
 export const variant: Record<string, string> = conformance.variant
 export const mtls: { key: string; cert: string } = conformance.mtls || {}
+export const reportStatusPath: string = conformance.reportStatusPath
+export const unhandledModules: Array<{ name: string; path: string }> =
+  conformance.unhandledModules
+
+test.afterEach.always((t) => {
+  if (!t.passed) {
+    requestReport(reportStatusPath, {
+      type: 'failure',
+      detail: normalizeAvaTestTitle(t.title),
+    })
+  }
+})
 
 let prefix = ''
 
@@ -72,13 +86,10 @@ async function importPrivateKey(alg: string, jwk: JWK) {
 }
 
 export function modules(metaUrl: string): ModulePrescription[] {
-  const name = metaUrl.split('/').reverse()[0].replace('.ts', '')
+  const name = metaUrl.split('/').reverse()[0].replace(/\.ts$/, '')
   return conformance.plan.modules.filter((x: ModulePrescription) => {
-    switch (x.variant?.response_type) {
-      case 'id_token token':
-      case 'code token':
-      case 'code id_token token':
-        return false
+    if (!isRunnableModule(x)) {
+      return false
     }
 
     return (
@@ -86,6 +97,20 @@ export function modules(metaUrl: string): ModulePrescription[] {
       (name === prefix.slice(0, -1) ? name : `${prefix}${name}`)
     )
   })
+}
+
+async function waitForResult(
+  instance: Test,
+  options?: Parameters<typeof waitForState>[1],
+) {
+  const result = await waitForState(instance, options)
+  if (result[1] === 'WARNING') {
+    requestReport(reportStatusPath, {
+      type: 'warning',
+      detail: `${instance.name} (${instance.id})`,
+    })
+  }
+  return result
 }
 
 function usesJarm(variant: Record<string, string>) {
@@ -516,7 +541,7 @@ export const flow = (options?: MacroOptions) => {
         }
       }
 
-      await waitForState(instance)
+      await waitForResult(instance)
       if (module.skipLogTestFinished !== true) {
         t.log('Test Finished')
       }
@@ -600,7 +625,7 @@ export const rejects = (
         }
       }
 
-      await waitForState(t.context.instance)
+      await waitForResult(t.context.instance)
       t.log('Test Finished')
       t.pass()
     },
@@ -617,7 +642,7 @@ export const skippable = (
         macro.exec(t, { ...module, skipLogTestFinished: true }),
       ])
 
-      await waitForState(t.context.instance, {
+      await waitForResult(t.context.instance, {
         results: new Set(['SKIPPED', 'PASSED']),
       })
       t.log('Test Finished')

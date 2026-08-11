@@ -1,5 +1,5 @@
 import * as crypto from 'node:crypto'
-import { existsSync as exists, writeFileSync, readFileSync } from 'node:fs'
+import { existsSync as exists, readFileSync } from 'node:fs'
 
 import * as jose from 'jose'
 
@@ -8,6 +8,13 @@ const { homepage, name, version } = JSON.parse(
 )
 
 import * as api from './api.js'
+import { getModuleHandler, isRunnableModule, sortTestFiles } from './modules.js'
+import {
+  clearReportRequest,
+  getReportStatusPath,
+  setActionEnvironment,
+  validatePlanId,
+} from './report.js'
 
 const UUID = crypto.randomUUID()
 
@@ -115,14 +122,6 @@ export function getScope(variant: Record<string, string>) {
   return variant.fapi_client_type === 'plain_oauth' ? 'email' : 'openid email'
 }
 
-export function logToActions(content: string) {
-  if (process.env.GITHUB_STEP_SUMMARY) {
-    writeFileSync(process.env.GITHUB_STEP_SUMMARY, `${content}\n`, {
-      flag: 'a',
-    })
-  }
-}
-
 export function makePublicJwks(def: any) {
   const client = structuredClone(def)
   client.jwks.keys.forEach((jwk: any) => {
@@ -143,21 +142,9 @@ function pushEncryptionKey(def: any) {
     ...key,
     kid: `enc-${key.kid}`,
     use: 'enc',
-    alg: 'RSA-OEAP',
+    alg: 'RSA-OAEP',
   })
   return client
-}
-
-function ensureTestFile(path: string, name: string) {
-  if (!exists(path)) {
-    writeFileSync(
-      path,
-      `import test from 'ava'
-
-test.todo('${name}')
-`,
-    )
-  }
 }
 
 const variant = {
@@ -228,46 +215,63 @@ export default async () => {
     },
     variant,
   )
+  const planId = validatePlanId(plan.id)
+
+  setActionEnvironment('CONFORMANCE_PLAN_NAME', PLAN_NAME)
+  setActionEnvironment('CONFORMANCE_PLAN_ID', planId)
+  setActionEnvironment('CONFORMANCE_PLAN_VARIANT', JSON.stringify(variant))
 
   const { certificationProfileName } = await api.getTestPlanInfo(plan)
 
-  function logBoth(input: string) {
+  function log(input: string) {
     console.log(input.replaceAll('`', '').replaceAll('**', ''))
-    logToActions(input)
   }
 
-  logBoth('Test Plan Details')
-  logBoth('')
-  logBoth(`- Name: **${PLAN_NAME}**`)
-  logBoth(`- ID: **\`${plan.id}\`**`)
-  logBoth('- Variant')
+  const planDetails = [
+    'Test Plan Details',
+    '',
+    `- Name: **${PLAN_NAME}**`,
+    `- ID: **\`${plan.id}\`**`,
+    '- Variant',
+  ]
   for (const [key, value] of Object.entries(variant)) {
-    logBoth(`  - ${key}: ${value}`)
+    planDetails.push(`  - ${key}: ${value}`)
   }
   if (certificationProfileName) {
-    logBoth(`- Certification Profile Name: **${certificationProfileName}**`)
+    planDetails.push(
+      `- Certification Profile Name: **${certificationProfileName}**`,
+    )
   } else {
-    logBoth(`- Certification Profile Name: **N/A**`)
+    planDetails.push(`- Certification Profile Name: **N/A**`)
+  }
+  for (const detail of planDetails) {
+    log(detail)
   }
 
   const files: Set<string> = new Set()
+  const unhandledModules = new Map<string, { name: string; path: string }>()
   for (const module of plan.modules) {
-    switch (module.variant?.response_type) {
-      case 'id_token token':
-      case 'code token':
-      case 'code id_token token':
-        continue
+    if (!isRunnableModule(module)) {
+      continue
     }
-    const name = module.testModule.replace(
-      /(?:fapi2-(?:security-profile-final|message-signing-final)|fapi1-advanced-final|oidcc)-client-test-/,
-      '',
-    )
-    const path = `./conformance/modules/${name}.ts`
-    ensureTestFile(path, name)
-    files.add(path)
+
+    const handler = getModuleHandler(module.testModule)
+    if (exists(handler.path)) {
+      files.add(handler.path)
+    } else {
+      unhandledModules.set(handler.path, handler)
+    }
   }
 
+  if (unhandledModules.size) {
+    files.add('./conformance/unhandled.ts')
+  }
+
+  const reportStatusPath = getReportStatusPath(planId)
+  clearReportRequest(reportStatusPath)
+
   return {
+    cache: false,
     environmentVariables: {
       CONFORMANCE: JSON.stringify({
         configuration,
@@ -275,9 +279,13 @@ export default async () => {
         plan,
         mtls,
         ALG,
+        reportStatusPath,
+        unhandledModules: [...unhandledModules.values()],
       }),
     },
+    sortTestFiles,
     concurrency: 1,
+    failFast: false,
     extensions: {
       ts: 'module',
       mjs: true,

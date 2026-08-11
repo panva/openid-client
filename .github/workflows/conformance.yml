@@ -100,6 +100,7 @@ jobs:
         with:
           version-override: ${{ inputs.conformance_suite_version || vars.CONFORMANCE_SUITE_VERSION || '' }}
       - name: npm run conformance
+        id: conformance
         run: |
           set -o pipefail
           npm run conformance | tee capture.txt
@@ -107,20 +108,27 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
           PLAN_NAME: ${{ matrix.setup.plan }}
           VARIANT: ${{ toJSON(matrix.setup.variant) }}
+      - name: Summarize conformance runner failure
+        if: ${{ always() && steps.conformance.outcome == 'failure' && env.CONFORMANCE_REPORT != 'true' }}
+        run: bash -c 'source .node_flags.sh && node ./conformance/report_failure.ts'
+        env:
+          CONFORMANCE_PLAN_NAME: ${{ env.CONFORMANCE_PLAN_NAME || matrix.setup.plan }}
+          CONFORMANCE_PLAN_ID: ${{ env.CONFORMANCE_PLAN_ID || 'unavailable' }}
+          CONFORMANCE_PLAN_VARIANT: ${{ env.CONFORMANCE_PLAN_VARIANT || '{}' }}
       - run: node ./conformance/.parse-logs.mjs capture.txt
-      - name: Upload test artifacts
-        id: artifact-upload-step
+        if: ${{ always() && steps.conformance.outcome == 'success' && env.CONFORMANCE_REPORT == 'true' }}
+      - name: Upload conformance diagnostics
+        id: conformance_artifact
         uses: actions/upload-artifact@v7.0.1
         with:
           path: |
             *.zip
             *.txt
-          name: conformance results idx(${{ strategy.job-index }})
+          name: conformance diagnostics idx(${{ strategy.job-index }})
           if-no-files-found: error
-        if: ${{ always() }}
-      - if: ${{ success() }}
-        run: |
-          echo "### [:tada:](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }})" >> $GITHUB_STEP_SUMMARY
-      - if: ${{ failure() }}
-        run: |
-          echo "### [:exclamation:](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }})" >> $GITHUB_STEP_SUMMARY
+        if: ${{ always() && (steps.conformance.outcome == 'failure' || env.CONFORMANCE_REPORT == 'true') }}
+      - name: Link conformance diagnostics
+        if: ${{ always() && steps.conformance_artifact.outputs.artifact-url != '' }}
+        run: printf '\n[Download conformance diagnostics](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          ARTIFACT_URL: ${{ steps.conformance_artifact.outputs.artifact-url }}

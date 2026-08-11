@@ -9,7 +9,7 @@ run_conformance() {
   local variant=$2
   local capture_file="capture-$(uuidgen).txt" # Use a unique capture filename
   echo "Running conformance test with PLAN_NAME=$plan_name, VARIANT=$variant"
-  npm run conformance | tee "$capture_file"
+  CONFORMANCE_SUBMISSION=true npm run conformance | tee "$capture_file"
   node ./conformance/.parse-logs.mjs --submission "$capture_file"
   echo "===================================================================="
 }
