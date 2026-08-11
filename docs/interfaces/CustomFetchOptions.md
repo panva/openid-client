@@ -41,6 +41,15 @@ See [Request.redirect](https://developer.mozilla.org/docs/Web/API/Request/redire
 
 ***
 
+### duplex?
+
+• `optional` **duplex?**: `"half"`
+
+Request body streaming mode. Set to `half` when `body` is a
+`ReadableStream`.
+
+***
+
 ### signal?
 
 • `optional` **signal?**: [`AbortSignal`](https://developer.mozilla.org/docs/Web/API/AbortSignal)

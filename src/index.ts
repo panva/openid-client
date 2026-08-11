@@ -1747,6 +1747,11 @@ export interface CustomFetchOptions {
    */
   body: FetchBody
   /**
+   * Request body streaming mode. Set to `half` when `body` is a
+   * `ReadableStream`.
+   */
+  duplex?: 'half'
+  /**
    * HTTP Headers
    */
   headers: Record<string, string>

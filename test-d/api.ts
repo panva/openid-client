@@ -13,6 +13,8 @@ const _isDependencyCryptoKeyPair: Equals<
   oauth.CryptoKeyPair
 > = true
 const _isDependencyJwk: Equals<client.JWK, oauth.JWK> = true
+const _duplex: Equals<client.CustomFetchOptions['duplex'], 'half' | undefined> =
+  true
 
 // @ts-expect-error `any` would accept this
 const _notAny: client.CryptoKey = 'definitely not a key'

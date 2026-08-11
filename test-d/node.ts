@@ -14,6 +14,8 @@ const _isDependencyCryptoKeyPair: Equals<
   oauth.CryptoKeyPair
 > = true
 const _isDependencyJwk: Equals<client.JWK, oauth.JWK> = true
+const _duplex: Equals<client.CustomFetchOptions['duplex'], 'half' | undefined> =
+  true
 
 // @ts-expect-error `any` would accept this
 const _notAny: client.CryptoKey = 'definitely not a key'
@@ -24,6 +26,7 @@ declare const pair: client.CryptoKeyPair
 declare const clientJwk: client.JWK
 declare const hostJwk: JsonWebKey
 declare const webcryptoHostJwk: webcrypto.JsonWebKey
+declare const customFetchOptions: client.CustomFetchOptions
 
 const _toClient: client.CryptoKey = hostKey
 const _toHost: webcrypto.CryptoKey = clientKey
@@ -34,3 +37,7 @@ const _clientJwkToHost: JsonWebKey = clientJwk
 const _hostJwkToClient: client.JWK = hostJwk
 const _clientJwkToWebcryptoHost: webcrypto.JsonWebKey = clientJwk
 const _webcryptoHostJwkToClient: client.JWK = webcryptoHostJwk
+const _requestInit: RequestInit = {
+  body: new URLSearchParams(),
+  duplex: customFetchOptions.duplex,
+}
