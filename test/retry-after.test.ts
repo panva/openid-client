@@ -263,8 +263,8 @@ test('pollBackchannelAuthenticationGrant - respects retry-after header with nume
 test('pollBackchannelAuthenticationGrant - respects retry-after header with date', async (t) => {
   const { agent, mockAgent } = await setupMockAgent()
 
-  const futureDate = new Date(Date.now() + 3000) // 3 seconds from now, means 2 seconds from the initial poll
   const startTime = Date.now()
+  const retryAt = Math.ceil(startTime / 1000) * 1000 + 3000
 
   // First poll - return 503 with retry-after date
   mockAgent
@@ -274,7 +274,7 @@ test('pollBackchannelAuthenticationGrant - respects retry-after header with date
     })
     .reply(503, '503 Service Unavailable', {
       headers: {
-        'retry-after': futureDate.toUTCString(),
+        'retry-after': new Date(retryAt).toUTCString(),
       },
     })
 
@@ -303,10 +303,10 @@ test('pollBackchannelAuthenticationGrant - respects retry-after header with date
   )
 
   const elapsed = Date.now() - startTime
-  // Should take ~3 seconds (1 second initial interval, 2 second retry-after the initial response)
+  const expected = retryAt - startTime
   t.true(
-    elapsed >= 3000 && elapsed <= 5000,
-    `expected ~3s wait, got ${elapsed}ms`,
+    elapsed >= expected && elapsed <= expected + 2000,
+    `expected ${expected}-${expected + 2000}ms wait, got ${elapsed}ms`,
   )
   t.is(result.access_token, 'access_token')
   t.notThrows(() => agent.assertNoPendingInterceptors())
@@ -518,8 +518,8 @@ test('pollDeviceAuthorizationGrant - respects retry-after header with numeric se
 test('pollDeviceAuthorizationGrant - respects retry-after header with date', async (t) => {
   const { agent, mockAgent } = await setupMockAgent()
 
-  const futureDate = new Date(Date.now() + 3000) // 3 seconds from now, means 2 seconds from the initial poll
   const startTime = Date.now()
+  const retryAt = Math.ceil(startTime / 1000) * 1000 + 3000
 
   // First poll - return 503 with retry-after date
   mockAgent
@@ -529,7 +529,7 @@ test('pollDeviceAuthorizationGrant - respects retry-after header with date', asy
     })
     .reply(503, '503 Service Unavailable', {
       headers: {
-        'retry-after': futureDate.toUTCString(),
+        'retry-after': new Date(retryAt).toUTCString(),
       },
     })
 
@@ -560,10 +560,10 @@ test('pollDeviceAuthorizationGrant - respects retry-after header with date', asy
   )
 
   const elapsed = Date.now() - startTime
-  // Should take ~3 seconds (1 second initial interval, 2 second retry-after the initial response)
+  const expected = retryAt - startTime
   t.true(
-    elapsed >= 3000 && elapsed <= 4000,
-    `expected ~3s wait, got ${elapsed}ms`,
+    elapsed >= expected && elapsed <= expected + 2000,
+    `expected ${expected}-${expected + 2000}ms wait, got ${elapsed}ms`,
   )
   t.is(result.access_token, 'access_token')
   t.notThrows(() => agent.assertNoPendingInterceptors())
