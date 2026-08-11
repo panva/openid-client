@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 • `const` **skipStateCheck**: *typeof* `oauth.skipStateCheck` = `oauth.skipStateCheck`
 
+Skips authorization response `state` validation.
+
 > [!WARNING]\
 > This option has security implications that must be understood, assessed for
 > applicability, and accepted before use.

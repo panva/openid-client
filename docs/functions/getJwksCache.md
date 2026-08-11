@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **getJwksCache**(`config`): [`ExportedJWKSCache`](../interfaces/ExportedJWKSCache.md) \| `undefined`
 
+Exports the JSON Web Key Set cache used for signature validation.
+
 This function can be used to export the JSON Web Key Set and the timestamp at
 which it was last fetched if the client used the
 [authorization server's JWK Set](../interfaces/ServerMetadata.md#jwks_uri) to validate

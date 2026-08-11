@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Public properties available on a [Configuration](../classes/Configuration.md) instance
+Configurable properties exposed by a [Configuration](../classes/Configuration.md) instance.
 
 ## Properties
 

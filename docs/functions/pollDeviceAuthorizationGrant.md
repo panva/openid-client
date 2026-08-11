@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **pollDeviceAuthorizationGrant**(`config`, `deviceAuthorizationResponse`, `parameters?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
+Polls until an OAuth 2.0 Device Authorization Grant completes.
+
 Continuously polls the [token endpoint](../interfaces/ServerMetadata.md#token_endpoint)
 until the end-user finishes the [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628.html) process
 on their secondary device

@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **randomDPoPKeyPair**(`alg?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`CryptoKeyPair`](../interfaces/CryptoKeyPair.md)\>
 
-Generates random [CryptoKeyPair](../interfaces/CryptoKeyPair.md) to sign DPoP Proof JWTs with
+Generates an asymmetric key pair for signing DPoP proofs.
 
 ## Parameters
 

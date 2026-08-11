@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Authorization server endpoint aliases used for mutual TLS.
+
 ## Indexable
 
 > \[`metadata`: `string`\]: `string` \| `undefined`

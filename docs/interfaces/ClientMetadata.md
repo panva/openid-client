@@ -6,9 +6,10 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-A subset of the [IANA OAuth Client Metadata
-registry](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata)
-that has an effect on how the Client functions
+Client metadata that affects openid-client behavior.
+
+This is a subset of the [IANA OAuth Client Metadata
+registry](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata).
 
 ## Indexable
 

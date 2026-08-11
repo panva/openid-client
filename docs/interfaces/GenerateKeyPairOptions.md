@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Options for generating an asymmetric signing key pair.
+
 ## Properties
 
 ### extractable?

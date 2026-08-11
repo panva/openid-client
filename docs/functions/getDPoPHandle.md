@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **getDPoPHandle**(`config`, `keyPair`, `options?`): [`DPoPHandle`](../interfaces/DPoPHandle.md)
 
+Creates a DPoP handle for sender-constrained token requests.
+
 Returns a wrapper / handle around a public/private key pair that is used for
 negotiating and proving proof-of-possession to sender-constrain OAuth 2.0
 tokens via [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) at the Authorization Server and Resource Server.

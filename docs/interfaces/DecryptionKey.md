@@ -6,6 +6,9 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+An asymmetric private key and optional JOSE metadata used to decrypt
+responses.
+
 ## Properties
 
 ### key

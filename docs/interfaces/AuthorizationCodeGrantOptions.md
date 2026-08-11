@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Options for performing an Authorization Code Grant.
+
 ## Properties
 
 ### DPoP?

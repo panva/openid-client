@@ -8,6 +8,9 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **authorizationCodeGrant**(`config`, `currentUrl`, `checks?`, `tokenEndpointParameters?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
+Processes an authorization response and performs the Authorization Code
+Grant.
+
 This method validates the authorization response and then executes the
 [Authorization Code Grant](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1) at the Authorization Server's
 [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) to obtain an access

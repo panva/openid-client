@@ -8,6 +8,9 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **buildAuthorizationUrlWithJAR**(`config`, `parameters`, `signingKey`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`URL`](https://developer.mozilla.org/docs/Web/API/URL)\>
 
+Builds an authorization request URL using a JWT Secured Authorization Request
+(JAR).
+
 Returns a URL to redirect the user-agent to, in order to request
 authorization at the Authorization Server with a prior step of using
 [JAR](https://www.rfc-editor.org/rfc/rfc9101.html)

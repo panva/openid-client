@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **randomNonce**(): `string`
 
+Generates a random OpenID Connect `nonce` value.
+
 ## Returns
 
 `string`

@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **setJwksCache**(`config`, `jwksCache`): `void`
 
+Imports an externally managed JSON Web Key Set cache.
+
 > [!WARNING]\
 > Use of this function has security implications that must be understood,
 > assessed for applicability, and accepted before use. It is critical that the

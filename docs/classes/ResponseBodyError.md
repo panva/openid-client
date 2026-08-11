@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Throw when a server responds with an "OAuth-style" error JSON body
+Thrown when a server returns an OAuth-style error in a JSON response body.
 
 ## Example
 

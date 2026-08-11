@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Proof-of-possession confirmation (`cnf`) claims associated with a token.
+
 ## Indexable
 
 > \[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`

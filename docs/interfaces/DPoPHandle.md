@@ -6,8 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-DPoP handle to use for requesting a sender-constrained access token. Obtained
-from [getDPoPHandle](../functions/getDPoPHandle.md)
+A DPoP proof-generation and nonce-management handle returned by
+[getDPoPHandle](../functions/getDPoPHandle.md).
 
 ## See
 

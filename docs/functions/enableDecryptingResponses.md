@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **enableDecryptingResponses**(`config`, `contentEncryptionAlgorithms?`, ...`keys`): `void`
 
+Enables processing of encrypted authorization server responses.
+
 Enables the client to process encrypted ID Tokens, encrypted JWT UserInfo
 responses, and encrypted JWT Introspection responses. Multiple private keys
 may be provided for the decryption key selection process but only a single

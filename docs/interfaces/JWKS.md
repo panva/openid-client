@@ -6,8 +6,10 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+A JSON Web Key Set.
+
 ## Properties
 
 ### keys
 
-• `readonly` **keys**: [`JWK`](JWK.md)[]
+• `readonly` **keys**: [`JWK`](../type-aliases/JWK.md)[]

@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **useCodeIdTokenResponseType**(`config`): `void`
 
+Configures the client to use the OpenID Connect Hybrid Flow.
+
 This changes the `response_type` used by the client to be `code id_token` and
 expects the authorization server response passed to
 [authorizationCodeGrant](authorizationCodeGrant.md) to be one described by

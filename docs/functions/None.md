@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **None**(): [`ClientAuth`](../type-aliases/ClientAuth.md)
 
+Creates a `none` client authentication method.
+
 **`none`** (public client) uses the HTTP request body to send only
 `client_id` as `application/x-www-form-urlencoded` body parameter.
 

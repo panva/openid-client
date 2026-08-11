@@ -6,8 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Interface to pass an asymmetric private key and, optionally, its associated JWK Key ID to be
-added as a `kid` JOSE Header Parameter.
+An asymmetric private key with an optional JWK Key ID for JOSE headers.
 
 ## Properties
 

@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Helpers attached to any resolved [TokenEndpointResponse](TokenEndpointResponse.md)
+Helpers attached to a parsed [TokenEndpointResponse](TokenEndpointResponse.md).
 
 ## Methods
 

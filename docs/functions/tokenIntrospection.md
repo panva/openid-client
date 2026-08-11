@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **tokenIntrospection**(`config`, `token`, `parameters?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`IntrospectionResponse`](../interfaces/IntrospectionResponse.md)\>
 
+Retrieves the status and metadata of an OAuth 2.0 token.
+
 Queries the
 [token introspection endpoint](../interfaces/ServerMetadata.md#introspection_endpoint) to
 obtain the status and metadata of a given token. The range of metadata

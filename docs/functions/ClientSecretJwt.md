@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **ClientSecretJwt**(`clientSecret?`, `options?`): [`ClientAuth`](../type-aliases/ClientAuth.md)
 
+Creates a `client_secret_jwt` client authentication method.
+
 **`client_secret_jwt`** uses the HTTP request body to send `client_id`,
 `client_assertion_type`, and `client_assertion` as
 `application/x-www-form-urlencoded` body parameters. HMAC is used for the

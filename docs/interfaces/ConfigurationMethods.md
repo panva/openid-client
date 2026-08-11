@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Public methods available on a [Configuration](../classes/Configuration.md) instance
+Methods exposed by a [Configuration](../classes/Configuration.md) instance.
 
 ## Methods
 

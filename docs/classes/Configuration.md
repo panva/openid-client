@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Represents an authorization server and its client configuration.
+
 Configuration is an abstraction over the
 [OAuth 2.0 Authorization Server metadata](../interfaces/ServerMetadata.md) and
 [OAuth 2.0 Client metadata](../interfaces/ClientMetadata.md)

@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **fetchUserInfo**(`config`, `accessToken`, `expectedSubject`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`UserInfoResponse`](../interfaces/UserInfoResponse.md)\>
 
+Fetches and parses OpenID Connect UserInfo claims.
+
 Performs a UserInfo Request at the
 [userinfo endpoint](../interfaces/ServerMetadata.md#userinfo_endpoint) and returns the
 parsed UserInfo claims from either its JSON or JWT response.

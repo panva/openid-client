@@ -8,4 +8,4 @@ Support from the community to continue maintaining and improving this module is 
 
 • **JsonValue** = [`JsonPrimitive`](JsonPrimitive.md) \| [`JsonObject`](JsonObject.md) \| [`JsonArray`](JsonArray.md)
 
-JSON Values
+Any JSON-compatible value.

@@ -6,8 +6,9 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Thrown when a server responds with a parseable WWW-Authenticate challenges, typically because of
-expired tokens, or bad client authentication
+Thrown when a server response contains one or more parseable `WWW-Authenticate` challenges.
+
+This typically occurs because of expired tokens or bad client authentication.
 
 ## Example
 

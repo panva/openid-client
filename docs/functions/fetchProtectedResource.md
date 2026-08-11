@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **fetchProtectedResource**(`config`, `accessToken`, `url`, `method`, `body?`, `headers?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Response`](https://developer.mozilla.org/docs/Web/API/Response)\>
 
-Performs an arbitrary Protected Resource resource.
+Fetches an arbitrary OAuth 2.0 protected resource.
 
 Authorization Header is used to transmit the Access Token value. No other
 Access Token means of transport are supported.

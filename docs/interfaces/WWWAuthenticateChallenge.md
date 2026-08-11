@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Parsed WWW-Authenticate challenge
+A parsed `WWW-Authenticate` challenge.
 
 ## Properties
 

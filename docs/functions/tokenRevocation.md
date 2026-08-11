@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **tokenRevocation**(`config`, `token`, `parameters?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`void`\>
 
+Requests revocation of an OAuth 2.0 token.
+
 Attempts revocation of an OAuth 2.0 token by making a request to the
 [token revocation endpoint](../interfaces/ServerMetadata.md#revocation_endpoint). Whether
 the token gets revoked, and the effect of that revocation is at the

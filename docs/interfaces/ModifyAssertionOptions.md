@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Options for customizing a JWT assertion immediately before signing.
+
 ## Properties
 
 ### \[modifyAssertion\]?

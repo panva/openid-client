@@ -8,7 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 • **OmitSymbolProperties**\<`T`\> = `{ [K in keyof T as K extends symbol ? never : K]: T[K] }`
 
-Removes all Symbol properties from a type
+Removes symbol-keyed properties from a type.
 
 ## Type Parameters
 

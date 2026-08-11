@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 • `const` **clockSkew**: *typeof* `oauth.clockSkew` = `oauth.clockSkew`
 
+Adjusts the current time used by protocol validations.
+
 Use to adjust the assumed current time. Positive and negative finite values
 representing seconds are allowed. Default is `0` (Date.now() + 0 seconds is
 used).

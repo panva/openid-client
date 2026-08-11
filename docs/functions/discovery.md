@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **discovery**(`server`, `clientId`, `metadata?`, `clientAuthentication?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Configuration`](../classes/Configuration.md)\>
 
+Discovers authorization server metadata and creates a client configuration.
+
 Performs Authorization Server Metadata discovery and returns a
 [Configuration](../classes/Configuration.md) with the discovered
 [Authorization Server](../interfaces/ServerMetadata.md) metadata.

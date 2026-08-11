@@ -8,4 +8,4 @@ Support from the community to continue maintaining and improving this module is 
 
 • **JsonPrimitive** = `string` \| `number` \| `boolean` \| `null`
 
-JSON Primitives
+A JSON primitive value.

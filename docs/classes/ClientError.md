@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+An error raised by openid-client.
+
 ## Properties
 
 ### message

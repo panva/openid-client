@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Thrown when OAuth 2.0 Authorization Error Response is encountered.
+Thrown when an OAuth 2.0 Authorization Error Response is encountered.
 
 ## Example
 

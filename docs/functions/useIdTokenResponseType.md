@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **useIdTokenResponseType**(`config`): `void`
 
+Configures the client to use the OpenID Connect Implicit Flow.
+
 This changes the `response_type` used by the client to be `id_token`, this
 subsequently requires that the authorization server response be passed to
 [implicitAuthentication](implicitAuthentication.md) (instead of [authorizationCodeGrant](authorizationCodeGrant.md)) and

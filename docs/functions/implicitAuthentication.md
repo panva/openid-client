@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **implicitAuthentication**(`config`, `currentUrl`, `expectedNonce`, `checks?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`IDToken`](../interfaces/IDToken.md)\>
 
+Validates an OpenID Connect Implicit Flow response.
+
 This method validates the authorization server's
 [Implicit Authentication Flow](https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth)
 Response.

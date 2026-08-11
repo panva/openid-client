@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Options for Dynamic Client Registration requests.
+
 ## Properties
 
 ### \[customFetch\]?

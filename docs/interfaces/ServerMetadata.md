@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-Authorization Server Metadata
+Metadata describing an OAuth 2.0 authorization server.
 
 ## See
 

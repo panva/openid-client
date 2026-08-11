@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 • `const` **clockTolerance**: *typeof* `oauth.clockTolerance` = `oauth.clockTolerance`
 
+Sets the allowed clock tolerance for JWT timestamp claim validation.
+
 Use to set allowed clock tolerance when checking DateTime JWT Claims. Only
 positive finite values representing seconds are allowed. Default is `30` (30
 seconds).

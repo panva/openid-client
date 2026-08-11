@@ -6,6 +6,9 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Expected values and validation checks for an Authorization Code Grant
+response.
+
 ## Properties
 
 ### expectedNonce?

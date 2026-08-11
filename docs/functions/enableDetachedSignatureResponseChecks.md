@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **enableDetachedSignatureResponseChecks**(`config`): `void`
 
+Enables FAPI 1.0 Advanced detached-signature response validation.
+
 This builds on top of [useCodeIdTokenResponseType](useCodeIdTokenResponseType.md) and enables the
 response to be validated as per the
 [FAPI 1.0 Advanced profile](https://openid.net/specs/openid-financial-api-part-2-1_0-final.html#id-token-as-detached-signature).

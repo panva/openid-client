@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+A JSON Web Key Set cache value suitable for external persistence.
+
 ## Properties
 
 ### jwks

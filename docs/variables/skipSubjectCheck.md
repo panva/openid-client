@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 • `const` **skipSubjectCheck**: *typeof* `oauth.skipSubjectCheck` = `oauth.skipSubjectCheck`
 
+Skips UserInfo `sub` claim validation.
+
 > [!WARNING]\
 > This option has security implications that must be understood, assessed for
 > applicability, and accepted before use.

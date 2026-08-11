@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+An asymmetric public and private `CryptoKey` pair.
+
 ## Properties
 
 ### privateKey

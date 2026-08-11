@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Helpers for querying authorization server capabilities.
+
 ## Methods
 
 ### supportsPKCE()

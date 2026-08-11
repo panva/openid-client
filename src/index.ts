@@ -73,8 +73,8 @@ export {
 } from 'oauth4webapi'
 
 /**
- * Implementation of the Client's Authentication Method at the Authorization
- * Server.
+ * A function that applies client authentication to an authorization server
+ * request.
  *
  * The default is {@link ClientSecretPost} if {@link ClientMetadata.client_secret}
  * is present, {@link None} otherwise.
@@ -99,6 +99,8 @@ export type ClientAuth = (
 let tbi!: WeakMap<Internal['c'], ClientAuth>
 
 /**
+ * Creates a `client_secret_post` client authentication method.
+ *
  * **`client_secret_post`** uses the HTTP request body to send `client_id` and
  * `client_secret` as `application/x-www-form-urlencoded` body parameters
  *
@@ -175,6 +177,8 @@ function assertString(input: unknown, it: string): asserts input is string {
 }
 
 /**
+ * Creates a `client_secret_basic` client authentication method.
+ *
  * **`client_secret_basic`** uses the HTTP `Basic` authentication scheme to send
  * `client_id` and `client_secret` in an `Authorization` HTTP Header.
  *
@@ -241,6 +245,8 @@ export function ClientSecretBasic(clientSecret?: string): ClientAuth {
 }
 
 /**
+ * Creates a `client_secret_jwt` client authentication method.
+ *
  * **`client_secret_jwt`** uses the HTTP request body to send `client_id`,
  * `client_assertion_type`, and `client_assertion` as
  * `application/x-www-form-urlencoded` body parameters. HMAC is used for the
@@ -312,6 +318,8 @@ export function ClientSecretJwt(
 }
 
 /**
+ * Creates a `none` client authentication method.
+ *
  * **`none`** (public client) uses the HTTP request body to send only
  * `client_id` as `application/x-www-form-urlencoded` body parameter.
  *
@@ -359,6 +367,8 @@ export function None(): ClientAuth {
 }
 
 /**
+ * Creates a `private_key_jwt` client authentication method.
+ *
  * **`private_key_jwt`** uses the HTTP request body to send `client_id`,
  * `client_assertion_type`, and `client_assertion` as
  * `application/x-www-form-urlencoded` body parameters. Digital signature is
@@ -415,6 +425,8 @@ export function PrivateKeyJwt(
 }
 
 /**
+ * Creates a `tls_client_auth` client authentication method.
+ *
  * **`tls_client_auth`** uses the HTTP request body to send only `client_id` as
  * `application/x-www-form-urlencoded` body parameter and the mTLS key and
  * certificate is configured through
@@ -464,6 +476,8 @@ export function TlsClientAuth(): ClientAuth {
 }
 
 /**
+ * Skips authorization response `state` validation.
+ *
  * > [!WARNING]\
  * > This option has security implications that must be understood, assessed for
  * > applicability, and accepted before use.
@@ -481,6 +495,8 @@ export function TlsClientAuth(): ClientAuth {
 export const skipStateCheck: typeof oauth.skipStateCheck = oauth.skipStateCheck
 
 /**
+ * Skips UserInfo `sub` claim validation.
+ *
  * > [!WARNING]\
  * > This option has security implications that must be understood, assessed for
  * > applicability, and accepted before use.
@@ -497,6 +513,8 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
   oauth.skipSubjectCheck
 
 /**
+ * Overrides the Fetch API implementation used for outbound HTTP requests.
+ *
  * When set on a {@link Configuration}, this replaces the use of global fetch. As
  * a fetch replacement the arguments and expected return are the same as fetch.
  *
@@ -665,6 +683,9 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
 export const customFetch: typeof oauth.customFetch = oauth.customFetch
 
 /**
+ * Provides a hook for mutating JWT headers and claims immediately before
+ * signing.
+ *
  * Use to mutate JWT header and payload before they are signed. Its intended use
  * is working around non-conform server behaviours, such as modifying JWT "aud"
  * (audience) claims, or otherwise changing fixed claims used by this library.
@@ -706,6 +727,8 @@ export const modifyAssertion: typeof oauth.modifyAssertion =
   oauth.modifyAssertion
 
 /**
+ * Adjusts the current time used by protocol validations.
+ *
  * Use to adjust the assumed current time. Positive and negative finite values
  * representing seconds are allowed. Default is `0` (Date.now() + 0 seconds is
  * used).
@@ -737,6 +760,8 @@ export const modifyAssertion: typeof oauth.modifyAssertion =
 
 export const clockSkew: typeof oauth.clockSkew = oauth.clockSkew
 /**
+ * Sets the allowed clock tolerance for JWT timestamp claim validation.
+ *
  * Use to set allowed clock tolerance when checking DateTime JWT Claims. Only
  * positive finite values representing seconds are allowed. Default is `30` (30
  * seconds).
@@ -755,6 +780,9 @@ export const clockSkew: typeof oauth.clockSkew = oauth.clockSkew
  */
 export const clockTolerance: typeof oauth.clockTolerance = oauth.clockTolerance
 
+/**
+ * A request body supported by openid-client's Fetch API integration.
+ */
 export type FetchBody =
   | ArrayBuffer
   | null
@@ -765,17 +793,18 @@ export type FetchBody =
   | URLSearchParams
 
 /**
- * DPoP handle to use for requesting a sender-constrained access token. Obtained
- * from {@link getDPoPHandle}
+ * A DPoP proof-generation and nonce-management handle returned by
+ * {@link getDPoPHandle}.
  *
  * @see {@link !DPoP RFC 9449 - OAuth 2.0 Demonstrating Proof of Possession (DPoP)}
  */
 export interface DPoPHandle extends oauth.DPoPHandle {}
 
 /**
- * A subset of the [IANA OAuth Client Metadata
- * registry](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata)
- * that has an effect on how the Client functions
+ * Client metadata that affects openid-client behavior.
+ *
+ * This is a subset of the [IANA OAuth Client Metadata
+ * registry](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata).
  *
  * @group You are probably looking for this
  */
@@ -839,7 +868,7 @@ export interface ClientMetadata extends oauth.Client {
   use_mtls_endpoint_aliases?: boolean
 }
 /**
- * Authorization Server Metadata
+ * Metadata describing an OAuth 2.0 authorization server.
  *
  * @group You are probably looking for this
  *
@@ -859,8 +888,7 @@ function CodedTypeError(message: string, code: codes, cause?: unknown) {
 }
 
 /**
- * Calculates the PKCE `code_challenge` value to send with an authorization
- * request using the S256 PKCE Code Challenge Method transformation
+ * Calculates an S256 PKCE `code_challenge` from a `code_verifier`.
  *
  * @param codeVerifier `code_verifier` value generated e.g. from
  *   {@link randomPKCECodeVerifier}
@@ -878,6 +906,8 @@ export function calculatePKCECodeChallenge(
 }
 
 /**
+ * Generates a random PKCE `code_verifier` value.
+ *
  * @returns Random `code_verifier` value
  *
  * @group PKCE
@@ -887,6 +917,8 @@ export function randomPKCECodeVerifier(): string {
 }
 
 /**
+ * Generates a random OpenID Connect `nonce` value.
+ *
  * @returns Random `nonce` value
  *
  * @group Authorization Request
@@ -896,6 +928,8 @@ export function randomNonce(): string {
 }
 
 /**
+ * Generates a random OAuth 2.0 `state` value.
+ *
  * @returns Random `state` value
  *
  * @group Authorization Request
@@ -905,6 +939,8 @@ export function randomState(): string {
 }
 
 /**
+ * An error raised by openid-client.
+ *
  * @group Errors
  */
 export class ClientError extends Error {
@@ -992,7 +1028,7 @@ function errorHandler(err: unknown): never {
 }
 
 /**
- * Generates random {@link CryptoKeyPair} to sign DPoP Proof JWTs with
+ * Generates an asymmetric key pair for signing DPoP proofs.
  *
  * @param alg One of the supported {@link JWSAlgorithm JWS Algorithm}
  *   identifiers. Default is `ES256`.
@@ -1013,6 +1049,9 @@ export function randomDPoPKeyPair(
     .catch(errorHandler)
 }
 
+/**
+ * Options for authorization server metadata discovery.
+ */
 export interface DiscoveryRequestOptions {
   /**
    * Custom {@link !fetch Fetch API} implementation to use for the HTTP Requests
@@ -1122,6 +1161,9 @@ function handleB2Clogin(server: URL, options?: DiscoveryRequestOptions) {
   return false
 }
 
+/**
+ * Options for Dynamic Client Registration requests.
+ */
 export interface DynamicClientRegistrationRequestOptions
   extends DiscoveryRequestOptions, DPoPOptions {
   /**
@@ -1143,6 +1185,8 @@ export interface DynamicClientRegistrationRequestOptions
 }
 
 /**
+ * Discovers an authorization server and dynamically registers a client.
+ *
  * Performs Authorization Server Metadata discovery and subsequently a Dynamic
  * Client Registration at the discovered Authorization Server's
  * {@link ServerMetadata.registration_endpoint} using the provided client
@@ -1251,6 +1295,8 @@ export async function dynamicClientRegistration(
 }
 
 /**
+ * Discovers authorization server metadata and creates a client configuration.
+ *
  * Performs Authorization Server Metadata discovery and returns a
  * {@link Configuration} with the discovered
  * {@link ServerMetadata Authorization Server} metadata.
@@ -1317,6 +1363,10 @@ export async function discovery(
   return instance
 }
 
+/**
+ * An asymmetric private key and optional JOSE metadata used to decrypt
+ * responses.
+ */
 export interface DecryptionKey {
   /**
    * An asymmetric private CryptoKey. Its algorithm must be compatible with a
@@ -1459,6 +1509,8 @@ function checkEcdhAlg(algs: Set<string>, alg: unknown, pk: unknown) {
 }
 
 /**
+ * Enables processing of encrypted authorization server responses.
+ *
  * Enables the client to process encrypted ID Tokens, encrypted JWT UserInfo
  * responses, and encrypted JWT Introspection responses. Multiple private keys
  * may be provided for the decryption key selection process but only a single
@@ -1683,6 +1735,9 @@ async function decrypt(
   )
 }
 
+/**
+ * Helpers for querying authorization server capabilities.
+ */
 export interface ServerMetadataHelpers {
   /**
    * Determines whether the Authorization Server supports a given Code Challenge
@@ -1728,7 +1783,7 @@ type HybridImplementation = (
 type NonRepudiationImplementation = (response: Response) => Promise<void>
 
 /**
- * Public methods available on a {@link Configuration} instance
+ * Methods exposed by a {@link Configuration} instance.
  */
 export interface ConfigurationMethods {
   /**
@@ -1741,6 +1796,9 @@ export interface ConfigurationMethods {
   clientMetadata(): Readonly<oauth.OmitSymbolProperties<ClientMetadata>>
 }
 
+/**
+ * Options passed to a custom HTTP request implementation.
+ */
 export interface CustomFetchOptions {
   /**
    * The request body content to send to the server
@@ -1772,6 +1830,8 @@ export interface CustomFetchOptions {
 }
 
 /**
+ * A Fetch API-compatible function used for outbound HTTP requests.
+ *
  * @see {@link customFetch}
  */
 export type CustomFetch = (
@@ -1787,7 +1847,7 @@ export type CustomFetch = (
 ) => Promise<Response>
 
 /**
- * Public properties available on a {@link Configuration} instance
+ * Configurable properties exposed by a {@link Configuration} instance.
  */
 export interface ConfigurationProperties {
   /**
@@ -1806,6 +1866,8 @@ export interface ConfigurationProperties {
 }
 
 /**
+ * Represents an authorization server and its client configuration.
+ *
  * Configuration is an abstraction over the
  * {@link ServerMetadata OAuth 2.0 Authorization Server metadata} and
  * {@link ClientMetadata OAuth 2.0 Client metadata}
@@ -1970,7 +2032,7 @@ export class Configuration
 Object.freeze(Configuration.prototype)
 
 /**
- * Helpers attached to any resolved {@link TokenEndpointResponse}
+ * Helpers attached to a parsed {@link TokenEndpointResponse}.
  */
 export interface TokenEndpointResponseHelpers {
   /**
@@ -2042,6 +2104,8 @@ function addHelpers(
 }
 
 /**
+ * Creates a DPoP handle for sender-constrained token requests.
+ *
  * Returns a wrapper / handle around a public/private key pair that is used for
  * negotiating and proving proof-of-possession to sender-constrain OAuth 2.0
  * tokens via {@link !DPoP} at the Authorization Server and Resource Server.
@@ -2077,6 +2141,9 @@ export function getDPoPHandle(
   return oauth.DPoP(int(config).c, keyPair, options)
 }
 
+/**
+ * Options for polling an OAuth 2.0 Device Authorization Grant.
+ */
 export interface DeviceAuthorizationGrantPollOptions extends DPoPOptions {
   /**
    * AbortSignal to abort polling. Default is that the operation will time out
@@ -2192,6 +2259,8 @@ function pollRequestSignal(
 }
 
 /**
+ * Polls until an OAuth 2.0 Device Authorization Grant completes.
+ *
  * Continuously polls the {@link ServerMetadata.token_endpoint token endpoint}
  * until the end-user finishes the {@link !"Device Authorization Grant"} process
  * on their secondary device
@@ -2326,6 +2395,8 @@ export async function pollDeviceAuthorizationGrant(
 }
 
 /**
+ * Initiates an OAuth 2.0 Device Authorization Grant.
+ *
  * Initiates a {@link !"Device Authorization Grant"} using parameters from the
  * `parameters` argument.
  *
@@ -2374,6 +2445,8 @@ export async function initiateDeviceAuthorization(
 }
 
 /**
+ * Initiates a Client-Initiated Backchannel Authentication request.
+ *
  * Initiates a {@link !"Client-Initiated Backchannel Authentication Grant"} using
  * parameters from the `parameters` argument.
  *
@@ -2422,6 +2495,9 @@ export async function initiateBackchannelAuthentication(
     .catch(errorHandler)
 }
 
+/**
+ * Options for polling a Client-Initiated Backchannel Authentication Grant.
+ */
 export interface BackchannelAuthenticationGrantPollOptions extends DPoPOptions {
   /**
    * AbortSignal to abort polling. Default is that the operation will time out
@@ -2432,6 +2508,8 @@ export interface BackchannelAuthenticationGrantPollOptions extends DPoPOptions {
 }
 
 /**
+ * Polls until a Client-Initiated Backchannel Authentication Grant completes.
+ *
  * Continuously polls the {@link ServerMetadata.token_endpoint token endpoint}
  * until the end-user finishes the
  * {@link !"Client-Initiated Backchannel Authentication Grant"} process
@@ -2574,6 +2652,9 @@ export async function pollBackchannelAuthenticationGrant(
   return result
 }
 
+/**
+ * Options for performing an Authorization Code Grant.
+ */
 export interface AuthorizationCodeGrantOptions extends DPoPOptions {
   /**
    * This is not part of the public API.
@@ -2650,6 +2731,8 @@ export function allowInsecureRequests(config: Configuration) {
 }
 
 /**
+ * Imports an externally managed JSON Web Key Set cache.
+ *
  * > [!WARNING]\
  * > Use of this function has security implications that must be understood,
  * > assessed for applicability, and accepted before use. It is critical that the
@@ -2671,6 +2754,8 @@ export function setJwksCache(
 }
 
 /**
+ * Exports the JSON Web Key Set cache used for signature validation.
+ *
  * This function can be used to export the JSON Web Key Set and the timestamp at
  * which it was last fetched if the client used the
  * {@link ServerMetadata.jwks_uri authorization server's JWK Set} to validate
@@ -2698,6 +2783,8 @@ export function getJwksCache(
 }
 
 /**
+ * Enables JWS signature validation for processed JWT responses.
+ *
  * Enables validating the JWS Signature of either a JWT {@link !Response.body} or
  * {@link TokenEndpointResponse.id_token} of a processed {@link !Response} such as
  * JWT UserInfo or JWT Introspection responses.
@@ -2769,6 +2856,8 @@ export function enableNonRepudiationChecks(config: Configuration) {
 }
 
 /**
+ * Configures the client to use JWT Secured Authorization Response Mode (JARM).
+ *
  * This changes the `response_mode` used by the client to be `jwt` and expects
  * the authorization server response passed to {@link authorizationCodeGrant} to
  * be one described by {@link !JARM}.
@@ -2830,6 +2919,8 @@ export function useJwtResponseMode(config: Configuration) {
 }
 
 /**
+ * Enables FAPI 1.0 Advanced detached-signature response validation.
+ *
  * This builds on top of {@link useCodeIdTokenResponseType} and enables the
  * response to be validated as per the
  * {@link https://openid.net/specs/openid-financial-api-part-2-1_0-final.html#id-token-as-detached-signature FAPI 1.0 Advanced profile}.
@@ -2898,12 +2989,18 @@ export function enableDetachedSignatureResponseChecks(config: Configuration) {
     )
 }
 
+/**
+ * Expected values and validation checks for an OpenID Connect Implicit Flow
+ * response.
+ */
 export interface ImplicitAuthenticationResponseChecks extends Pick<
   AuthorizationCodeGrantChecks,
   'expectedState' | 'maxAge'
 > {}
 
 /**
+ * Validates an OpenID Connect Implicit Flow response.
+ *
  * This method validates the authorization server's
  * {@link https://openid.net/specs/openid-connect-core-1_0-errata2.html#ImplicitFlowAuth Implicit Authentication Flow}
  * Response.
@@ -3089,6 +3186,8 @@ export async function implicitAuthentication(
 }
 
 /**
+ * Configures the client to use the OpenID Connect Hybrid Flow.
+ *
  * This changes the `response_type` used by the client to be `code id_token` and
  * expects the authorization server response passed to
  * {@link authorizationCodeGrant} to be one described by
@@ -3163,6 +3262,8 @@ export function useCodeIdTokenResponseType(config: Configuration) {
 }
 
 /**
+ * Configures the client to use the OpenID Connect Implicit Flow.
+ *
  * This changes the `response_type` used by the client to be `id_token`, this
  * subsequently requires that the authorization server response be passed to
  * {@link implicitAuthentication} (instead of {@link authorizationCodeGrant}) and
@@ -3224,6 +3325,10 @@ export function useIdTokenResponseType(config: Configuration) {
   int(config).implicit = true
 }
 
+/**
+ * Expected values and validation checks for an Authorization Code Grant
+ * response.
+ */
 export interface AuthorizationCodeGrantChecks {
   /**
    * Expected value of the `nonce` ID Token claim. This value must match
@@ -3282,6 +3387,9 @@ function webInstanceOf<T>(input: unknown, toStringTag: string): input is T {
 }
 
 /**
+ * Processes an authorization response and performs the Authorization Code
+ * Grant.
+ *
  * This method validates the authorization response and then executes the
  * {@link !"Authorization Code Grant"} at the Authorization Server's
  * {@link ServerMetadata.token_endpoint token endpoint} to obtain an access
@@ -3556,6 +3664,8 @@ async function validateCodeIdTokenResponse(
 }
 
 /**
+ * Performs an OAuth 2.0 Refresh Token Grant.
+ *
  * Performs an OAuth 2.0 {@link !"Refresh Token Grant"} at the Authorization
  * Server's {@link ServerMetadata.token_endpoint token endpoint} using parameters
  * from the `parameters` argument, allowing a client to obtain a new access
@@ -3643,6 +3753,8 @@ export async function refreshTokenGrant(
 }
 
 /**
+ * Performs an OAuth 2.0 Client Credentials Grant.
+ *
  * Performs an OAuth 2.0 {@link !"Client Credentials Grant"} at the Authorization
  * Server's {@link ServerMetadata.token_endpoint token endpoint} using parameters
  * from the `parameters` argument
@@ -3715,6 +3827,8 @@ export async function clientCredentialsGrant(
 }
 
 /**
+ * Builds an authorization request URL.
+ *
  * Returns a URL to redirect the user-agent to, in order to request
  * authorization at the Authorization Server
  *
@@ -3803,6 +3917,9 @@ export function buildAuthorizationUrl(
 }
 
 /**
+ * Builds an authorization request URL using a JWT Secured Authorization Request
+ * (JAR).
+ *
  * Returns a URL to redirect the user-agent to, in order to request
  * authorization at the Authorization Server with a prior step of using
  * {@link !JAR}
@@ -3908,6 +4025,9 @@ export async function buildAuthorizationUrlWithJAR(
 }
 
 /**
+ * Builds an authorization request URL using Pushed Authorization Requests
+ * (PAR).
+ *
  * Returns a URL to redirect the user-agent to, in order to request
  * authorization at the Authorization Server with a prior step of using
  * {@link !PAR}
@@ -4029,6 +4149,8 @@ export async function buildAuthorizationUrlWithPAR(
 }
 
 /**
+ * Builds an RP-Initiated Logout URL.
+ *
  * Returns a URL to redirect the user-agent to after they log out to trigger
  * {@link https://openid.net/specs/openid-connect-rpinitiated-1_0-final.html#RPLogout RP-Initiated Logout}
  * at the Authorization Server.
@@ -4107,6 +4229,8 @@ function signal(timeout?: number): AbortSignal | undefined {
 }
 
 /**
+ * Fetches and parses OpenID Connect UserInfo claims.
+ *
  * Performs a UserInfo Request at the
  * {@link ServerMetadata.userinfo_endpoint userinfo endpoint} and returns the
  * parsed UserInfo claims from either its JSON or JWT response.
@@ -4183,6 +4307,8 @@ function retryable(err: unknown, options: DPoPOptions | undefined) {
 }
 
 /**
+ * Retrieves the status and metadata of an OAuth 2.0 token.
+ *
  * Queries the
  * {@link ServerMetadata.introspection_endpoint token introspection endpoint} to
  * obtain the status and metadata of a given token. The range of metadata
@@ -4237,6 +4363,9 @@ export async function tokenIntrospection(
 }
 
 const retry: unique symbol = Symbol()
+/**
+ * Options for making DPoP-bound requests.
+ */
 export interface DPoPOptions {
   /**
    * DPoP handle to use for requesting a sender-constrained access token.
@@ -4259,6 +4388,8 @@ export interface DPoPOptions {
 }
 
 /**
+ * Performs an arbitrary OAuth grant request.
+ *
  * Performs any Grant request at the
  * {@link ServerMetadata.token_endpoint token endpoint}. The purpose is to be
  * able to execute grant requests such as Token Exchange Grant, JWT Bearer Token
@@ -4353,6 +4484,8 @@ export async function genericGrantRequest(
 }
 
 /**
+ * Requests revocation of an OAuth 2.0 token.
+ *
  * Attempts revocation of an OAuth 2.0 token by making a request to the
  * {@link ServerMetadata.revocation_endpoint token revocation endpoint}. Whether
  * the token gets revoked, and the effect of that revocation is at the
@@ -4392,7 +4525,7 @@ export async function tokenRevocation(
 }
 
 /**
- * Performs an arbitrary Protected Resource resource.
+ * Fetches an arbitrary OAuth 2.0 protected resource.
  *
  * Authorization Header is used to transmit the Access Token value. No other
  * Access Token means of transport are supported.

@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **genericGrantRequest**(`config`, `grantType`, `parameters`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
+Performs an arbitrary OAuth grant request.
+
 Performs any Grant request at the
 [token endpoint](../interfaces/ServerMetadata.md#token_endpoint). The purpose is to be
 able to execute grant requests such as Token Exchange Grant, JWT Bearer Token

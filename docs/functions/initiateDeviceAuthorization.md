@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **initiateDeviceAuthorization**(`config`, `parameters`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DeviceAuthorizationResponse`](../interfaces/DeviceAuthorizationResponse.md)\>
 
+Initiates an OAuth 2.0 Device Authorization Grant.
+
 Initiates a [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628.html) using parameters from the
 `parameters` argument.
 

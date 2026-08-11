@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Options passed to a custom HTTP request implementation.
+
 ## Properties
 
 ### body

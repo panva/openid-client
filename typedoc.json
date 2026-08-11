@@ -1,11 +1,12 @@
 {
-  "$schema": "https://typedoc.org/schema.json",
+  "$schema": "https://typedoc-plugin-markdown.org/schema.json",
   "disableSources": true,
   "parametersFormat": "table",
+  "indexFormat": "table",
   "strikeDeprecatedPageTitles": false,
   "textContentMappings": {
     "title.memberPage": "{kind}: {name}\n\n[💗 Help the project](https://github.com/sponsors/panva)\n\nSupport from the community to continue maintaining and improving this module is welcome. If you find the module useful, please consider supporting the project by [becoming a sponsor](https://github.com/sponsors/panva).\n\n***\n\n",
-    "title.indexPage": "{projectName} API Reference\n\n[💗 Help the project](https://github.com/sponsors/panva)\n\nSupport from the community to continue maintaining and improving this module is welcome. If you find the module useful, please consider supporting the project by [becoming a sponsor](https://github.com/sponsors/panva).\n\n",
+    "title.indexPage": "{projectName} API Reference\n\n[💗 Help the project](https://github.com/sponsors/panva)\n\nSupport from the community to continue maintaining and improving this module is welcome. If you find the module useful, please consider supporting the project by [becoming a sponsor](https://github.com/sponsors/panva).\n\n"
   },
   "hideBreadcrumbs": true,
   "hidePageHeader": true,
@@ -15,6 +16,7 @@
   "excludeProtected": true,
   "excludeInternal": true,
   "gitRevision": "main",
+  "treatWarningsAsErrors": true,
   "hideGenerator": true,
   "out": "docs",
   "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-mdn-links"],

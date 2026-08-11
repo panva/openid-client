@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Options for polling a Client-Initiated Backchannel Authentication Grant.
+
 ## Properties
 
 ### DPoP?

@@ -8,8 +8,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **calculatePKCECodeChallenge**(`codeVerifier`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`string`\>
 
-Calculates the PKCE `code_challenge` value to send with an authorization
-request using the S256 PKCE Code Challenge Method transformation
+Calculates an S256 PKCE `code_challenge` from a `code_verifier`.
 
 ## Parameters
 

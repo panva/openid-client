@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **randomPKCECodeVerifier**(): `string`
 
+Generates a random PKCE `code_verifier` value.
+
 ## Returns
 
 `string`

@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+Options for authorization server metadata discovery.
+
 ## Properties
 
 ### \[customFetch\]?

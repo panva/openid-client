@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 • `const` **customFetch**: *typeof* `oauth.customFetch` = `oauth.customFetch`
 
+Overrides the Fetch API implementation used for outbound HTTP requests.
+
 When set on a [Configuration](../classes/Configuration.md), this replaces the use of global fetch. As
 a fetch replacement the arguments and expected return are the same as fetch.
 

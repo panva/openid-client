@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **randomState**(): `string`
 
+Generates a random OAuth 2.0 `state` value.
+
 ## Returns
 
 `string`

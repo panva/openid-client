@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+An entry in an OAuth 2.0 Rich Authorization Requests `authorization_details` array.
+
 ## Indexable
 
 > \[`parameter`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`

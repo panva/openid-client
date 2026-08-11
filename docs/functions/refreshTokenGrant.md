@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **refreshTokenGrant**(`config`, `refreshToken`, `parameters?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`TokenEndpointResponse`](../interfaces/TokenEndpointResponse.md) & [`TokenEndpointResponseHelpers`](../interfaces/TokenEndpointResponseHelpers.md)\>
 
+Performs an OAuth 2.0 Refresh Token Grant.
+
 Performs an OAuth 2.0 [Refresh Token Grant](https://datatracker.ietf.org/doc/html/rfc6749#section-6) at the Authorization
 Server's [token endpoint](../interfaces/ServerMetadata.md#token_endpoint) using parameters
 from the `parameters` argument, allowing a client to obtain a new access

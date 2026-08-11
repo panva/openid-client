@@ -6,7 +6,11 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+A callback that mutates a JWT assertion header and claims immediately before signing.
+
 ▸ **ModifyAssertionFunction**(`header`, `payload`): `void`
+
+A callback that mutates a JWT assertion header and claims immediately before signing.
 
 ## Parameters
 

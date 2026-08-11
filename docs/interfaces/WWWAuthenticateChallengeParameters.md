@@ -6,7 +6,7 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
-WWW-Authenticate challenge auth-param dictionary with known and unknown parameter names
+Known and extension authentication parameters from a `WWW-Authenticate` challenge.
 
 ## Indexable
 

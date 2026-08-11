@@ -6,6 +6,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ***
 
+The structured `address` claim in an OpenID Connect UserInfo response.
+
 ## Indexable
 
 > \[`claim`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md) \| `undefined`

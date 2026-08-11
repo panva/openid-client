@@ -8,6 +8,8 @@ Support from the community to continue maintaining and improving this module is 
 
 ▸ **dynamicClientRegistration**(`server`, `metadata`, `clientAuthentication?`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Configuration`](../classes/Configuration.md)\>
 
+Discovers an authorization server and dynamically registers a client.
+
 Performs Authorization Server Metadata discovery and subsequently a Dynamic
 Client Registration at the discovered Authorization Server's
 [ServerMetadata.registration\_endpoint](../interfaces/ServerMetadata.md#registration_endpoint) using the provided client
