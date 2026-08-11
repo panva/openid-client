@@ -15,5 +15,13 @@ jobs:
       id-token: write
     uses: panva/.github/.github/workflows/npm-release.yml@main
     with:
+      artifact_check_command: node tools/test-dist.js "$PACKAGE_TARBALL" .
       cleanup_paths: '["build"]'
+      prepare_command: >-
+        npm clean-install &&
+        npm run build &&
+        npm run typecheck:dist &&
+        npm run typecheck:types &&
+        npm run check:packaging &&
+        git diff --exit-code
       publish_jsr: true

@@ -67,27 +67,33 @@
     "build/passport.d.ts"
   ],
   "scripts": {
-    "_format": "find src test examples tap conformance -type f -name '*.ts' -o -name '*.mjs' -o -name '*.cjs' | xargs prettier --check",
-    "build": "rm -rf build && tsc && tsc --removeComments false --declaration --emitDeclarationOnly && tsc -p tsconfig.passport.json && tsc -p tsconfig.passport.json --removeComments false --declaration --emitDeclarationOnly && tsc -p test && npm run --silent check-build && npx --yes jsr publish --dry-run --allow-dirty",
+    "_format": "find src test test-d examples tap conformance tools -type f -name '*.ts' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' | xargs prettier --check",
+    "build": "npm run generate-build && tsc -p test && npm run --silent check-build && npx --yes jsr publish --dry-run --allow-dirty",
+    "check:packaging": "publint --strict && node tools/attw-check.js",
     "check-build": "tsc --noEmit --types node --lib ES2022.Error && tsc -p conformance && tsc -p tap && tsc -p examples",
     "conformance": "bash -c 'source .node_flags.sh && ava --config conformance/ava.config.ts'",
     "docs": "patch-package && typedoc",
     "docs-check": "./check-examples.sh",
     "format": "npm run _format -- --write",
     "format-check": "npm run _format",
+    "generate-build": "rm -rf build && tsc && tsc --removeComments false --declaration --emitDeclarationOnly && tsc -p tsconfig.passport.json && tsc -p tsconfig.passport.json --removeComments false --declaration --emitDeclarationOnly",
     "tap:browsers": "./tap/.browsers.sh",
     "tap:bun": "./tap/.bun.sh",
     "tap:deno": "./tap/.deno.sh",
     "tap:electron": "./tap/.electron.sh",
     "tap:node": "bash -c './tap/.node.sh'",
     "tap:workerd": "./tap/.workerd.sh",
-    "test": "bash -c 'source .node_flags.sh && ava'"
+    "test": "bash -c 'source .node_flags.sh && ava'",
+    "test:dist": "node tools/test-dist.js",
+    "typecheck:dist": "./tools/typecheck-dist.sh",
+    "typecheck:types": "tsc -p test-d && tsc -p test-d/tsconfig.node.json && tsc -p test-d/tsconfig.fallback.json && tsc -p test-d/tsconfig.fallback.const.json && tsc -p test-d/tsconfig.fallback.let.json"
   },
   "dependencies": {
     "jose": "^6.2.7",
     "oauth4webapi": "^3.8.7"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@koa/cors": "^5.0.0",
     "@playwright/test": "^1.62.1",
     "@types/connect-ensure-login": "^0.1.9",
@@ -108,6 +114,7 @@
     "patch-package": "^8.0.1",
     "prettier": "^3.9.6",
     "prettier-plugin-jsdoc": "^1.8.1",
+    "publint": "0.3.23",
     "qunit": "^2.26.0",
     "raw-body": "^3.0.2",
     "selfsigned": "^5.5.0",

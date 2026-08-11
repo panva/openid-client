@@ -24,6 +24,14 @@ jobs:
           cache: 'npm'
       - run: npm clean-install
       - run: npm run build
+      - name: Type check the emitted declarations
+        run: npm run typecheck:dist
+      - name: Type-level regression tests
+        run: npm run typecheck:types
+      - name: Packaging metadata and type resolution
+        run: npm run check:packaging
+      - name: Packed artifact contents and runtime
+        run: npm run test:dist
 
   format:
     runs-on: ubuntu-latest
@@ -88,6 +96,9 @@ jobs:
       - run: npm clean-install
       - name: Run Test Suite
         run: npm run ${{ matrix.suite }}
+      - name: Test packed artifact
+        if: ${{ matrix.suite == 'test' }}
+        run: npm run test:dist
       - name: Upload server logs
         if: ${{ failure() && matrix.suite == 'tap:node' }}
         id: artifact-upload-step
