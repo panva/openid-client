@@ -4550,7 +4550,7 @@ export async function fetchProtectedResource(
   checkConfig(config)
 
   headers ||= new Headers()
-  if (!headers.has('user-agent')) {
+  if (USER_AGENT && !headers.has('user-agent')) {
     headers.set('user-agent', USER_AGENT)
   }
 
