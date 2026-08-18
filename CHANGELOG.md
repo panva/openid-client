@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.8.6](https://github.com/panva/openid-client/compare/v6.8.5...v6.8.6) (2026-08-18)
+
+### Fixes
+
+* avoid undefined user-agent in fetchProtectedResource ([492c3c3](https://github.com/panva/openid-client/commit/492c3c36aad1ac324661b808b32bc17a35d22665)), references [#885](https://github.com/panva/openid-client/issues/885)
 ## [6.8.5](https://github.com/panva/openid-client/compare/v6.8.4...v6.8.5) (2026-08-11)
 
 ### Fixes
