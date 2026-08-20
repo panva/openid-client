@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.8.7](https://github.com/panva/openid-client/compare/v6.8.6...v6.8.7) (2026-08-20)
+
+### Fixes
+
+* allow destructuring the claims helper ([38bd8c0](https://github.com/panva/openid-client/commit/38bd8c052a7e1e6d0e2beda14d35fb38b9b26d4c)), references [#887](https://github.com/panva/openid-client/issues/887)
 ## [6.8.6](https://github.com/panva/openid-client/compare/v6.8.5...v6.8.6) (2026-08-18)
 
 ### Fixes
