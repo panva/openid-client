@@ -2086,12 +2086,8 @@ function getHelpers(response: oauth.TokenEndpointResponse) {
     },
     claims: {
       __proto__: null,
-      value(this: oauth.TokenEndpointResponse) {
-        try {
-          return oauth.getValidatedIdTokenClaims(this)
-        } catch {
-          return undefined
-        }
+      value() {
+        return oauth.getValidatedIdTokenClaims(response)
       },
     },
   }

@@ -75,4 +75,6 @@ test('RSA-OAEP JWE decryption ignores unrelated keys without kid', async (t) => 
   )
 
   t.is(result.claims()?.sub, 'subject')
+  const { claims } = result
+  t.is(claims()?.sub, 'subject')
 })
