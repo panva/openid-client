@@ -7,11 +7,13 @@ All notable changes to this project will be documented in this file. See [commit
 ### Fixes
 
 * allow destructuring the claims helper ([38bd8c0](https://github.com/panva/openid-client/commit/38bd8c052a7e1e6d0e2beda14d35fb38b9b26d4c)), references [#887](https://github.com/panva/openid-client/issues/887)
+
 ## [6.8.6](https://github.com/panva/openid-client/compare/v6.8.5...v6.8.6) (2026-08-18)
 
 ### Fixes
 
 * avoid undefined user-agent in fetchProtectedResource ([492c3c3](https://github.com/panva/openid-client/commit/492c3c36aad1ac324661b808b32bc17a35d22665)), references [#885](https://github.com/panva/openid-client/issues/885)
+
 ## [6.8.5](https://github.com/panva/openid-client/compare/v6.8.4...v6.8.5) (2026-08-11)
 
 ### Fixes
@@ -23,6 +25,7 @@ All notable changes to this project will be documented in this file. See [commit
 
 * improve API index tables ([c6e4ae3](https://github.com/panva/openid-client/commit/c6e4ae338f21e5e1502a10bba345a14a9dc57095))
 * update README.md and SECURITY.md to reflect passed EOL dates ([d3721c2](https://github.com/panva/openid-client/commit/d3721c2cab93d6525d85ac32fe767bc6124972df))
+
 ## [6.8.4](https://github.com/panva/openid-client/compare/v6.8.3...v6.8.4) (2026-04-27)
 
 
@@ -1504,6 +1507,7 @@ access token is returned from the OP.
 
 
 # Pre standard-version Change Log
+
 ## Version 2.2.x
 ### Version 2.2.1
 - 2018-07-10 [DIFF](https://github.com/panva/node-openid-client/compare/v2.2.0...v2.2.1)
