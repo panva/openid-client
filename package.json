@@ -107,6 +107,7 @@
     "archiver": "^8.0.0",
     "ava": "^7.0.0",
     "esbuild": "^0.28.1",
+    "fast-check": "^4.9.0",
     "happy-dom": "^20.11.1",
     "http-cookie-agent": "^7.0.4",
     "ky": "^1.14.3",
