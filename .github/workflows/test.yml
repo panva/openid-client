@@ -68,7 +68,7 @@ jobs:
       - run: npm run docs-check
 
   node-versions:
-    uses: panva/.github/.github/workflows/node-versions.yml@main
+    uses: panva/.github/.github/workflows/node-versions.yml@bd045b0d7d15f7827910cdedd3e7f0570bc5bf58
     with:
       min: 20
 
