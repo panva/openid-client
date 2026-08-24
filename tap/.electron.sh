@@ -2,5 +2,6 @@
 
 . ./tap/.server.sh
 
+ELECTRON_BIN=${ELECTRON_BIN:-"$(pwd)/tap/electron/node_modules/.bin/electron"}
 source .electron_flags.sh
-electron tap/run-electron.ts
+"$ELECTRON_BIN" tap/run-electron.ts

@@ -120,10 +120,16 @@ jobs:
         with:
           node-version: lts/*
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            tap/electron/package-lock.json
       - run: npm clean-install
-      - run: npm install --global electron
+      - name: Install Electron
+        run: npm clean-install --prefix tap/electron
       - name: Run Test Suite
         run: npm run tap:electron
+        env:
+          ELECTRON_BIN: ${{ github.workspace }}/tap/electron/node_modules/.bin/electron
       - name: Upload server logs
         if: ${{ failure() }}
         id: artifact-upload-step
@@ -172,11 +178,16 @@ jobs:
         with:
           node-version: lts/*
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            tap/workerd/package-lock.json
       - run: npm clean-install
-      - run: npm install --global workerd
-      - run: npm link workerd
+      - run: npm clean-install --prefix tap/workerd
       - name: Run Test Suite
         run: npm run tap:workerd
+        env:
+          WORKERD_BIN: ${{ github.workspace }}/tap/workerd/node_modules/.bin/workerd
+          WORKERD_MODULE: ${{ github.workspace }}/tap/workerd/node_modules/workerd
 
   bun:
     needs:
@@ -227,12 +238,12 @@ jobs:
       - run: npm clean-install
       - name: Get Playwright version
         id: playwright-version
-        run: echo "version=$(npm list playwright --json | jq -r '.dependencies["@playwright/test"].dependencies.playwright.version')" >> $GITHUB_OUTPUT
+        run: echo "version=$(node -p "require('./node_modules/playwright/package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/Library/Caches/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
-      - run: npx playwright install --only-shell chromium firefox webkit
+      - run: ./node_modules/.bin/playwright install --only-shell chromium firefox webkit
       - name: Run Test Suite
         run: npm run tap:browsers
         env:

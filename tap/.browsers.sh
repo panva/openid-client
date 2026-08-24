@@ -13,4 +13,4 @@
 
 : "${BROWSER:=chromium}"
 
-npx playwright test --project="$BROWSER"
+./node_modules/.bin/playwright test --project="$BROWSER"

@@ -1,0 +1,7 @@
+{
+  "name": "openid-client-workerd-tests",
+  "private": true,
+  "devDependencies": {
+    "workerd": "1.20260821.1"
+  }
+}
