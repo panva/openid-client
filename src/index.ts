@@ -1283,7 +1283,7 @@ export async function dynamicClientRegistration(
     internals.fetch = options[customFetch]
   }
 
-  if (options?.timeout) {
+  if (options?.timeout !== undefined) {
     internals.timeout = options.timeout
   }
 
@@ -1352,7 +1352,7 @@ export async function discovery(
     internals.fetch = options[customFetch]
   }
 
-  if (options?.timeout) {
+  if (options?.timeout !== undefined) {
     internals.timeout = options.timeout
   }
 
@@ -1983,6 +1983,7 @@ export class Configuration
       c,
       auth,
       tlsOnly: true,
+      timeout: 30,
       jwksCache: {},
     })
   }

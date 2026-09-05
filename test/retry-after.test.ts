@@ -41,6 +41,8 @@ function createSignalTrackingConfig() {
     'client_id',
   )
 
+  config.timeout = undefined
+
   config[client.customFetch] = async (_url, options) => {
     if (options.signal) {
       seenSignals.push(options.signal)
