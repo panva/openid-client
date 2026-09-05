@@ -1236,6 +1236,8 @@ export async function dynamicClientRegistration(
   const clockSkew = metadata[oauth.clockSkew] ?? 0
   const clockTolerance = metadata[oauth.clockTolerance] ?? 30
   metadata = structuredClone(metadata)
+  metadata[oauth.clockSkew] = clockSkew
+  metadata[oauth.clockTolerance] = clockTolerance
 
   const timeout = options?.timeout ?? 30
   const signal = AbortSignal.timeout(timeout * 1000)

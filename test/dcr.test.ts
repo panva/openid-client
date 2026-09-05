@@ -4,6 +4,67 @@ import * as oauth from 'oauth4webapi'
 import * as undici from 'undici'
 import * as jose from 'jose'
 
+test('DCR preserves clock settings across DPoP nonce retries', async (t) => {
+  const issuer = new URL('https://op.example.com')
+  const keyPair = await client.randomDPoPKeyPair('ES256')
+  let registrationRequests = 0
+  let authenticated = false
+
+  const config = await client.dynamicClientRegistration(
+    issuer,
+    {
+      [client.clockSkew]: 120,
+      [client.clockTolerance]: 0,
+    },
+    (server, metadata, body, headers) => {
+      t.is(metadata[client.clockSkew], 120)
+      t.is(metadata[client.clockTolerance], 0)
+      authenticated = true
+      return client.None()(server, metadata, body, headers)
+    },
+    {
+      DPoP: oauth.DPoP({}, keyPair),
+      [client.customFetch]: async (url, options) => {
+        switch (new URL(url).pathname) {
+          case '/.well-known/openid-configuration':
+            return Response.json({
+              issuer: issuer.href,
+              registration_endpoint: `${issuer.origin}/reg`,
+              token_endpoint: `${issuer.origin}/token`,
+            })
+          case '/reg':
+            t.deepEqual(JSON.parse(options.body as string), {})
+            if (++registrationRequests === 1) {
+              return Response.json(
+                {},
+                {
+                  status: 400,
+                  headers: {
+                    'dpop-nonce': 'server-nonce',
+                    'www-authenticate': 'DPoP error="use_dpop_nonce"',
+                  },
+                },
+              )
+            }
+            t.is(jose.decodeJwt(options.headers.dpop).nonce, 'server-nonce')
+            return Response.json({ client_id: 'client' }, { status: 201 })
+          case '/token':
+            return Response.json({
+              access_token: 'access_token',
+              token_type: 'bearer',
+            })
+          default:
+            throw new Error(`unexpected request to ${url}`)
+        }
+      },
+    },
+  )
+
+  await client.clientCredentialsGrant(config)
+  t.is(registrationRequests, 2)
+  t.true(authenticated)
+})
+
 test('dpop may be used with DCR w/ initial access token', async (t) => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
