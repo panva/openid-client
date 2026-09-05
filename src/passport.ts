@@ -3,6 +3,12 @@ import * as client from './index.js'
 import type * as express from 'express'
 import type passport from 'passport'
 
+/**
+ * Verification callback that calls `verified` with the authentication result.
+ *
+ * Async callbacks are supported. Rejected promises are forwarded to Passport's
+ * error handler; returning a value does not complete authentication.
+ */
 export type VerifyFunction = (
   /**
    * Parsed Token Endpoint Response returned by the authorization server with
@@ -12,6 +18,11 @@ export type VerifyFunction = (
   verified: passport.AuthenticateCallback,
 ) => void
 
+/**
+ * {@link VerifyFunction Verification callback} with access to the current
+ * request. Async callbacks and their rejected promises are handled in the same
+ * way.
+ */
 export type VerifyFunctionWithRequest = (
   req: express.Request,
   /**
@@ -599,14 +610,14 @@ export class Strategy implements passport.Strategy {
       }
 
       if (options.passReqToCallback ?? this._passReqToCallback) {
-        return (this._verify as VerifyFunctionWithRequest)(
+        return await (this._verify as VerifyFunctionWithRequest)(
           req,
           tokens,
           verified,
         )
       }
 
-      return (this._verify as VerifyFunction)(tokens, verified)
+      return await (this._verify as VerifyFunction)(tokens, verified)
     } catch (err) {
       if (
         err instanceof client.AuthorizationResponseError &&

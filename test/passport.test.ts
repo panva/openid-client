@@ -7,7 +7,11 @@ import test from 'ava'
 import type passport from 'passport'
 import * as client from '../src/index.js'
 import { Strategy } from '../src/passport.js'
-import type { AuthenticateOptions, VerifyFunction } from '../src/passport.js'
+import type {
+  AuthenticateOptions,
+  VerifyFunction,
+  VerifyFunctionWithRequest,
+} from '../src/passport.js'
 
 function close(server: http.Server): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -427,6 +431,70 @@ test('callback with missing session state calls fail', async (t) => {
     message: 'Unable to verify authorization request state',
   })
 })
+
+for (const passReqToCallback of [false, true]) {
+  for (const asynchronous of [false, true]) {
+    test(`${asynchronous ? 'async' : 'sync'} verify errors reach strategy.error (passReqToCallback=${passReqToCallback})`, async (testContext) => {
+      const { port, server } = await startTokenEndpoint()
+      testContext.teardown(() => close(server))
+      const verifyError = new Error('verify failed')
+      const harness = createStrategyHarness(
+        port,
+        () => {
+          if (asynchronous) {
+            return Promise.resolve().then(() => {
+              throw verifyError
+            })
+          }
+          throw verifyError
+        },
+        { passReqToCallback },
+      )
+
+      const redirectTo = await doAuthorizationRequest(harness)
+      await doAuthorizationCodeGrant(
+        harness,
+        `${new URL(redirectTo).origin}/cb?code=ok`,
+      )
+
+      testContext.is(harness.results.error, verifyError)
+      testContext.falsy(harness.results.successUser)
+      testContext.falsy(harness.results.failInfo)
+    })
+  }
+
+  test(`async verify can complete authentication (passReqToCallback=${passReqToCallback})`, async (testContext) => {
+    const { port, server } = await startTokenEndpoint()
+    testContext.teardown(() => close(server))
+    const harness = createStrategyHarness(port, undefined, {
+      passReqToCallback,
+    })
+    const user = { sub: 'user' }
+    const verify: VerifyFunction = async (tokens, verified) => {
+      await Promise.resolve()
+      testContext.is(tokens.access_token, 'ok')
+      verified(null, user)
+    }
+    const verifyWithRequest: VerifyFunctionWithRequest = async (
+      req,
+      tokens,
+      verified,
+    ) => {
+      testContext.is(req.method, 'GET')
+      await verify(tokens, verified)
+    }
+    harness.strategy._verify = passReqToCallback ? verifyWithRequest : verify
+
+    const redirectTo = await doAuthorizationRequest(harness)
+    await doAuthorizationCodeGrant(
+      harness,
+      `${new URL(redirectTo).origin}/cb?code=ok`,
+    )
+
+    testContext.is(harness.results.successUser, user)
+    testContext.falsy(harness.results.error)
+  })
+}
 
 test('verify callback error propagates via strategy.error', async (t) => {
   const { port, server } = await startTokenEndpoint()
