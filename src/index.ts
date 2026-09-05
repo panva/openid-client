@@ -2066,9 +2066,7 @@ export interface TokenEndpointResponseHelpers {
 function getHelpers(response: oauth.TokenEndpointResponse) {
   let exp: number | undefined = undefined
   if (response.expires_in !== undefined) {
-    const now = new Date()
-    now.setSeconds(now.getSeconds() + response.expires_in)
-    exp = now.getTime()
+    exp = Date.now() + response.expires_in * 1000
   }
 
   return {
