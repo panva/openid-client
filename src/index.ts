@@ -2253,6 +2253,85 @@ function pollRequestSignal(
   }
 }
 
+async function pollGrant(
+  config: Configuration,
+  authorizationResponse: Pick<
+    oauth.DeviceAuthorizationResponse,
+    'interval' | 'expires_in'
+  >,
+  grantCode: string,
+  request: typeof oauth.deviceCodeGrantRequest,
+  processResponse: typeof oauth.processDeviceCodeResponse,
+  parameters?: URLSearchParams | Record<string, string>,
+  options?: DeviceAuthorizationGrantPollOptions,
+): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+  const requestParameters = new URLSearchParams(parameters)
+  let interval = authorizationResponse.interval ?? 5
+  const pollingSignal =
+    options?.signal ??
+    AbortSignal.timeout(authorizationResponse.expires_in * 1000)
+
+  for (;;) {
+    try {
+      await wait(interval, pollingSignal)
+    } catch (error) {
+      errorHandler(error)
+    }
+
+    const { as, c, auth, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
+      int(config)
+    const requestSignal = pollRequestSignal(pollingSignal, timeout)
+    try {
+      const response = await request(as, c, auth, grantCode, {
+        [oauth.customFetch]: fetch,
+        [oauth.allowInsecureRequests]: !tlsOnly,
+        additionalParameters: requestParameters,
+        DPoP: options?.DPoP,
+        headers: new Headers(headers),
+        signal: requestSignal.signal,
+      }).catch(errorHandler)
+
+      if (response.status === 503 && response.headers.has('retry-after')) {
+        await response.body?.cancel()
+        await handleRetryAfter(response, interval, pollingSignal, true)
+        options = { ...options, flag: undefined }
+        continue
+      }
+
+      let result: oauth.TokenEndpointResponse
+      try {
+        result = await processResponse(as, c, response, {
+          [oauth.jweDecrypt]: decrypt,
+        })
+      } catch (error) {
+        if (retryable(error, options)) {
+          options = { ...options, flag: retry }
+          continue
+        }
+
+        if (
+          error instanceof oauth.ResponseBodyError &&
+          (error.error === 'slow_down' ||
+            error.error === 'authorization_pending')
+        ) {
+          if (error.error === 'slow_down') interval += 5
+          await handleRetryAfter(error.response, interval, pollingSignal)
+          options = { ...options, flag: undefined }
+          continue
+        }
+
+        errorHandler(error)
+      }
+
+      result.id_token && (await nonRepudiation?.(response))
+      addHelpers(result)
+      return result
+    } finally {
+      requestSignal.cleanup()
+    }
+  }
+}
+
 /**
  * Polls until an OAuth 2.0 Device Authorization Grant completes.
  *
@@ -2300,96 +2379,15 @@ export async function pollDeviceAuthorizationGrant(
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
-  parameters = new URLSearchParams(parameters)
-
-  let interval = deviceAuthorizationResponse.interval ?? 5
-
-  const pollingSignal =
-    options?.signal ??
-    AbortSignal.timeout(deviceAuthorizationResponse.expires_in * 1000)
-
-  try {
-    await wait(interval, pollingSignal)
-  } catch (err) {
-    errorHandler(err)
-  }
-
-  const { as, c, auth, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
-    int(config)
-
-  const retryPoll = (updatedInterval: number, flag?: typeof retry) =>
-    pollDeviceAuthorizationGrant(
-      config,
-      {
-        ...deviceAuthorizationResponse,
-        interval: updatedInterval,
-      },
-      parameters,
-      {
-        ...options,
-        signal: pollingSignal,
-        flag,
-      },
-    )
-
-  const requestSignal = pollRequestSignal(pollingSignal, timeout)
-  try {
-    const response = await oauth
-      .deviceCodeGrantRequest(
-        as,
-        c,
-        auth,
-        deviceAuthorizationResponse.device_code,
-        {
-          [oauth.customFetch]: fetch,
-          [oauth.allowInsecureRequests]: !tlsOnly,
-          additionalParameters: parameters,
-          DPoP: options?.DPoP,
-          headers: new Headers(headers),
-          signal: requestSignal.signal,
-        },
-      )
-      .catch(errorHandler)
-
-    if (response.status === 503 && response.headers.has('retry-after')) {
-      await response.body?.cancel()
-      await handleRetryAfter(response, interval, pollingSignal, true)
-      return retryPoll(interval)
-    }
-
-    const p = oauth.processDeviceCodeResponse(as, c, response, {
-      [oauth.jweDecrypt]: decrypt,
-    })
-
-    let result: oauth.TokenEndpointResponse
-    try {
-      result = await p
-    } catch (err) {
-      if (retryable(err, options)) {
-        return retryPoll(interval, retry)
-      }
-
-      if (err instanceof oauth.ResponseBodyError) {
-        switch (err.error) {
-          // @ts-ignore
-          case 'slow_down': // Fall through
-            interval += 5
-          case 'authorization_pending':
-            await handleRetryAfter(err.response, interval, pollingSignal)
-            return retryPoll(interval)
-        }
-      }
-
-      errorHandler(err)
-    }
-
-    result.id_token && (await nonRepudiation?.(response))
-
-    addHelpers(result)
-    return result
-  } finally {
-    requestSignal.cleanup()
-  }
+  return pollGrant(
+    config,
+    deviceAuthorizationResponse,
+    deviceAuthorizationResponse.device_code,
+    oauth.deviceCodeGrantRequest,
+    oauth.processDeviceCodeResponse,
+    parameters,
+    options,
+  )
 }
 
 /**
@@ -2556,101 +2554,15 @@ export async function pollBackchannelAuthenticationGrant(
 ): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
   checkConfig(config)
 
-  parameters = new URLSearchParams(parameters)
-
-  let interval = backchannelAuthenticationResponse.interval ?? 5
-
-  const pollingSignal =
-    options?.signal ??
-    AbortSignal.timeout(backchannelAuthenticationResponse.expires_in * 1000)
-
-  try {
-    await wait(interval, pollingSignal)
-  } catch (err) {
-    errorHandler(err)
-  }
-
-  const { as, c, auth, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
-    int(config)
-
-  const retryPoll = (updatedInterval: number, flag?: typeof retry) =>
-    pollBackchannelAuthenticationGrant(
-      config,
-      {
-        ...backchannelAuthenticationResponse,
-        interval: updatedInterval,
-      },
-      parameters,
-      {
-        ...options,
-        signal: pollingSignal,
-        flag,
-      },
-    )
-
-  const requestSignal = pollRequestSignal(pollingSignal, timeout)
-  try {
-    const response = await oauth
-      .backchannelAuthenticationGrantRequest(
-        as,
-        c,
-        auth,
-        backchannelAuthenticationResponse.auth_req_id,
-        {
-          [oauth.customFetch]: fetch,
-          [oauth.allowInsecureRequests]: !tlsOnly,
-          additionalParameters: parameters,
-          DPoP: options?.DPoP,
-          headers: new Headers(headers),
-          signal: requestSignal.signal,
-        },
-      )
-      .catch(errorHandler)
-
-    if (response.status === 503 && response.headers.has('retry-after')) {
-      await response.body?.cancel()
-      await handleRetryAfter(response, interval, pollingSignal, true)
-      return retryPoll(interval)
-    }
-
-    const p = oauth.processBackchannelAuthenticationGrantResponse(
-      as,
-      c,
-      response,
-      {
-        [oauth.jweDecrypt]: decrypt,
-      },
-    )
-
-    let result: oauth.TokenEndpointResponse
-    try {
-      result = await p
-    } catch (err) {
-      if (retryable(err, options)) {
-        return retryPoll(interval, retry)
-      }
-
-      if (err instanceof oauth.ResponseBodyError) {
-        switch (err.error) {
-          // @ts-ignore
-          case 'slow_down': // Fall through
-            interval += 5
-          case 'authorization_pending':
-            await handleRetryAfter(err.response, interval, pollingSignal)
-            return retryPoll(interval)
-        }
-      }
-
-      errorHandler(err)
-    }
-
-    result.id_token && (await nonRepudiation?.(response))
-
-    addHelpers(result)
-    return result
-  } finally {
-    requestSignal.cleanup()
-  }
+  return pollGrant(
+    config,
+    backchannelAuthenticationResponse,
+    backchannelAuthenticationResponse.auth_req_id,
+    oauth.backchannelAuthenticationGrantRequest,
+    oauth.processBackchannelAuthenticationGrantResponse,
+    parameters,
+    options,
+  )
 }
 
 /**

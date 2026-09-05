@@ -2,6 +2,7 @@ import { getEventListeners } from 'node:events'
 import { mock } from 'node:test'
 import test from 'ava'
 import * as client from '../src/index.js'
+import * as jose from 'jose'
 
 const issuer = new URL('https://op.example.com')
 const authorizationResponse = {
@@ -17,6 +18,164 @@ for (const poll of [
   client.pollDeviceAuthorizationGrant,
   client.pollBackchannelAuthenticationGrant,
 ]) {
+  test.serial(
+    `${poll.name} preserves intervals, parameters, and its deadline`,
+    async (testContext) => {
+      const config = new client.Configuration(
+        { issuer: issuer.href, token_endpoint: `${issuer.origin}/token` },
+        'client',
+      )
+      const schedule = setTimeout
+      let elapsed = 0
+      const timerMock = mock.method(
+        globalThis,
+        'setTimeout',
+        (callback: () => void, milliseconds = 0) => {
+          elapsed += milliseconds
+          return schedule(callback, 0)
+        },
+      )
+      const timeoutMock = mock.method(AbortSignal, 'timeout')
+      testContext.teardown(() => {
+        timerMock.mock.restore()
+        timeoutMock.mock.restore()
+      })
+      const requestTimes: number[] = []
+      const resource = 'https://resource.example.com'
+      config[client.customFetch] = async (_url, options) => {
+        requestTimes.push(elapsed)
+        const parameters = new URLSearchParams(options.body as string)
+        testContext.is(parameters.get('resource'), resource)
+        const device = poll === client.pollDeviceAuthorizationGrant
+        testContext.is(
+          parameters.get('grant_type'),
+          device
+            ? 'urn:ietf:params:oauth:grant-type:device_code'
+            : 'urn:openid:params:grant-type:ciba',
+        )
+        testContext.is(
+          parameters.get(device ? 'device_code' : 'auth_req_id'),
+          device
+            ? authorizationResponse.device_code
+            : authorizationResponse.auth_req_id,
+        )
+        switch (requestTimes.length) {
+          case 1:
+            return Response.json({ error: 'slow_down' }, { status: 400 })
+          case 2:
+            return Response.json(
+              { error: 'authorization_pending' },
+              { status: 400 },
+            )
+          default:
+            return Response.json({
+              access_token: 'access_token',
+              token_type: 'bearer',
+            })
+        }
+      }
+
+      const input = { ...authorizationResponse, interval: 1 }
+      const result = await poll(config, input, { resource })
+      testContext.deepEqual(requestTimes, [1000, 7000, 13000])
+      testContext.deepEqual(
+        timeoutMock.mock.calls.map((call) => call.arguments[0]),
+        [600_000, 30_000, 30_000, 30_000],
+      )
+      testContext.is(input.interval, 1)
+      testContext.is(result.access_token, 'access_token')
+      testContext.is(result.claims(), undefined)
+    },
+  )
+
+  for (const intermediate of ['authorization_pending', '503']) {
+    test.serial(
+      `${poll.name} resets DPoP retry limits after ${intermediate}`,
+      async (testContext) => {
+        const config = new client.Configuration(
+          { issuer: issuer.href, token_endpoint: `${issuer.origin}/token` },
+          'client',
+        )
+        const DPoP = client.getDPoPHandle(
+          config,
+          await client.randomDPoPKeyPair('ES256'),
+        )
+        const nonces: unknown[] = []
+        config[client.customFetch] = async (_url, options) => {
+          nonces.push(jose.decodeJwt(options.headers.dpop).nonce)
+          switch (nonces.length) {
+            case 1:
+            case 3:
+              return Response.json(
+                { error: 'use_dpop_nonce' },
+                {
+                  status: 400,
+                  headers: {
+                    'dpop-nonce': nonces.length === 1 ? 'first' : 'second',
+                  },
+                },
+              )
+            case 2:
+              return intermediate === '503'
+                ? new Response(null, {
+                    status: 503,
+                    headers: { 'retry-after': '0' },
+                  })
+                : Response.json({ error: intermediate }, { status: 400 })
+            default:
+              return Response.json({
+                access_token: 'access_token',
+                token_type: 'dpop',
+              })
+          }
+        }
+
+        const options = Object.freeze({ DPoP })
+        const result = await poll(
+          config,
+          authorizationResponse,
+          undefined,
+          options,
+        )
+        testContext.deepEqual(nonces, [undefined, 'first', 'first', 'second'])
+        testContext.is(result.token_type, 'dpop')
+      },
+    )
+  }
+
+  test.serial(
+    `${poll.name} stops after repeated DPoP nonce challenges`,
+    async (testContext) => {
+      const config = new client.Configuration(
+        { issuer: issuer.href, token_endpoint: `${issuer.origin}/token` },
+        'client',
+      )
+      const DPoP = client.getDPoPHandle(
+        config,
+        await client.randomDPoPKeyPair('ES256'),
+      )
+      let requests = 0
+      config[client.customFetch] = async () => {
+        requests++
+        testContext.true(requests <= 2)
+        return Response.json(
+          { error: 'use_dpop_nonce' },
+          {
+            status: 400,
+            headers: { 'dpop-nonce': `nonce-${requests}` },
+          },
+        )
+      }
+
+      const error = await testContext.throwsAsync(
+        poll(config, authorizationResponse, undefined, { DPoP }),
+        { instanceOf: client.ResponseBodyError },
+      )
+      testContext.is(error?.error, 'use_dpop_nonce')
+      testContext.is(requests, 2)
+    },
+  )
+
   for (const abortSource of ['caller', 'timeout']) {
     test.serial(
       `${poll.name} cancels body reads on ${abortSource} abort`,
