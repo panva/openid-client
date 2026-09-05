@@ -96,8 +96,6 @@ export type ClientAuth = (
   headers: Headers,
 ) => void
 
-let tbi!: WeakMap<Internal['c'], ClientAuth>
-
 /**
  * Creates a `client_secret_post` client authentication method.
  *
@@ -153,14 +151,14 @@ export function ClientSecretPost(clientSecret?: string): ClientAuth {
     return oauth.ClientSecretPost(clientSecret)
   }
 
-  tbi ||= new WeakMap()
+  const cache = new WeakMap<Internal['c'], ClientAuth>()
 
   return (as, client, body, headers) => {
     let auth: ClientAuth | undefined
-    if (!(auth = tbi.get(client))) {
+    if (!(auth = cache.get(client))) {
       assertString(client.client_secret, '"metadata.client_secret"')
       auth = oauth.ClientSecretPost(client.client_secret)
-      tbi.set(client, auth)
+      cache.set(client, auth)
     }
     return auth(as, client, body, headers)
   }
@@ -231,14 +229,14 @@ export function ClientSecretBasic(clientSecret?: string): ClientAuth {
     return oauth.ClientSecretBasic(clientSecret)
   }
 
-  tbi ||= new WeakMap()
+  const cache = new WeakMap<Internal['c'], ClientAuth>()
 
   return (as, client, body, headers) => {
     let auth: ClientAuth | undefined
-    if (!(auth = tbi.get(client))) {
+    if (!(auth = cache.get(client))) {
       assertString(client.client_secret, '"metadata.client_secret"')
       auth = oauth.ClientSecretBasic(client.client_secret)
-      tbi.set(client, auth)
+      cache.set(client, auth)
     }
     return auth(as, client, body, headers)
   }
@@ -304,14 +302,14 @@ export function ClientSecretJwt(
     return oauth.ClientSecretJwt(clientSecret, options)
   }
 
-  tbi ||= new WeakMap()
+  const cache = new WeakMap<Internal['c'], ClientAuth>()
 
   return (as, client, body, headers) => {
     let auth: ClientAuth | undefined
-    if (!(auth = tbi.get(client))) {
+    if (!(auth = cache.get(client))) {
       assertString(client.client_secret, '"metadata.client_secret"')
       auth = oauth.ClientSecretJwt(client.client_secret, options)
-      tbi.set(client, auth)
+      cache.set(client, auth)
     }
     return auth(as, client, body, headers)
   }
