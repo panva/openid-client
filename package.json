@@ -89,8 +89,8 @@
     "typecheck:types": "tsc -p test-d && tsc -p test-d/tsconfig.node.json && tsc -p test-d/tsconfig.fallback.json && tsc -p test-d/tsconfig.fallback.const.json && tsc -p test-d/tsconfig.fallback.let.json"
   },
   "dependencies": {
-    "jose": "^6.2.8",
-    "oauth4webapi": "^3.8.7"
+    "jose": "^6.2.12",
+    "oauth4webapi": "^3.8.8"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
