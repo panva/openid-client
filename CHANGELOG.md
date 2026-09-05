@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.8.8](https://github.com/panva/openid-client/compare/v6.8.7...v6.8.8) (2026-09-05)
+
+### Fixes
+
+* apply the default HTTP request timeout ([af32783](https://github.com/panva/openid-client/commit/af327837ad997895aabc56817bd350b99a959228))
+* calculate token lifetimes using elapsed time ([e816bf0](https://github.com/panva/openid-client/commit/e816bf0b2b223536114fda8c59d74559e02c5b1a))
+* isolate lazy client authentication handler caches ([d687796](https://github.com/panva/openid-client/commit/d687796b812cf1404c2e4a5354d1bef211efa1ef))
+* **passport:** handle rejected async verification callbacks ([d730f80](https://github.com/panva/openid-client/commit/d730f80337fe1ea57279a36c7f24136121aa5c5c))
+* preserve clock settings across DCR nonce retries ([5433d68](https://github.com/panva/openid-client/commit/5433d68215419fd9029974d7dba6859cf04f0217))
+* **release:** separate changelog sections ([57fcbc6](https://github.com/panva/openid-client/commit/57fcbc655052d0b3e4c9814efa8f9ff5e183438c))
+* retain polling abort signals through response processing ([b26170e](https://github.com/panva/openid-client/commit/b26170e814a2da1a2549251201d8949b60bf87ed))
+* select a unique decryption key when kid is omitted ([10ba026](https://github.com/panva/openid-client/commit/10ba0268c9c89b85d57b6d46e6a48b348c0c6db1))
+
+### Refactor
+
+* share grant polling lifecycle and retry handling ([b931c40](https://github.com/panva/openid-client/commit/b931c4073b44b0bf824271d8c3f564d85f4adc46))
+
 ## [6.8.7](https://github.com/panva/openid-client/compare/v6.8.6...v6.8.7) (2026-08-20)
 
 ### Fixes
