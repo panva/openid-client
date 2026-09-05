@@ -1681,7 +1681,7 @@ function selectCryptoKeyForDecryption(
   epk?: unknown,
 ): oauth.CryptoKey {
   const { 0: key, length } = keys.filter((key) => {
-    if (kid !== key.kid) {
+    if (kid !== undefined && kid !== key.kid) {
       return false
     }
 
