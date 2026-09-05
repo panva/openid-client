@@ -2337,60 +2337,63 @@ export async function pollDeviceAuthorizationGrant(
     )
 
   const requestSignal = pollRequestSignal(pollingSignal, timeout)
-  const response = await oauth
-    .deviceCodeGrantRequest(
-      as,
-      c,
-      auth,
-      deviceAuthorizationResponse.device_code,
-      {
-        [oauth.customFetch]: fetch,
-        [oauth.allowInsecureRequests]: !tlsOnly,
-        additionalParameters: parameters,
-        DPoP: options?.DPoP,
-        headers: new Headers(headers),
-        signal: requestSignal.signal,
-      },
-    )
-    .catch(errorHandler)
-    .finally(requestSignal.cleanup)
-
-  if (response.status === 503 && response.headers.has('retry-after')) {
-    await handleRetryAfter(response, interval, pollingSignal, true)
-    await response.body?.cancel()
-    return retryPoll(interval)
-  }
-
-  const p = oauth.processDeviceCodeResponse(as, c, response, {
-    [oauth.jweDecrypt]: decrypt,
-  })
-
-  let result: oauth.TokenEndpointResponse
   try {
-    result = await p
-  } catch (err) {
-    if (retryable(err, options)) {
-      return retryPoll(interval, retry)
+    const response = await oauth
+      .deviceCodeGrantRequest(
+        as,
+        c,
+        auth,
+        deviceAuthorizationResponse.device_code,
+        {
+          [oauth.customFetch]: fetch,
+          [oauth.allowInsecureRequests]: !tlsOnly,
+          additionalParameters: parameters,
+          DPoP: options?.DPoP,
+          headers: new Headers(headers),
+          signal: requestSignal.signal,
+        },
+      )
+      .catch(errorHandler)
+
+    if (response.status === 503 && response.headers.has('retry-after')) {
+      await response.body?.cancel()
+      await handleRetryAfter(response, interval, pollingSignal, true)
+      return retryPoll(interval)
     }
 
-    if (err instanceof oauth.ResponseBodyError) {
-      switch (err.error) {
-        // @ts-ignore
-        case 'slow_down': // Fall through
-          interval += 5
-        case 'authorization_pending':
-          await handleRetryAfter(err.response, interval, pollingSignal)
-          return retryPoll(interval)
+    const p = oauth.processDeviceCodeResponse(as, c, response, {
+      [oauth.jweDecrypt]: decrypt,
+    })
+
+    let result: oauth.TokenEndpointResponse
+    try {
+      result = await p
+    } catch (err) {
+      if (retryable(err, options)) {
+        return retryPoll(interval, retry)
       }
+
+      if (err instanceof oauth.ResponseBodyError) {
+        switch (err.error) {
+          // @ts-ignore
+          case 'slow_down': // Fall through
+            interval += 5
+          case 'authorization_pending':
+            await handleRetryAfter(err.response, interval, pollingSignal)
+            return retryPoll(interval)
+        }
+      }
+
+      errorHandler(err)
     }
 
-    errorHandler(err)
+    result.id_token && (await nonRepudiation?.(response))
+
+    addHelpers(result)
+    return result
+  } finally {
+    requestSignal.cleanup()
   }
-
-  result.id_token && (await nonRepudiation?.(response))
-
-  addHelpers(result)
-  return result
 }
 
 /**
@@ -2590,65 +2593,68 @@ export async function pollBackchannelAuthenticationGrant(
     )
 
   const requestSignal = pollRequestSignal(pollingSignal, timeout)
-  const response = await oauth
-    .backchannelAuthenticationGrantRequest(
+  try {
+    const response = await oauth
+      .backchannelAuthenticationGrantRequest(
+        as,
+        c,
+        auth,
+        backchannelAuthenticationResponse.auth_req_id,
+        {
+          [oauth.customFetch]: fetch,
+          [oauth.allowInsecureRequests]: !tlsOnly,
+          additionalParameters: parameters,
+          DPoP: options?.DPoP,
+          headers: new Headers(headers),
+          signal: requestSignal.signal,
+        },
+      )
+      .catch(errorHandler)
+
+    if (response.status === 503 && response.headers.has('retry-after')) {
+      await response.body?.cancel()
+      await handleRetryAfter(response, interval, pollingSignal, true)
+      return retryPoll(interval)
+    }
+
+    const p = oauth.processBackchannelAuthenticationGrantResponse(
       as,
       c,
-      auth,
-      backchannelAuthenticationResponse.auth_req_id,
+      response,
       {
-        [oauth.customFetch]: fetch,
-        [oauth.allowInsecureRequests]: !tlsOnly,
-        additionalParameters: parameters,
-        DPoP: options?.DPoP,
-        headers: new Headers(headers),
-        signal: requestSignal.signal,
+        [oauth.jweDecrypt]: decrypt,
       },
     )
-    .catch(errorHandler)
-    .finally(requestSignal.cleanup)
 
-  if (response.status === 503 && response.headers.has('retry-after')) {
-    await handleRetryAfter(response, interval, pollingSignal, true)
-    await response.body?.cancel()
-    return retryPoll(interval)
-  }
-
-  const p = oauth.processBackchannelAuthenticationGrantResponse(
-    as,
-    c,
-    response,
-    {
-      [oauth.jweDecrypt]: decrypt,
-    },
-  )
-
-  let result: oauth.TokenEndpointResponse
-  try {
-    result = await p
-  } catch (err) {
-    if (retryable(err, options)) {
-      return retryPoll(interval, retry)
-    }
-
-    if (err instanceof oauth.ResponseBodyError) {
-      switch (err.error) {
-        // @ts-ignore
-        case 'slow_down': // Fall through
-          interval += 5
-        case 'authorization_pending':
-          await handleRetryAfter(err.response, interval, pollingSignal)
-          return retryPoll(interval)
+    let result: oauth.TokenEndpointResponse
+    try {
+      result = await p
+    } catch (err) {
+      if (retryable(err, options)) {
+        return retryPoll(interval, retry)
       }
+
+      if (err instanceof oauth.ResponseBodyError) {
+        switch (err.error) {
+          // @ts-ignore
+          case 'slow_down': // Fall through
+            interval += 5
+          case 'authorization_pending':
+            await handleRetryAfter(err.response, interval, pollingSignal)
+            return retryPoll(interval)
+        }
+      }
+
+      errorHandler(err)
     }
 
-    errorHandler(err)
+    result.id_token && (await nonRepudiation?.(response))
+
+    addHelpers(result)
+    return result
+  } finally {
+    requestSignal.cleanup()
   }
-
-  result.id_token && (await nonRepudiation?.(response))
-
-  addHelpers(result)
-  return result
 }
 
 /**
