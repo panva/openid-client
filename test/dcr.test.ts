@@ -1,10 +1,11 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as oauth from 'oauth4webapi'
 import * as undici from 'undici'
 import * as jose from 'jose'
 
-test('DCR preserves clock settings across DPoP nonce retries', async (t) => {
+test('DCR preserves clock settings across DPoP nonce retries', async () => {
   const issuer = new URL('https://op.example.com')
   const keyPair = await client.randomDPoPKeyPair('ES256')
   let registrationRequests = 0
@@ -17,8 +18,8 @@ test('DCR preserves clock settings across DPoP nonce retries', async (t) => {
       [client.clockTolerance]: 0,
     },
     (server, metadata, body, headers) => {
-      t.is(metadata[client.clockSkew], 120)
-      t.is(metadata[client.clockTolerance], 0)
+      assert.strictEqual(metadata[client.clockSkew], 120)
+      assert.strictEqual(metadata[client.clockTolerance], 0)
       authenticated = true
       return client.None()(server, metadata, body, headers)
     },
@@ -33,7 +34,7 @@ test('DCR preserves clock settings across DPoP nonce retries', async (t) => {
               token_endpoint: `${issuer.origin}/token`,
             })
           case '/reg':
-            t.deepEqual(JSON.parse(options.body as string), {})
+            assert.deepStrictEqual(JSON.parse(options.body as string), {})
             if (++registrationRequests === 1) {
               return Response.json(
                 {},
@@ -46,7 +47,10 @@ test('DCR preserves clock settings across DPoP nonce retries', async (t) => {
                 },
               )
             }
-            t.is(jose.decodeJwt(options.headers.dpop).nonce, 'server-nonce')
+            assert.strictEqual(
+              jose.decodeJwt(options.headers.dpop).nonce,
+              'server-nonce',
+            )
             return Response.json({ client_id: 'client' }, { status: 201 })
           case '/token':
             return Response.json({
@@ -61,11 +65,11 @@ test('DCR preserves clock settings across DPoP nonce retries', async (t) => {
   )
 
   await client.clientCredentialsGrant(config)
-  t.is(registrationRequests, 2)
-  t.true(authenticated)
+  assert.strictEqual(registrationRequests, 2)
+  assert.strictEqual(authenticated, true)
 })
 
-test('dpop may be used with DCR w/ initial access token', async (t) => {
+test('dpop may be used with DCR w/ initial access token', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -125,10 +129,10 @@ test('dpop may be used with DCR w/ initial access token', async (t) => {
     },
   })
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('dpop may be used with DCR w/o initial access token', async (t) => {
+test('dpop may be used with DCR w/o initial access token', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -190,10 +194,10 @@ test('dpop may be used with DCR w/o initial access token', async (t) => {
     },
   })
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('DCR uses client_secret_post by default when client_secret was returned', async (t) => {
+test('DCR uses client_secret_post by default when client_secret was returned', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -236,8 +240,8 @@ test('DCR uses client_secret_post by default when client_secret was returned', a
       path: '/token',
       body(body) {
         const params = new URLSearchParams(body)
-        t.true(params.has('client_id'))
-        t.true(params.has('client_secret'))
+        assert.strictEqual(params.has('client_id'), true)
+        assert.strictEqual(params.has('client_secret'), true)
         return true
       },
     })
@@ -250,10 +254,10 @@ test('DCR uses client_secret_post by default when client_secret was returned', a
   await client.clientCredentialsGrant(config)
   await client.clientCredentialsGrant(config)
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('DCR uses none by default when client_secret was not returned', async (t) => {
+test('DCR uses none by default when client_secret was not returned', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -294,7 +298,7 @@ test('DCR uses none by default when client_secret was not returned', async (t) =
       path: '/token',
       body(body) {
         const params = new URLSearchParams(body)
-        t.true(params.has('client_id'))
+        assert.strictEqual(params.has('client_id'), true)
         return true
       },
     })
@@ -307,10 +311,10 @@ test('DCR uses none by default when client_secret was not returned', async (t) =
   await client.clientCredentialsGrant(config)
   await client.clientCredentialsGrant(config)
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('DCR can use ClientSecretBasic without having a secret at hand prior to the registration', async (t) => {
+test('DCR can use ClientSecretBasic without having a secret at hand prior to the registration', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -369,10 +373,10 @@ test('DCR can use ClientSecretBasic without having a secret at hand prior to the
   await client.clientCredentialsGrant(config)
   await client.clientCredentialsGrant(config)
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('DCR can use ClientSecretPost without having a secret at hand prior to the registration', async (t) => {
+test('DCR can use ClientSecretPost without having a secret at hand prior to the registration', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -420,8 +424,8 @@ test('DCR can use ClientSecretPost without having a secret at hand prior to the 
       path: '/token',
       body(body) {
         const params = new URLSearchParams(body)
-        t.true(params.has('client_id'))
-        t.true(params.has('client_secret'))
+        assert.strictEqual(params.has('client_id'), true)
+        assert.strictEqual(params.has('client_secret'), true)
         return true
       },
     })
@@ -434,10 +438,10 @@ test('DCR can use ClientSecretPost without having a secret at hand prior to the 
   await client.clientCredentialsGrant(config)
   await client.clientCredentialsGrant(config)
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('DCR can use ClientSecretJwt without having a secret at hand prior to the registration', async (t) => {
+test('DCR can use ClientSecretJwt without having a secret at hand prior to the registration', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -485,9 +489,9 @@ test('DCR can use ClientSecretJwt without having a secret at hand prior to the r
       path: '/token',
       body(body) {
         const params = new URLSearchParams(body)
-        t.true(params.has('client_id'))
-        t.true(params.has('client_assertion_type'))
-        t.true(params.has('client_assertion'))
+        assert.strictEqual(params.has('client_id'), true)
+        assert.strictEqual(params.has('client_assertion_type'), true)
+        assert.strictEqual(params.has('client_assertion'), true)
         return true
       },
     })
@@ -500,5 +504,5 @@ test('DCR can use ClientSecretJwt without having a secret at hand prior to the r
   await client.clientCredentialsGrant(config)
   await client.clientCredentialsGrant(config)
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })

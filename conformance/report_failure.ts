@@ -17,7 +17,7 @@ writeStepSummary(
     [
       {
         type: 'failure',
-        detail: 'AVA runner failure (test details unavailable)',
+        detail: 'Node.js test runner failure (test details unavailable)',
       },
     ],
   ),

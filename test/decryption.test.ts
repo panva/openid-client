@@ -1,4 +1,5 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as jose from 'jose'
 
@@ -23,7 +24,7 @@ for (const { name, kid, extraKey, message } of [
     message: 'multiple applicable decryption keys selected',
   },
 ]) {
-  test(`JWE decryption with ${name}`, async (testContext) => {
+  test(`JWE decryption with ${name}`, async () => {
     const issuer = new URL('https://as.example.com')
     const signingKeyPair = await jose.generateKeyPair('ES256')
     const encryptionKeyPair = await jose.generateKeyPair('RSA-OAEP-256')
@@ -72,18 +73,19 @@ for (const { name, kid, extraKey, message } of [
       { idTokenExpected: true },
     )
     if (message) {
-      const error = await testContext.throwsAsync(pending, {
-        instanceOf: client.ClientError,
-        message,
+      await assert.rejects(pending, (error: unknown) => {
+        assert.ok(error instanceof client.ClientError)
+        assert.strictEqual(error.message, message)
+        assert.strictEqual(error.code, 'OAUTH_DECRYPTION_FAILED')
+        return true
       })
-      testContext.is(error?.code, 'OAUTH_DECRYPTION_FAILED')
     } else {
-      testContext.is((await pending).claims()?.sub, 'subject')
+      assert.strictEqual((await pending).claims()?.sub, 'subject')
     }
   })
 }
 
-test('RSA-OAEP JWE decryption ignores unrelated keys without kid', async (t) => {
+test('RSA-OAEP JWE decryption ignores unrelated keys without kid', async () => {
   const issuer = new URL('https://as.example.com')
   const signingKeyPair = await client.randomDPoPKeyPair('ES256')
   const rsaKeyPair = await crypto.subtle.generateKey(
@@ -155,7 +157,7 @@ test('RSA-OAEP JWE decryption ignores unrelated keys without kid', async (t) => 
     { idTokenExpected: true },
   )
 
-  t.is(result.claims()?.sub, 'subject')
+  assert.strictEqual(result.claims()?.sub, 'subject')
   const { claims } = result
-  t.is(claims()?.sub, 'subject')
+  assert.strictEqual(claims()?.sub, 'subject')
 })

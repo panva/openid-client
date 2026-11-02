@@ -1,7 +1,7 @@
 import * as events from 'node:events'
 import * as fs from 'node:fs'
 import * as readline from 'node:readline'
-import { parseArgs } from 'node:util'
+import { parseArgs, stripVTControlCharacters } from 'node:util'
 
 import { ZipArchive } from 'archiver'
 
@@ -32,6 +32,7 @@ let testId
 const files = []
 
 rl.on('line', (line) => {
+  line = stripVTControlCharacters(line)
   if (line.includes('- ID')) {
     planId = line.slice(6)
     return
@@ -41,7 +42,7 @@ rl.on('line', (line) => {
     return
   }
 
-  line = line.substring(4)
+  line = line.replace(/^(?: {4}|ℹ )/u, '')
 
   if (currentFile && line.includes('Test ID')) {
     throw new Error()

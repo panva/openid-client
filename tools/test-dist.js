@@ -196,7 +196,7 @@ const pair: client.CryptoKeyPair = await client.randomDPoPKeyPair('ES256')
 void pair
 `,
   )
-  const tsc = join(root, 'node_modules', 'typescript', 'bin', 'tsc')
+  const tsc = join(root, 'node_modules', '@typescript', 'native', 'bin', 'tsc')
   run(
     process.execPath,
     [

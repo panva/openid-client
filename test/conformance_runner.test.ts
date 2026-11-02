@@ -1,8 +1,11 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { execFile } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { promisify } from 'node:util'
 
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 
 import { downloadArtifact } from '../conformance/api.js'
 import {
@@ -15,7 +18,6 @@ import {
   clearReportRequest,
   formatReportSummary,
   missingHandlerMessage,
-  normalizeAvaTestTitle,
   reportIssues,
   reportRequested,
   requestReport,
@@ -23,27 +25,69 @@ import {
   validatePlanId,
 } from '../conformance/report.js'
 
-test('AVA afterEach hook titles identify the affected test', (t) => {
-  t.is(
-    normalizeAvaTestTitle(
-      'afterEach.always hook for missing conformance handler: newly-exposed-test',
+test('conformance failures are recorded before the final archive test', async (t) => {
+  const directory = mkdtempSync(
+    join(tmpdir(), 'openid-client-native-report-test-'),
+  )
+  t.after(() => rmSync(directory, { recursive: true, force: true }))
+  const failedModule = join(directory, 'failed-module.mjs')
+  const archive = join(directory, 'archive.mjs')
+  const launcher = join(directory, 'launcher.mjs')
+  const status = join(directory, 'status')
+  const archivedStatus = join(directory, 'archived-status')
+  const title = 'missing conformance handler: newly-exposed-test'
+
+  writeFileSync(
+    failedModule,
+    `import test from 'node:test'
+test(${JSON.stringify(title)}, () => { throw new Error('missing handler') })`,
+  )
+  writeFileSync(
+    archive,
+    `import test from 'node:test'
+import { readFileSync, writeFileSync } from 'node:fs'
+test('archive', () => {
+  writeFileSync(${JSON.stringify(archivedStatus)}, readFileSync(${JSON.stringify(status)}))
+})`,
+  )
+
+  writeFileSync(
+    launcher,
+    `import { runTests } from ${JSON.stringify(new URL('../conformance/execute.js', import.meta.url).href)}
+for await (const event of runTests(${JSON.stringify([failedModule, archive])}, ${JSON.stringify(status)})) {}`,
+  )
+  const env = { ...process.env }
+  delete env.NODE_TEST_CONTEXT
+  await promisify(execFile)(process.execPath, [launcher], { env })
+  assert.ok(
+    reportIssues(status).some(
+      (issue) => issue.type === 'failure' && issue.detail === title,
     ),
-    'missing conformance handler: newly-exposed-test',
   )
-  t.is(normalizeAvaTestTitle('ordinary test title'), 'ordinary test title')
+  assert.match(readFileSync(archivedStatus, 'utf8'), /newly-exposed-test/)
 })
 
-test('conformance module response type filtering', (t) => {
-  t.false(isRunnableModule({ variant: { response_type: 'id_token token' } }))
-  t.false(isRunnableModule({ variant: { response_type: 'code token' } }))
-  t.false(
+test('conformance module response type filtering', () => {
+  assert.strictEqual(
+    isRunnableModule({ variant: { response_type: 'id_token token' } }),
+    false,
+  )
+  assert.strictEqual(
+    isRunnableModule({ variant: { response_type: 'code token' } }),
+    false,
+  )
+  assert.strictEqual(
     isRunnableModule({ variant: { response_type: 'code id_token token' } }),
+    false,
   )
-  t.true(isRunnableModule({ variant: { response_type: 'code' } }))
-  t.true(isRunnableModule({ variant: null }))
+  assert.strictEqual(
+    isRunnableModule({ variant: { response_type: 'code' } }),
+    true,
+  )
+  assert.strictEqual(isRunnableModule({ variant: null }), true)
 })
 
-test('known unsupported OIDC conformance modules are skipped', (t) => {
+test('known unsupported OIDC conformance modules are skipped', () => {
   for (const name of [
     'aggregated-claims',
     'discovery-jwks-uri-keys',
@@ -55,33 +99,41 @@ test('known unsupported OIDC conformance modules are skipped', (t) => {
     'signing-key-rotation-just-before-signing',
     'userinfo-bearer-body',
   ]) {
-    t.true(isSkippedUnhandledModule('oidcc-client-test-plan', name), name)
-    t.false(
+    assert.strictEqual(
+      isSkippedUnhandledModule('oidcc-client-test-plan', name),
+      true,
+      name,
+    )
+    assert.strictEqual(
       isSkippedUnhandledModule(
         'fapi2-security-profile-final-client-test-plan',
         name,
       ),
+      false,
       name,
     )
   }
-  t.false(
+  assert.strictEqual(
     isSkippedUnhandledModule('oidcc-client-test-plan', 'newly-exposed-test'),
+    false,
   )
-  t.false(
+  assert.strictEqual(
     isSkippedUnhandledModule(
       'oidcc-client-test-plan',
       'discovery-issuer-mismatch',
     ),
+    false,
   )
-  t.false(
+  assert.strictEqual(
     isSkippedUnhandledModule(
       'fapi2-security-profile-final-client-test-plan',
       'rs-dpop-auth-scheme-case-insensitivity',
     ),
+    false,
   )
 })
 
-test('conformance diagnostics file always sorts last', (t) => {
+test('conformance diagnostics file always sorts last', () => {
   const diagnostics = '/workspace/conformance/download_archive.ts'
   const handlers = [
     '/workspace/conformance/modules/z-test.ts',
@@ -89,26 +141,27 @@ test('conformance diagnostics file always sorts last', (t) => {
     '/workspace/conformance/modules/test-2.ts',
   ]
 
-  t.deepEqual([diagnostics, ...handlers].sort(sortTestFiles), [
+  assert.deepStrictEqual([diagnostics, ...handlers].sort(sortTestFiles), [
     handlers[2],
     handlers[1],
     handlers[0],
     diagnostics,
   ])
-  t.true(
+  assert.strictEqual(
     sortTestFiles(
       String.raw`C:\workspace\conformance\download_archive.ts`,
       String.raw`C:\workspace\conformance\modules\test.ts`,
     ) > 0,
+    true,
   )
 })
 
-test('conformance module handlers', (t) => {
-  t.deepEqual(getModuleHandler('oidcc-client-test-new-test'), {
+test('conformance module handlers', () => {
+  assert.deepStrictEqual(getModuleHandler('oidcc-client-test-new-test'), {
     name: 'new-test',
     path: './conformance/modules/new-test.ts',
   })
-  t.deepEqual(
+  assert.deepStrictEqual(
     getModuleHandler('fapi2-message-signing-final-client-test-new-test'),
     {
       name: 'new-test',
@@ -119,17 +172,17 @@ test('conformance module handlers', (t) => {
     name: 'discovery-issuer-mismatch',
     path: './conformance/modules/discovery-issuer-mismatch.ts',
   }
-  t.deepEqual(
+  assert.deepStrictEqual(
     getModuleHandler('oidcc-client-test-discovery-issuer-mismatch'),
     discoveryIssuerMismatch,
   )
-  t.deepEqual(
+  assert.deepStrictEqual(
     getModuleHandler(
       'fapi2-security-profile-final-client-test-discovery-issuer-mismatch',
     ),
     discoveryIssuerMismatch,
   )
-  t.deepEqual(
+  assert.deepStrictEqual(
     getModuleHandler(
       'fapi2-security-profile-final-client-test-rs-dpop-auth-scheme-case-insensitivity',
     ),
@@ -138,37 +191,37 @@ test('conformance module handlers', (t) => {
       path: './conformance/modules/rs-dpop-auth-scheme-case-insensitivity.ts',
     },
   )
-  t.throws(() => getModuleHandler('../new-test'), {
+  assert.throws(() => getModuleHandler('../new-test'), {
     message: 'invalid conformance module name: ../new-test',
   })
-  t.throws(() => getModuleHandler('oidcc-client-test-.hidden'), {
+  assert.throws(() => getModuleHandler('oidcc-client-test-.hidden'), {
     message: 'invalid conformance module name: .hidden',
   })
   const longModule = 'a'.repeat(129)
-  t.throws(() => getModuleHandler(longModule), {
+  assert.throws(() => getModuleHandler(longModule), {
     message: `invalid conformance module name: ${longModule}`,
   })
 })
 
-test('conformance report inputs are safe for paths and GitHub environment files', (t) => {
-  t.is(validatePlanId('plan-123_abc'), 'plan-123_abc')
-  t.throws(() => validatePlanId('../plan'), {
+test('conformance report inputs are safe for paths and GitHub environment files', () => {
+  assert.strictEqual(validatePlanId('plan-123_abc'), 'plan-123_abc')
+  assert.throws(() => validatePlanId('../plan'), {
     message: 'invalid conformance plan ID: ../plan',
   })
   const longPlanId = 'a'.repeat(129)
-  t.throws(() => validatePlanId(longPlanId), {
+  assert.throws(() => validatePlanId(longPlanId), {
     message: `invalid conformance plan ID: ${longPlanId}`,
   })
-  t.throws(() => setActionEnvironment('INVALID-NAME', 'value'), {
+  assert.throws(() => setActionEnvironment('INVALID-NAME', 'value'), {
     message: 'invalid GitHub Actions environment variable name: INVALID-NAME',
   })
-  t.throws(() => setActionEnvironment('VALID_NAME', 'first\r\nsecond'), {
+  assert.throws(() => setActionEnvironment('VALID_NAME', 'first\r\nsecond'), {
     message: 'invalid multiline value for VALID_NAME',
   })
 })
 
-test('conformance archive rejects an unsafe plan ID before fetching', async (t) => {
-  await t.throwsAsync(
+test('conformance archive rejects an unsafe plan ID before fetching', async () => {
+  await assert.rejects(
     () =>
       downloadArtifact({
         id: '../plan',
@@ -179,30 +232,27 @@ test('conformance archive rejects an unsafe plan ID before fetching', async (t) 
   )
 })
 
-test.serial(
-  'conformance archive rejects an unsuccessful response before writing',
-  async (t) => {
-    const originalFetch = globalThis.fetch
-    globalThis.fetch = async () =>
-      new Response('download failed', { status: 500 })
-    t.teardown(() => {
-      globalThis.fetch = originalFetch
-    })
+test('conformance archive rejects an unsuccessful response before writing', async (t) => {
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = async () =>
+    new Response('download failed', { status: 500 })
+  t.after(() => {
+    globalThis.fetch = originalFetch
+  })
 
-    await t.throwsAsync(
-      () =>
-        downloadArtifact({
-          id: 'failed-plan-id',
-          name: 'plan-name',
-          modules: [],
-        }),
-      { message: 'download failed' },
-    )
-  },
-)
+  await assert.rejects(
+    () =>
+      downloadArtifact({
+        id: 'failed-plan-id',
+        name: 'plan-name',
+        modules: [],
+      }),
+    { message: 'download failed' },
+  )
+})
 
-test('missing conformance module handler message', (t) => {
-  t.is(
+test('missing conformance module handler message', () => {
+  assert.strictEqual(
     missingHandlerMessage('new-test', './conformance/modules/new-test.ts'),
     'The conformance suite exposed a new test module named "new-test", but no handler exists at ./conformance/modules/new-test.ts',
   )
@@ -213,15 +263,15 @@ test('conformance issue report', (t) => {
     join(tmpdir(), 'openid-client-conformance-test-'),
   )
   const path = join(directory, 'report')
-  t.teardown(() => rmSync(directory, { recursive: true, force: true }))
+  t.after(() => rmSync(directory, { recursive: true, force: true }))
 
   requestReport(path, { type: 'warning', detail: 'warning-test' })
   requestReport(path, { type: 'failure', detail: 'failure-test' })
   requestReport(path, { type: 'failure', detail: 'failure-test' })
 
-  t.true(reportRequested(path))
+  assert.strictEqual(reportRequested(path), true)
   const issues = reportIssues(path)
-  t.deepEqual(issues, [
+  assert.deepStrictEqual(issues, [
     { type: 'warning', detail: 'warning-test' },
     { type: 'failure', detail: 'failure-test' },
   ])
@@ -231,46 +281,50 @@ test('conformance issue report', (t) => {
     { response_type: 'code' },
     issues,
   )
-  t.true(summary.startsWith('## ❌ Conformance failure'))
-  t.true(summary.includes('- Plan: `plan-name`'))
-  t.true(summary.includes('- Plan ID: `plan-id`'))
-  t.true(summary.includes('<summary>Variant</summary>'))
-  t.true(summary.includes('"response_type": "code"'))
-  t.true(
+  assert.strictEqual(summary.startsWith('## ❌ Conformance failure'), true)
+  assert.strictEqual(summary.includes('- Plan: `plan-name`'), true)
+  assert.strictEqual(summary.includes('- Plan ID: `plan-id`'), true)
+  assert.strictEqual(summary.includes('<summary>Variant</summary>'), true)
+  assert.strictEqual(summary.includes('"response_type": "code"'), true)
+  assert.strictEqual(
     summary.endsWith(
       '### Affected tests\n\n- `warning-test`\n- `failure-test`',
     ),
+    true,
   )
 
   clearReportRequest(path)
-  t.false(reportRequested(path))
+  assert.strictEqual(reportRequested(path), false)
 })
 
-test('warning-only conformance report', (t) => {
+test('warning-only conformance report', () => {
   const summary = formatReportSummary(
     { id: 'plan-id', name: 'plan-name' },
     {},
     [{ type: 'warning', detail: 'warning-test' }],
   )
-  t.true(summary.startsWith('## ⚠️ Conformance warning'))
+  assert.strictEqual(summary.startsWith('## ⚠️ Conformance warning'), true)
 })
 
-test('conformance report sanitizes affected test details', (t) => {
+test('conformance report sanitizes affected test details', () => {
   const summary = formatReportSummary(
     { id: 'plan-id', name: 'plan-name' },
     {},
     [{ type: 'warning', detail: 'first\r\n`second`' }],
   )
-  t.true(summary.endsWith("### Affected tests\n\n- `first 'second'`"))
-  t.false(summary.includes('\r'))
+  assert.strictEqual(
+    summary.endsWith("### Affected tests\n\n- `first 'second'`"),
+    true,
+  )
+  assert.strictEqual(summary.includes('\r'), false)
 })
 
-test.serial('GitHub Actions environment values', (t) => {
+test('GitHub Actions environment values', (t) => {
   const directory = mkdtempSync(join(tmpdir(), 'openid-client-actions-test-'))
   const path = join(directory, 'environment')
   const previous = process.env.GITHUB_ENV
   process.env.GITHUB_ENV = path
-  t.teardown(() => {
+  t.after(() => {
     if (previous === undefined) {
       delete process.env.GITHUB_ENV
     } else {
@@ -280,5 +334,5 @@ test.serial('GitHub Actions environment values', (t) => {
   })
 
   setActionEnvironment('VALID_NAME', 'single-line')
-  t.is(readFileSync(path, 'utf8'), 'VALID_NAME=single-line\n')
+  assert.strictEqual(readFileSync(path, 'utf8'), 'VALID_NAME=single-line\n')
 })

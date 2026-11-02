@@ -3,7 +3,8 @@
 import { once } from 'node:events'
 import http from 'node:http'
 import type { AddressInfo } from 'node:net'
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as undici from 'undici'
 import * as jose from 'jose'
@@ -64,7 +65,7 @@ test('30x on discoveries and jwks_uri can be worked around', async (t) => {
 
   server.listen(0, '127.0.0.1')
   await once(server, 'listening')
-  t.teardown(async () => {
+  t.after(async () => {
     server.close()
     await once(server, 'close')
   })
@@ -82,7 +83,7 @@ test('30x on discoveries and jwks_uri can be worked around', async (t) => {
 
   const hit = new Set<string>()
 
-  let err = await t.throwsAsync(
+  await assert.rejects(
     client.discovery(issuer, 'decoy', 'decoy', undefined, {
       execute: [client.allowInsecureRequests],
       // @ts-ignore
@@ -90,13 +91,14 @@ test('30x on discoveries and jwks_uri can be worked around', async (t) => {
         return undici.fetch(url, options)
       },
     }),
-    {
-      code: 'OAUTH_RESPONSE_IS_NOT_CONFORM',
-      message: 'unexpected HTTP response status code',
+    (error: unknown) => {
+      assert.ok(error instanceof client.ClientError)
+      assert.strictEqual(error.code, 'OAUTH_RESPONSE_IS_NOT_CONFORM')
+      assert.strictEqual(error.message, 'unexpected HTTP response status code')
+      assert.match((error.cause as Response).url, /well-known/)
+      return true
     },
   )
-
-  t.regex((err.cause as Response).url, /well-known/)
 
   const config = await client.discovery(issuer, 'decoy', 'decoy', undefined, {
     execute: [client.allowInsecureRequests, client.enableNonRepudiationChecks],
@@ -117,27 +119,28 @@ test('30x on discoveries and jwks_uri can be worked around', async (t) => {
     },
   })
 
-  err = await t.throwsAsync(
+  await assert.rejects(
     client.authorizationCodeGrant(
       config,
       new URL('https://rp.example.com/cb?code=foo'),
     ),
-    {
-      code: 'OAUTH_RESPONSE_IS_NOT_CONFORM',
-      message: 'unexpected HTTP response status code',
+    (error: unknown) => {
+      assert.ok(error instanceof client.ClientError)
+      assert.strictEqual(error.code, 'OAUTH_RESPONSE_IS_NOT_CONFORM')
+      assert.strictEqual(error.message, 'unexpected HTTP response status code')
+      assert.match((error.cause as Response).url, /jwks/)
+      return true
     },
   )
 
-  t.regex((err.cause as Response).url, /jwks/)
-
-  await t.notThrowsAsync(
+  await assert.doesNotReject(
     client.authorizationCodeGrant(
       config,
       new URL('https://rp.example.com/cb?code=foo'),
     ),
   )
 
-  t.deepEqual(requests, [
+  assert.deepStrictEqual(requests, [
     'GET /.well-known/openid-configuration',
     'GET /.well-known/openid-configuration',
     'GET /not-conform-redirect',

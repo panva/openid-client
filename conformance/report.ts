@@ -2,14 +2,6 @@ import { appendFileSync, existsSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const AFTER_EACH_TITLE_PREFIX = 'afterEach.always hook for '
-
-export function normalizeAvaTestTitle(title: string) {
-  return title.startsWith(AFTER_EACH_TITLE_PREFIX)
-    ? title.slice(AFTER_EACH_TITLE_PREFIX.length)
-    : title
-}
-
 export function validatePlanId(planId: string) {
   if (!/^[a-z0-9_-]{1,128}$/i.test(planId)) {
     throw new Error(`invalid conformance plan ID: ${planId}`)

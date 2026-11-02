@@ -3,7 +3,8 @@ import type { AddressInfo } from 'node:net'
 import { Readable } from 'node:stream'
 import * as crypto from 'node:crypto'
 
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import type passport from 'passport'
 import * as client from '../src/index.js'
 import { Strategy } from '../src/passport.js'
@@ -213,44 +214,42 @@ async function doAuthorizationCodeGrant(
 
 // --- Constructor ---
 
-test('constructor throws on missing config', (t) => {
-  t.throws(() => new Strategy({} as any, () => {}), {
-    instanceOf: TypeError,
-  })
+test('constructor throws on missing config', () => {
+  assert.throws(() => new Strategy({} as any, () => {}), TypeError)
 })
 
-test('constructor throws on non-function verify', (t) => {
+test('constructor throws on non-function verify', () => {
   const { port } = { port: 0 }
-  t.throws(
+  assert.throws(
     () =>
       new Strategy(
         { config: createConfiguration(port) } as any,
         'not a function' as any,
       ),
-    { instanceOf: TypeError },
+    TypeError,
   )
 })
 
-test('constructor uses issuer host as default name and sessionKey', (t) => {
+test('constructor uses issuer host as default name and sessionKey', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
-  t.is(strategy.name, '127.0.0.1:9999')
-  t.is(strategy._sessionKey, '127.0.0.1:9999')
+  assert.strictEqual(strategy.name, '127.0.0.1:9999')
+  assert.strictEqual(strategy._sessionKey, '127.0.0.1:9999')
 })
 
-test('constructor accepts custom name and sessionKey', (t) => {
+test('constructor accepts custom name and sessionKey', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy(
     { config, name: 'custom-name', sessionKey: 'custom-key' },
     () => {},
   )
-  t.is(strategy.name, 'custom-name')
-  t.is(strategy._sessionKey, 'custom-key')
+  assert.strictEqual(strategy.name, 'custom-name')
+  assert.strictEqual(strategy._sessionKey, 'custom-key')
 })
 
 // --- authenticate routing ---
 
-test('authenticate errors when session is missing', (t) => {
+test('authenticate errors when session is missing', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {}) as StrategyHarness
 
@@ -260,46 +259,59 @@ test('authenticate errors when session is missing', (t) => {
   }
 
   Strategy.prototype.authenticate.call(strategy, {} as any, {})
-  t.true(error instanceof Error)
-  t.regex((error as Error).message, /session/i)
+  assert.strictEqual(error instanceof Error, true)
+  assert.match((error as Error).message, /session/i)
 })
 
 // --- shouldInitiateAuthRequest ---
 
-test('shouldInitiateAuthRequest returns true for plain GET without callback params', (t) => {
+test('shouldInitiateAuthRequest returns true for plain GET without callback params', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
   const url = new URL('http://localhost/login')
-  t.true(strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}))
+  assert.strictEqual(
+    strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}),
+    true,
+  )
 })
 
-test('shouldInitiateAuthRequest returns false when code param present', (t) => {
+test('shouldInitiateAuthRequest returns false when code param present', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
   const url = new URL('http://localhost/cb?code=abc')
-  t.false(strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}))
+  assert.strictEqual(
+    strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}),
+    false,
+  )
 })
 
-test('shouldInitiateAuthRequest returns false when error param present', (t) => {
+test('shouldInitiateAuthRequest returns false when error param present', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
   const url = new URL('http://localhost/cb?error=access_denied')
-  t.false(strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}))
+  assert.strictEqual(
+    strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}),
+    false,
+  )
 })
 
-test('shouldInitiateAuthRequest returns false when response param present', (t) => {
+test('shouldInitiateAuthRequest returns false when response param present', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
   const url = new URL('http://localhost/cb?response=jarm')
-  t.false(strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}))
+  assert.strictEqual(
+    strategy.shouldInitiateAuthRequest({ method: 'GET' } as any, url, {}),
+    false,
+  )
 })
 
-test('shouldInitiateAuthRequest returns false for POST', (t) => {
+test('shouldInitiateAuthRequest returns false for POST', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
   const url = new URL('http://localhost/cb')
-  t.false(
+  assert.strictEqual(
     strategy.shouldInitiateAuthRequest({ method: 'POST' } as any, url, {}),
+    false,
   )
 })
 
@@ -307,26 +319,26 @@ test('shouldInitiateAuthRequest returns false for POST', (t) => {
 
 test('authorizationRequest redirects and stores state in session', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
 
   const url = new URL(redirectTo)
-  t.truthy(url.searchParams.get('code_challenge'))
-  t.is(url.searchParams.get('code_challenge_method'), 'S256')
-  t.truthy(url.searchParams.get('redirect_uri'))
+  assert.ok(url.searchParams.get('code_challenge'))
+  assert.strictEqual(url.searchParams.get('code_challenge_method'), 'S256')
+  assert.ok(url.searchParams.get('redirect_uri'))
 
   // Session state was stored
   const sessionKey = harness.strategy._sessionKey
   const stateData = harness.session[sessionKey] as any
-  t.truthy(stateData)
-  t.truthy(stateData.code_verifier)
+  assert.ok(stateData)
+  assert.ok(stateData.code_verifier)
 })
 
 test('authorizationRequest includes scope from options', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -334,12 +346,12 @@ test('authorizationRequest includes scope from options', async (t) => {
   })
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('scope'), 'openid profile')
+  assert.strictEqual(url.searchParams.get('scope'), 'openid profile')
 })
 
 test('authorizationRequest includes scope array from options', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -347,12 +359,12 @@ test('authorizationRequest includes scope array from options', async (t) => {
   })
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('scope'), 'openid email')
+  assert.strictEqual(url.searchParams.get('scope'), 'openid email')
 })
 
 test('authorizationRequest uses strategy-level scope as fallback', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port, undefined, {
     scope: 'openid',
@@ -360,12 +372,12 @@ test('authorizationRequest uses strategy-level scope as fallback', async (t) => 
   const redirectTo = await doAuthorizationRequest(harness)
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('scope'), 'openid')
+  assert.strictEqual(url.searchParams.get('scope'), 'openid')
 })
 
 test('authorizationRequest includes loginHint', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -373,12 +385,12 @@ test('authorizationRequest includes loginHint', async (t) => {
   })
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('login_hint'), 'user@example.com')
+  assert.strictEqual(url.searchParams.get('login_hint'), 'user@example.com')
 })
 
 test('authorizationRequest includes prompt', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -386,12 +398,12 @@ test('authorizationRequest includes prompt', async (t) => {
   })
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('prompt'), 'consent')
+  assert.strictEqual(url.searchParams.get('prompt'), 'consent')
 })
 
 test('authorizationRequest includes resource', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -399,12 +411,12 @@ test('authorizationRequest includes resource', async (t) => {
   })
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('resource'), 'https://rs.example.com')
+  assert.strictEqual(url.searchParams.get('resource'), 'https://rs.example.com')
 })
 
 test('authorizationRequest includes strategy-level resource as fallback', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port, undefined, {
     resource: 'https://rs.example.com',
@@ -412,31 +424,32 @@ test('authorizationRequest includes strategy-level resource as fallback', async 
   const redirectTo = await doAuthorizationRequest(harness)
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('resource'), 'https://rs.example.com')
+  assert.strictEqual(url.searchParams.get('resource'), 'https://rs.example.com')
 })
 
 // --- Authorization Code Grant (callback) ---
 
 test('callback with missing session state calls fail', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
 
   // No authorizationRequest was made, so session is empty
   await doAuthorizationCodeGrant(harness, `http://127.0.0.1:${port}/cb?code=ok`)
 
-  t.truthy(harness.results.failInfo)
-  t.like(harness.results.failInfo as Record<string, unknown>, {
-    message: 'Unable to verify authorization request state',
-  })
+  assert.ok(harness.results.failInfo)
+  assert.strictEqual(
+    (harness.results.failInfo as Record<string, unknown>).message,
+    'Unable to verify authorization request state',
+  )
 })
 
 for (const passReqToCallback of [false, true]) {
   for (const asynchronous of [false, true]) {
     test(`${asynchronous ? 'async' : 'sync'} verify errors reach strategy.error (passReqToCallback=${passReqToCallback})`, async (testContext) => {
       const { port, server } = await startTokenEndpoint()
-      testContext.teardown(() => close(server))
+      testContext.after(() => close(server))
       const verifyError = new Error('verify failed')
       const harness = createStrategyHarness(
         port,
@@ -457,22 +470,22 @@ for (const passReqToCallback of [false, true]) {
         `${new URL(redirectTo).origin}/cb?code=ok`,
       )
 
-      testContext.is(harness.results.error, verifyError)
-      testContext.falsy(harness.results.successUser)
-      testContext.falsy(harness.results.failInfo)
+      assert.strictEqual(harness.results.error, verifyError)
+      assert.ok(!harness.results.successUser)
+      assert.ok(!harness.results.failInfo)
     })
   }
 
   test(`async verify can complete authentication (passReqToCallback=${passReqToCallback})`, async (testContext) => {
     const { port, server } = await startTokenEndpoint()
-    testContext.teardown(() => close(server))
+    testContext.after(() => close(server))
     const harness = createStrategyHarness(port, undefined, {
       passReqToCallback,
     })
     const user = { sub: 'user' }
     const verify: VerifyFunction = async (tokens, verified) => {
       await Promise.resolve()
-      testContext.is(tokens.access_token, 'ok')
+      assert.strictEqual(tokens.access_token, 'ok')
       verified(null, user)
     }
     const verifyWithRequest: VerifyFunctionWithRequest = async (
@@ -480,7 +493,7 @@ for (const passReqToCallback of [false, true]) {
       tokens,
       verified,
     ) => {
-      testContext.is(req.method, 'GET')
+      assert.strictEqual(req.method, 'GET')
       await verify(tokens, verified)
     }
     harness.strategy._verify = passReqToCallback ? verifyWithRequest : verify
@@ -491,14 +504,14 @@ for (const passReqToCallback of [false, true]) {
       `${new URL(redirectTo).origin}/cb?code=ok`,
     )
 
-    testContext.is(harness.results.successUser, user)
-    testContext.falsy(harness.results.error)
+    assert.strictEqual(harness.results.successUser, user)
+    assert.ok(!harness.results.error)
   })
 }
 
 test('verify callback error propagates via strategy.error', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const verifyError = new Error('verify failed')
   const harness = createStrategyHarness(port, (_tokens, verified) => {
@@ -511,12 +524,12 @@ test('verify callback error propagates via strategy.error', async (t) => {
     `${new URL(redirectTo).origin}/cb?code=ok`,
   )
 
-  t.is(harness.results.error, verifyError)
+  assert.strictEqual(harness.results.error, verifyError)
 })
 
 test('verify callback with no user calls fail', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port, (_tokens, verified) => {
     verified(null, false, { message: 'no such user' })
@@ -528,12 +541,12 @@ test('verify callback with no user calls fail', async (t) => {
     `${new URL(redirectTo).origin}/cb?code=ok`,
   )
 
-  t.truthy(harness.results.failInfo)
+  assert.ok(harness.results.failInfo)
 })
 
 test('access_denied error response calls fail instead of error', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
@@ -543,16 +556,17 @@ test('access_denied error response calls fail instead of error', async (t) => {
     `${new URL(redirectTo).origin}/cb?error=access_denied&error_description=user+denied`,
   )
 
-  t.truthy(harness.results.failInfo)
-  t.falsy(harness.results.error)
-  t.like(harness.results.failInfo as Record<string, unknown>, {
-    message: 'user denied',
-  })
+  assert.ok(harness.results.failInfo)
+  assert.ok(!harness.results.error)
+  assert.strictEqual(
+    (harness.results.failInfo as Record<string, unknown>).message,
+    'user denied',
+  )
 })
 
 test('non-access_denied error response calls error', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
@@ -562,13 +576,16 @@ test('non-access_denied error response calls error', async (t) => {
     `${new URL(redirectTo).origin}/cb?error=server_error`,
   )
 
-  t.truthy(harness.results.error)
-  t.true(harness.results.error instanceof client.AuthorizationResponseError)
+  assert.ok(harness.results.error)
+  assert.strictEqual(
+    harness.results.error instanceof client.AuthorizationResponseError,
+    true,
+  )
 })
 
 test('callbackURL option overrides strategy-level callbackURL in callback', async (t) => {
   const { port, server, requests } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
@@ -581,15 +598,15 @@ test('callbackURL option overrides strategy-level callbackURL in callback', asyn
     { callbackURL: overrideUrl },
   )
 
-  t.truthy(harness.results.successUser)
+  assert.ok(harness.results.successUser)
   // The token request should include the overridden redirect_uri
   const tokenBody = new URLSearchParams(requests[0])
-  t.is(tokenBody.get('redirect_uri'), overrideUrl)
+  assert.strictEqual(tokenBody.get('redirect_uri'), overrideUrl)
 })
 
 test('passReqToCallback passes request to verify function', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   let receivedReq: unknown
   const strategy = new Strategy(
@@ -635,13 +652,13 @@ test('passReqToCallback passes request to verify function', async (t) => {
     {},
   )
 
-  t.truthy(results.successUser)
-  t.is((receivedReq as any).marker, 'the-request')
+  assert.ok(results.successUser)
+  assert.strictEqual((receivedReq as any).marker, 'the-request')
 })
 
 test('token endpoint request includes code_verifier from session', async (t) => {
   const { port, server, requests } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
@@ -651,18 +668,18 @@ test('token endpoint request includes code_verifier from session', async (t) => 
     `${new URL(redirectTo).origin}/cb?code=test_code`,
   )
 
-  t.truthy(harness.results.successUser)
+  assert.ok(harness.results.successUser)
   const tokenBody = new URLSearchParams(requests[0])
-  t.is(tokenBody.get('grant_type'), 'authorization_code')
-  t.is(tokenBody.get('code'), 'test_code')
-  t.truthy(tokenBody.get('code_verifier'))
+  assert.strictEqual(tokenBody.get('grant_type'), 'authorization_code')
+  assert.strictEqual(tokenBody.get('code'), 'test_code')
+  assert.ok(tokenBody.get('code_verifier'))
 })
 
 // --- authorizationRequestParams: idTokenHint ---
 
 test('authorizationRequest includes idTokenHint', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -670,14 +687,17 @@ test('authorizationRequest includes idTokenHint', async (t) => {
   })
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('id_token_hint'), 'eyJ.previous.token')
+  assert.strictEqual(
+    url.searchParams.get('id_token_hint'),
+    'eyJ.previous.token',
+  )
 })
 
 // --- authorizationRequestParams: authorizationDetails ---
 
 test('authorizationRequest includes authorizationDetails from options', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const details: client.AuthorizationDetails = {
@@ -690,13 +710,13 @@ test('authorizationRequest includes authorizationDetails from options', async (t
 
   const url = new URL(redirectTo)
   const parsed = JSON.parse(url.searchParams.get('authorization_details')!)
-  t.true(Array.isArray(parsed))
-  t.is(parsed[0].type, 'payment_initiation')
+  assert.strictEqual(Array.isArray(parsed), true)
+  assert.strictEqual(parsed[0].type, 'payment_initiation')
 })
 
 test('authorizationRequest includes authorizationDetails array from options', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const details: client.AuthorizationDetails[] = [
@@ -709,16 +729,16 @@ test('authorizationRequest includes authorizationDetails array from options', as
 
   const url = new URL(redirectTo)
   const parsed = JSON.parse(url.searchParams.get('authorization_details')!)
-  t.is(parsed.length, 2)
-  t.is(parsed[0].type, 'payment_initiation')
-  t.is(parsed[1].type, 'account_information')
+  assert.strictEqual(parsed.length, 2)
+  assert.strictEqual(parsed[0].type, 'payment_initiation')
+  assert.strictEqual(parsed[1].type, 'account_information')
 })
 
 // --- authorizationRequestParams: callbackURL override in auth request ---
 
 test('authorizationRequest includes callbackURL option as redirect_uri', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -726,7 +746,7 @@ test('authorizationRequest includes callbackURL option as redirect_uri', async (
   })
 
   const url = new URL(redirectTo)
-  t.is(
+  assert.strictEqual(
     url.searchParams.get('redirect_uri'),
     `http://127.0.0.1:${port}/override-cb`,
   )
@@ -736,7 +756,7 @@ test('authorizationRequest includes callbackURL option as redirect_uri', async (
 
 test('authorizationRequest uses strategy-level authorizationDetails as fallback', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const details: client.AuthorizationDetails = { type: 'payment_initiation' }
   const config = createConfiguration(port)
@@ -766,15 +786,15 @@ test('authorizationRequest uses strategy-level authorizationDetails as fallback'
 
   const url = new URL(results.redirectTo!)
   const parsed = JSON.parse(url.searchParams.get('authorization_details')!)
-  t.true(Array.isArray(parsed))
-  t.is(parsed[0].type, 'payment_initiation')
+  assert.strictEqual(Array.isArray(parsed), true)
+  assert.strictEqual(parsed[0].type, 'payment_initiation')
 })
 
 // --- Session state stores nonce, state, max_age ---
 
 test('authorizationRequest stores max_age in session when present', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
 
@@ -790,15 +810,15 @@ test('authorizationRequest stores max_age in session when present', async (t) =>
 
   const sessionKey = harness.strategy._sessionKey
   const stateData = harness.session[sessionKey] as any
-  t.is(stateData.max_age, 3600)
-  t.truthy(stateData.code_verifier)
+  assert.strictEqual(stateData.max_age, 3600)
+  assert.ok(stateData.code_verifier)
 })
 
 // --- authorizationRequest error handling ---
 
 test('authorizationRequest error routes to strategy.error', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
 
@@ -809,16 +829,16 @@ test('authorizationRequest error routes to strategy.error', async (t) => {
 
   await doAuthorizationRequest(harness)
 
-  t.truthy(harness.results.error)
-  t.is((harness.results.error as Error).message, 'params failed')
-  t.falsy(harness.results.redirectTo)
+  assert.ok(harness.results.error)
+  assert.strictEqual((harness.results.error as Error).message, 'params failed')
+  assert.ok(!harness.results.redirectTo)
 })
 
 // --- resource forwarded to token endpoint ---
 
 test('resource option is forwarded to token endpoint request', async (t) => {
   const { port, server, requests } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
@@ -829,14 +849,14 @@ test('resource option is forwarded to token endpoint request', async (t) => {
     { resource: 'https://rs.example.com' },
   )
 
-  t.truthy(harness.results.successUser)
+  assert.ok(harness.results.successUser)
   const tokenBody = new URLSearchParams(requests[0])
-  t.is(tokenBody.get('resource'), 'https://rs.example.com')
+  assert.strictEqual(tokenBody.get('resource'), 'https://rs.example.com')
 })
 
 // --- currentUrl ---
 
-test('currentUrl constructs URL from request properties', (t) => {
+test('currentUrl constructs URL from request properties', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
 
@@ -857,13 +877,13 @@ test('currentUrl constructs URL from request properties', (t) => {
   }
 
   const url = strategy.currentUrl(req as any)
-  t.is(url.origin, 'https://example.com')
-  t.is(url.pathname, '/cb')
-  t.is(url.searchParams.get('code'), 'abc')
-  t.is(url.searchParams.get('state'), 'xyz')
+  assert.strictEqual(url.origin, 'https://example.com')
+  assert.strictEqual(url.pathname, '/cb')
+  assert.strictEqual(url.searchParams.get('code'), 'abc')
+  assert.strictEqual(url.searchParams.get('state'), 'xyz')
 })
 
-test('currentUrl falls back to req.url when originalUrl is absent', (t) => {
+test('currentUrl falls back to req.url when originalUrl is absent', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
 
@@ -884,14 +904,14 @@ test('currentUrl falls back to req.url when originalUrl is absent', (t) => {
   }
 
   const url = strategy.currentUrl(req as any)
-  t.is(url.href, 'http://localhost:3000/callback?code=test')
+  assert.strictEqual(url.href, 'http://localhost:3000/callback?code=test')
 })
 
 // --- authenticate integration ---
 
 test('authenticate routes to authorizationRequest for initial GET', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
 
@@ -919,14 +939,14 @@ test('authenticate routes to authorizationRequest for initial GET', async (t) =>
   // Give the async authorizationRequest time to complete
   await new Promise((resolve) => setTimeout(resolve, 100))
 
-  t.truthy(harness.results.redirectTo)
+  assert.ok(harness.results.redirectTo)
   const url = new URL(harness.results.redirectTo!)
-  t.truthy(url.searchParams.get('code_challenge'))
+  assert.ok(url.searchParams.get('code_challenge'))
 })
 
 test('authenticate routes to authorizationCodeGrant for callback GET with code', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
 
@@ -956,40 +976,40 @@ test('authenticate routes to authorizationCodeGrant for callback GET with code',
   // Give the async authorizationCodeGrant time to complete
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  t.truthy(harness.results.successUser)
+  assert.ok(harness.results.successUser)
 })
 
 // --- Constructor: callbackURL string→URL conversion ---
 
-test('constructor converts string callbackURL to URL instance', (t) => {
+test('constructor converts string callbackURL to URL instance', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy(
     { config, callbackURL: 'http://example.com/cb' },
     () => {},
   )
-  t.true(strategy._callbackURL instanceof URL)
-  t.is(strategy._callbackURL!.href, 'http://example.com/cb')
+  assert.strictEqual(strategy._callbackURL instanceof URL, true)
+  assert.strictEqual(strategy._callbackURL!.href, 'http://example.com/cb')
 })
 
-test('constructor accepts URL callbackURL', (t) => {
+test('constructor accepts URL callbackURL', () => {
   const config = createConfiguration(9999)
   const url = new URL('http://example.com/cb')
   const strategy = new Strategy({ config, callbackURL: url }, () => {})
-  t.true(strategy._callbackURL instanceof URL)
-  t.is(strategy._callbackURL!.href, 'http://example.com/cb')
+  assert.strictEqual(strategy._callbackURL instanceof URL, true)
+  assert.strictEqual(strategy._callbackURL!.href, 'http://example.com/cb')
 })
 
-test('constructor leaves _callbackURL undefined when not provided', (t) => {
+test('constructor leaves _callbackURL undefined when not provided', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
-  t.is(strategy._callbackURL, undefined)
+  assert.strictEqual(strategy._callbackURL, undefined)
 })
 
 // --- State stored in session when server lacks PKCE support ---
 
 test('authorizationRequest adds state to session when server lacks PKCE support', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   // No code_challenge_methods_supported → supportsPKCE() returns false
   const harness = createStrategyHarness(port, undefined, undefined, {
@@ -999,21 +1019,21 @@ test('authorizationRequest adds state to session when server lacks PKCE support'
 
   const url = new URL(redirectTo)
   // PKCE is still always used
-  t.truthy(url.searchParams.get('code_challenge'))
+  assert.ok(url.searchParams.get('code_challenge'))
   // State should be added as fallback
-  t.truthy(url.searchParams.get('state'))
+  assert.ok(url.searchParams.get('state'))
 
   const sessionKey = harness.strategy._sessionKey
   const stateData = harness.session[sessionKey] as any
-  t.truthy(stateData.state)
-  t.is(stateData.state, url.searchParams.get('state'))
+  assert.ok(stateData.state)
+  assert.strictEqual(stateData.state, url.searchParams.get('state'))
 })
 
 // --- Nonce stored in session for implicit/hybrid flows ---
 
 test('authorizationRequest stores nonce in session when response_type includes id_token', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
 
@@ -1026,20 +1046,20 @@ test('authorizationRequest stores nonce in session when response_type includes i
 
   const sessionKey = harness.strategy._sessionKey
   const stateData = harness.session[sessionKey] as any
-  t.truthy(stateData.nonce)
-  t.truthy(stateData.code_verifier)
+  assert.ok(stateData.nonce)
+  assert.ok(stateData.code_verifier)
 
   // response_mode should default to form_post for implicit
   const url = new URL(harness.results.redirectTo!)
-  t.is(url.searchParams.get('response_mode'), 'form_post')
-  t.truthy(url.searchParams.get('nonce'))
+  assert.strictEqual(url.searchParams.get('response_mode'), 'form_post')
+  assert.ok(url.searchParams.get('nonce'))
 })
 
 // --- passReqToCallback option-level override ---
 
 test('options.passReqToCallback overrides strategy-level passReqToCallback', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   let argCount = 0
   const strategy = new Strategy(
@@ -1086,14 +1106,14 @@ test('options.passReqToCallback overrides strategy-level passReqToCallback', asy
     { passReqToCallback: false },
   )
 
-  t.truthy(results.successUser)
+  assert.ok(results.successUser)
   // With passReqToCallback=false override, verify receives (tokens, verified) = 2 args
-  t.is(argCount, 2)
+  assert.strictEqual(argCount, 2)
 })
 
 // --- currentUrl: x-forwarded-host ---
 
-test('currentUrl uses x-forwarded-host when trust proxy is configured', (t) => {
+test('currentUrl uses x-forwarded-host when trust proxy is configured', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
 
@@ -1116,10 +1136,10 @@ test('currentUrl uses x-forwarded-host when trust proxy is configured', (t) => {
   }
 
   const url = strategy.currentUrl(req as any)
-  t.is(url.host, 'frontend.example.com')
+  assert.strictEqual(url.host, 'frontend.example.com')
 })
 
-test('currentUrl ignores x-forwarded-host when trust proxy rejects', (t) => {
+test('currentUrl ignores x-forwarded-host when trust proxy rejects', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
 
@@ -1142,10 +1162,10 @@ test('currentUrl ignores x-forwarded-host when trust proxy rejects', (t) => {
   }
 
   const url = strategy.currentUrl(req as any)
-  t.is(url.host, 'backend.internal')
+  assert.strictEqual(url.host, 'backend.internal')
 })
 
-test('currentUrl trims first value from multi-value x-forwarded-host', (t) => {
+test('currentUrl trims first value from multi-value x-forwarded-host', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
 
@@ -1168,10 +1188,10 @@ test('currentUrl trims first value from multi-value x-forwarded-host', (t) => {
   }
 
   const url = strategy.currentUrl(req as any)
-  t.is(url.host, 'frontend.example.com')
+  assert.strictEqual(url.host, 'frontend.example.com')
 })
 
-test('currentUrl falls back to req.host when app.get throws', (t) => {
+test('currentUrl falls back to req.host when app.get throws', () => {
   const config = createConfiguration(9999)
   const strategy = new Strategy({ config }, () => {})
 
@@ -1188,14 +1208,14 @@ test('currentUrl falls back to req.host when app.get throws', (t) => {
   }
 
   const url = strategy.currentUrl(req as any)
-  t.is(url.host, 'fastify.local:3000')
+  assert.strictEqual(url.host, 'fastify.local:3000')
 })
 
 // --- POST (form_post) callback ---
 
 test('callback handles POST form_post response', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   await doAuthorizationRequest(harness)
@@ -1219,14 +1239,14 @@ test('callback handles POST form_post response', async (t) => {
     {},
   )
 
-  t.truthy(harness.results.successUser)
+  assert.ok(harness.results.successUser)
 })
 
 // --- DPoP: dpop_jkt in authorization request ---
 
 test('authorizationRequest includes dpop_jkt when DPoP is configured', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const keyPair = await client.randomDPoPKeyPair()
   const config = createConfiguration(port)
@@ -1257,16 +1277,16 @@ test('authorizationRequest includes dpop_jkt when DPoP is configured', async (t)
     {},
   )
 
-  t.falsy(results.error)
+  assert.ok(!results.error)
   const url = new URL(results.redirectTo!)
-  t.truthy(url.searchParams.get('dpop_jkt'))
+  assert.ok(url.searchParams.get('dpop_jkt'))
 })
 
 // --- useJAR ---
 
 test('authorizationRequest uses JAR when useJAR is configured', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const keyPair = await crypto.subtle.generateKey(
     { name: 'ECDSA', namedCurve: 'P-256' },
@@ -1301,18 +1321,18 @@ test('authorizationRequest uses JAR when useJAR is configured', async (t) => {
     {},
   )
 
-  t.falsy(results.error)
+  assert.ok(!results.error)
   const url = new URL(results.redirectTo!)
   // JAR replaces individual params with a `request` JWT
-  t.truthy(url.searchParams.get('request'))
-  t.truthy(url.searchParams.get('client_id'))
+  assert.ok(url.searchParams.get('request'))
+  assert.ok(url.searchParams.get('client_id'))
   // The individual params should have been collapsed into the request object
-  t.falsy(url.searchParams.get('code_challenge'))
+  assert.ok(!url.searchParams.get('code_challenge'))
 })
 
 test('authorizationRequest uses JAR with modifyAssertion function', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const keyPair = await crypto.subtle.generateKey(
     { name: 'ECDSA', namedCurve: 'P-256' },
@@ -1355,10 +1375,10 @@ test('authorizationRequest uses JAR with modifyAssertion function', async (t) =>
     {},
   )
 
-  t.falsy(results.error)
-  t.true(modifyCalled)
+  assert.ok(!results.error)
+  assert.strictEqual(modifyCalled, true)
   const url = new URL(results.redirectTo!)
-  t.truthy(url.searchParams.get('request'))
+  assert.ok(url.searchParams.get('request'))
 })
 
 // --- usePAR ---
@@ -1367,7 +1387,7 @@ test('authorizationRequest uses PAR when usePAR is configured', async (t) => {
   const { port, server } = await startTokenEndpoint(undefined, {
     handlePAR: true,
   })
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const config = createConfiguration(port, {
     pushed_authorization_request_endpoint: `http://127.0.0.1:${port}/par`,
@@ -1398,20 +1418,20 @@ test('authorizationRequest uses PAR when usePAR is configured', async (t) => {
     {},
   )
 
-  t.falsy(results.error)
+  assert.ok(!results.error)
   const url = new URL(results.redirectTo!)
   // PAR replaces individual params with request_uri
-  t.truthy(url.searchParams.get('request_uri'))
-  t.truthy(url.searchParams.get('client_id'))
+  assert.ok(url.searchParams.get('request_uri'))
+  assert.ok(url.searchParams.get('client_id'))
   // Individual params should not be in the redirect URL
-  t.falsy(url.searchParams.get('code_challenge'))
+  assert.ok(!url.searchParams.get('code_challenge'))
 })
 
 // --- Multiple resource values ---
 
 test('authorizationRequest includes multiple resource values from array', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness, {
@@ -1420,16 +1440,16 @@ test('authorizationRequest includes multiple resource values from array', async 
 
   const url = new URL(redirectTo)
   const resources = url.searchParams.getAll('resource')
-  t.is(resources.length, 2)
-  t.is(resources[0], 'https://rs1.example.com')
-  t.is(resources[1], 'https://rs2.example.com')
+  assert.strictEqual(resources.length, 2)
+  assert.strictEqual(resources[0], 'https://rs1.example.com')
+  assert.strictEqual(resources[1], 'https://rs2.example.com')
 })
 
 // --- Option-level scope overrides strategy-level scope ---
 
 test('option-level scope takes precedence over strategy-level scope', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port, undefined, {
     scope: 'openid',
@@ -1439,14 +1459,14 @@ test('option-level scope takes precedence over strategy-level scope', async (t) 
   })
 
   const url = new URL(redirectTo)
-  t.is(url.searchParams.get('scope'), 'openid profile email')
+  assert.strictEqual(url.searchParams.get('scope'), 'openid profile email')
 })
 
 // --- Custom sessionKey isolates state between strategies ---
 
 test('custom sessionKey isolates state from another strategy', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness1 = createStrategyHarness(port, undefined, {
     sessionKey: 'strategy-a',
@@ -1461,16 +1481,19 @@ test('custom sessionKey isolates state from another strategy', async (t) => {
   await doAuthorizationRequest(harness1)
   await doAuthorizationRequest(harness2)
 
-  t.truthy(harness1.session['strategy-a'])
-  t.truthy(harness1.session['strategy-b'])
-  t.not(harness1.session['strategy-a'], harness1.session['strategy-b'])
+  assert.ok(harness1.session['strategy-a'])
+  assert.ok(harness1.session['strategy-b'])
+  assert.notStrictEqual(
+    harness1.session['strategy-a'],
+    harness1.session['strategy-b'],
+  )
 })
 
 // --- Session state cleanup ---
 
 test('successful callback calls success and clears session state', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
@@ -1480,13 +1503,13 @@ test('successful callback calls success and clears session state', async (t) => 
     `${new URL(redirectTo).origin}/cb?code=ok`,
   )
 
-  t.truthy(harness.results.successUser)
-  t.deepEqual(harness.session, {})
+  assert.ok(harness.results.successUser)
+  assert.deepStrictEqual(harness.session, {})
 })
 
 test('replayed callback fails because state was consumed', async (t) => {
   const { port, server } = await startTokenEndpoint()
-  t.teardown(() => close(server))
+  t.after(() => close(server))
 
   const harness = createStrategyHarness(port)
   const redirectTo = await doAuthorizationRequest(harness)
@@ -1494,7 +1517,7 @@ test('replayed callback fails because state was consumed', async (t) => {
 
   // First callback succeeds
   await doAuthorizationCodeGrant(harness, callbackUrl)
-  t.truthy(harness.results.successUser)
+  assert.ok(harness.results.successUser)
 
   // Reset results
   harness.results.successUser = undefined
@@ -1502,8 +1525,9 @@ test('replayed callback fails because state was consumed', async (t) => {
 
   // Second callback with same session should fail
   await doAuthorizationCodeGrant(harness, callbackUrl)
-  t.truthy(harness.results.failInfo)
-  t.like(harness.results.failInfo as Record<string, unknown>, {
-    message: 'Unable to verify authorization request state',
-  })
+  assert.ok(harness.results.failInfo)
+  assert.strictEqual(
+    (harness.results.failInfo as Record<string, unknown>).message,
+    'Unable to verify authorization request state',
+  )
 })

@@ -1,4 +1,5 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as undici from 'undici'
 
@@ -66,7 +67,7 @@ function createSignalTrackingConfig() {
 
 // Tests for Device Authorization Grant polling with retry-after
 
-test('pollBackchannelAuthenticationGrant - passes abort signal to token request', async (t) => {
+test('pollBackchannelAuthenticationGrant - passes abort signal to token request', async () => {
   const { config, seenSignals } = createSignalTrackingConfig()
   const controller = new AbortController()
 
@@ -82,12 +83,12 @@ test('pollBackchannelAuthenticationGrant - passes abort signal to token request'
   )
 
   const [signal] = seenSignals
-  t.truthy(signal)
+  assert.ok(signal)
   controller.abort()
-  t.true(signal.aborted)
+  assert.strictEqual(signal.aborted, true)
 })
 
-test('pollDeviceAuthorizationGrant - passes abort signal to token request', async (t) => {
+test('pollDeviceAuthorizationGrant - passes abort signal to token request', async () => {
   const { config, seenSignals } = createSignalTrackingConfig()
   const controller = new AbortController()
 
@@ -105,12 +106,12 @@ test('pollDeviceAuthorizationGrant - passes abort signal to token request', asyn
   )
 
   const [signal] = seenSignals
-  t.truthy(signal)
+  assert.ok(signal)
   controller.abort()
-  t.true(signal.aborted)
+  assert.strictEqual(signal.aborted, true)
 })
 
-test('pollBackchannelAuthenticationGrant - passes abort signal to retried token request', async (t) => {
+test('pollBackchannelAuthenticationGrant - passes abort signal to retried token request', async () => {
   const { config, seenSignals } = createSignalTrackingConfig()
   const controller = new AbortController()
 
@@ -153,13 +154,13 @@ test('pollBackchannelAuthenticationGrant - passes abort signal to retried token 
     { signal: controller.signal },
   )
 
-  t.is(seenSignals.length, 2)
+  assert.strictEqual(seenSignals.length, 2)
   controller.abort()
-  t.true(seenSignals[0]!.aborted)
-  t.true(seenSignals[1]!.aborted)
+  assert.strictEqual(seenSignals[0]!.aborted, true)
+  assert.strictEqual(seenSignals[1]!.aborted, true)
 })
 
-test('pollDeviceAuthorizationGrant - passes abort signal to retried token request', async (t) => {
+test('pollDeviceAuthorizationGrant - passes abort signal to retried token request', async () => {
   const { config, seenSignals } = createSignalTrackingConfig()
   const controller = new AbortController()
 
@@ -204,13 +205,13 @@ test('pollDeviceAuthorizationGrant - passes abort signal to retried token reques
     { signal: controller.signal },
   )
 
-  t.is(seenSignals.length, 2)
+  assert.strictEqual(seenSignals.length, 2)
   controller.abort()
-  t.true(seenSignals[0]!.aborted)
-  t.true(seenSignals[1]!.aborted)
+  assert.strictEqual(seenSignals[0]!.aborted, true)
+  assert.strictEqual(seenSignals[1]!.aborted, true)
 })
 
-test('pollBackchannelAuthenticationGrant - respects retry-after header with numeric seconds', async (t) => {
+test('pollBackchannelAuthenticationGrant - respects retry-after header with numeric seconds', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -254,15 +255,16 @@ test('pollBackchannelAuthenticationGrant - respects retry-after header with nume
 
   const elapsed = Date.now() - startTime
   // Should take ~3 seconds (1 second initial interval, 2 second retry-after the initial response)
-  t.true(
+  assert.strictEqual(
     elapsed >= 3000 && elapsed <= 4000,
+    true,
     `expected ~3s wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollBackchannelAuthenticationGrant - respects retry-after header with date', async (t) => {
+test('pollBackchannelAuthenticationGrant - respects retry-after header with date', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -306,15 +308,16 @@ test('pollBackchannelAuthenticationGrant - respects retry-after header with date
 
   const elapsed = Date.now() - startTime
   const expected = retryAt - startTime
-  t.true(
+  assert.strictEqual(
     elapsed >= expected && elapsed <= expected + 2000,
+    true,
     `expected ${expected}-${expected + 2000}ms wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollBackchannelAuthenticationGrant - throws on invalid retry-after header when status is 503', async (t) => {
+test('pollBackchannelAuthenticationGrant - throws on invalid retry-after header when status is 503', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   // Return 503 with invalid retry-after
@@ -337,15 +340,14 @@ test('pollBackchannelAuthenticationGrant - throws on invalid retry-after header 
     interval: 5,
   }
 
-  const error = await t.throwsAsync(
+  await assert.rejects(
     client.pollBackchannelAuthenticationGrant(config, response),
+    { message: /invalid Retry-After header value/ },
   )
-
-  t.true(error.message.includes('invalid Retry-After header value'))
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollBackchannelAuthenticationGrant - respects retry-after on authorization_pending error', async (t) => {
+test('pollBackchannelAuthenticationGrant - respects retry-after on authorization_pending error', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -395,15 +397,16 @@ test('pollBackchannelAuthenticationGrant - respects retry-after on authorization
 
   const elapsed = Date.now() - startTime
   // Should take ~3 seconds (1 second initial interval, 2 second retry-after the initial response)
-  t.true(
+  assert.strictEqual(
     elapsed >= 3000 && elapsed <= 4000,
+    true,
     `expected ~3s wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollBackchannelAuthenticationGrant - ignores invalid retry-after on authorization_pending error', async (t) => {
+test('pollBackchannelAuthenticationGrant - ignores invalid retry-after on authorization_pending error', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -453,17 +456,18 @@ test('pollBackchannelAuthenticationGrant - ignores invalid retry-after on author
 
   const elapsed = Date.now() - startTime
   // Should only wait for the normal intervals (twice 1 second)
-  t.true(
+  assert.strictEqual(
     elapsed >= 2000 && elapsed <= 3000,
+    true,
     `expected ~2s wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
 // Tests for Device Authorization Grant polling with retry-after
 
-test('pollDeviceAuthorizationGrant - respects retry-after header with numeric seconds', async (t) => {
+test('pollDeviceAuthorizationGrant - respects retry-after header with numeric seconds', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -509,15 +513,16 @@ test('pollDeviceAuthorizationGrant - respects retry-after header with numeric se
 
   const elapsed = Date.now() - startTime
   // Should take ~3 seconds (1 second initial interval, 2 second retry-after the initial response)
-  t.true(
+  assert.strictEqual(
     elapsed >= 3000 && elapsed <= 4000,
+    true,
     `expected ~3s wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollDeviceAuthorizationGrant - respects retry-after header with date', async (t) => {
+test('pollDeviceAuthorizationGrant - respects retry-after header with date', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -563,15 +568,16 @@ test('pollDeviceAuthorizationGrant - respects retry-after header with date', asy
 
   const elapsed = Date.now() - startTime
   const expected = retryAt - startTime
-  t.true(
+  assert.strictEqual(
     elapsed >= expected && elapsed <= expected + 2000,
+    true,
     `expected ${expected}-${expected + 2000}ms wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollDeviceAuthorizationGrant - throws on invalid retry-after header when status is 503', async (t) => {
+test('pollDeviceAuthorizationGrant - throws on invalid retry-after header when status is 503', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   // Return 503 with invalid retry-after
@@ -596,15 +602,14 @@ test('pollDeviceAuthorizationGrant - throws on invalid retry-after header when s
     interval: 5,
   }
 
-  const error = await t.throwsAsync(
+  await assert.rejects(
     client.pollDeviceAuthorizationGrant(config, deviceAuthorizationResponse),
+    { message: /invalid Retry-After header value/ },
   )
-
-  t.true(error.message.includes('invalid Retry-After header value'))
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollDeviceAuthorizationGrant - respects retry-after on authorization_pending error', async (t) => {
+test('pollDeviceAuthorizationGrant - respects retry-after on authorization_pending error', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -656,15 +661,16 @@ test('pollDeviceAuthorizationGrant - respects retry-after on authorization_pendi
 
   const elapsed = Date.now() - startTime
   // Should take ~3 seconds (1 second initial interval, 2 second retry-after the initial response)
-  t.true(
+  assert.strictEqual(
     elapsed >= 3000 && elapsed <= 4000,
+    true,
     `expected ~3s wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('pollDeviceAuthorizationGrant - ignores invalid retry-after on authorization_pending error', async (t) => {
+test('pollDeviceAuthorizationGrant - ignores invalid retry-after on authorization_pending error', async () => {
   const { agent, mockAgent } = await setupMockAgent()
 
   const startTime = Date.now()
@@ -716,10 +722,11 @@ test('pollDeviceAuthorizationGrant - ignores invalid retry-after on authorizatio
 
   const elapsed = Date.now() - startTime
   // Should only wait for the normal intervals (twice 1 second)
-  t.true(
+  assert.strictEqual(
     elapsed >= 2000 && elapsed <= 3000,
+    true,
     `expected ~2s wait, got ${elapsed}ms`,
   )
-  t.is(result.access_token, 'access_token')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.access_token, 'access_token')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })

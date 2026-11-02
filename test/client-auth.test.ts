@@ -1,4 +1,5 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as jose from 'jose'
 
@@ -23,7 +24,7 @@ async function authenticate(
 }
 
 for (const firstFactory of factories) {
-  test(`lazy authentication remains isolated after ${firstFactory.name}`, async (testContext) => {
+  test(`lazy authentication remains isolated after ${firstFactory.name}`, async () => {
     const metadata = Object.freeze({
       client_id: 'client',
       client_secret: 'example-client-secret'.repeat(2),
@@ -39,34 +40,34 @@ for (const firstFactory of factories) {
       const { body, headers } = await authenticate(factory(), metadata)
       switch (factory) {
         case client.ClientSecretPost:
-          testContext.is(body.get('client_id'), metadata.client_id)
-          testContext.is(body.get('client_secret'), metadata.client_secret)
-          testContext.false(headers.has('authorization'))
+          assert.strictEqual(body.get('client_id'), metadata.client_id)
+          assert.strictEqual(body.get('client_secret'), metadata.client_secret)
+          assert.strictEqual(headers.has('authorization'), false)
           break
         case client.ClientSecretBasic:
-          testContext.is(
+          assert.strictEqual(
             headers.get('authorization'),
             expectedBasic.headers.get('authorization'),
           )
-          testContext.false(body.has('client_secret'))
+          assert.strictEqual(body.has('client_secret'), false)
           break
         default:
-          testContext.is(
+          assert.strictEqual(
             body.get('client_assertion_type'),
             'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
           )
-          testContext.is(
+          assert.strictEqual(
             jose.decodeJwt(body.get('client_assertion')!).sub,
             metadata.client_id,
           )
-          testContext.false(body.has('client_secret'))
-          testContext.false(headers.has('authorization'))
+          assert.strictEqual(body.has('client_secret'), false)
+          assert.strictEqual(headers.has('authorization'), false)
       }
     }
   })
 }
 
-test('lazy JWT handlers retain their own assertion modifiers', async (testContext) => {
+test('lazy JWT handlers retain their own assertion modifiers', async () => {
   const metadata = Object.freeze({
     client_id: 'client',
     client_secret: 'example-client-secret'.repeat(2),
@@ -81,7 +82,7 @@ test('lazy JWT handlers retain their own assertion modifiers', async (testContex
 
   for (const index of [0, 1, 0, 1]) {
     const { body } = await authenticate(handlers[index], metadata)
-    testContext.is(
+    assert.strictEqual(
       jose.decodeJwt(body.get('client_assertion')!).marker,
       index === 0 ? 'first' : 'second',
     )

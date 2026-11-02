@@ -1,4 +1,4 @@
-import test from 'ava'
+import test from 'node:test'
 
 import { downloadArtifact } from './api.js'
 import {
@@ -16,13 +16,14 @@ test('emitting conformance diagnostics when needed', async (t) => {
   const submission = process.env.CONFORMANCE_SUBMISSION === 'true'
 
   if (!requested && !submission) {
-    t.pass()
     return
   }
 
   const issues = requested ? reportIssues(reportStatusPath) : []
   if (requested) {
-    t.log('Conformance diagnostics requested for', issues)
+    t.diagnostic(
+      `Conformance diagnostics requested for ${JSON.stringify(issues)}`,
+    )
   }
 
   try {
@@ -37,6 +38,4 @@ test('emitting conformance diagnostics when needed', async (t) => {
     writeStepSummary(formatReportSummary(plan, variant, issues))
     setActionEnvironment('CONFORMANCE_REPORT', 'true')
   }
-
-  t.pass()
 })

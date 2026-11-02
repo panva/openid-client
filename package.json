@@ -71,7 +71,7 @@
     "build": "npm run generate-build && tsc -p test && npm run --silent check-build && npx --yes jsr publish --dry-run --allow-dirty",
     "check:packaging": "publint --strict && node tools/attw-check.js",
     "check-build": "tsc --noEmit --types node --lib ES2022.Error && tsc -p conformance && tsc -p tap && tsc -p examples",
-    "conformance": "bash -c 'source .node_flags.sh && ava --config conformance/ava.config.ts'",
+    "conformance": "bash -c 'source .node_flags.sh && node --enable-source-maps conformance/run.ts \"$@\"' --",
     "docs": "patch-package && typedoc",
     "docs-check": "./check-examples.sh",
     "format": "npm run _format -- --write",
@@ -83,7 +83,7 @@
     "tap:electron": "./tap/.electron.sh",
     "tap:node": "bash -c './tap/.node.sh'",
     "tap:workerd": "./tap/.workerd.sh",
-    "test": "bash -c 'source .node_flags.sh && ava'",
+    "test": "bash -c 'source .node_flags.sh && node --enable-source-maps --test \"$@\" test/*.test.ts' --",
     "test:dist": "node tools/test-dist.js",
     "typecheck:dist": "./tools/typecheck-dist.sh",
     "typecheck:types": "tsc -p test-d && tsc -p test-d/tsconfig.node.json && tsc -p test-d/tsconfig.fallback.json && tsc -p test-d/tsconfig.fallback.const.json && tsc -p test-d/tsconfig.fallback.let.json"
@@ -104,8 +104,8 @@
     "@types/node": "^26.6.6",
     "@types/passport": "^1.0.17",
     "@types/qunit": "^2.19.14",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "archiver": "^8.0.0",
-    "ava": "^7.0.0",
     "esbuild": "^0.28.2",
     "fast-check": "^4.10.2",
     "happy-dom": "^21.0.4",
@@ -124,7 +124,7 @@
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.14.1",
     "typedoc-plugin-mdn-links": "^5.1.1",
-    "typescript": "^6.0.3",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
     "undici": "^8.12.3"
   }
 }

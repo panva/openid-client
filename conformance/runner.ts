@@ -1,13 +1,10 @@
-import anyTest from 'ava'
-import type { ExecutionContext } from 'ava'
-import type { Macro, TestFn } from 'ava'
+import assert from 'node:assert/strict'
+import nativeTest, { type TestContext } from 'node:test'
 import { importJWK, type JWK } from 'jose'
 import * as undici from 'undici'
-import { inspect } from 'node:util'
+import { inspect, formatWithOptions } from 'node:util'
 
-export const test = anyTest as TestFn<{ instance: Test }>
-
-import { getScope, makePublicJwks } from './ava.config.js'
+import { getScope, makePublicJwks } from './config.js'
 import * as client from '../src/index.js'
 import {
   createTestFromPlan,
@@ -18,7 +15,7 @@ import {
   type Test,
 } from './api.js'
 import { isRunnableModule } from './modules.js'
-import { normalizeAvaTestTitle, requestReport } from './report.js'
+import { requestReport } from './report.js'
 
 const conformance = JSON.parse(process.env.CONFORMANCE!)
 
@@ -48,14 +45,33 @@ export const reportStatusPath: string = conformance.reportStatusPath
 export const unhandledModules: Array<{ name: string; path: string }> =
   conformance.unhandledModules
 
-test.afterEach.always((t) => {
-  if (!t.passed) {
-    requestReport(reportStatusPath, {
-      type: 'failure',
-      detail: normalizeAvaTestTitle(t.title),
-    })
-  }
-})
+interface FlowState {
+  instance?: Test
+}
+
+interface ConformanceFlow<Args extends unknown[] = []> {
+  exec(
+    t: TestContext,
+    state: FlowState,
+    module: ModulePrescription,
+    ...args: Args
+  ): Promise<void>
+  title(module: ModulePrescription): string
+}
+
+function diagnostic(t: TestContext, ...values: unknown[]) {
+  t.diagnostic(formatWithOptions({ depth: Infinity }, ...values))
+}
+
+export function run<Args extends unknown[]>(
+  flow: ConformanceFlow<Args>,
+  module: ModulePrescription,
+  ...args: Args
+) {
+  nativeTest(flow.title(module), { timeout: 15000, concurrency: false }, (t) =>
+    flow.exec(t, {}, module, ...args),
+  )
+}
 
 let prefix = ''
 
@@ -178,27 +194,25 @@ function dcr(variant: Record<string, string>) {
   return variant.client_registration === 'dynamic_client'
 }
 
-export interface MacroOptions {
+export interface FlowOptions {
   useNonce?: boolean
   useState?: boolean
 }
 
-export const flow = (options?: MacroOptions) => {
-  return test.macro({
-    async exec(t, module: ModulePrescription) {
-      t.timeout(15000)
-
+export const flow = (options?: FlowOptions): ConformanceFlow => {
+  return {
+    async exec(t, context, module) {
       const instance = await createTestFromPlan(plan, module)
-      t.context.instance = instance
+      context.instance = instance
 
-      t.log('Test ID', instance.id)
-      t.log('Test Name', instance.name)
+      diagnostic(t, 'Test ID', instance.id)
+      diagnostic(t, 'Test Name', instance.name)
 
       const variant: Record<string, string> = {
         ...conformance.variant,
         ...module.variant,
       }
-      t.log('variant', variant)
+      diagnostic(t, 'variant', variant)
 
       const { issuer: issuerIdentifier, accounts_endpoint } =
         await getTestExposed(instance)
@@ -372,9 +386,10 @@ export const flow = (options?: MacroOptions) => {
         })
       }
 
-      t.log('AS Metadata discovered for', issuer.href)
+      diagnostic(t, 'AS Metadata discovered for', issuer.href)
       if (dcr(variant)) {
-        t.log(
+        diagnostic(
+          t,
           'Client Metadata registered for',
           config.clientMetadata().client_id,
         )
@@ -434,7 +449,7 @@ export const flow = (options?: MacroOptions) => {
       let authorizationUrl: URL
 
       if (usesPar(plan)) {
-        t.log('PAR request with', Object.fromEntries(params.entries()))
+        diagnostic(t, 'PAR request with', Object.fromEntries(params.entries()))
         authorizationUrl = await client.buildAuthorizationUrlWithPAR(
           config,
           params,
@@ -442,7 +457,8 @@ export const flow = (options?: MacroOptions) => {
             DPoP,
           },
         )
-        t.log(
+        diagnostic(
+          t,
           'PAR request_uri',
           authorizationUrl.searchParams.get('request_uri'),
         )
@@ -459,7 +475,8 @@ export const flow = (options?: MacroOptions) => {
         fetch(authorizationUrl.href, { redirect: 'manual' }),
       ])
 
-      t.log(
+      diagnostic(
+        t,
         'redirect with',
         Object.fromEntries(authorizationUrl.searchParams.entries()),
       )
@@ -473,7 +490,7 @@ export const flow = (options?: MacroOptions) => {
 
       const currentUrl = new URL(authorization_endpoint_response_redirect)
 
-      t.log('response redirect to', currentUrl.href)
+      diagnostic(t, 'response redirect to', currentUrl.href)
 
       if (response_type === 'id_token') {
         const response = await client.implicitAuthentication(
@@ -485,7 +502,7 @@ export const flow = (options?: MacroOptions) => {
           },
         )
 
-        t.log('validated ID Token Claims Set', {
+        diagnostic(t, 'validated ID Token Claims Set', {
           ...response,
         })
       } else {
@@ -501,7 +518,7 @@ export const flow = (options?: MacroOptions) => {
           { DPoP },
         )
 
-        t.log('token endpoint response', { ...response })
+        diagnostic(t, 'token endpoint response', { ...response })
 
         if (
           !plan.name.startsWith('fapi1') &&
@@ -509,7 +526,7 @@ export const flow = (options?: MacroOptions) => {
           config.serverMetadata().userinfo_endpoint
         ) {
           // fetch userinfo response
-          t.log('fetching', config.serverMetadata().userinfo_endpoint)
+          diagnostic(t, 'fetching', config.serverMetadata().userinfo_endpoint)
           const userinfo = await client.fetchUserInfo(
             config,
             response.access_token,
@@ -518,7 +535,7 @@ export const flow = (options?: MacroOptions) => {
               DPoP,
             },
           )
-          t.log('userinfo endpoint response', { ...userinfo })
+          diagnostic(t, 'userinfo endpoint response', { ...userinfo })
         }
 
         if (accounts_endpoint) {
@@ -534,28 +551,27 @@ export const flow = (options?: MacroOptions) => {
 
           const result = await resource.text()
           try {
-            t.log('accounts endpoint response', JSON.parse(result))
+            diagnostic(t, 'accounts endpoint response', JSON.parse(result))
           } catch {
-            t.log('accounts endpoint response body', result)
+            diagnostic(t, 'accounts endpoint response body', result)
           }
         }
       }
 
       await waitForResult(instance)
       if (module.skipLogTestFinished !== true) {
-        t.log('Test Finished')
+        diagnostic(t, 'Test Finished')
       }
-      t.pass()
     },
-    title(providedTitle = '', module: ModulePrescription) {
+    title(module) {
       if (module.variant) {
-        return `${providedTitle}${plan.name} (${plan.id}) - ${module.testModule} - ${JSON.stringify(
+        return `${plan.name} (${plan.id}) - ${module.testModule} - ${JSON.stringify(
           module.variant,
         )}`
       }
-      return `${providedTitle}${plan.name} (${plan.id}) - ${module.testModule}`
+      return `${plan.name} (${plan.id}) - ${module.testModule}`
     },
-  })
+  }
 }
 
 interface ErrorAssertion {
@@ -571,83 +587,67 @@ export type NameErrorAssertion = Partial<ErrorAssertion> &
 export type MessageErrorAssertion = Partial<ErrorAssertion> &
   Pick<ErrorAssertion, 'message'>
 
-function assertError(
-  t: ExecutionContext,
-  actual: unknown,
-  expected: Partial<ErrorAssertion>,
-) {
-  if (!(actual instanceof Error)) {
-    t.fail('expected and Error instance')
-  }
+type ExpectedError = CodeErrorAssertion | MessageErrorAssertion
 
-  // @ts-ignore
-  if (expected.code) t.is(actual.code, expected.code)
-  if (expected.name) t.is(actual.name, expected.name)
+function assertError(actual: unknown, expected: Partial<ErrorAssertion>) {
+  assert.ok(actual instanceof Error, 'expected an Error instance')
+  if (expected.code) {
+    assert.strictEqual(
+      (actual as Error & { code?: string }).code,
+      expected.code,
+    )
+  }
+  if (expected.name) assert.strictEqual(actual.name, expected.name)
   if (expected.message) {
     if (typeof expected.message === 'string') {
-      t.is(actual.message, expected.message)
+      assert.strictEqual(actual.message, expected.message)
     } else {
-      t.regex(actual.message, expected.message)
+      assert.match(actual.message, expected.message)
     }
   }
 }
 
 export const rejects = (
-  macro: Macro<[module: ModulePrescription], { instance: Test }>,
-) => {
-  return test.macro({
-    async exec(
-      t,
-      module: ModulePrescription,
-      expected: CodeErrorAssertion | MessageErrorAssertion,
-      cause?: CodeErrorAssertion | MessageErrorAssertion,
-    ) {
-      const err = await t.throwsAsync(
-        () => macro.exec(t, { ...module, skipLogTestFinished: true }) as any,
-      )
-      t.log('rejected with', inspect(err, { depth: Infinity }))
-
-      expected.name ||= 'ClientError'
-      assertError(t, err, expected)
-
-      if (cause) {
-        cause.name ||= 'OperationProcessingError'
-        if (!(err.cause instanceof Error)) {
-          t.fail('expected and Error instance')
+  flow: ConformanceFlow,
+): ConformanceFlow<[expected: ExpectedError, cause?: ExpectedError]> => ({
+  async exec(t, context, module, expected, cause) {
+    await assert.rejects(
+      () => flow.exec(t, context, { ...module, skipLogTestFinished: true }),
+      (error: unknown) => {
+        diagnostic(t, 'rejected with', inspect(error, { depth: Infinity }))
+        assertError(error, {
+          ...expected,
+          name: expected.name || 'ClientError',
+        })
+        if (cause) {
+          assert.ok(error instanceof Error)
+          assertError(error.cause, {
+            ...cause,
+            name: cause.name || 'OperationProcessingError',
+          })
         }
-        t.truthy(
-          err.cause,
-          'expected err to have a [cause] that is an Error instance',
-        )
+        return true
+      },
+    )
 
-        if (typeof cause !== 'boolean') {
-          assertError(t, err.cause, cause)
-        }
-      }
+    assert.ok(context.instance, 'expected a conformance test instance')
+    await waitForResult(context.instance)
+    diagnostic(t, 'Test Finished')
+  },
+  title: flow.title,
+})
 
-      await waitForResult(t.context.instance)
-      t.log('Test Finished')
-      t.pass()
-    },
-    title: macro.title as any,
-  })
-}
+export const skippable = (flow: ConformanceFlow): ConformanceFlow => ({
+  async exec(t, context, module) {
+    await Promise.allSettled([
+      flow.exec(t, context, { ...module, skipLogTestFinished: true }),
+    ])
 
-export const skippable = (
-  macro: Macro<[module: ModulePrescription], { instance: Test }>,
-) => {
-  return test.macro({
-    async exec(t, module: ModulePrescription) {
-      await Promise.allSettled([
-        macro.exec(t, { ...module, skipLogTestFinished: true }),
-      ])
-
-      await waitForResult(t.context.instance, {
-        results: new Set(['SKIPPED', 'PASSED']),
-      })
-      t.log('Test Finished')
-      t.pass()
-    },
-    title: macro.title as any,
-  })
-}
+    assert.ok(context.instance, 'expected a conformance test instance')
+    await waitForResult(context.instance, {
+      results: new Set(['SKIPPED', 'PASSED']),
+    })
+    diagnostic(t, 'Test Finished')
+  },
+  title: flow.title,
+})

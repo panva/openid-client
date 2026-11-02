@@ -7,9 +7,10 @@ globalThis.navigator = { userAgent: 'Mozilla/5.0 foo' }
 
 const client = await import('../src/index.js')
 
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 
-test('fetchProtectedResource does not set user-agent in browsers', async (t) => {
+test('fetchProtectedResource does not set user-agent in browsers', async () => {
   const config = new client.Configuration(
     { issuer: 'https://as.example.com' },
     'client-id',
@@ -28,5 +29,5 @@ test('fetchProtectedResource does not set user-agent in browsers', async (t) => 
     'GET',
   )
 
-  t.false(headers?.has('user-agent'))
+  assert.strictEqual(headers?.has('user-agent'), false)
 })

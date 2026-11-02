@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import fc from 'fast-check'
 
 import * as client from '../src/index.js'
@@ -29,14 +30,14 @@ function mutate(value: string, position: number): string {
   return `${value.slice(0, offset)}${replacement}${value.slice(offset + 1)}`
 }
 
-test('S256 PKCE challenges match the independent digest', async (t) => {
+test('S256 PKCE challenges match the independent digest', async () => {
   await fc.assert(
     fc.asyncProperty(codeVerifiers, fc.nat(), async (verifier, position) => {
       const challenge = await client.calculatePKCECodeChallenge(verifier)
       const expected = createHash('sha256').update(verifier).digest('base64url')
 
-      t.is(challenge, expected)
-      t.not(
+      assert.strictEqual(challenge, expected)
+      assert.notStrictEqual(
         await client.calculatePKCECodeChallenge(mutate(verifier, position)),
         challenge,
       )
@@ -45,7 +46,7 @@ test('S256 PKCE challenges match the independent digest', async (t) => {
   )
 })
 
-test('authorization URLs preserve arbitrary parameters and add defaults', (t) => {
+test('authorization URLs preserve arbitrary parameters and add defaults', () => {
   fc.assert(
     fc.property(clientIds, authorizationParameters, (clientId, parameters) => {
       const config = new client.Configuration(
@@ -60,15 +61,22 @@ test('authorization URLs preserve arbitrary parameters and add defaults', (t) =>
       const before = input.toString()
       const result = client.buildAuthorizationUrl(config, input)
 
-      t.is(input.toString(), before)
-      t.is(result.origin, 'https://as.example.com')
-      t.is(result.pathname, '/authorize')
-      t.deepEqual(result.searchParams.getAll('existing'), ['server'])
-      t.deepEqual(result.searchParams.getAll('client_id'), [clientId])
-      t.deepEqual(result.searchParams.getAll('response_type'), ['code'])
+      assert.strictEqual(input.toString(), before)
+      assert.strictEqual(result.origin, 'https://as.example.com')
+      assert.strictEqual(result.pathname, '/authorize')
+      assert.deepStrictEqual(result.searchParams.getAll('existing'), ['server'])
+      assert.deepStrictEqual(result.searchParams.getAll('client_id'), [
+        clientId,
+      ])
+      assert.deepStrictEqual(result.searchParams.getAll('response_type'), [
+        'code',
+      ])
 
       for (const name of new Set(input.keys())) {
-        t.deepEqual(result.searchParams.getAll(name), input.getAll(name))
+        assert.deepStrictEqual(
+          result.searchParams.getAll(name),
+          input.getAll(name),
+        )
       }
     }),
     options,

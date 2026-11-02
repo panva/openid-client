@@ -1,6 +1,7 @@
 // see https://github.com/panva/openid-client/discussions/704
 
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as undici from 'undici'
 import * as jose from 'jose'
@@ -15,7 +16,7 @@ const urls = [
 let i = 0
 for (const url of urls) {
   i++
-  test(`handles Entra ID multi-tenant issuer identifiers ${i}/${urls.length}`, async (t) => {
+  test(`handles Entra ID multi-tenant issuer identifiers ${i}/${urls.length}`, async () => {
     let agent = new undici.MockAgent()
     agent.disableNetConnect()
 
@@ -72,7 +73,7 @@ for (const url of urls) {
         },
       )
 
-    await t.notThrowsAsync(async () => {
+    await assert.doesNotReject(async () => {
       const config = await client.discovery(url, 'decoy', 'decoy', undefined, {
         // @ts-ignore
         [client.customFetch](url, options) {
@@ -86,6 +87,6 @@ for (const url of urls) {
       )
     })
 
-    t.notThrows(() => agent.assertNoPendingInterceptors())
+    assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
   })
 }

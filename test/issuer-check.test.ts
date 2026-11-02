@@ -1,8 +1,9 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as undici from 'undici'
 
-test('issuer discovery matching', async (t) => {
+test('issuer discovery matching', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -38,7 +39,7 @@ test('issuer discovery matching', async (t) => {
     )
     .times(4)
 
-  await t.notThrowsAsync(
+  await assert.doesNotReject(
     client.discovery(url, 'decoy', 'decoy', undefined, {
       // @ts-ignore
       [client.customFetch](url, options) {
@@ -47,7 +48,7 @@ test('issuer discovery matching', async (t) => {
     }),
   )
 
-  await t.notThrowsAsync(
+  await assert.doesNotReject(
     client.discovery(url, 'decoy', 'decoy', undefined, {
       // @ts-ignore
       [client.customFetch](url, options) {
@@ -56,7 +57,7 @@ test('issuer discovery matching', async (t) => {
     }),
   )
 
-  await t.throwsAsync(
+  await assert.rejects(
     client.discovery(url, 'decoy', 'decoy', undefined, {
       // @ts-ignore
       [client.customFetch](url, options) {
@@ -65,7 +66,7 @@ test('issuer discovery matching', async (t) => {
     }),
   )
 
-  await t.notThrowsAsync(
+  await assert.doesNotReject(
     client.discovery(
       new URL('https://op.example.com/.well-known/openid-configuration'),
       'decoy',
@@ -80,5 +81,5 @@ test('issuer discovery matching', async (t) => {
     ),
   )
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })

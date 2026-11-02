@@ -1,9 +1,10 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 import * as undici from 'undici'
 import * as jose from 'jose'
 
-test('genericGrantRequest accepts n_a token type in token exchange grant response', async (t) => {
+test('genericGrantRequest accepts n_a token type in token exchange grant response', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -55,18 +56,18 @@ test('genericGrantRequest accepts n_a token type in token exchange grant respons
     },
   )
 
-  t.is(result.access_token, 'test-access-token')
-  t.is(result.token_type, 'n_a')
-  t.is(result.expires_in, 3600)
-  t.is(
+  assert.strictEqual(result.access_token, 'test-access-token')
+  assert.strictEqual(result.token_type, 'n_a')
+  assert.strictEqual(result.expires_in, 3600)
+  assert.strictEqual(
     result.issued_token_type,
     'urn:ietf:params:oauth:token-type:access_token',
   )
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('genericGrantRequest with other grant types does not add n_a token type recognition', async (t) => {
+test('genericGrantRequest with other grant types does not add n_a token type recognition', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -108,7 +109,7 @@ test('genericGrantRequest with other grant types does not add n_a token type rec
   }
 
   // This should throw because n_a token type is not recognized for JWT bearer grants
-  await t.throwsAsync(
+  await assert.rejects(
     client.genericGrantRequest(
       config,
       'urn:ietf:params:oauth:grant-type:jwt-bearer',
@@ -122,10 +123,10 @@ test('genericGrantRequest with other grant types does not add n_a token type rec
     },
   )
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('genericGrantRequest retries DPoP nonce errors', async (t) => {
+test('genericGrantRequest retries DPoP nonce errors', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -204,13 +205,13 @@ test('genericGrantRequest retries DPoP nonce errors', async (t) => {
     { DPoP },
   )
 
-  t.is(result.access_token, 'test-access-token')
-  t.is(result.token_type, 'dpop')
+  assert.strictEqual(result.access_token, 'test-access-token')
+  assert.strictEqual(result.token_type, 'dpop')
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })
 
-test('genericGrantRequest applies non-repudiation checks to ID Tokens', async (t) => {
+test('genericGrantRequest applies non-repudiation checks to ID Tokens', async () => {
   let agent = new undici.MockAgent()
   agent.disableNetConnect()
 
@@ -287,6 +288,6 @@ test('genericGrantRequest applies non-repudiation checks to ID Tokens', async (t
     },
   )
 
-  t.is(result.claims()?.sub, 'subject')
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  assert.strictEqual(result.claims()?.sub, 'subject')
+  assert.doesNotThrow(() => agent.assertNoPendingInterceptors())
 })

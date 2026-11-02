@@ -20,6 +20,7 @@
   "hideGenerator": true,
   "out": "docs",
   "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-mdn-links"],
+  "additionalModuleSources": ["@typescript/old"],
   "readme": "none",
   "groupOrder": [
     "You are probably looking for this",

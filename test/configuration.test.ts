@@ -1,4 +1,5 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import * as client from '../src/index.js'
 
 const issuer = new URL('https://op.example.com')
@@ -10,7 +11,7 @@ const server: client.ServerMetadata = {
 
 for (const method of ['constructor', 'discovery', 'registration']) {
   for (const timeout of [undefined, 5, 0]) {
-    test(`${method} timeout: ${timeout ?? 'default'}`, async (t) => {
+    test(`${method} timeout: ${timeout ?? 'default'}`, async () => {
       let tokenRequests = 0
       const fetch: client.CustomFetch = async (url, options) => {
         switch (new URL(url).pathname) {
@@ -20,7 +21,10 @@ for (const method of ['constructor', 'discovery', 'registration']) {
             return Response.json({ client_id: 'client' }, { status: 201 })
           case '/token':
             tokenRequests++
-            t.is(options.signal instanceof AbortSignal, timeout !== 0)
+            assert.strictEqual(
+              options.signal instanceof AbortSignal,
+              timeout !== 0,
+            )
             return Response.json({
               access_token: 'access_token',
               token_type: 'bearer',
@@ -56,18 +60,18 @@ for (const method of ['constructor', 'discovery', 'registration']) {
           )
       }
 
-      t.is(config.timeout, timeout ?? 30)
+      assert.strictEqual(config.timeout, timeout ?? 30)
       await client.clientCredentialsGrant(config)
-      t.is(tokenRequests, 1)
+      assert.strictEqual(tokenRequests, 1)
     })
   }
 }
 
-test('request timeouts can be disabled with undefined', async (t) => {
+test('request timeouts can be disabled with undefined', async () => {
   const config = new client.Configuration(server, 'client')
   config.timeout = undefined
   config[client.customFetch] = async (_url, options) => {
-    t.is(options.signal, undefined)
+    assert.strictEqual(options.signal, undefined)
     return Response.json({ access_token: 'access_token', token_type: 'bearer' })
   }
 
