@@ -1,7 +1,7 @@
 import type * as client from 'openid-client'
 import type { StrategyOptions } from 'openid-client/passport'
 import type * as oauth from 'oauth4webapi'
-import type { JsonWebKey, webcrypto } from 'node:crypto'
+import type { JsonWebKeyInput, webcrypto } from 'node:crypto'
 import type { CryptoKey as JoseCryptoKey } from 'jose'
 
 type Equals<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : never
@@ -24,7 +24,7 @@ declare const hostKey: webcrypto.CryptoKey
 declare const clientKey: client.CryptoKey
 declare const pair: client.CryptoKeyPair
 declare const clientJwk: client.JWK
-declare const hostJwk: JsonWebKey
+declare const hostJwk: JsonWebKeyInput['key']
 declare const webcryptoHostJwk: webcrypto.JsonWebKey
 declare const customFetchOptions: client.CustomFetchOptions
 
@@ -33,7 +33,7 @@ const _toHost: webcrypto.CryptoKey = clientKey
 const _privateKey: webcrypto.CryptoKey = pair.privateKey
 const _publicKey: webcrypto.CryptoKey = pair.publicKey
 const _passportUseJAR: NonNullable<StrategyOptions['useJAR']> = hostKey
-const _clientJwkToHost: JsonWebKey = clientJwk
+const _clientJwkToHost: JsonWebKeyInput['key'] = clientJwk
 const _hostJwkToClient: client.JWK = hostJwk
 const _clientJwkToWebcryptoHost: webcrypto.JsonWebKey = clientJwk
 const _webcryptoHostJwkToClient: client.JWK = webcryptoHostJwk

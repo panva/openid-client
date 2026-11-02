@@ -14,4 +14,4 @@ Removes symbol-keyed properties from a type.
 
 | Type Parameter |
 | ------ |
-| `T` |
+| <a id="type-parameter-t"></a> `T` |

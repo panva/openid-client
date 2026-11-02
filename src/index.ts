@@ -560,7 +560,7 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
  *     ...args[1],
  *     hooks: {
  *       beforeRequest: [
- *         (request) => {
+ *         ({ request }) => {
  *           logRequest(request)
  *         },
  *       ],
@@ -570,7 +570,7 @@ export const skipSubjectCheck: typeof oauth.skipSubjectCheck =
  *         },
  *       ],
  *       afterResponse: [
- *         (request, _, response) => {
+ *         ({ request, response }) => {
  *           logResponse(request, response)
  *         },
  *       ],

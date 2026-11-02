@@ -1,6 +1,7 @@
 #!/bin/bash
 
+source .node_flags.sh
+
 . ./tap/.server.sh
 
-source .node_flags.sh
 node tap/run-node.ts

@@ -43,7 +43,7 @@ The following JWE Content Encryption Algorithms are supported
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `config` | [`Configuration`](../classes/Configuration.md) | - |
-| `contentEncryptionAlgorithms` | `string`[] | An allow list for JWE Content Encryption Algorithms identifiers |
+| `contentEncryptionAlgorithms?` | `string`[] | An allow list for JWE Content Encryption Algorithms identifiers |
 | ...`keys` | ([`CryptoKey`](https://developer.mozilla.org/docs/Web/API/CryptoKey) \| [`DecryptionKey`](../interfaces/DecryptionKey.md))[] | Keys to enable decrypting assertions with |
 
 ## Returns

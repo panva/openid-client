@@ -57,7 +57,7 @@ config[client.customFetch] = (...args) =>
     ...args[1],
     hooks: {
       beforeRequest: [
-        (request) => {
+        ({ request }) => {
           logRequest(request)
         },
       ],
@@ -67,7 +67,7 @@ config[client.customFetch] = (...args) =>
         },
       ],
       afterResponse: [
-        (request, _, response) => {
+        ({ request, response }) => {
           logResponse(request, response)
         },
       ],

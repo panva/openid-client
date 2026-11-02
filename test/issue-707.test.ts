@@ -1,114 +1,93 @@
 // see https://github.com/panva/openid-client/issues/707#issuecomment-2419779410
 
+import { once } from 'node:events'
+import http from 'node:http'
+import type { AddressInfo } from 'node:net'
 import test from 'ava'
 import * as client from '../src/index.js'
 import * as undici from 'undici'
 import * as jose from 'jose'
 
 test('30x on discoveries and jwks_uri can be worked around', async (t) => {
-  let agent = new undici.MockAgent()
-  agent.disableNetConnect()
-
-  const issuer = new URL('https://op.example.com/')
   const kp = await client.randomDPoPKeyPair('ES256')
+  const publicJwk = await jose.exportJWK(kp.publicKey)
+  const requests: string[] = []
 
-  const mockAgent = agent.get(issuer.origin)
+  // Exercise real fetch redirects: Undici 8's MockAgent cancels redirected requests.
+  const server = http.createServer((req, res) => {
+    const route = `${req.method} ${req.url}`
+    requests.push(route)
 
-  mockAgent
-    .intercept({
-      method: 'GET',
-      path: '/.well-known/openid-configuration',
-    })
-    .reply(302, new Uint8Array(), {
-      headers: {
-        location: 'https://op.example.com/not-conform-redirect',
-      },
-    })
-    .times(2)
+    switch (route) {
+      case 'GET /.well-known/openid-configuration':
+        res.writeHead(302, {
+          location: new URL('/not-conform-redirect', issuer).href,
+        })
+        res.end()
+        return
+      case 'GET /jwks':
+        res.writeHead(302, {
+          location: new URL('/not-conform-jwks', issuer).href,
+        })
+        res.end()
+        return
+      case 'GET /not-conform-redirect':
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(
+          JSON.stringify({
+            issuer: issuer.href,
+            token_endpoint: new URL('/token', issuer).href,
+            jwks_uri: new URL('/jwks', issuer).href,
+            id_token_signing_alg_values_supported: ['ES256'],
+          }),
+        )
+        return
+      case 'GET /not-conform-jwks':
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(JSON.stringify({ keys: [publicJwk] }))
+        return
+      case 'POST /token':
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(
+          JSON.stringify({
+            access_token: 'foo',
+            token_type: 'bearer',
+            id_token: idToken,
+          }),
+        )
+        return
+      default:
+        res.writeHead(404)
+        res.end()
+    }
+  })
 
-  mockAgent
-    .intercept({
-      method: 'GET',
-      path: '/jwks',
-    })
-    .reply(302, new Uint8Array(), {
-      headers: {
-        location: 'https://op.example.com/not-conform-jwks',
-      },
-    })
-    .times(2)
+  server.listen(0, '127.0.0.1')
+  await once(server, 'listening')
+  t.teardown(async () => {
+    server.close()
+    await once(server, 'close')
+  })
 
-  mockAgent
-    .intercept({
-      method: 'POST',
-      path: '/token',
-    })
-    .reply(
-      200,
-      {
-        access_token: 'foo',
-        token_type: 'bearer',
-        id_token: await new jose.SignJWT()
-          .setProtectedHeader({ alg: 'ES256' })
-          .setIssuer(issuer.href)
-          .setAudience('decoy')
-          .setIssuedAt()
-          .setExpirationTime('1m')
-          .setSubject('decoy')
-          .sign(kp.privateKey),
-      },
-      {
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    )
-    .times(2)
-
-  mockAgent
-    .intercept({
-      method: 'GET',
-      path: '/not-conform-redirect',
-    })
-    .reply(
-      200,
-      {
-        issuer: issuer.href,
-        token_endpoint: 'https://op.example.com/token',
-        jwks_uri: 'https://op.example.com/jwks',
-        id_token_signing_alg_values_supported: ['ES256'],
-      },
-      {
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    )
-
-  mockAgent
-    .intercept({
-      method: 'GET',
-      path: '/not-conform-jwks',
-    })
-    .reply(
-      200,
-      {
-        keys: [await jose.exportJWK(kp.publicKey)],
-      },
-      {
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    )
+  const { port } = server.address() as AddressInfo
+  const issuer = new URL(`http://127.0.0.1:${port}/`)
+  const idToken = await new jose.SignJWT()
+    .setProtectedHeader({ alg: 'ES256' })
+    .setIssuer(issuer.href)
+    .setAudience('decoy')
+    .setIssuedAt()
+    .setExpirationTime('1m')
+    .setSubject('decoy')
+    .sign(kp.privateKey)
 
   const hit = new Set<string>()
 
   let err = await t.throwsAsync(
     client.discovery(issuer, 'decoy', 'decoy', undefined, {
+      execute: [client.allowInsecureRequests],
       // @ts-ignore
       [client.customFetch](url, options) {
-        return undici.fetch(url, { ...options, dispatcher: agent })
+        return undici.fetch(url, options)
       },
     }),
     {
@@ -120,7 +99,7 @@ test('30x on discoveries and jwks_uri can be worked around', async (t) => {
   t.regex((err.cause as Response).url, /well-known/)
 
   const config = await client.discovery(issuer, 'decoy', 'decoy', undefined, {
-    execute: [client.enableNonRepudiationChecks],
+    execute: [client.allowInsecureRequests, client.enableNonRepudiationChecks],
     // @ts-ignore
     [client.customFetch](url, options) {
       if (url.includes('.well-known')) {
@@ -134,7 +113,7 @@ test('30x on discoveries and jwks_uri can be worked around', async (t) => {
           hit.add(url)
         }
       }
-      return undici.fetch(url, { ...options, dispatcher: agent })
+      return undici.fetch(url, options)
     },
   })
 
@@ -158,5 +137,14 @@ test('30x on discoveries and jwks_uri can be worked around', async (t) => {
     ),
   )
 
-  t.notThrows(() => agent.assertNoPendingInterceptors())
+  t.deepEqual(requests, [
+    'GET /.well-known/openid-configuration',
+    'GET /.well-known/openid-configuration',
+    'GET /not-conform-redirect',
+    'POST /token',
+    'GET /jwks',
+    'POST /token',
+    'GET /jwks',
+    'GET /not-conform-jwks',
+  ])
 })

@@ -52,7 +52,7 @@ Given the Issuer Identifier is https://example.com/pathname
 
 ### execute?
 
-• `optional` **execute?**: (`config`) => `void`[]
+• `optional` **execute?**: ((`config`) => `void`)[]
 
 Methods (available list linked below) to execute with the
 [Configuration](../classes/Configuration.md) instance as argument after it is instantiated
