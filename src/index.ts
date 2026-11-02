@@ -1856,13 +1856,13 @@ export interface ConfigurationProperties {
    *
    * @see {@link customFetch}
    */
-  [customFetch]?: CustomFetch
+  [customFetch]?: CustomFetch | undefined
 
   /**
    * Timeout (in seconds) for the HTTP Requests the client will be making.
    * Default is `30` (seconds)
    */
-  timeout?: number
+  timeout?: number | undefined
 }
 
 /**
