@@ -15,7 +15,7 @@ jobs:
       contents: write # Publish releases and update release branches.
       discussions: write # Create release discussions.
       id-token: write # Authenticate trusted publishing and attestations.
-    uses: panva/.github/.github/workflows/npm-release.yml@3faba8af3880247be43547787aedd52780c9f946
+    uses: panva/.github/.github/workflows/npm-release.yml@a4736719ab55fdedeee01739c175e01bff32386f # v1
     with:
       artifact_check_command: node tools/test-dist.js "$PACKAGE_TARBALL" .
       cleanup_paths: '["build"]'
