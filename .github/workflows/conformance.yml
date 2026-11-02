@@ -103,7 +103,7 @@ jobs:
           cache: 'npm'
       - run: npm clean-install
       - name: Start Conformance Suite
-        uses: panva/.github/.github/actions/conformance-suite@a4736719ab55fdedeee01739c175e01bff32386f # v1
+        uses: panva/.github/.github/actions/conformance-suite@75ad63f5730195dd3e9ec22dbbf29101c99d8501 # v4
         with:
           version-override: ${{ inputs.conformance_suite_version || vars.CONFORMANCE_SUITE_VERSION || '' }}
       - name: npm run conformance
