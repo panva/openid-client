@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.8.9](https://github.com/panva/openid-client/compare/v6.8.8...v6.8.9) (2026-11-02)
+
+### Fixes
+
+* **types:** support exactOptionalPropertyTypes ([91f3005](https://github.com/panva/openid-client/commit/91f3005c22d37076d69430d282df35d4fa73a261)), closes [#903](https://github.com/panva/openid-client/issues/903)
+
 ## [6.8.8](https://github.com/panva/openid-client/compare/v6.8.7...v6.8.8) (2026-09-05)
 
 ### Fixes
