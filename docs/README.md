@@ -43,6 +43,7 @@ Support from the community to continue maintaining and improving this module is 
 | [enableDecryptingResponses](functions/enableDecryptingResponses.md) | Enables processing of encrypted authorization server responses. |
 | [enableDetachedSignatureResponseChecks](functions/enableDetachedSignatureResponseChecks.md) | Enables FAPI 1.0 Advanced detached-signature response validation. |
 | [enableNonRepudiationChecks](functions/enableNonRepudiationChecks.md) | Enables JWS signature validation for processed JWT responses. |
+| [getDecryptedResponses](functions/getDecryptedResponses.md) | Returns the inner compact JWS values decrypted from a successfully processed response. |
 | [getJwksCache](functions/getJwksCache.md) | Exports the JSON Web Key Set cache used for signature validation. |
 | [setJwksCache](functions/setJwksCache.md) | Imports an externally managed JSON Web Key Set cache. |
 | [useCodeIdTokenResponseType](functions/useCodeIdTokenResponseType.md) | Configures the client to use the OpenID Connect Hybrid Flow. |
@@ -139,6 +140,7 @@ Support from the community to continue maintaining and improving this module is 
 | [ConfirmationClaims](interfaces/ConfirmationClaims.md) | Proof-of-possession confirmation (`cnf`) claims associated with a token. |
 | [CryptoKeyPair](interfaces/CryptoKeyPair.md) | An asymmetric public and private `CryptoKey` pair. |
 | [CustomFetchOptions](interfaces/CustomFetchOptions.md) | Options passed to a custom HTTP request implementation. |
+| [DecryptedAuthorizationCodeResponses](interfaces/DecryptedAuthorizationCodeResponses.md) | Inner compact JWS values decrypted by [authorizationCodeGrant](functions/authorizationCodeGrant.md). |
 | [DecryptionKey](interfaces/DecryptionKey.md) | An asymmetric private key and optional JOSE metadata used to decrypt responses. |
 | [DeviceAuthorizationGrantPollOptions](interfaces/DeviceAuthorizationGrantPollOptions.md) | Options for polling an OAuth 2.0 Device Authorization Grant. |
 | [DeviceAuthorizationResponse](interfaces/DeviceAuthorizationResponse.md) | A parsed successful OAuth 2.0 Device Authorization Response. |

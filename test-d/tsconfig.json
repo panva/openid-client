@@ -1,5 +1,6 @@
 {
   "files": ["api.ts"],
+  "include": ["decrypted-responses.ts"],
   "compilerOptions": {
     "target": "ESNext",
     "module": "NodeNext",

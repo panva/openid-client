@@ -58,3 +58,7 @@ let config!: client.Configuration
 
 client.enableDecryptingResponses(config, ['A128CBC-HS256'], key)
 ```
+
+## See
+
+[getDecryptedResponses](getDecryptedResponses.md)

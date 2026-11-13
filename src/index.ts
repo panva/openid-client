@@ -1553,6 +1553,8 @@ function checkEcdhAlg(algs: Set<string>, alg: unknown, pk: unknown) {
  * @param keys Keys to enable decrypting assertions with
  *
  * @group Advanced Configuration
+ *
+ * @see {@link getDecryptedResponses}
  */
 export function enableDecryptingResponses(
   config: Configuration,
@@ -1646,6 +1648,138 @@ export function enableDecryptingResponses(
     decrypt(normalized, jwe, contentEncryptionAlgorithms, [...algs]).catch(
       errorHandler,
     )
+}
+
+/**
+ * Inner compact JWS values decrypted by {@link authorizationCodeGrant}.
+ */
+export interface DecryptedAuthorizationCodeResponses {
+  /**
+   * Inner signed ID Tokens decrypted from Token and Authorization Endpoint
+   * responses.
+   */
+  readonly id_token?: {
+    /**
+     * Inner signed ID Token decrypted from the Token Endpoint response.
+     */
+    readonly token_endpoint?: string
+    /**
+     * Inner signed ID Token decrypted from a hybrid or FAPI 1.0 Advanced
+     * detached-signature authorization response.
+     */
+    readonly authorization_endpoint?: string
+  }
+
+  /**
+   * Inner signed JWT Secured Authorization Response Mode (JARM) response.
+   */
+  readonly authorization_response?: string
+}
+
+declare const decryptedResponseType: unique symbol
+
+type WithDecryptedResponse<
+  T,
+  S extends string | DecryptedAuthorizationCodeResponses,
+> = T & {
+  readonly [decryptedResponseType]: S
+}
+
+let decryptedResponses:
+  WeakMap<object, string | DecryptedAuthorizationCodeResponses> | undefined
+
+/**
+ * Returns the inner compact JWS values decrypted from a successfully processed
+ * response.
+ *
+ * {@link enableDecryptingResponses} must have been enabled when the response was
+ * processed. Only JWTs decrypted from a JWE are retained. Unencrypted responses
+ * do not contribute any values.
+ *
+ * For {@link authorizationCodeGrant}, returns a
+ * {@link DecryptedAuthorizationCodeResponses} record covering both the
+ * authorization response and any token endpoint ID Token.
+ * {@link refreshTokenGrant}, {@link genericGrantRequest},
+ * {@link pollDeviceAuthorizationGrant},
+ * {@link pollBackchannelAuthenticationGrant}, {@link implicitAuthentication},
+ * {@link fetchUserInfo}, and {@link tokenIntrospection} return a single compact
+ * JWS. Returns `undefined` whenever no JWT was decrypted, including
+ * authorization code grants.
+ *
+ * Returns `undefined` if decryption support was not enabled or the argument is
+ * not the original result object. Retrieving a JWS does not enable signature
+ * verification beyond the checks already configured for the operation.
+ *
+ * @example
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let key!: client.CryptoKey
+ * let currentUrl!: URL
+ *
+ * client.enableDecryptingResponses(config, undefined, key)
+ *
+ * let tokens = await client.authorizationCodeGrant(config, currentUrl)
+ * let signed = client.getDecryptedResponses(tokens)
+ * signed?.id_token?.token_endpoint
+ * signed?.id_token?.authorization_endpoint
+ * signed?.authorization_response
+ * ```
+ *
+ * @example
+ *
+ * ```ts
+ * let config!: client.Configuration
+ * let key!: client.CryptoKey
+ * let accessToken!: string
+ * let subject!: string
+ *
+ * client.enableDecryptingResponses(config, undefined, key)
+ *
+ * let userInfo = await client.fetchUserInfo(config, accessToken, subject)
+ * let signed: string | undefined = client.getDecryptedResponses(userInfo)
+ * ```
+ *
+ * @param result Original result returned by a response-processing operation.
+ *
+ * @group Advanced Configuration
+ */
+export function getDecryptedResponses<
+  S extends string | DecryptedAuthorizationCodeResponses,
+>(result: WithDecryptedResponse<object, S>): S | undefined
+/**
+ * @param result Original result returned by a response-processing operation.
+ */
+export function getDecryptedResponses(
+  result:
+    | oauth.TokenEndpointResponse
+    | oauth.IDToken
+    | oauth.UserInfoResponse
+    | oauth.IntrospectionResponse,
+): string | DecryptedAuthorizationCodeResponses | undefined
+export function getDecryptedResponses(result: object) {
+  return decryptedResponses?.get(result)
+}
+
+function setDecryptedResponse<
+  T extends object,
+  S extends string | DecryptedAuthorizationCodeResponses,
+>(result: T, signed: S | undefined): WithDecryptedResponse<T, S> {
+  if (signed !== undefined) {
+    decryptedResponses ||= new WeakMap()
+    decryptedResponses.set(result, signed)
+  }
+  return result as WithDecryptedResponse<T, S>
+}
+
+function captureDecryptedResponse(
+  decrypt: oauth.JweDecryptFunction | undefined,
+) {
+  let signed: string | undefined
+  return {
+    decrypt: decrypt && (async (jwe: string) => (signed = await decrypt(jwe))),
+    get: () => signed,
+  }
 }
 
 function checkCryptoKey(key: oauth.CryptoKey, alg: string, epk: unknown) {
@@ -2264,7 +2398,12 @@ async function pollGrant(
   processResponse: typeof oauth.processDeviceCodeResponse,
   parameters?: URLSearchParams | Record<string, string>,
   options?: DeviceAuthorizationGrantPollOptions,
-): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+): Promise<
+  WithDecryptedResponse<
+    oauth.TokenEndpointResponse & TokenEndpointResponseHelpers,
+    string
+  >
+> {
   const requestParameters = new URLSearchParams(parameters)
   let interval = authorizationResponse.interval ?? 5
   const pollingSignal =
@@ -2299,9 +2438,10 @@ async function pollGrant(
       }
 
       let result: oauth.TokenEndpointResponse
+      const signed = captureDecryptedResponse(decrypt)
       try {
         result = await processResponse(as, c, response, {
-          [oauth.jweDecrypt]: decrypt,
+          [oauth.jweDecrypt]: signed.decrypt,
         })
       } catch (error) {
         if (retryable(error, options)) {
@@ -2325,7 +2465,7 @@ async function pollGrant(
 
       result.id_token && (await nonRepudiation?.(response))
       addHelpers(result)
-      return result
+      return setDecryptedResponse(result, signed.get())
     } finally {
       requestSignal.cleanup()
     }
@@ -2376,7 +2516,12 @@ export async function pollDeviceAuthorizationGrant(
   deviceAuthorizationResponse: oauth.DeviceAuthorizationResponse,
   parameters?: URLSearchParams | Record<string, string>,
   options?: DeviceAuthorizationGrantPollOptions,
-): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+): Promise<
+  WithDecryptedResponse<
+    oauth.TokenEndpointResponse & TokenEndpointResponseHelpers,
+    string
+  >
+> {
   checkConfig(config)
 
   return pollGrant(
@@ -2551,7 +2696,12 @@ export async function pollBackchannelAuthenticationGrant(
   backchannelAuthenticationResponse: oauth.BackchannelAuthenticationResponse,
   parameters?: URLSearchParams | Record<string, string>,
   options?: BackchannelAuthenticationGrantPollOptions,
-): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+): Promise<
+  WithDecryptedResponse<
+    oauth.TokenEndpointResponse & TokenEndpointResponseHelpers,
+    string
+  >
+> {
   checkConfig(config)
 
   return pollGrant(
@@ -2997,7 +3147,7 @@ export async function implicitAuthentication(
   currentUrl: URL | Request,
   expectedNonce: string,
   checks?: ImplicitAuthenticationResponseChecks,
-): Promise<oauth.IDToken> {
+): Promise<WithDecryptedResponse<oauth.IDToken, string>> {
   checkConfig(config)
 
   if (
@@ -3076,10 +3226,11 @@ export async function implicitAuthentication(
         },
       )
 
+      const signed = captureDecryptedResponse(decrypt)
       const ref = await oauth.processAuthorizationCodeResponse(as, c, decoy, {
         expectedNonce,
         maxAge: checks?.maxAge,
-        [oauth.jweDecrypt]: decrypt,
+        [oauth.jweDecrypt]: signed.decrypt,
       })
 
       // validate ID Token signature
@@ -3091,7 +3242,10 @@ export async function implicitAuthentication(
         [oauth.jwksCache]: jwksCache,
       })
 
-      return oauth.getValidatedIdTokenClaims(ref)!
+      return setDecryptedResponse(
+        oauth.getValidatedIdTokenClaims(ref)!,
+        signed.get(),
+      )
     }
   } catch (err) {
     errorHandler(err)
@@ -3364,7 +3518,12 @@ export async function authorizationCodeGrant(
   checks?: AuthorizationCodeGrantChecks,
   tokenEndpointParameters?: URLSearchParams | Record<string, string>,
   options?: AuthorizationCodeGrantOptions,
-): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+): Promise<
+  WithDecryptedResponse<
+    oauth.TokenEndpointResponse & TokenEndpointResponseHelpers,
+    DecryptedAuthorizationCodeResponses
+  >
+> {
   checkConfig(config)
 
   if (
@@ -3484,11 +3643,12 @@ export async function authorizationCodeGrant(
     checks.idTokenExpected = true
   }
 
+  const signed = captureDecryptedResponse(decrypt)
   const p = oauth.processAuthorizationCodeResponse(as, c, response, {
     expectedNonce: checks?.expectedNonce,
     maxAge: checks?.maxAge,
     requireIdToken: checks?.idTokenExpected,
-    [oauth.jweDecrypt]: decrypt,
+    [oauth.jweDecrypt]: signed.decrypt,
   })
 
   let result: oauth.TokenEndpointResponse
@@ -3517,7 +3677,28 @@ export async function authorizationCodeGrant(
   result.id_token && (await nonRepudiation?.(response))
 
   addHelpers(result)
-  return result
+  const authorization = decryptedResponses?.get(authResponse) as
+    DecryptedAuthorizationCodeResponses | undefined
+  const tokenEndpoint = signed.get()
+  let jwts: DecryptedAuthorizationCodeResponses | undefined
+  if (tokenEndpoint || authorization) {
+    const authorizationEndpoint =
+      authorization?.id_token?.authorization_endpoint
+    jwts = Object.freeze({
+      ...(authorization?.authorization_response && {
+        authorization_response: authorization.authorization_response,
+      }),
+      ...((tokenEndpoint || authorizationEndpoint) && {
+        id_token: Object.freeze({
+          ...(tokenEndpoint && { token_endpoint: tokenEndpoint }),
+          ...(authorizationEndpoint && {
+            authorization_endpoint: authorizationEndpoint,
+          }),
+        }),
+      }),
+    })
+  }
+  return setDecryptedResponse(result, jwts)
 }
 
 async function validateJARMResponse(
@@ -3526,21 +3707,28 @@ async function validateJARMResponse(
   expectedState: string | typeof skipStateCheck | undefined,
 ): Promise<URLSearchParams> {
   const { as, c, fetch, tlsOnly, timeout, decrypt, jwksCache } = int(config)
-  return oauth
+  const signed = captureDecryptedResponse(decrypt)
+  const result = await oauth
     .validateJwtAuthResponse(as, c, authorizationResponse, expectedState, {
       [oauth.customFetch]: fetch,
       [oauth.allowInsecureRequests]: !tlsOnly,
       headers: new Headers(headers),
       signal: signal(timeout),
-      [oauth.jweDecrypt]: decrypt,
+      [oauth.jweDecrypt]: signed.decrypt,
       [oauth.jwksCache]: jwksCache,
     })
     .catch(errorHandler)
+
+  const jwt = signed.get()
+  if (jwt) {
+    setDecryptedResponse(result, Object.freeze({ authorization_response: jwt }))
+  }
+  return result
 }
 
 async function validateCodeIdTokenResponse(
   config: Configuration,
-  authorizationResponse: URL | Request,
+  authorizationResponse: URL,
   expectedNonce: string | undefined,
   expectedState: string | typeof skipStateCheck | undefined,
   maxAge: number | undefined,
@@ -3562,7 +3750,8 @@ async function validateCodeIdTokenResponse(
 
   const { as, c, fetch, tlsOnly, timeout, decrypt, jwksCache } = int(config)
 
-  return (
+  const signed = captureDecryptedResponse(decrypt)
+  const result = await (
     fapi
       ? oauth.validateDetachedSignatureResponse
       : oauth.validateCodeIdTokenResponse
@@ -3571,9 +3760,20 @@ async function validateCodeIdTokenResponse(
     [oauth.allowInsecureRequests]: !tlsOnly,
     headers: new Headers(headers),
     signal: signal(timeout),
-    [oauth.jweDecrypt]: decrypt,
+    [oauth.jweDecrypt]: signed.decrypt,
     [oauth.jwksCache]: jwksCache,
   }).catch(errorHandler)
+
+  const jwt = signed.get()
+  if (jwt) {
+    setDecryptedResponse(
+      result,
+      Object.freeze({
+        id_token: Object.freeze({ authorization_endpoint: jwt }),
+      }),
+    )
+  }
+  return result
 }
 
 /**
@@ -3623,7 +3823,12 @@ export async function refreshTokenGrant(
   refreshToken: string,
   parameters?: URLSearchParams | Record<string, string>,
   options?: DPoPOptions,
-): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+): Promise<
+  WithDecryptedResponse<
+    oauth.TokenEndpointResponse & TokenEndpointResponseHelpers,
+    string
+  >
+> {
   checkConfig(config)
 
   parameters = new URLSearchParams(parameters)
@@ -3641,8 +3846,9 @@ export async function refreshTokenGrant(
     })
     .catch(errorHandler)
 
+  const signed = captureDecryptedResponse(decrypt)
   const p = oauth.processRefreshTokenResponse(as, c, response, {
-    [oauth.jweDecrypt]: decrypt,
+    [oauth.jweDecrypt]: signed.decrypt,
   })
 
   let result: oauth.TokenEndpointResponse
@@ -3662,7 +3868,7 @@ export async function refreshTokenGrant(
   result.id_token && (await nonRepudiation?.(response))
 
   addHelpers(result)
-  return result
+  return setDecryptedResponse(result, signed.get())
 }
 
 /**
@@ -4171,7 +4377,7 @@ export async function fetchUserInfo(
   accessToken: string,
   expectedSubject: string | typeof skipSubjectCheck,
   options?: DPoPOptions,
-): Promise<oauth.UserInfoResponse> {
+): Promise<WithDecryptedResponse<oauth.UserInfoResponse, string>> {
   checkConfig(config)
 
   const { as, c, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
@@ -4186,8 +4392,9 @@ export async function fetchUserInfo(
     })
     .catch(errorHandler)
 
+  const signed = captureDecryptedResponse(decrypt)
   let exec = oauth.processUserInfoResponse(as, c, expectedSubject, response, {
-    [oauth.jweDecrypt]: decrypt,
+    [oauth.jweDecrypt]: signed.decrypt,
   })
 
   let result: oauth.UserInfoResponse
@@ -4208,7 +4415,7 @@ export async function fetchUserInfo(
   oauth.getContentType(response) === 'application/jwt' &&
     (await nonRepudiation?.(response))
 
-  return result
+  return setDecryptedResponse(result, signed.get())
 }
 
 function retryable(err: unknown, options: DPoPOptions | undefined) {
@@ -4247,7 +4454,7 @@ export async function tokenIntrospection(
   config: Configuration,
   token: string,
   parameters?: URLSearchParams | Record<string, string>,
-): Promise<oauth.IntrospectionResponse> {
+): Promise<WithDecryptedResponse<oauth.IntrospectionResponse, string>> {
   checkConfig(config)
 
   const { as, c, auth, fetch, tlsOnly, nonRepudiation, timeout, decrypt } =
@@ -4262,9 +4469,10 @@ export async function tokenIntrospection(
     })
     .catch(errorHandler)
 
+  const signed = captureDecryptedResponse(decrypt)
   const result = await oauth
     .processIntrospectionResponse(as, c, response, {
-      [oauth.jweDecrypt]: decrypt,
+      [oauth.jweDecrypt]: signed.decrypt,
     })
     .catch(errorHandler)
 
@@ -4272,7 +4480,7 @@ export async function tokenIntrospection(
   oauth.getContentType(response) === 'application/token-introspection+jwt' &&
     (await nonRepudiation?.(response))
 
-  return result
+  return setDecryptedResponse(result, signed.get())
 }
 
 const retry: unique symbol = Symbol()
@@ -4344,7 +4552,12 @@ export async function genericGrantRequest(
   grantType: string,
   parameters: URLSearchParams | Record<string, string>,
   options?: DPoPOptions,
-): Promise<oauth.TokenEndpointResponse & TokenEndpointResponseHelpers> {
+): Promise<
+  WithDecryptedResponse<
+    oauth.TokenEndpointResponse & TokenEndpointResponseHelpers,
+    string
+  >
+> {
   checkConfig(config)
 
   const { as, c, auth, fetch, tlsOnly, timeout, decrypt, nonRepudiation } =
@@ -4371,8 +4584,9 @@ export async function genericGrantRequest(
     recognizedTokenTypes = { n_a: () => {} }
   }
 
+  const signed = captureDecryptedResponse(decrypt)
   const p = oauth.processGenericTokenEndpointResponse(as, c, response, {
-    [oauth.jweDecrypt]: decrypt,
+    [oauth.jweDecrypt]: signed.decrypt,
     recognizedTokenTypes,
   })
 
@@ -4393,7 +4607,7 @@ export async function genericGrantRequest(
   result.id_token && (await nonRepudiation?.(response))
 
   addHelpers(result)
-  return result
+  return setDecryptedResponse(result, signed.get())
 }
 
 /**

@@ -19,7 +19,11 @@
   "treatWarningsAsErrors": true,
   "hideGenerator": true,
   "out": "docs",
-  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-mdn-links"],
+  "plugin": [
+    "typedoc-plugin-markdown",
+    "typedoc-plugin-mdn-links",
+    "./tools/typedoc.js"
+  ],
   "additionalModuleSources": ["@typescript/old"],
   "readme": "none",
   "groupOrder": [
