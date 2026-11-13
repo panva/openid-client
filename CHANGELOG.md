@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.9.0](https://github.com/panva/openid-client/compare/v6.8.9...v6.9.0) (2026-11-13)
+
+### Features
+
+* add getDecryptedResponses ([279212e](https://github.com/panva/openid-client/commit/279212ef7b949e23d2252d59f8423f1daa268b40))
+
 ## [6.8.9](https://github.com/panva/openid-client/compare/v6.8.8...v6.8.9) (2026-11-02)
 
 ### Fixes
