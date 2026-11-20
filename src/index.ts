@@ -3636,13 +3636,6 @@ export async function authorizationCodeGrant(
     )
     .catch(errorHandler)
 
-  if (
-    typeof checks?.expectedNonce === 'string' ||
-    typeof checks?.maxAge === 'number'
-  ) {
-    checks.idTokenExpected = true
-  }
-
   const signed = captureDecryptedResponse(decrypt)
   const p = oauth.processAuthorizationCodeResponse(as, c, response, {
     expectedNonce: checks?.expectedNonce,
