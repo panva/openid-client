@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.9.1](https://github.com/panva/openid-client/compare/v6.9.0...v6.9.1) (2026-11-20)
+
+### Fixes
+
+* **passport:** forward verify callback info on success ([ff14ff8](https://github.com/panva/openid-client/commit/ff14ff8726f6f08b575f87373835c9ab5d36736a))
+* preserve nonce challenges for streaming request bodies ([efb0f9b](https://github.com/panva/openid-client/commit/efb0f9b315a4c1d6fbe0aee2f68300c9d48fb51f))
+* **types:** export the decrypted response type alias ([a12e668](https://github.com/panva/openid-client/commit/a12e6681c153694ec432be4bc1c30a847589942a))
+
+### Refactor
+
+* remove redundant ID Token requirement check ([579912b](https://github.com/panva/openid-client/commit/579912b687a2ae885e909405d9bee9d7351dd0d0))
+
 ## [6.9.0](https://github.com/panva/openid-client/compare/v6.8.9...v6.9.0) (2026-11-13)
 
 ### Features
