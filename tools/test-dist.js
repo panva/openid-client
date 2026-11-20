@@ -192,6 +192,9 @@ const config = new client.Configuration({ issuer: 'https://as.example' }, 'clien
 const options: StrategyOptions = { config }
 new Strategy(options, () => {})
 
+export const getUserInfo = (token: string, subject: string) =>
+  client.fetchUserInfo(config, token, subject)
+
 const pair: client.CryptoKeyPair = await client.randomDPoPKeyPair('ES256')
 void pair
 `,
@@ -201,7 +204,8 @@ void pair
     process.execPath,
     [
       tsc,
-      '--noEmit',
+      '--declaration',
+      '--emitDeclarationOnly',
       '--ignoreConfig',
       '--strict',
       '--skipLibCheck',

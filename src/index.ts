@@ -1678,7 +1678,12 @@ export interface DecryptedAuthorizationCodeResponses {
 
 declare const decryptedResponseType: unique symbol
 
-type WithDecryptedResponse<
+/**
+ * Exported so downstream declarations can name inferred response types.
+ *
+ * @ignore
+ */
+export type WithDecryptedResponse<
   T,
   S extends string | DecryptedAuthorizationCodeResponses,
 > = T & {
