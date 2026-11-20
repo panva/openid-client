@@ -89,13 +89,13 @@
     "typecheck:types": "tsc -p test-d && tsc -p test-d/tsconfig.node.json && tsc -p test-d/tsconfig.fallback.json && tsc -p test-d/tsconfig.fallback.const.json && tsc -p test-d/tsconfig.fallback.let.json"
   },
   "dependencies": {
-    "jose": "^6.2.15",
-    "oauth4webapi": "^3.8.8"
+    "jose": "^6.2.18",
+    "oauth4webapi": "^3.8.9"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@koa/cors": "^5.0.0",
-    "@playwright/test": "^1.64.1",
+    "@playwright/test": "^1.65.0",
     "@types/connect-ensure-login": "^0.1.9",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
@@ -111,20 +111,20 @@
     "happy-dom": "^21.0.4",
     "http-cookie-agent": "^8.0.0",
     "ky": "^2.2.0",
-    "oidc-provider": "^9.13.3",
+    "oidc-provider": "^9.15.1",
     "patch-package": "^8.0.1",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.1",
     "prettier-plugin-jsdoc": "^1.8.1",
     "publint": "0.3.23",
     "qunit": "^3.0.0",
     "raw-body": "^4.0.0",
     "selfsigned": "^5.5.0",
-    "tough-cookie": "^6.0.2",
+    "tough-cookie": "^6.1.0",
     "ts-blank-space": "^0.9.0",
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.14.1",
     "typedoc-plugin-mdn-links": "^5.1.1",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "undici": "^8.12.3"
+    "undici": "^8.12.4"
   }
 }
