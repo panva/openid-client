@@ -4693,7 +4693,10 @@ export async function fetchProtectedResource(
   try {
     result = await exec
   } catch (err) {
-    if (retryable(err, options)) {
+    if (
+      retryable(err, options) &&
+      !webInstanceOf<ReadableStream>(body, 'ReadableStream')
+    ) {
       return fetchProtectedResource(
         config,
         accessToken,
