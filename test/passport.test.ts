@@ -135,6 +135,7 @@ interface HarnessResult {
     error?: unknown
     failInfo?: unknown
     successUser?: Express.User
+    successInfo?: unknown
   }
 }
 
@@ -176,8 +177,9 @@ function createStrategyHarness(
   strategy.fail = (info: unknown) => {
     results.failInfo = info
   }
-  strategy.success = (user: Express.User) => {
+  strategy.success = (user: Express.User, info?: unknown) => {
     results.successUser = user
+    results.successInfo = info
   }
 
   return { strategy, session, results }
@@ -483,10 +485,11 @@ for (const passReqToCallback of [false, true]) {
       passReqToCallback,
     })
     const user = { sub: 'user' }
+    const info = { scope: 'profile' }
     const verify: VerifyFunction = async (tokens, verified) => {
       await Promise.resolve()
       assert.strictEqual(tokens.access_token, 'ok')
-      verified(null, user)
+      verified(null, user, info)
     }
     const verifyWithRequest: VerifyFunctionWithRequest = async (
       req,
@@ -505,6 +508,7 @@ for (const passReqToCallback of [false, true]) {
     )
 
     assert.strictEqual(harness.results.successUser, user)
+    assert.strictEqual(harness.results.successInfo, info)
     assert.ok(!harness.results.error)
   })
 }

@@ -606,7 +606,8 @@ export class Strategy implements passport.Strategy {
       const verified: passport.AuthenticateCallback = (err, user, info) => {
         if (err) return this.error(err)
         if (!user) return this.fail(info)
-        return this.success(user)
+        // Passport's success action accepts the verify callback's info at runtime.
+        return this.success(user, info as object | undefined)
       }
 
       if (options.passReqToCallback ?? this._passReqToCallback) {
